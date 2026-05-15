@@ -1,0 +1,5 @@
+package com.example.saath_khata
+
+import io.flutter.embedding.android.FlutterActivity
+
+class MainActivity : FlutterActivity()

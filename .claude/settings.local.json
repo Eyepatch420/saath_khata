@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(ls -t ~/.claude/projects/ | head -20)",
+      "Read(//Users/hacksman/.claude/projects/**)",
+      "Bash(mkdir -p /Users/hacksman/Developer/Flutter/saath_khata/.claude)"
+    ],
+    "additionalDirectories": [
+      "/Users/hacksman/Developer/Flutter/saath_khata/.claude"
+    ]
+  }
+}
