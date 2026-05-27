@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class VendorTile extends StatelessWidget {
   final dynamic vendor;
@@ -10,32 +11,34 @@ class VendorTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final info = vendor.vendor; // VendorLinkItem.vendor → VendorSummary
+    final surface = Theme.of(context).colorScheme.surface;
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
-        extra: {'id': vendor.id, 'name': vendor.name},
+        extra: {'linkId': vendor.linkId, 'name': info.name},
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: AppColors.secondary.withValues(alpha: 0.1),
-              child: Text(vendor.name[0],
+              backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+              child: Text(info.name[0],
                   style: const TextStyle(
-                      color: AppColors.secondary, fontWeight: FontWeight.bold)),
+                      color: AppColors.primary, fontWeight: FontWeight.bold)),
             ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(vendor.name, style: AppTypography.labelLarge),
+                  Text(info.name, style: AppTypography.labelLarge),
                   const Text('Last delivery: Today, 7:30 AM',
                       style: TextStyle(fontSize: 10, color: AppColors.textHint)),
                 ],
@@ -44,10 +47,10 @@ class VendorTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('₹850',
+                Text('₹${vendor.balance.toStringAsFixed(0)}',
                     style: AppTypography.labelLarge.copyWith(color: AppColors.error)),
-                const Text('Due',
-                    style: TextStyle(fontSize: 10, color: AppColors.textHint)),
+                Text(AppLocalizations.of(context)!.outstanding,
+                    style: const TextStyle(fontSize: 10, color: AppColors.textHint)),
               ],
             ),
             const SizedBox(width: 8),

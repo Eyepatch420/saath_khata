@@ -17,6 +17,12 @@ class BookingLoaded extends BookingState {
 
   const BookingLoaded({required this.bookings, required this.selectedDate});
 
+  BookingLoaded copyWith({List<BookingModel>? bookings, DateTime? selectedDate}) =>
+      BookingLoaded(
+        bookings: bookings ?? this.bookings,
+        selectedDate: selectedDate ?? this.selectedDate,
+      );
+
   @override
   List<Object?> get props => [bookings, selectedDate];
 }
@@ -43,4 +49,18 @@ class BookingError extends BookingState {
   const BookingError(this.message);
   @override
   List<Object?> get props => [message];
+}
+
+/// Non-fatal error for a status update action — list remains visible.
+class BookingActionError extends BookingState {
+  final List<BookingModel> bookings;
+  final DateTime selectedDate;
+  final String message;
+  const BookingActionError({
+    required this.bookings,
+    required this.selectedDate,
+    required this.message,
+  });
+  @override
+  List<Object?> get props => [bookings, selectedDate, message];
 }

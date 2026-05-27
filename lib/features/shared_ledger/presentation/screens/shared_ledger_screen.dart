@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/services/ledger_socket_service.dart';
+import '../../../../core/utils/app_logger.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
@@ -11,7 +14,7 @@ import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
 import '../bloc/ledger_state.dart';
 
-class SharedLedgerScreen extends StatelessWidget {
+class SharedLedgerScreen extends StatefulWidget {
   final String linkId;
   final String customerName;
 
@@ -22,10 +25,56 @@ class SharedLedgerScreen extends StatelessWidget {
   });
 
   @override
+  State<SharedLedgerScreen> createState() => _SharedLedgerScreenState();
+}
+
+class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
+  static const _m = 'LedgerScreen';
+  late final LedgerBloc _bloc;
+  late final LedgerSocketService _socket;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = LedgerBloc(getIt())..add(LoadLedger(widget.linkId));
+    _socket = getIt<LedgerSocketService>();
+    _socket.joinLedger(widget.linkId);
+
+    _socket.onEntryAdded((data) {
+      try {
+        final entry = LedgerEntry.fromJson(data['entry'] as Map<String, dynamic>);
+        AppLogger.v(_m, 'Socket entry_added received id:${entry.id}');
+        _bloc.add(SocketLedgerEntryAdded(entry));
+      } catch (e) {
+        AppLogger.e(_m, 'Failed to parse socket entry_added', e);
+      }
+    });
+
+    _socket.onEntryUpdated((data) {
+      try {
+        final entry = LedgerEntry.fromJson(data['entry'] as Map<String, dynamic>);
+        AppLogger.v(_m, 'Socket entry_updated received id:${entry.id}');
+        _bloc.add(SocketLedgerEntryUpdated(entry));
+      } catch (e) {
+        AppLogger.e(_m, 'Failed to parse socket entry_updated', e);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _socket.leaveLedger(widget.linkId);
+    _socket.off('ledger:entry_added');
+    _socket.off('ledger:entry_updated');
+    _bloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LedgerBloc(getIt())..add(LoadLedger(linkId)),
-      child: SharedLedgerView(customerName: customerName, linkId: linkId),
+    return BlocProvider.value(
+      value: _bloc,
+      child: SharedLedgerView(customerName: widget.customerName, linkId: widget.linkId),
     );
   }
 }
@@ -34,24 +83,28 @@ class SharedLedgerView extends StatelessWidget {
   final String customerName;
   final String linkId;
 
-  const SharedLedgerView({super.key, required this.customerName, required this.linkId});
+  const SharedLedgerView(
+      {super.key, required this.customerName, required this.linkId});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(customerName, style: AppTypography.h3),
-            Text('Shared Ledger',
-                style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
+            Text(
+              l10n.sharedLedger,
+              style:
+                  AppTypography.bodySmall.copyWith(color: AppColors.primary),
+            ),
           ],
         ),
         actions: [
           IconButton(
-            onPressed: () => _showLedgerInfo(context),
+            onPressed: () => _showLedgerInfo(context, l10n),
             icon: const Icon(Icons.info_outline_rounded),
           ),
         ],
@@ -60,7 +113,8 @@ class SharedLedgerView extends StatelessWidget {
         children: [
           _BalanceHeader(linkId: linkId),
           _FilterBar(),
-          Expanded(child: _LedgerList(linkId: linkId, customerName: customerName)),
+          Expanded(
+              child: _LedgerList(linkId: linkId, customerName: customerName)),
         ],
       ),
       bottomNavigationBar: _LedgerActions(
@@ -70,7 +124,7 @@ class SharedLedgerView extends StatelessWidget {
     );
   }
 
-  void _showLedgerInfo(BuildContext context) {
+  void _showLedgerInfo(BuildContext context, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -82,25 +136,25 @@ class SharedLedgerView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('How this ledger works', style: AppTypography.h3),
+            Text(l10n.ledgerInfoTitle, style: AppTypography.h3),
             const SizedBox(height: 16),
             _InfoRow(
               icon: Icons.lock_rounded,
               color: AppColors.success,
-              label: 'Confirmed',
-              desc: 'Both parties agreed. Entry is locked and cannot be changed.',
+              label: l10n.statusConfirmed,
+              desc: l10n.statusConfirmedDesc,
             ),
             _InfoRow(
               icon: Icons.access_time_rounded,
               color: AppColors.warning,
-              label: 'Pending',
-              desc: 'Awaiting customer confirmation. Auto-confirmed after 72 hours.',
+              label: l10n.statusPending,
+              desc: l10n.statusPendingDesc,
             ),
             _InfoRow(
               icon: Icons.warning_amber_rounded,
               color: AppColors.error,
-              label: 'Disputed',
-              desc: 'Customer raised a dispute. Vendor review required.',
+              label: l10n.statusDisputed,
+              desc: l10n.statusDisputedDesc,
             ),
             const SizedBox(height: 16),
           ],
@@ -116,7 +170,11 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String desc;
 
-  const _InfoRow({required this.icon, required this.color, required this.label, required this.desc});
+  const _InfoRow(
+      {required this.icon,
+      required this.color,
+      required this.label,
+      required this.desc});
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +189,8 @@ class _InfoRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: AppTypography.labelLarge.copyWith(color: color)),
+                Text(label,
+                    style: AppTypography.labelLarge.copyWith(color: color)),
                 Text(desc, style: AppTypography.bodySmall),
               ],
             ),
@@ -148,17 +207,25 @@ class _BalanceHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<LedgerBloc, LedgerState>(
       builder: (context, state) {
         double balance = 0;
         if (state is LedgerLoaded) balance = state.balance;
         if (state is LedgerActionLoading) balance = state.balance;
 
+        final balanceLabel = balance > 0
+            ? l10n.balanceCustomerOwes
+            : balance < 0
+                ? l10n.balanceYouOwe
+                : l10n.balanceSettled;
+
         return Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            border: Border(bottom: BorderSide(color: AppColors.divider)),
+          padding:
+              const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -166,18 +233,23 @@ class _BalanceHeader extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('TOTAL BALANCE', style: AppTypography.bodySmall),
+                  Text(l10n.totalBalance,
+                      style: AppTypography.bodySmall),
                   const SizedBox(height: 4),
                   Text(
                     '₹${balance.toStringAsFixed(0)}',
                     style: AppTypography.h1.copyWith(
-                      color: balance > 0 ? AppColors.error : AppColors.success,
+                      color: balance > 0
+                          ? AppColors.error
+                          : AppColors.success,
                     ),
                   ),
                   Text(
-                    balance > 0 ? 'Customer owes you' : balance < 0 ? 'You owe customer' : 'Settled',
+                    balanceLabel,
                     style: AppTypography.bodySmall.copyWith(
-                      color: balance > 0 ? AppColors.error : AppColors.success,
+                      color: balance > 0
+                          ? AppColors.error
+                          : AppColors.success,
                     ),
                   ),
                 ],
@@ -185,10 +257,11 @@ class _BalanceHeader extends StatelessWidget {
               ElevatedButton.icon(
                 onPressed: () {},
                 icon: const Icon(Icons.picture_as_pdf_rounded, size: 16),
-                label: const Text('Statement'),
+                label: Text(l10n.statement),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.secondary,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 14, vertical: 10),
                 ),
               ),
             ],
@@ -202,43 +275,50 @@ class _BalanceHeader extends StatelessWidget {
 class _FilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<LedgerBloc, LedgerState>(
       builder: (context, state) {
         EntryStatus? activeFilter;
         if (state is LedgerLoaded) activeFilter = state.activeFilter;
 
         return Container(
-          color: AppColors.surface,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          color: Theme.of(context).colorScheme.surface,
+          padding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
                 _FilterChip(
-                  label: 'All',
+                  label: l10n.filterAll,
                   isActive: activeFilter == null,
-                  onTap: () => context.read<LedgerBloc>().add(const FilterLedger(null)),
+                  onTap: () => context
+                      .read<LedgerBloc>()
+                      .add(const FilterLedger(null)),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'Pending',
+                  label: l10n.statusPending,
                   isActive: activeFilter == EntryStatus.pending,
                   color: AppColors.warning,
-                  onTap: () => context.read<LedgerBloc>().add(const FilterLedger(EntryStatus.pending)),
+                  onTap: () => context.read<LedgerBloc>().add(
+                      const FilterLedger(EntryStatus.pending)),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'Confirmed',
+                  label: l10n.statusConfirmed,
                   isActive: activeFilter == EntryStatus.confirmed,
                   color: AppColors.success,
-                  onTap: () => context.read<LedgerBloc>().add(const FilterLedger(EntryStatus.confirmed)),
+                  onTap: () => context.read<LedgerBloc>().add(
+                      const FilterLedger(EntryStatus.confirmed)),
                 ),
                 const SizedBox(width: 8),
                 _FilterChip(
-                  label: 'Disputed',
+                  label: l10n.statusDisputed,
                   isActive: activeFilter == EntryStatus.disputed,
                   color: AppColors.error,
-                  onTap: () => context.read<LedgerBloc>().add(const FilterLedger(EntryStatus.disputed)),
+                  onTap: () => context.read<LedgerBloc>().add(
+                      const FilterLedger(EntryStatus.disputed)),
                 ),
               ],
             ),
@@ -271,7 +351,9 @@ class _FilterChip extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: isActive ? activeColor : activeColor.withValues(alpha: 0.08),
+          color: isActive
+              ? activeColor
+              : activeColor.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
@@ -291,10 +373,12 @@ class _LedgerList extends StatelessWidget {
   final String linkId;
   final String customerName;
 
-  const _LedgerList({required this.linkId, required this.customerName});
+  const _LedgerList(
+      {required this.linkId, required this.customerName});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<LedgerBloc, LedgerState>(
       builder: (context, state) {
         if (state is LedgerLoading) {
@@ -304,7 +388,8 @@ class _LedgerList extends StatelessWidget {
         if (state is LedgerError) {
           return ErrorStateWidget(
             message: state.message,
-            onRetry: () => context.read<LedgerBloc>().add(LoadLedger(linkId)),
+            onRetry: () =>
+                context.read<LedgerBloc>().add(LoadLedger(linkId)),
           );
         }
 
@@ -331,8 +416,8 @@ class _LedgerList extends StatelessWidget {
         if (entries.isEmpty) {
           return EmptyStateWidget(
             icon: Icons.receipt_long_rounded,
-            title: 'No transactions yet',
-            subtitle: 'Add a credit or payment entry to get started.',
+            title: l10n.noLedgerTransactions,
+            subtitle: l10n.noLedgerTransactionsSubtitle,
           );
         }
 
@@ -360,21 +445,24 @@ class _EntryCard extends StatelessWidget {
   final LedgerEntry entry;
   final String customerName;
 
-  const _EntryCard({required this.entry, required this.customerName});
+  const _EntryCard(
+      {required this.entry, required this.customerName});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isCredit = entry.type == EntryType.credit;
 
     return GestureDetector(
-      onTap: () => _showEntryDetail(context),
+      onTap: () => _showEntryDetail(context, l10n),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: entry.status == EntryStatus.disputed
-              ? Border.all(color: AppColors.error.withValues(alpha: 0.3))
+              ? Border.all(
+                  color: AppColors.error.withValues(alpha: 0.3))
               : null,
         ),
         child: Column(
@@ -384,12 +472,19 @@ class _EntryCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: (isCredit ? AppColors.error : AppColors.success).withValues(alpha: 0.1),
+                    color: (isCredit
+                            ? AppColors.error
+                            : AppColors.success)
+                        .withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    isCredit ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-                    color: isCredit ? AppColors.error : AppColors.success,
+                    isCredit
+                        ? Icons.arrow_upward_rounded
+                        : Icons.arrow_downward_rounded,
+                    color: isCredit
+                        ? AppColors.error
+                        : AppColors.success,
                     size: 18,
                   ),
                 ),
@@ -399,12 +494,16 @@ class _EntryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        entry.description ?? (isCredit ? 'Credit Entry' : 'Payment Received'),
+                        entry.description ??
+                            (isCredit
+                                ? l10n.entryTypeCreditLabel
+                                : l10n.entryTypePaymentLabel),
                         style: AppTypography.labelLarge,
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        DateFormat('dd MMM yyyy, hh:mm a').format(entry.date),
+                        DateFormat('dd MMM yyyy, hh:mm a')
+                            .format(entry.date),
                         style: AppTypography.bodySmall,
                       ),
                     ],
@@ -416,7 +515,9 @@ class _EntryCard extends StatelessWidget {
                     Text(
                       '₹${entry.amount.toStringAsFixed(0)}',
                       style: AppTypography.h3.copyWith(
-                        color: isCredit ? AppColors.error : AppColors.success,
+                        color: isCredit
+                            ? AppColors.error
+                            : AppColors.success,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -425,47 +526,56 @@ class _EntryCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (entry.status == EntryStatus.pending && !entry.isLocked) ...[
+            if (entry.status == EntryStatus.pending &&
+                !entry.isLocked) ...[
               const Divider(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: () => _showDisputeSheet(context),
+                      onPressed: () =>
+                          _showDisputeSheet(context, l10n),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: const BorderSide(color: AppColors.error),
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         minimumSize: const Size(0, 36),
                       ),
-                      child: const Text('Dispute', style: TextStyle(fontSize: 13)),
+                      child: Text(l10n.dispute,
+                          style: const TextStyle(fontSize: 13)),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => _confirmEntry(context),
+                      onPressed: () => _confirmEntry(context, l10n),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.success,
-                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        padding:
+                            const EdgeInsets.symmetric(vertical: 10),
                         minimumSize: const Size(0, 36),
                       ),
-                      child: const Text('Confirm', style: TextStyle(fontSize: 13, color: Colors.white)),
+                      child: Text(l10n.confirm,
+                          style: const TextStyle(
+                              fontSize: 13, color: Colors.white)),
                     ),
                   ),
                 ],
               ),
             ],
-            if (entry.status == EntryStatus.disputed && entry.disputeReason != null) ...[
+            if (entry.status == EntryStatus.disputed &&
+                entry.disputeReason != null) ...[
               const Divider(height: 20),
               Row(
                 children: [
-                  const Icon(Icons.warning_amber_rounded, size: 14, color: AppColors.error),
+                  const Icon(Icons.warning_amber_rounded,
+                      size: 14, color: AppColors.error),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       entry.disputeReason!,
-                      style: AppTypography.bodySmall.copyWith(color: AppColors.error),
+                      style: AppTypography.bodySmall
+                          .copyWith(color: AppColors.error),
                     ),
                   ),
                 ],
@@ -477,34 +587,38 @@ class _EntryCard extends StatelessWidget {
     );
   }
 
-  void _confirmEntry(BuildContext context) {
+  void _confirmEntry(BuildContext context, AppLocalizations l10n) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Confirm Entry'),
-        content: Text(
-          'Are you sure you want to confirm ₹${entry.amount.toStringAsFixed(0)} entry? This action cannot be undone.',
-        ),
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(l10n.confirmEntryTitle),
+        content: Text(l10n.confirmEntryMessage(
+            entry.amount.toStringAsFixed(0))),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              context.read<LedgerBloc>().add(ConfirmLedgerEntry(entry.id));
+              context
+                  .read<LedgerBloc>()
+                  .add(ConfirmLedgerEntry(entry.id));
             },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
-            child: const Text('Confirm', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.success),
+            child: Text(l10n.confirm,
+                style: const TextStyle(color: Colors.white)),
           ),
         ],
       ),
     );
   }
 
-  void _showDisputeSheet(BuildContext context) {
+  void _showDisputeSheet(BuildContext context, AppLocalizations l10n) {
     final bloc = context.read<LedgerBloc>();
     final controller = TextEditingController();
 
@@ -525,19 +639,21 @@ class _EntryCard extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Raise a Dispute', style: AppTypography.h3),
+            Text(l10n.raiseDisputeTitle, style: AppTypography.h3),
             const SizedBox(height: 4),
             Text(
-              'Describe what is incorrect about this entry.',
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+              l10n.raiseDisputeSubtitle,
+              style: AppTypography.bodySmall
+                  .copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: controller,
               maxLines: 3,
               decoration: InputDecoration(
-                hintText: 'e.g. Amount should be ₹50, not ₹60',
-                hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.textHint),
+                hintText: l10n.raiseDisputeHint,
+                hintStyle: AppTypography.bodyMedium
+                    .copyWith(color: AppColors.textHint),
               ),
             ),
             const SizedBox(height: 20),
@@ -557,7 +673,8 @@ class _EntryCard extends StatelessWidget {
                   backgroundColor: AppColors.error,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('Submit Dispute', style: TextStyle(color: Colors.white)),
+                child: Text(l10n.submitDispute,
+                    style: const TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -566,7 +683,7 @@ class _EntryCard extends StatelessWidget {
     );
   }
 
-  void _showEntryDetail(BuildContext context) {
+  void _showEntryDetail(BuildContext context, AppLocalizations l10n) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -581,20 +698,30 @@ class _EntryCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Entry Details', style: AppTypography.h3),
+                Text(l10n.entryDetails, style: AppTypography.h3),
                 _StatusChip(status: entry.status),
               ],
             ),
             const SizedBox(height: 20),
-            _DetailRow('Amount', '₹${entry.amount.toStringAsFixed(2)}'),
-            _DetailRow('Type', entry.type == EntryType.credit ? 'Credit (Given)' : 'Payment (Received)'),
-            _DetailRow('Date', DateFormat('dd MMM yyyy, hh:mm a').format(entry.date)),
-            if (entry.description != null) _DetailRow('Description', entry.description!),
-            if (entry.quantity != null) _DetailRow('Quantity', '${entry.quantity} ${entry.unit ?? ''}'),
+            _DetailRow(l10n.entryAmount,
+                '₹${entry.amount.toStringAsFixed(2)}'),
+            _DetailRow(
+                l10n.entryType,
+                entry.type == EntryType.credit
+                    ? l10n.entryTypeCreditGiven
+                    : l10n.entryTypePaymentReceived),
+            _DetailRow(l10n.entryDate,
+                DateFormat('dd MMM yyyy, hh:mm a').format(entry.date)),
+            if (entry.description != null)
+              _DetailRow(l10n.entryDescription, entry.description!),
+            if (entry.quantity != null)
+              _DetailRow(l10n.entryQuantity,
+                  '${entry.quantity} ${entry.unit ?? ''}'),
             if (entry.confirmedAt != null)
-              _DetailRow('Confirmed At', DateFormat('dd MMM yyyy').format(entry.confirmedAt!)),
+              _DetailRow(l10n.entryConfirmedAt,
+                  DateFormat('dd MMM yyyy').format(entry.confirmedAt!)),
             if (entry.disputeReason != null)
-              _DetailRow('Dispute Reason', entry.disputeReason!),
+              _DetailRow(l10n.entryDisputeReason, entry.disputeReason!),
             const SizedBox(height: 8),
           ],
         ),
@@ -634,6 +761,7 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final Color color;
     final String text;
     final IconData icon;
@@ -641,22 +769,22 @@ class _StatusChip extends StatelessWidget {
     switch (status) {
       case EntryStatus.confirmed:
         color = AppColors.success;
-        text = 'Confirmed';
+        text = l10n.statusConfirmed;
         icon = Icons.lock_rounded;
         break;
       case EntryStatus.disputed:
         color = AppColors.error;
-        text = 'Disputed';
+        text = l10n.statusDisputed;
         icon = Icons.warning_rounded;
         break;
       case EntryStatus.pending:
         color = AppColors.warning;
-        text = 'Pending';
+        text = l10n.statusPending;
         icon = Icons.access_time_rounded;
         break;
       case EntryStatus.autoConfirmed:
         color = AppColors.success;
-        text = 'Auto-Confirmed';
+        text = l10n.statusAutoConfirmed;
         icon = Icons.lock_rounded;
         break;
     }
@@ -674,7 +802,10 @@ class _StatusChip extends StatelessWidget {
           const SizedBox(width: 3),
           Text(
             text,
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: color),
+            style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+                color: color),
           ),
         ],
       ),
@@ -686,14 +817,16 @@ class _LedgerActions extends StatelessWidget {
   final String linkId;
   final String customerName;
 
-  const _LedgerActions({required this.linkId, required this.customerName});
+  const _LedgerActions(
+      {required this.linkId, required this.customerName});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.06),
@@ -706,26 +839,30 @@ class _LedgerActions extends StatelessWidget {
         children: [
           Expanded(
             child: OutlinedButton.icon(
-              onPressed: () => _showAddEntrySheet(context, EntryType.payment),
+              onPressed: () =>
+                  _showAddEntrySheet(context, l10n, EntryType.payment),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.success,
                 side: const BorderSide(color: AppColors.success),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               icon: const Icon(Icons.arrow_downward_rounded, size: 18),
-              label: const Text('RECORD PAYMENT'),
+              label: Text(l10n.recordPayment),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             child: ElevatedButton.icon(
-              onPressed: () => _showAddEntrySheet(context, EntryType.credit),
+              onPressed: () =>
+                  _showAddEntrySheet(context, l10n, EntryType.credit),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.error,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              icon: const Icon(Icons.arrow_upward_rounded, size: 18, color: Colors.white),
-              label: const Text('GIVE CREDIT', style: TextStyle(color: Colors.white)),
+              icon: const Icon(Icons.arrow_upward_rounded,
+                  size: 18, color: Colors.white),
+              label: Text(l10n.giveCredit,
+                  style: const TextStyle(color: Colors.white)),
             ),
           ),
         ],
@@ -733,7 +870,8 @@ class _LedgerActions extends StatelessWidget {
     );
   }
 
-  void _showAddEntrySheet(BuildContext context, EntryType type) {
+  void _showAddEntrySheet(
+      BuildContext context, AppLocalizations l10n, EntryType type) {
     final bloc = context.read<LedgerBloc>();
     final amountCtrl = TextEditingController();
     final descCtrl = TextEditingController();
@@ -761,7 +899,9 @@ class _LedgerActions extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: (type == EntryType.credit ? AppColors.error : AppColors.success)
+                    color: (type == EntryType.credit
+                            ? AppColors.error
+                            : AppColors.success)
                         .withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
@@ -769,46 +909,54 @@ class _LedgerActions extends StatelessWidget {
                     type == EntryType.credit
                         ? Icons.arrow_upward_rounded
                         : Icons.arrow_downward_rounded,
-                    color: type == EntryType.credit ? AppColors.error : AppColors.success,
+                    color: type == EntryType.credit
+                        ? AppColors.error
+                        : AppColors.success,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  type == EntryType.credit ? 'Give Credit' : 'Record Payment',
+                  type == EntryType.credit
+                      ? l10n.giveCreditSheet
+                      : l10n.recordPaymentSheet,
                   style: AppTypography.h3,
                 ),
               ],
             ),
             Text(
-              'for $customerName',
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+              l10n.entryFor(customerName),
+              style: AppTypography.bodySmall
+                  .copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: amountCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Amount (₹)',
-                prefixIcon: Icon(Icons.currency_rupee_rounded),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: l10n.amountRupees,
+                prefixIcon:
+                    const Icon(Icons.currency_rupee_rounded),
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: descCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Description (optional)',
-                prefixIcon: Icon(Icons.description_rounded),
-                hintText: 'e.g. 2L Milk, Monthly groceries',
+              decoration: InputDecoration(
+                labelText: l10n.descriptionOptional,
+                prefixIcon: const Icon(Icons.description_rounded),
+                hintText: l10n.descriptionHint,
               ),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: qtyCtrl,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(
-                labelText: 'Quantity (optional)',
-                prefixIcon: Icon(Icons.numbers_rounded),
-                hintText: 'e.g. 2',
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(
+                labelText: l10n.quantityOptional,
+                prefixIcon: const Icon(Icons.numbers_rounded),
+                hintText: l10n.quantityHint,
               ),
             ),
             const SizedBox(height: 24),
@@ -825,17 +973,25 @@ class _LedgerActions extends StatelessWidget {
                     linkId: linkId,
                     vendorId: 'v1',
                     customerId: 'c1',
-                    description: descCtrl.text.trim().isEmpty ? null : descCtrl.text.trim(),
+                    description: descCtrl.text.trim().isEmpty
+                        ? null
+                        : descCtrl.text.trim(),
                     quantity: double.tryParse(qtyCtrl.text),
                   ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: type == EntryType.credit ? AppColors.error : AppColors.success,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  backgroundColor: type == EntryType.credit
+                      ? AppColors.error
+                      : AppColors.success,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: Text(
-                  type == EntryType.credit ? 'ADD CREDIT ENTRY' : 'RECORD PAYMENT',
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  type == EntryType.credit
+                      ? l10n.addCreditEntry
+                      : l10n.recordPayment,
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),

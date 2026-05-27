@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/staff_model.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
@@ -28,9 +29,10 @@ class _StaffView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Staff & Labour')),
+
+      appBar: AppBar(title: Text(l10n.staffAndLabour)),
       body: BlocBuilder<StaffBloc, StaffState>(
         builder: (context, state) {
           if (state is StaffLoading || state is StaffActionLoading) {
@@ -50,7 +52,7 @@ class _StaffView extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showAddStaffSheet(context),
-        label: const Text('Add Staff'),
+        label: Text(l10n.addStaff),
         icon: const Icon(Icons.person_add_rounded),
         backgroundColor: AppColors.primary,
       ),
@@ -59,6 +61,7 @@ class _StaffView extends StatelessWidget {
 
   void _showAddStaffSheet(BuildContext context) {
     final bloc = context.read<StaffBloc>();
+    final l10n = AppLocalizations.of(context)!;
     final nameCtrl = TextEditingController();
     final phoneCtrl = TextEditingController();
     final salaryCtrl = TextEditingController();
@@ -83,30 +86,30 @@ class _StaffView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Add New Staff', style: AppTypography.h3),
+              Text(l10n.addNewStaff, style: AppTypography.h3),
               const SizedBox(height: 20),
               TextField(
                 controller: nameCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  prefixIcon: Icon(Icons.person_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.fullNameLabel,
+                  prefixIcon: const Icon(Icons.person_rounded),
                 ),
               ),
               const SizedBox(height: 14),
               TextField(
                 controller: phoneCtrl,
                 keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  prefixIcon: Icon(Icons.phone_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.phoneNumber,
+                  prefixIcon: const Icon(Icons.phone_rounded),
                 ),
               ),
               const SizedBox(height: 14),
               DropdownButtonFormField<String>(
                 initialValue: selectedRole,
-                decoration: const InputDecoration(
-                  labelText: 'Role',
-                  prefixIcon: Icon(Icons.work_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.role,
+                  prefixIcon: const Icon(Icons.work_rounded),
                 ),
                 items: ['Helper', 'Cook', 'Delivery', 'Driver', 'Guard', 'Cleaner', 'Other']
                     .map((r) => DropdownMenuItem(value: r, child: Text(r)))
@@ -116,13 +119,13 @@ class _StaffView extends StatelessWidget {
               const SizedBox(height: 14),
               DropdownButtonFormField<SalaryType>(
                 initialValue: selectedType,
-                decoration: const InputDecoration(
-                  labelText: 'Salary Type',
-                  prefixIcon: Icon(Icons.calendar_today_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.salaryType,
+                  prefixIcon: const Icon(Icons.calendar_today_rounded),
                 ),
-                items: const [
-                  DropdownMenuItem(value: SalaryType.daily, child: Text('Daily Wage')),
-                  DropdownMenuItem(value: SalaryType.monthly, child: Text('Monthly Salary')),
+                items: [
+                  DropdownMenuItem(value: SalaryType.daily, child: Text(l10n.dailyWage)),
+                  DropdownMenuItem(value: SalaryType.monthly, child: Text(l10n.monthlySalary)),
                 ],
                 onChanged: (v) => setState(() => selectedType = v!),
               ),
@@ -131,7 +134,9 @@ class _StaffView extends StatelessWidget {
                 controller: salaryCtrl,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  labelText: selectedType == SalaryType.daily ? 'Daily Wage (₹)' : 'Monthly Salary (₹)',
+                  labelText: selectedType == SalaryType.daily
+                      ? l10n.dailyWageAmount
+                      : l10n.monthlySalaryAmount,
                   prefixIcon: const Icon(Icons.currency_rupee_rounded),
                 ),
               ),
@@ -158,7 +163,7 @@ class _StaffView extends StatelessWidget {
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('ADD STAFF', style: TextStyle(color: Colors.white)),
+                  child: Text(l10n.addStaffButton, style: const TextStyle(color: Colors.white)),
                 ),
               ),
             ],
@@ -175,11 +180,12 @@ class _StaffContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (state.staffList.isEmpty) {
-      return const EmptyStateWidget(
+      return EmptyStateWidget(
         icon: Icons.people_outline_rounded,
-        title: 'No staff added yet',
-        subtitle: 'Tap the button below to add your first staff member.',
+        title: l10n.noStaffAdded,
+        subtitle: l10n.noStaffAddedSubtitle,
       );
     }
 
@@ -207,13 +213,14 @@ class _StaffSummaryBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      color: AppColors.surface,
+      color: Theme.of(context).colorScheme.surface,
       child: Row(
         children: [
           _SummaryItem(
-            label: 'Present Today',
+            label: l10n.presentToday,
             value: '${state.presentCount}/${state.staffList.length}',
             color: AppColors.success,
             icon: Icons.check_circle_rounded,
@@ -222,7 +229,7 @@ class _StaffSummaryBar extends StatelessWidget {
           Container(width: 1, height: 40, color: AppColors.divider),
           const SizedBox(width: 16),
           _SummaryItem(
-            label: 'Unpaid Salary',
+            label: l10n.unpaidSalary,
             value: '₹${state.totalUnpaidSalary.toStringAsFixed(0)}',
             color: AppColors.error,
             icon: Icons.account_balance_wallet_rounded,
@@ -270,6 +277,11 @@ class _StaffCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final salaryDisplay = staff.salaryType == SalaryType.daily
+        ? l10n.staffSalaryPerDay(staff.salaryAmount.toStringAsFixed(0))
+        : l10n.staffSalaryPerMonth(staff.salaryAmount.toStringAsFixed(0));
+
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
@@ -278,7 +290,7 @@ class _StaffCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(
@@ -304,7 +316,7 @@ class _StaffCard extends StatelessWidget {
                     children: [
                       Text(staff.name, style: AppTypography.labelLarge),
                       Text(
-                        '${staff.role} • ${staff.salaryType == SalaryType.daily ? '₹${staff.salaryAmount.toStringAsFixed(0)}/day' : '₹${staff.salaryAmount.toStringAsFixed(0)}/month'}',
+                        '${staff.role} • $salaryDisplay',
                         style: AppTypography.bodySmall,
                       ),
                     ],
@@ -325,7 +337,7 @@ class _StaffCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          staff.presentToday ? 'Present' : 'Absent',
+                          staff.presentToday ? l10n.present : l10n.absent,
                           style: AppTypography.bodySmall.copyWith(
                             color: staff.presentToday ? AppColors.success : AppColors.error,
                           ),
@@ -345,7 +357,7 @@ class _StaffCard extends StatelessWidget {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Unpaid Salary', style: AppTypography.bodySmall),
+                    Text(l10n.unpaidSalary, style: AppTypography.bodySmall),
                     Text(
                       '₹${staff.unpaidSalary.toStringAsFixed(0)}',
                       style: AppTypography.h3.copyWith(color: AppColors.error),
@@ -356,7 +368,7 @@ class _StaffCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Advance Taken', style: AppTypography.bodySmall),
+                      Text(l10n.advanceTaken, style: AppTypography.bodySmall),
                       Text(
                         '₹${staff.advanceTaken.toStringAsFixed(0)}',
                         style: AppTypography.labelLarge.copyWith(color: AppColors.warning),
@@ -379,6 +391,7 @@ class _AttendanceTodayButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return PopupMenuButton<AttendanceStatus>(
       onSelected: (status) {
         context.read<StaffBloc>().add(MarkAttendance(
@@ -388,28 +401,28 @@ class _AttendanceTodayButton extends StatelessWidget {
             ));
       },
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
           value: AttendanceStatus.present,
           child: Row(children: [
-            Icon(Icons.check_circle_rounded, color: AppColors.success, size: 18),
-            SizedBox(width: 8),
-            Text('Present'),
+            const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 18),
+            const SizedBox(width: 8),
+            Text(l10n.present),
           ]),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: AttendanceStatus.absent,
           child: Row(children: [
-            Icon(Icons.cancel_rounded, color: AppColors.error, size: 18),
-            SizedBox(width: 8),
-            Text('Absent'),
+            const Icon(Icons.cancel_rounded, color: AppColors.error, size: 18),
+            const SizedBox(width: 8),
+            Text(l10n.absent),
           ]),
         ),
-        const PopupMenuItem(
+        PopupMenuItem(
           value: AttendanceStatus.halfDay,
           child: Row(children: [
-            Icon(Icons.access_time_rounded, color: AppColors.warning, size: 18),
-            SizedBox(width: 8),
-            Text('Half Day'),
+            const Icon(Icons.access_time_rounded, color: AppColors.warning, size: 18),
+            const SizedBox(width: 8),
+            Text(l10n.halfDay),
           ]),
         ),
       ],
@@ -424,7 +437,8 @@ class _AttendanceTodayButton extends StatelessWidget {
           children: [
             const Icon(Icons.edit_calendar_rounded, size: 14, color: AppColors.primary),
             const SizedBox(width: 4),
-            Text('Attendance', style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
+            Text(l10n.attendanceTitle,
+                style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
           ],
         ),
       ),

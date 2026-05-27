@@ -62,3 +62,17 @@ class FilterLedger extends LedgerEvent {
   @override
   List<Object?> get props => [filterStatus];
 }
+
+class SocketLedgerEntryAdded extends LedgerEvent {
+  final LedgerEntry entry;
+  const SocketLedgerEntryAdded(this.entry);
+  @override
+  List<Object?> get props => [entry];
+}
+
+class SocketLedgerEntryUpdated extends LedgerEvent {
+  final LedgerEntry entry;
+  const SocketLedgerEntryUpdated(this.entry);
+  @override
+  List<Object?> get props => [entry];
+}

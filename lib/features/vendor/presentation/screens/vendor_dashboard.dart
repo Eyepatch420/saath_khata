@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
+import '../../domain/repositories/vendor_repository.dart';
 import '../bloc/vendor_bloc.dart';
 import '../bloc/vendor_event.dart';
 import '../bloc/vendor_state.dart';
@@ -31,7 +32,6 @@ class VendorDashboardView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +115,7 @@ class VendorDashboardView extends StatelessWidget {
                       children: [
                         Text(l10n.recentCustomers, style: AppTypography.h3),
                         TextButton(
-                          onPressed: () {},
+                          onPressed: () => context.push(AppRouter.allCustomers),
                           child: Text(l10n.viewAll),
                         ),
                       ],
@@ -153,8 +153,9 @@ class VendorDashboardView extends StatelessWidget {
 
   void _showAddCustomerSheet(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final nameCtrl = TextEditingController();
-    final mobileCtrl = TextEditingController();
+    final emailCtrl = TextEditingController();
+    final bloc = context.read<VendorBloc>();
+    bool isLoading = false;
 
     showModalBottomSheet(
       context: context,
@@ -162,54 +163,73 @@ class VendorDashboardView extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.addNewCustomer, style: AppTypography.h3),
-            const SizedBox(height: 20),
-            TextField(
-              controller: nameCtrl,
-              decoration: InputDecoration(
-                labelText: l10n.customerName,
-                prefixIcon: const Icon(Icons.person_rounded),
-              ),
-            ),
-            const SizedBox(height: 14),
-            TextField(
-              controller: mobileCtrl,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(
-                labelText: l10n.mobileNo,
-                prefixIcon: const Icon(Icons.phone_rounded),
-              ),
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (nameCtrl.text.trim().isEmpty) return;
-                  Navigator.pop(ctx);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${nameCtrl.text.trim()} added')),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.addNewCustomer, style: AppTypography.h3),
+              const SizedBox(height: 20),
+              TextField(
+                controller: emailCtrl,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  labelText: 'Customer Email',
+                  prefixIcon: Icon(Icons.email_outlined),
                 ),
-                child: Text(l10n.addCustomer, style: const TextStyle(color: Colors.white)),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          final email = emailCtrl.text.trim();
+                          if (email.isEmpty) return;
+                          setSheetState(() => isLoading = true);
+                          try {
+                            await getIt<VendorRepository>().linkCustomer(email);
+                            if (context.mounted) {
+                              Navigator.pop(ctx);
+                              bloc.add(LoadVendorDashboard());
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Customer added successfully')),
+                              );
+                            }
+                          } catch (e) {
+                            setSheetState(() => isLoading = false);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(e.toString().replaceFirst('Exception: ', '')),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : Text(l10n.addCustomer, style: const TextStyle(color: Colors.white)),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -237,7 +257,7 @@ class _QuickAction extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.surface,
+              color: Theme.of(context).colorScheme.surface,
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
@@ -260,24 +280,26 @@ class _CustomerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final info = customer.customer; // CustomerLinkItem.customer → UserSummary
+    final surface = Theme.of(context).colorScheme.surface;
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
-        extra: {'id': customer.id, 'name': customer.name},
+        extra: {'linkId': customer.linkId, 'name': info.name},
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
           children: [
             CircleAvatar(
-              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.15),
               child: Text(
-                customer.name[0],
+                info.name[0],
                 style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
               ),
             ),
@@ -286,20 +308,20 @@ class _CustomerTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(customer.name, style: AppTypography.labelLarge),
-                  Text(customer.mobile, style: AppTypography.bodySmall),
+                  Text(info.name, style: AppTypography.labelLarge),
+                  if (info.mobile != null)
+                    Text(info.mobile!, style: AppTypography.bodySmall),
                 ],
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('₹1,250', style: AppTypography.labelLarge.copyWith(color: AppColors.error)),
-                const Text('Pending', style: TextStyle(fontSize: 10, color: AppColors.textHint)),
+                Text('₹${customer.balance.toStringAsFixed(0)}',
+                    style: AppTypography.labelLarge.copyWith(color: AppColors.error)),
+                const Icon(Icons.chevron_right_rounded, color: AppColors.textHint, size: 16),
               ],
             ),
-            const SizedBox(width: 8),
-            const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
           ],
         ),
       ),

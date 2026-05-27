@@ -1,4 +1,5 @@
 import '../../../../shared/models/link_model.dart';
+import '../../../../shared/models/report_models.dart';
 
 abstract class VendorRepository {
   /// GET /api/v1/links/customers — all linked customers with balances
@@ -9,4 +10,7 @@ abstract class VendorRepository {
 
   /// DELETE /api/v1/links/:linkId — deactivate a link
   Future<void> deactivateLink(String linkId);
+
+  /// GET /api/v1/reports/summary — real outstanding + this-month collection
+  Future<VendorSummaryReport> getVendorSummary();
 }

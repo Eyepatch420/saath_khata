@@ -38,6 +38,15 @@ class CancelBooking extends BookingEvent {
   List<Object?> get props => [bookingId];
 }
 
+/// Vendor-initiated status update (confirm / complete / cancel).
+class UpdateBookingStatus extends BookingEvent {
+  final String bookingId;
+  final BookingStatus status;
+  const UpdateBookingStatus({required this.bookingId, required this.status});
+  @override
+  List<Object?> get props => [bookingId, status];
+}
+
 class SelectBookingDate extends BookingEvent {
   final DateTime date;
   const SelectBookingDate(this.date);

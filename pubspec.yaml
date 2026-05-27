@@ -42,6 +42,16 @@ dependencies:
   # Icons & Extra UI
   font_awesome_flutter: ^10.7.0
 
+  # Networking
+  dio: ^5.8.0+1
+  socket_io_client: ^2.0.3+1
+
+  # Secure storage (tokens + onboarding flag)
+  flutter_secure_storage: ^9.2.2
+
+  # Image picking (profile photo)
+  image_picker: ^1.1.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

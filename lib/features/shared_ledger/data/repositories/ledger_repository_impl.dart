@@ -1,0 +1,100 @@
+import 'package:dio/dio.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api_endpoints.dart';
+import '../../domain/repositories/ledger_repository.dart';
+import '../../../../shared/models/ledger_entry.dart';
+import '../../../../shared/models/ledger_balance.dart';
+
+class LedgerRepositoryImpl implements LedgerRepository {
+  final ApiClient _api;
+
+  // Cached from the most recent getEntries / addEntry call.
+  // Used by confirmEntry / disputeEntry which need :linkId in the URL
+  // but the BLoC only passes entryId.
+  String? _currentLinkId;
+
+  LedgerRepositoryImpl(this._api);
+
+  @override
+  Future<List<LedgerEntry>> getEntries(String linkId) async {
+    _currentLinkId = linkId;
+    try {
+      // Fetch up to 100 entries so the BLoC's client-side balance calc
+      // covers the full ledger without pagination complexity.
+      final response = await _api.get(
+        ApiEndpoints.linkEntries(linkId),
+        queryParameters: {'page': 1, 'limit': 100},
+      );
+      final data = ApiClient.extractData(response);
+      final list = (data['entries'] as List?) ?? [];
+      return list
+          .map((e) => LedgerEntry.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<LedgerEntry> addEntry(LedgerEntry entry) async {
+    _currentLinkId = entry.linkId;
+    try {
+      final body = <String, dynamic>{
+        'amount': entry.amount,
+        'type': entry.type.toJson(),
+        'date': entry.date.toIso8601String(),
+      };
+      if (entry.description != null) body['description'] = entry.description;
+      if (entry.quantity != null) body['quantity'] = entry.quantity;
+      if (entry.unit != null) body['unit'] = entry.unit;
+
+      final response = await _api.post(
+        ApiEndpoints.linkEntries(entry.linkId),
+        data: body,
+      );
+      return LedgerEntry.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<LedgerEntry> confirmEntry(String entryId) async {
+    final linkId = _currentLinkId;
+    if (linkId == null) throw Exception('No active link — call getEntries first');
+    try {
+      final response = await _api.patch(
+        ApiEndpoints.confirmEntry(linkId, entryId),
+      );
+      return LedgerEntry.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<LedgerEntry> disputeEntry(String entryId, String reason) async {
+    final linkId = _currentLinkId;
+    if (linkId == null) throw Exception('No active link — call getEntries first');
+    try {
+      final response = await _api.patch(
+        ApiEndpoints.disputeEntry(linkId, entryId),
+        data: {'reason': reason},
+      );
+      return LedgerEntry.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<LedgerBalance> getBalance(String linkId) async {
+    _currentLinkId = linkId;
+    try {
+      final response = await _api.get(ApiEndpoints.linkBalance(linkId));
+      return LedgerBalance.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+}

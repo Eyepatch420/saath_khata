@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../core/constants/app_colors.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
@@ -21,7 +20,7 @@ class AppCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final radius = borderRadius ?? 16.0;
     return Material(
-      color: color ?? AppColors.surface,
+      color: color ?? Theme.of(context).colorScheme.surface,
       borderRadius: BorderRadius.circular(radius),
       child: InkWell(
         onTap: onTap,

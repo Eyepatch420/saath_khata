@@ -6,6 +6,29 @@ enum SalaryType { daily, monthly }
 // JSON serialization: halfDay → "half_day", others are lowercase as-is.
 enum AttendanceStatus { present, absent, halfDay, holiday }
 
+extension SalaryTypeX on SalaryType {
+  String toJson() => name;
+}
+
+extension AttendanceStatusX on AttendanceStatus {
+  String toJson() => this == AttendanceStatus.halfDay ? 'half_day' : name;
+
+  static AttendanceStatus fromString(String v) =>
+      _attendanceStatusFromJson(v);
+}
+
+SalaryType _salaryTypeFromJson(String v) {
+  if (v == 'weekly') return SalaryType.monthly; // backend has weekly; Flutter doesn't
+  return SalaryType.values.firstWhere((e) => e.name == v,
+      orElse: () => SalaryType.daily);
+}
+
+AttendanceStatus _attendanceStatusFromJson(String v) {
+  if (v == 'half_day') return AttendanceStatus.halfDay;
+  return AttendanceStatus.values.firstWhere((e) => e.name == v,
+      orElse: () => AttendanceStatus.absent);
+}
+
 class StaffModel extends Equatable {
   final String id;
   final String vendorId;
@@ -20,6 +43,22 @@ class StaffModel extends Equatable {
   final bool presentToday;
   final double unpaidSalary;
   final double advanceTaken;
+
+  factory StaffModel.fromJson(Map<String, dynamic> json) => StaffModel(
+        id: json['id'] as String,
+        vendorId: json['vendorId'] as String,
+        name: json['name'] as String,
+        phone: json['phone'] as String,
+        role: json['role'] as String,
+        salaryType: _salaryTypeFromJson(json['salaryType'] as String),
+        salaryAmount: (json['salaryAmount'] as num).toDouble(),
+        upiId: json['upiId'] as String?,
+        joinDate: DateTime.parse(json['joinDate'] as String),
+        isActive: json['isActive'] as bool? ?? true,
+        presentToday: json['presentToday'] as bool? ?? false,
+        unpaidSalary: (json['unpaidSalary'] as num?)?.toDouble() ?? 0,
+        advanceTaken: (json['advanceTaken'] as num?)?.toDouble() ?? 0,
+      );
 
   const StaffModel({
     required this.id,
@@ -88,6 +127,13 @@ class AttendanceRecord extends Equatable {
     required this.date,
     required this.status,
   });
+
+  factory AttendanceRecord.fromJson(Map<String, dynamic> json) =>
+      AttendanceRecord(
+        staffId: json['staffId'] as String,
+        date: DateTime.parse(json['date'] as String),
+        status: _attendanceStatusFromJson(json['status'] as String),
+      );
 
   @override
   List<Object?> get props => [staffId, date, status];

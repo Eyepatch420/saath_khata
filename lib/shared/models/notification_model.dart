@@ -15,6 +15,21 @@ enum NotificationType {
   monthlySummary,
 }
 
+NotificationType _notifTypeFromJson(String v) {
+  const map = {
+    'entry_added': NotificationType.entryAdded,
+    'entry_confirmed': NotificationType.entryConfirmed,
+    'entry_disputed': NotificationType.entryDisputed,
+    'payment_received': NotificationType.paymentReceived,
+    'booking_confirmed': NotificationType.bookingConfirmed,
+    'booking_cancelled': NotificationType.bookingCancelled,
+    'salary_paid': NotificationType.salaryPaid,
+    'reminder_due': NotificationType.reminderDue,
+    'monthly_summary': NotificationType.monthlySummary,
+  };
+  return map[v] ?? NotificationType.entryAdded;
+}
+
 class AppNotification extends Equatable {
   final String id;
   final String userId;
@@ -24,6 +39,19 @@ class AppNotification extends Equatable {
   final Map<String, dynamic>? data;
   final bool isRead;
   final DateTime createdAt;
+
+  factory AppNotification.fromJson(Map<String, dynamic> json) => AppNotification(
+        id: json['id'] as String,
+        userId: json['userId'] as String,
+        type: _notifTypeFromJson(json['type'] as String),
+        title: json['title'] as String,
+        body: json['body'] as String,
+        data: json['data'] != null
+            ? Map<String, dynamic>.from(json['data'] as Map)
+            : null,
+        isRead: json['isRead'] as bool,
+        createdAt: DateTime.parse(json['createdAt'] as String),
+      );
 
   const AppNotification({
     required this.id,

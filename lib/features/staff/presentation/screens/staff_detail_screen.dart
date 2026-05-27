@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/staff_model.dart';
 import '../bloc/staff_bloc.dart';
 import '../bloc/staff_event.dart';
@@ -35,15 +37,17 @@ class _StaffDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<StaffBloc, StaffState>(
       builder: (context, state) {
         final staff = state is StaffDetailLoaded ? state.staff : initialStaff;
-        final attendance = state is StaffDetailLoaded ? state.attendance : <String, AttendanceStatus>{};
+        final attendance =
+            state is StaffDetailLoaded ? state.attendance : <String, AttendanceStatus>{};
         final year = state is StaffDetailLoaded ? state.year : DateTime.now().year;
         final month = state is StaffDetailLoaded ? state.month : DateTime.now().month;
 
         return Scaffold(
-          backgroundColor: AppColors.background,
+
           appBar: AppBar(
             title: Text(staff.name),
             actions: [
@@ -51,7 +55,7 @@ class _StaffDetailView extends StatelessWidget {
                 TextButton.icon(
                   onPressed: () => _showPaySalarySheet(context, staff),
                   icon: const Icon(Icons.payment_rounded, size: 18),
-                  label: const Text('Pay'),
+                  label: Text(l10n.staffPayButton),
                   style: TextButton.styleFrom(foregroundColor: AppColors.primary),
                 ),
             ],
@@ -65,9 +69,11 @@ class _StaffDetailView extends StatelessWidget {
                     children: [
                       _ProfileCard(staff: staff),
                       const SizedBox(height: 16),
-                      _SalaryCard(staff: staff, attendance: attendance, year: year, month: month),
+                      _SalaryCard(
+                          staff: staff, attendance: attendance, year: year, month: month),
                       const SizedBox(height: 16),
                       _AttendanceCalendar(
+                        staffId: staff.id,
                         attendance: attendance,
                         year: year,
                         month: month,
@@ -89,6 +95,7 @@ class _StaffDetailView extends StatelessWidget {
   void _showPaySalarySheet(BuildContext context, StaffModel staff) {
     final bloc = context.read<StaffBloc>();
     final router = GoRouter.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final amountCtrl = TextEditingController(text: staff.unpaidSalary.toStringAsFixed(0));
     final upiCtrl = TextEditingController();
 
@@ -109,27 +116,27 @@ class _StaffDetailView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pay Salary', style: AppTypography.h3),
+            Text(l10n.paySalaryTitle, style: AppTypography.h3),
             const SizedBox(height: 4),
             Text(
-              'Unpaid: ₹${staff.unpaidSalary.toStringAsFixed(0)}',
+              l10n.unpaidLabel(staff.unpaidSalary.toStringAsFixed(0)),
               style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: amountCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Amount (₹)',
-                prefixIcon: Icon(Icons.currency_rupee_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.amountRupees,
+                prefixIcon: const Icon(Icons.currency_rupee_rounded),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: upiCtrl,
-              decoration: const InputDecoration(
-                labelText: 'UPI Transaction ID (optional)',
-                prefixIcon: Icon(Icons.qr_code_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.upiTransactionIdOptional,
+                prefixIcon: const Icon(Icons.qr_code_rounded),
               ),
             ),
             const SizedBox(height: 24),
@@ -143,7 +150,8 @@ class _StaffDetailView extends StatelessWidget {
                   bloc.add(PaySalary(
                     staffId: staff.id,
                     amount: amount,
-                    upiTransactionId: upiCtrl.text.trim().isEmpty ? null : upiCtrl.text.trim(),
+                    upiTransactionId:
+                        upiCtrl.text.trim().isEmpty ? null : upiCtrl.text.trim(),
                   ));
                   router.push(AppRouter.upiPayment, extra: {
                     'amount': amount,
@@ -155,7 +163,8 @@ class _StaffDetailView extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('CONFIRM PAYMENT', style: TextStyle(color: Colors.white)),
+                child: Text(l10n.paymentConfirmed,
+                    style: const TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -171,10 +180,14 @@ class _ProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+    final joinedDate = DateFormat('MMM yyyy', locale).format(staff.joinDate);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -198,25 +211,25 @@ class _ProfileCard extends StatelessWidget {
               children: [
                 Text(staff.name, style: AppTypography.h3),
                 const SizedBox(height: 2),
-                Text(staff.role, style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                Text(staff.role,
+                    style:
+                        AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
                 const SizedBox(height: 6),
                 Row(
                   children: [
                     const Icon(Icons.phone_rounded, size: 14, color: AppColors.textHint),
                     const SizedBox(width: 4),
-                    Text(staff.phone.isEmpty ? 'No phone' : staff.phone,
+                    Text(staff.phone.isEmpty ? l10n.noPhone : staff.phone,
                         style: AppTypography.bodySmall),
                   ],
                 ),
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.calendar_month_rounded, size: 14, color: AppColors.textHint),
+                    const Icon(Icons.calendar_month_rounded,
+                        size: 14, color: AppColors.textHint),
                     const SizedBox(width: 4),
-                    Text(
-                      'Joined ${_formatDate(staff.joinDate)}',
-                      style: AppTypography.bodySmall,
-                    ),
+                    Text(l10n.staffJoined(joinedDate), style: AppTypography.bodySmall),
                   ],
                 ),
               ],
@@ -231,7 +244,7 @@ class _ProfileCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              staff.isActive ? 'Active' : 'Inactive',
+              staff.isActive ? l10n.active : l10n.inactive,
               style: AppTypography.bodySmall.copyWith(
                 color: staff.isActive ? AppColors.success : AppColors.error,
                 fontWeight: FontWeight.w600,
@@ -241,11 +254,6 @@ class _ProfileCard extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _formatDate(DateTime dt) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return '${months[dt.month - 1]} ${dt.year}';
   }
 }
 
@@ -264,8 +272,11 @@ class _SalaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final daysPresent = attendance.values.where((s) => s == AttendanceStatus.present).length;
-    final halfDays = attendance.values.where((s) => s == AttendanceStatus.halfDay).length;
+    final l10n = AppLocalizations.of(context)!;
+    final daysPresent =
+        attendance.values.where((s) => s == AttendanceStatus.present).length;
+    final halfDays =
+        attendance.values.where((s) => s == AttendanceStatus.halfDay).length;
     final effectiveDays = daysPresent + (halfDays * 0.5);
 
     final earned = staff.salaryType == SalaryType.daily
@@ -275,34 +286,34 @@ class _SalaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Salary Summary', style: AppTypography.labelLarge),
+          Text(l10n.salaryTitle, style: AppTypography.labelLarge),
           const SizedBox(height: 16),
           Row(
             children: [
               _SalaryStat(
-                label: 'Rate',
+                label: l10n.rate,
                 value: staff.salaryType == SalaryType.daily
-                    ? '₹${staff.salaryAmount.toStringAsFixed(0)}/day'
-                    : '₹${staff.salaryAmount.toStringAsFixed(0)}/mo',
+                    ? l10n.staffSalaryPerDay(staff.salaryAmount.toStringAsFixed(0))
+                    : l10n.staffSalaryPerMonth(staff.salaryAmount.toStringAsFixed(0)),
                 color: AppColors.primary,
               ),
               const SizedBox(width: 12),
               _SalaryStat(
-                label: 'Days Present',
+                label: l10n.daysPresent,
                 value: daysPresent + halfDays > 0 ? effectiveDays.toStringAsFixed(1) : '0',
                 color: AppColors.success,
               ),
               const SizedBox(width: 12),
               _SalaryStat(
-                label: 'Earned',
+                label: l10n.earned,
                 value: '₹${earned.toStringAsFixed(0)}',
-                color: AppColors.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ],
           ),
@@ -313,7 +324,7 @@ class _SalaryCard extends StatelessWidget {
                 if (staff.unpaidSalary > 0)
                   Expanded(
                     child: _SalaryStat(
-                      label: 'Unpaid',
+                      label: l10n.unpaid,
                       value: '₹${staff.unpaidSalary.toStringAsFixed(0)}',
                       color: AppColors.error,
                     ),
@@ -321,7 +332,7 @@ class _SalaryCard extends StatelessWidget {
                 if (staff.advanceTaken > 0)
                   Expanded(
                     child: _SalaryStat(
-                      label: 'Advance Taken',
+                      label: l10n.advanceTaken,
                       value: '₹${staff.advanceTaken.toStringAsFixed(0)}',
                       color: AppColors.warning,
                     ),
@@ -348,7 +359,7 @@ class _SalaryStat extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: AppColors.background,
+          color: Theme.of(context).scaffoldBackgroundColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Column(
@@ -365,12 +376,14 @@ class _SalaryStat extends StatelessWidget {
 }
 
 class _AttendanceCalendar extends StatelessWidget {
+  final String staffId;
   final Map<String, AttendanceStatus> attendance;
   final int year;
   final int month;
   final void Function(int year, int month) onMonthChanged;
 
   const _AttendanceCalendar({
+    required this.staffId,
     required this.attendance,
     required this.year,
     required this.month,
@@ -379,18 +392,16 @@ class _AttendanceCalendar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+    final monthLabel = DateFormat('MMMM yyyy', locale).format(DateTime(year, month));
     final daysInMonth = DateTime(year, month + 1, 0).day;
     final firstWeekday = DateTime(year, month, 1).weekday % 7;
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -398,7 +409,7 @@ class _AttendanceCalendar extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text('Attendance', style: AppTypography.labelLarge),
+              Text(l10n.attendanceTitle, style: AppTypography.labelLarge),
               const Spacer(),
               IconButton(
                 icon: const Icon(Icons.chevron_left_rounded, size: 20),
@@ -411,7 +422,7 @@ class _AttendanceCalendar extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                '${monthNames[month - 1]} $year',
+                monthLabel,
                 style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
               ),
               const SizedBox(width: 8),
@@ -420,7 +431,8 @@ class _AttendanceCalendar extends StatelessWidget {
                 onPressed: () {
                   final next = DateTime(year, month + 1);
                   final now = DateTime.now();
-                  if (next.year < now.year || (next.year == now.year && next.month <= now.month)) {
+                  if (next.year < now.year ||
+                      (next.year == now.year && next.month <= now.month)) {
                     onMonthChanged(next.year, next.month);
                   }
                 },
@@ -457,17 +469,164 @@ class _AttendanceCalendar extends StatelessWidget {
             itemBuilder: (context, index) {
               if (index < firstWeekday) return const SizedBox();
               final day = index - firstWeekday + 1;
-              final key = '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+              final key =
+                  '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
               final status = attendance[key];
-              final isToday = DateTime.now().year == year &&
-                  DateTime.now().month == month &&
-                  DateTime.now().day == day;
-              return _DayCell(day: day, status: status, isToday: isToday);
+              final now = DateTime.now();
+              final cellDate = DateTime(year, month, day);
+              final isToday = now.year == year && now.month == month && now.day == day;
+              // Only allow marking attendance for today or past dates
+              final isFuture = cellDate.isAfter(DateTime(now.year, now.month, now.day));
+              return _DayCell(
+                day: day,
+                status: status,
+                isToday: isToday,
+                onTap: isFuture
+                    ? null
+                    : () => _showMarkSheet(context, staffId, cellDate, status),
+              );
             },
           ),
           const SizedBox(height: 12),
           const _CalendarLegend(),
         ],
+      ),
+    );
+  }
+
+  void _showMarkSheet(
+    BuildContext context,
+    String staffId,
+    DateTime date,
+    AttendanceStatus? current,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final bloc = context.read<StaffBloc>();
+    final dateLabel =
+        '${date.day}/${date.month}/${date.year}';
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.divider,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.markAttendanceFor(dateLabel),
+                style: AppTypography.labelLarge,
+              ),
+              const SizedBox(height: 16),
+              _AttendanceOption(
+                label: l10n.present,
+                color: AppColors.success,
+                icon: Icons.check_circle_outline_rounded,
+                selected: current == AttendanceStatus.present,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  bloc.add(MarkAttendance(
+                    staffId: staffId,
+                    date: date,
+                    status: AttendanceStatus.present,
+                  ));
+                },
+              ),
+              const SizedBox(height: 8),
+              _AttendanceOption(
+                label: l10n.halfDay,
+                color: AppColors.warning,
+                icon: Icons.timelapse_rounded,
+                selected: current == AttendanceStatus.halfDay,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  bloc.add(MarkAttendance(
+                    staffId: staffId,
+                    date: date,
+                    status: AttendanceStatus.halfDay,
+                  ));
+                },
+              ),
+              const SizedBox(height: 8),
+              _AttendanceOption(
+                label: l10n.absent,
+                color: AppColors.error,
+                icon: Icons.cancel_outlined,
+                selected: current == AttendanceStatus.absent,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  bloc.add(MarkAttendance(
+                    staffId: staffId,
+                    date: date,
+                    status: AttendanceStatus.absent,
+                  ));
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AttendanceOption extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _AttendanceOption({
+    required this.label,
+    required this.color,
+    required this.icon,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: selected ? 0.18 : 0.07),
+          borderRadius: BorderRadius.circular(12),
+          border: selected ? Border.all(color: color, width: 1.5) : null,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(width: 12),
+            Text(
+              label,
+              style: AppTypography.labelLarge.copyWith(color: color),
+            ),
+            if (selected) ...[
+              const Spacer(),
+              Icon(Icons.check_rounded, color: color, size: 18),
+            ],
+          ],
+        ),
       ),
     );
   }
@@ -477,8 +636,14 @@ class _DayCell extends StatelessWidget {
   final int day;
   final AttendanceStatus? status;
   final bool isToday;
+  final VoidCallback? onTap;
 
-  const _DayCell({required this.day, required this.status, required this.isToday});
+  const _DayCell({
+    required this.day,
+    required this.status,
+    required this.isToday,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -500,24 +665,27 @@ class _DayCell extends StatelessWidget {
         text = AppColors.textSecondary;
       case null:
         bg = isToday ? AppColors.primary.withValues(alpha: 0.15) : Colors.transparent;
-        text = isToday ? AppColors.primary : AppColors.textPrimary;
+        text = isToday ? AppColors.primary : Theme.of(context).colorScheme.onSurface;
     }
 
-    return Container(
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(6),
-        border: isToday && status == null
-            ? Border.all(color: AppColors.primary, width: 1.5)
-            : null,
-      ),
-      child: Center(
-        child: Text(
-          '$day',
-          style: AppTypography.bodySmall.copyWith(
-            color: text,
-            fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-            fontSize: 11,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(6),
+          border: isToday && status == null
+              ? Border.all(color: AppColors.primary, width: 1.5)
+              : null,
+        ),
+        child: Center(
+          child: Text(
+            '$day',
+            style: AppTypography.bodySmall.copyWith(
+              color: text,
+              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+              fontSize: 11,
+            ),
           ),
         ),
       ),
@@ -530,13 +698,14 @@ class _CalendarLegend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        _LegendItem(color: AppColors.success, label: 'Present'),
+        _LegendItem(color: AppColors.success, label: l10n.present),
         const SizedBox(width: 12),
-        _LegendItem(color: AppColors.error, label: 'Absent'),
+        _LegendItem(color: AppColors.error, label: l10n.absent),
         const SizedBox(width: 12),
-        _LegendItem(color: AppColors.warning, label: 'Half Day'),
+        _LegendItem(color: AppColors.warning, label: l10n.halfDay),
       ],
     );
   }
@@ -570,13 +739,14 @@ class _ActionButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
           child: OutlinedButton.icon(
             onPressed: () => _showAdvanceSheet(context, staff),
             icon: const Icon(Icons.add_card_rounded, size: 18),
-            label: const Text('Add Advance'),
+            label: Text(l10n.addAdvance),
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.warning,
               side: const BorderSide(color: AppColors.warning),
@@ -592,8 +762,8 @@ class _ActionButtons extends StatelessWidget {
                 : null,
             icon: const Icon(Icons.payment_rounded, size: 18),
             label: Text(staff.unpaidSalary > 0
-                ? 'Pay ₹${staff.unpaidSalary.toStringAsFixed(0)}'
-                : 'No Dues'),
+                ? l10n.staffPayAmount(staff.unpaidSalary.toStringAsFixed(0))
+                : l10n.noDues),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
@@ -607,6 +777,7 @@ class _ActionButtons extends StatelessWidget {
 
   void _showAdvanceSheet(BuildContext context, StaffModel staff) {
     final bloc = context.read<StaffBloc>();
+    final l10n = AppLocalizations.of(context)!;
     final amountCtrl = TextEditingController();
     final noteCtrl = TextEditingController();
 
@@ -627,22 +798,22 @@ class _ActionButtons extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Add Advance', style: AppTypography.h3),
+            Text(l10n.addAdvance, style: AppTypography.h3),
             const SizedBox(height: 20),
             TextField(
               controller: amountCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Amount (₹)',
-                prefixIcon: Icon(Icons.currency_rupee_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.amountRupees,
+                prefixIcon: const Icon(Icons.currency_rupee_rounded),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: noteCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Note (optional)',
-                prefixIcon: Icon(Icons.note_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.noteOptional,
+                prefixIcon: const Icon(Icons.note_rounded),
               ),
             ),
             const SizedBox(height: 24),
@@ -663,7 +834,7 @@ class _ActionButtons extends StatelessWidget {
                   backgroundColor: AppColors.warning,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('ADD ADVANCE', style: TextStyle(color: Colors.white)),
+                child: Text(l10n.addAdvanceTitle, style: const TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -675,6 +846,7 @@ class _ActionButtons extends StatelessWidget {
   void _showPaySalaryFromButtons(BuildContext context, StaffModel staff) {
     final bloc = context.read<StaffBloc>();
     final router = GoRouter.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final amountCtrl = TextEditingController(text: staff.unpaidSalary.toStringAsFixed(0));
     final upiCtrl = TextEditingController();
 
@@ -695,27 +867,27 @@ class _ActionButtons extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Pay Salary', style: AppTypography.h3),
+            Text(l10n.paySalaryTitle, style: AppTypography.h3),
             const SizedBox(height: 4),
             Text(
-              'Unpaid: ₹${staff.unpaidSalary.toStringAsFixed(0)}',
+              l10n.unpaidLabel(staff.unpaidSalary.toStringAsFixed(0)),
               style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: amountCtrl,
               keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Amount (₹)',
-                prefixIcon: Icon(Icons.currency_rupee_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.amountRupees,
+                prefixIcon: const Icon(Icons.currency_rupee_rounded),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: upiCtrl,
-              decoration: const InputDecoration(
-                labelText: 'UPI Transaction ID (optional)',
-                prefixIcon: Icon(Icons.qr_code_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.upiTransactionIdOptional,
+                prefixIcon: const Icon(Icons.qr_code_rounded),
               ),
             ),
             const SizedBox(height: 24),
@@ -729,7 +901,8 @@ class _ActionButtons extends StatelessWidget {
                   bloc.add(PaySalary(
                     staffId: staff.id,
                     amount: amount,
-                    upiTransactionId: upiCtrl.text.trim().isEmpty ? null : upiCtrl.text.trim(),
+                    upiTransactionId:
+                        upiCtrl.text.trim().isEmpty ? null : upiCtrl.text.trim(),
                   ));
                   router.push(AppRouter.upiPayment, extra: {
                     'amount': amount,
@@ -741,7 +914,8 @@ class _ActionButtons extends StatelessWidget {
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('CONFIRM PAYMENT', style: TextStyle(color: Colors.white)),
+                child: Text(l10n.paymentConfirmed,
+                    style: const TextStyle(color: Colors.white)),
               ),
             ),
           ],

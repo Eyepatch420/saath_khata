@@ -22,18 +22,17 @@ class AppLocalizationsHi extends AppLocalizations {
       'विक्रेता और ग्राहक दोनों के लिए एक ही खाता। दोनों एक ही सच देखते हैं।';
 
   @override
-  String get onboarding2Title => 'वॉइस और बिल ओसीआर';
+  String get onboarding2Title => 'वॉइस और बिल OCR';
 
   @override
   String get onboarding2Subtitle =>
-      '12 भाषाओं में तुरंत प्रविष्टि बनाने के लिए बोलें या बिल स्कैन करें।';
+      '12 भाषाओं में तुरंत एंट्री बनाने के लिए बोलें या बिल स्कैन करें।';
 
   @override
-  String get onboarding3Title => 'वन-टैप UPI भुगतान';
+  String get onboarding3Title => 'एक टैप UPI भुगतान';
 
   @override
-  String get onboarding3Subtitle =>
-      'UPI के माध्यम से एक टैप में अपने महीने के अंत के बकाया का निपटान करें।';
+  String get onboarding3Subtitle => 'UPI से एक टैप में महीने का बकाया चुकाएं।';
 
   @override
   String get getStarted => 'शुरू करें';
@@ -48,6 +47,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get chooseLanguage => 'अपनी भाषा चुनें';
 
   @override
+  String get continueButton => 'जारी रखें';
+
+  @override
   String get chooseRole => 'अपनी भूमिका चुनें';
 
   @override
@@ -60,47 +62,74 @@ class AppLocalizationsHi extends AppLocalizations {
   String get welcomeToSaathKhata => 'साथखाता में आपका स्वागत है';
 
   @override
-  String get tellUsHowYouUse => 'हमें बताएं कि आप ऐप का उपयोग कैसे करेंगे';
+  String get tellUsHowYouUse => 'बताएं आप ऐप का उपयोग कैसे करेंगे';
 
   @override
   String get vendorRoleTitle => 'मैं एक विक्रेता हूँ';
 
   @override
   String get vendorRoleSubtitle =>
-      'अपने व्यवसाय का बहीखाता, कर्मचारी प्रबंधित करें और भुगतान प्राप्त करें।';
+      'व्यापार का खाता, कर्मचारी प्रबंधित करें और भुगतान लें।';
 
   @override
   String get customerRoleTitle => 'मैं एक ग्राहक हूँ';
 
   @override
   String get customerRoleSubtitle =>
-      'स्थानीय विक्रेताओं के साथ अपना खाता ट्रैक करें और UPI के माध्यम से भुगतान करें।';
+      'विक्रेताओं के साथ खाता ट्रैक करें और UPI से भुगतान करें।';
 
   @override
   String get loginTitle => 'साथखाता में लॉगिन करें';
 
   @override
-  String get verifyOtp => 'ओटीपी सत्यापित करें';
-
-  @override
-  String get enterMobile => 'जारी रखने के लिए अपना मोबाइल नंबर दर्ज करें';
+  String get enterMobile => 'जारी रखने के लिए जानकारी दर्ज करें';
 
   @override
   String get mobileNumber => 'मोबाइल नंबर';
 
   @override
-  String get sendOtp => 'ओटीपी भेजें';
+  String get sendOtp => 'OTP भेजें';
+
+  @override
+  String get verifyOtp => 'OTP सत्यापित करें';
 
   @override
   String get verifyAndContinue => 'सत्यापित करें और जारी रखें';
 
   @override
-  String get changePhoneNumber => 'फ़ोन नंबर बदलें';
+  String get changePhoneNumber => 'फोन नंबर बदलें';
 
   @override
   String otpSentTo(String phoneNumber) {
-    return '+91 $phoneNumber पर भेजा गया 6-अंकों का कोड दर्ज करें';
+    return '+91 $phoneNumber पर भेजे गए 6 अंक दर्ज करें';
   }
+
+  @override
+  String get email => 'ईमेल';
+
+  @override
+  String get password => 'पासवर्ड';
+
+  @override
+  String get passwordHint => 'पासवर्ड दर्ज करें';
+
+  @override
+  String get loginButton => 'लॉगिन करें';
+
+  @override
+  String get noAccount => 'खाता नहीं है?';
+
+  @override
+  String get signUp => 'साइन अप करें';
+
+  @override
+  String get pleaseEnterCredentials => 'ईमेल और पासवर्ड दर्ज करें';
+
+  @override
+  String get fillRequiredFields => 'नाम, ईमेल और पासवर्ड भरें';
+
+  @override
+  String get passwordMinChars => 'कम से कम 8 अक्षर';
 
   @override
   String get completeProfile => 'प्रोफ़ाइल पूरी करें';
@@ -109,13 +138,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get enterYourName => 'अपना नाम दर्ज करें';
 
   @override
-  String get egBusinessName => 'जैसे: कृष्णा डेयरी';
+  String get egBusinessName => 'e.g. Krishna Dairy';
 
   @override
-  String get selectCategory => 'श्रेणी चुनें';
+  String get selectCategory => 'Select Category';
 
   @override
-  String get enterAddress => 'क्षेत्र या पूरा पता दर्ज करें';
+  String get enterAddress => 'Enter area or full address';
 
   @override
   String get upiHint => 'yourname@upi';
@@ -127,7 +156,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get businessName => 'व्यवसाय का नाम';
 
   @override
-  String get businessCategory => 'व्यवसाय की श्रेणी';
+  String get businessCategory => 'व्यवसाय श्रेणी';
 
   @override
   String get businessAddress => 'व्यवसाय का पता (वैकल्पिक)';
@@ -142,13 +171,19 @@ class AppLocalizationsHi extends AppLocalizations {
   String get customerDashboard => 'ग्राहक डैशबोर्ड';
 
   @override
+  String get customerMode => 'ग्राहक मोड';
+
+  @override
+  String get myVendors => 'मेरे विक्रेता';
+
+  @override
   String get outstanding => 'बकाया';
 
   @override
   String get collectedToday => 'आज का संग्रह';
 
   @override
-  String get quickActions => 'त्वरित कार्रवाई';
+  String get quickActions => 'त्वरित क्रिया';
 
   @override
   String get scanBill => 'बिल स्कैन करें';
@@ -166,6 +201,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get viewAll => 'सभी देखें';
 
   @override
+  String customerAddedSnackbar(String name) {
+    return '$name जोड़ा गया';
+  }
+
+  @override
   String get sharedLedger => 'साझा खाता';
 
   @override
@@ -181,6 +221,137 @@ class AppLocalizationsHi extends AppLocalizations {
   String get recordPayment => 'भुगतान रिकॉर्ड करें';
 
   @override
+  String get giveCreditSheet => 'उधार दें';
+
+  @override
+  String get recordPaymentSheet => 'भुगतान रिकॉर्ड करें';
+
+  @override
+  String get filterAll => 'सभी';
+
+  @override
+  String get balanceCustomerOwes => 'ग्राहक पर बकाया है';
+
+  @override
+  String get balanceYouOwe => 'आप पर बकाया है';
+
+  @override
+  String get balanceSettled => 'चुकता';
+
+  @override
+  String get ledgerInfoTitle => 'यह खाता कैसे काम करता है';
+
+  @override
+  String get statusConfirmed => 'पुष्टि हुई';
+
+  @override
+  String get statusConfirmedDesc =>
+      'दोनों पक्षों की सहमति। एंट्री लॉक है और बदली नहीं जा सकती।';
+
+  @override
+  String get statusPending => 'लंबित';
+
+  @override
+  String get statusPendingDesc =>
+      'ग्राहक की पुष्टि का इंतज़ार। 72 घंटे में स्वतः पुष्टि।';
+
+  @override
+  String get statusDisputed => 'विवादित';
+
+  @override
+  String get statusDisputedDesc =>
+      'ग्राहक ने विवाद उठाया। विक्रेता की समीक्षा आवश्यक।';
+
+  @override
+  String get statusAutoConfirmed => 'स्वतः पुष्टि';
+
+  @override
+  String get entryTypeCreditLabel => 'उधार एंट्री';
+
+  @override
+  String get entryTypePaymentLabel => 'भुगतान प्राप्त';
+
+  @override
+  String get entryDetails => 'एंट्री विवरण';
+
+  @override
+  String get entryAmount => 'राशि';
+
+  @override
+  String get entryType => 'प्रकार';
+
+  @override
+  String get entryTypeCreditGiven => 'उधार (दिया)';
+
+  @override
+  String get entryTypePaymentReceived => 'भुगतान (प्राप्त)';
+
+  @override
+  String get entryDate => 'तारीख';
+
+  @override
+  String get entryDescription => 'विवरण';
+
+  @override
+  String get entryQuantity => 'मात्रा';
+
+  @override
+  String get entryConfirmedAt => 'पुष्टि तारीख';
+
+  @override
+  String get entryDisputeReason => 'विवाद कारण';
+
+  @override
+  String entryFor(String name) {
+    return '$name के लिए';
+  }
+
+  @override
+  String get descriptionOptional => 'विवरण (वैकल्पिक)';
+
+  @override
+  String get quantityOptional => 'मात्रा (वैकल्पिक)';
+
+  @override
+  String get descriptionHint => 'जैसे: 2L दूध, मासिक राशन';
+
+  @override
+  String get quantityHint => 'जैसे: 2';
+
+  @override
+  String get addCreditEntry => 'उधार एंट्री जोड़ें';
+
+  @override
+  String get noLedgerTransactions => 'अभी तक कोई लेनदेन नहीं';
+
+  @override
+  String get noLedgerTransactionsSubtitle =>
+      'शुरू करने के लिए उधार या भुगतान एंट्री जोड़ें।';
+
+  @override
+  String get confirmEntryTitle => 'एंट्री की पुष्टि करें';
+
+  @override
+  String confirmEntryMessage(String amount) {
+    return 'क्या आप ₹$amount की एंट्री की पुष्टि करना चाहते हैं? यह पूर्ववत नहीं होगा।';
+  }
+
+  @override
+  String get dispute => 'विवाद';
+
+  @override
+  String get raiseDisputeTitle => 'विवाद उठाएं';
+
+  @override
+  String get raiseDisputeSubtitle => 'बताएं इस एंट्री में क्या गलत है।';
+
+  @override
+  String get raiseDisputeHint => 'जैसे: राशि ₹50 होनी चाहिए, ₹60 नहीं';
+
+  @override
+  String get submitDispute => 'विवाद दर्ज करें';
+
+  @override
   String get staffAndLabour => 'स्टाफ और लेबर';
 
   @override
@@ -193,7 +364,59 @@ class AppLocalizationsHi extends AppLocalizations {
   String get unpaidSalary => 'अवैतनिक वेतन';
 
   @override
-  String get paySalary => 'वेतन भुगतान करें';
+  String get paySalary => 'वेतन दें';
+
+  @override
+  String get noStaffAdded => 'अभी तक कोई स्टाफ नहीं';
+
+  @override
+  String get noStaffAddedSubtitle => 'पहला स्टाफ जोड़ने के लिए नीचे दबाएं।';
+
+  @override
+  String get present => 'उपस्थित';
+
+  @override
+  String get absent => 'अनुपस्थित';
+
+  @override
+  String get halfDay => 'आधा दिन';
+
+  @override
+  String get paySalaryTitle => 'वेतन दें';
+
+  @override
+  String unpaidLabel(String amount) {
+    return 'अवैतनिक: ₹$amount';
+  }
+
+  @override
+  String get upiTransactionIdOptional => 'UPI लेनदेन आईडी (वैकल्पिक)';
+
+  @override
+  String get noDues => 'कोई बकाया नहीं';
+
+  @override
+  String staffPayAmount(String amount) {
+    return '₹$amount दें';
+  }
+
+  @override
+  String staffJoined(String date) {
+    return '$date को जुड़े';
+  }
+
+  @override
+  String staffSalaryPerDay(String amount) {
+    return '₹$amount/दिन';
+  }
+
+  @override
+  String staffSalaryPerMonth(String amount) {
+    return '₹$amount/माह';
+  }
+
+  @override
+  String get staffPayButton => 'भुगतान';
 
   @override
   String get businessReports => 'व्यापार रिपोर्ट';
@@ -220,7 +443,27 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settings => 'सेटिंग्स';
 
   @override
-  String get appLanguage => 'ऐप की भाषा';
+  String get appLanguage => 'ऐप भाषा';
+
+  @override
+  String get selectLanguage => 'भाषा चुनें';
+
+  @override
+  String get settingsManagePayments => 'भुगतान खाते प्रबंधित करें';
+
+  @override
+  String get settingsManageAlerts => 'अलर्ट और रिमाइंडर सेट करें';
+
+  @override
+  String get settingsAppPinFingerprint => 'ऐप पिन और फिंगरप्रिंट';
+
+  @override
+  String get settingsFaqsContact => 'सहायता और संपर्क';
+
+  @override
+  String settingsVersion(String version) {
+    return 'संस्करण $version';
+  }
 
   @override
   String get myUpiIds => 'मेरी UPI आईडी';
@@ -232,7 +475,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get security => 'सुरक्षा';
 
   @override
-  String get helpSupport => 'सहायता और समर्थन';
+  String get helpSupport => 'सहायता';
 
   @override
   String get logout => 'लॉगआउट';
@@ -245,7 +488,23 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get noNotificationsSubtitle =>
-      'यहाँ बहीखाता अपडेट, भुगतान अलर्ट और रिमाइंडर दिखेंगे।';
+      'यहाँ खाता अपडेट, भुगतान अलर्ट और रिमाइंडर दिखेंगे।';
+
+  @override
+  String get today => 'आज';
+
+  @override
+  String get yesterday => 'कल';
+
+  @override
+  String minutesAgo(int count) {
+    return '$count मिनट पहले';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '$count घंटे पहले';
+  }
 
   @override
   String get payments => 'भुगतान';
@@ -266,10 +525,22 @@ class AppLocalizationsHi extends AppLocalizations {
   String get scanAndPay => 'स्कैन और भुगतान';
 
   @override
+  String get scanUpiDesc => 'विक्रेता को भुगतान के लिए UPI QR स्कैन करें';
+
+  @override
   String get noTransactionsTitle => 'अभी तक कोई लेनदेन नहीं';
 
   @override
   String get noTransactionsSubtitle => 'आपका भुगतान इतिहास यहाँ दिखेगा।';
+
+  @override
+  String get paymentStatusPaid => 'भुगतान हुआ';
+
+  @override
+  String get paymentStatusFailed => 'विफल';
+
+  @override
+  String get paymentStatusRefunded => 'वापस';
 
   @override
   String get appointments => 'अपॉइंटमेंट';
@@ -294,14 +565,37 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get noBookingsTodaySubtitle =>
-      'ग्राहक ऐप के माध्यम से अपॉइंटमेंट बुक कर सकते हैं।';
+      'ग्राहक ऐप से अपॉइंटमेंट बुक कर सकते हैं।';
 
   @override
   String get noAppointmentsTitle => 'अभी तक कोई अपॉइंटमेंट नहीं';
 
   @override
   String get noAppointmentsSubtitle =>
-      'शुरू करने के लिए अपने विक्रेता के साथ अपॉइंटमेंट बुक करें।';
+      'शुरुआत के लिए विक्रेता से अपॉइंटमेंट बुक करें।';
+
+  @override
+  String get cancelAppointmentTitle => 'अपॉइंटमेंट रद्द करें?';
+
+  @override
+  String cancelAppointmentMessage(String date, String time) {
+    return '$date को $time बजे का अपॉइंटमेंट रद्द करें?';
+  }
+
+  @override
+  String get bookingStatusConfirmed => 'पुष्टि हुई';
+
+  @override
+  String get bookingStatusPending => 'लंबित';
+
+  @override
+  String get bookingStatusCancelled => 'रद्द';
+
+  @override
+  String get bookingStatusCompleted => 'पूर्ण';
+
+  @override
+  String get bookingStatusDone => 'पूर्ण';
 
   @override
   String get upiPayment => 'UPI भुगतान';
@@ -319,10 +613,40 @@ class AppLocalizationsHi extends AppLocalizations {
   String get paymentFailed => 'भुगतान विफल';
 
   @override
-  String get retryPayment => 'पुनः प्रयास';
+  String get retryPayment => 'फिर प्रयास करें';
 
   @override
   String get enterUpiId => 'UPI आईडी दर्ज करें';
+
+  @override
+  String get addNoteOptional => 'नोट जोड़ें (वैकल्पिक)';
+
+  @override
+  String payAmountButton(String amount) {
+    return '₹$amount भुगतान करें';
+  }
+
+  @override
+  String get done => 'हो गया';
+
+  @override
+  String get paymentSomethingWentWrong => 'कुछ गलत हुआ। फिर से प्रयास करें।';
+
+  @override
+  String upiAppComingSoon(String app) {
+    return '$app जल्द आ रहा है';
+  }
+
+  @override
+  String get pleaseEnterUpiId => 'UPI आईडी दर्ज करें';
+
+  @override
+  String paidToRecipient(String amount, String name) {
+    return '₹$amount, $name को भुगतान हुआ';
+  }
+
+  @override
+  String get orDivider => 'या';
 
   @override
   String get addNewCustomer => 'नया ग्राहक जोड़ें';
@@ -407,4 +731,119 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get addStaffButton => 'स्टाफ जोड़ें';
+
+  @override
+  String get noteOptional => 'नोट (वैकल्पिक)';
+
+  @override
+  String get amountRupees => 'राशि (₹)';
+
+  @override
+  String get cancel => 'रद्द करें';
+
+  @override
+  String get confirm => 'पुष्टि करें';
+
+  @override
+  String get tryAgain => 'फिर से प्रयास करें';
+
+  @override
+  String get alignBillInFrame => 'बिल को फ्रेम में रखें';
+
+  @override
+  String get verifyAndLogin => 'सत्यापित करें और लॉगिन करें';
+
+  @override
+  String get voiceListening => 'सुन रहा हूँ...';
+
+  @override
+  String get voiceThinking => 'सोच रहा हूँ...';
+
+  @override
+  String get voiceDetectedEntry => 'पहचानी गई एंट्री';
+
+  @override
+  String get voiceConfirmEntry => 'एंट्री कन्फर्म करें';
+
+  @override
+  String get item => 'वस्तु';
+
+  @override
+  String get totalOutstandingBalance => 'कुल बकाया राशि';
+
+  @override
+  String get payAllDues => 'सभी बकाया भुगतान करें';
+
+  @override
+  String get myKhatas => 'मेरे खाते';
+
+  @override
+  String get noVendorsFound => 'कोई विक्रेता नहीं मिला';
+
+  @override
+  String get verifyBillDetails => 'बिल विवरण सत्यापित करें';
+
+  @override
+  String get scannedBillPreview => 'स्कैन किया बिल';
+
+  @override
+  String get descriptionItemDetails => 'विवरण / वस्तु की जानकारी';
+
+  @override
+  String get selectCustomer => 'ग्राहक चुनें';
+
+  @override
+  String get searchCustomerHint => 'ग्राहक खोजें या चुनें';
+
+  @override
+  String get saveToKhata => 'खाते में सेव करें';
+
+  @override
+  String get allCustomersReport => 'सभी ग्राहक रिपोर्ट';
+
+  @override
+  String collectedInMonth(String month) {
+    return '$month में संग्रह';
+  }
+
+  @override
+  String get notificationSettings => 'नोटिफिकेशन सेटिंग';
+
+  @override
+  String get securityPin => 'सुरक्षा और पिन';
+
+  @override
+  String get bookingActions => 'बुकिंग कार्रवाई';
+
+  @override
+  String get confirmBooking => 'बुकिंग कन्फर्म करें';
+
+  @override
+  String get markComplete => 'पूरा हुआ';
+
+  @override
+  String confirmBookingMessage(String date, String time, String customer) {
+    return '$customer की $date को $time बजे अपॉइंटमेंट कन्फर्म करें?';
+  }
+
+  @override
+  String get bookingUpdated => 'बुकिंग सफलतापूर्वक अपडेट हुई';
+
+  @override
+  String get bookingUpdateFailed => 'बुकिंग अपडेट करने में विफल';
+
+  @override
+  String markAttendanceFor(String date) {
+    return 'उपस्थिति दर्ज करें — $date';
+  }
+
+  @override
+  String get allCustomers => 'सभी ग्राहक';
+
+  @override
+  String get noCustomersYet => 'अभी तक कोई ग्राहक नहीं';
+
+  @override
+  String get noCustomersYetSubtitle =>
+      'शुरू करने के लिए अपना पहला ग्राहक जोड़ें';
 }

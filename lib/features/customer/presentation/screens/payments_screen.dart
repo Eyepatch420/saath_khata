@@ -33,7 +33,6 @@ class _PaymentsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(l10n.payments)),
       body: BlocBuilder<PaymentBloc, PaymentState>(
         builder: (context, state) {
@@ -141,7 +140,7 @@ class _SummaryStat extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -175,7 +174,7 @@ class _QuickPayCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -185,7 +184,7 @@ class _QuickPayCard extends StatelessWidget {
           Text(l10n.quickPay, style: AppTypography.labelLarge),
           const SizedBox(height: 4),
           Text(
-            'Scan any UPI QR to pay your vendor',
+            l10n.scanUpiDesc,
             style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
             textAlign: TextAlign.center,
           ),
@@ -236,7 +235,7 @@ class _PaymentTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -254,7 +253,8 @@ class _PaymentTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(transaction.vendorName ?? 'Vendor', style: AppTypography.labelLarge),
+                Text(transaction.vendorName ?? AppLocalizations.of(context)!.vendor,
+                    style: AppTypography.labelLarge),
                 Text(
                   DateFormat('dd MMM yyyy').format(DateTime.parse(transaction.createdAt)),
                   style: AppTypography.bodySmall,
@@ -282,7 +282,7 @@ class _PaymentTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
-                  _statusLabel(transaction.status),
+                  _statusLabel(transaction.status, AppLocalizations.of(context)!),
                   style: AppTypography.bodySmall.copyWith(
                     color: statusColor,
                     fontSize: 10,
@@ -297,10 +297,10 @@ class _PaymentTile extends StatelessWidget {
     );
   }
 
-  String _statusLabel(PaymentStatus s) => switch (s) {
-        PaymentStatus.success => 'Paid',
-        PaymentStatus.pending => 'Pending',
-        PaymentStatus.failed => 'Failed',
-        PaymentStatus.refunded => 'Refunded',
+  String _statusLabel(PaymentStatus s, AppLocalizations l10n) => switch (s) {
+        PaymentStatus.success => l10n.paymentStatusPaid,
+        PaymentStatus.pending => l10n.pending,
+        PaymentStatus.failed => l10n.paymentStatusFailed,
+        PaymentStatus.refunded => l10n.paymentStatusRefunded,
       };
 }

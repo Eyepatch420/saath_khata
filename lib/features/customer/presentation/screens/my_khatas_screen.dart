@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../bloc/customer_bloc.dart';
 import '../bloc/customer_event.dart';
 import '../bloc/customer_state.dart';
@@ -15,9 +15,8 @@ class MyKhatasScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => CustomerBloc(getIt())..add(LoadCustomerDashboard()),
       child: Scaffold(
-        backgroundColor: AppColors.background,
         appBar: AppBar(
-          title: const Text('My Khatas'),
+          title: Text(AppLocalizations.of(context)!.myKhatas),
         ),
         body: BlocBuilder<CustomerBloc, CustomerState>(
           builder: (context, state) {
@@ -25,7 +24,7 @@ class MyKhatasScreen extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is CustomerLoaded) {
               if (state.vendors.isEmpty) {
-                return const Center(child: Text('No vendors found'));
+                return Center(child: Text(AppLocalizations.of(context)!.noVendorsFound));
               }
               return ListView.separated(
                 padding: const EdgeInsets.all(20),

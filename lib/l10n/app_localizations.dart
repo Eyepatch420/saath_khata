@@ -170,6 +170,12 @@ abstract class AppLocalizations {
   /// **'Choose Your Language'**
   String get chooseLanguage;
 
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
   /// No description provided for @chooseRole.
   ///
   /// In en, this message translates to:
@@ -230,16 +236,10 @@ abstract class AppLocalizations {
   /// **'Login to SaathKhata'**
   String get loginTitle;
 
-  /// No description provided for @verifyOtp.
-  ///
-  /// In en, this message translates to:
-  /// **'Verify OTP'**
-  String get verifyOtp;
-
   /// No description provided for @enterMobile.
   ///
   /// In en, this message translates to:
-  /// **'Enter your mobile number to continue'**
+  /// **'Enter your credentials to continue'**
   String get enterMobile;
 
   /// No description provided for @mobileNumber.
@@ -253,6 +253,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send OTP'**
   String get sendOtp;
+
+  /// No description provided for @verifyOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify OTP'**
+  String get verifyOtp;
 
   /// No description provided for @verifyAndContinue.
   ///
@@ -271,6 +277,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter the 6-digit code sent to +91 {phoneNumber}'**
   String otpSentTo(String phoneNumber);
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get passwordHint;
+
+  /// No description provided for @loginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'LOGIN'**
+  String get loginButton;
+
+  /// No description provided for @noAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get noAccount;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get signUp;
+
+  /// No description provided for @pleaseEnterCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter email and password'**
+  String get pleaseEnterCredentials;
+
+  /// No description provided for @fillRequiredFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in name, email and password'**
+  String get fillRequiredFields;
+
+  /// No description provided for @passwordMinChars.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum 8 characters'**
+  String get passwordMinChars;
 
   /// No description provided for @completeProfile.
   ///
@@ -350,6 +410,18 @@ abstract class AppLocalizations {
   /// **'Customer Dashboard'**
   String get customerDashboard;
 
+  /// No description provided for @customerMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Mode'**
+  String get customerMode;
+
+  /// No description provided for @myVendors.
+  ///
+  /// In en, this message translates to:
+  /// **'My Vendors'**
+  String get myVendors;
+
   /// No description provided for @outstanding.
   ///
   /// In en, this message translates to:
@@ -398,6 +470,12 @@ abstract class AppLocalizations {
   /// **'View All'**
   String get viewAll;
 
+  /// No description provided for @customerAddedSnackbar.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} added'**
+  String customerAddedSnackbar(String name);
+
   /// No description provided for @sharedLedger.
   ///
   /// In en, this message translates to:
@@ -428,6 +506,252 @@ abstract class AppLocalizations {
   /// **'RECORD PAYMENT'**
   String get recordPayment;
 
+  /// No description provided for @giveCreditSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Give Credit'**
+  String get giveCreditSheet;
+
+  /// No description provided for @recordPaymentSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Payment'**
+  String get recordPaymentSheet;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @balanceCustomerOwes.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer owes you'**
+  String get balanceCustomerOwes;
+
+  /// No description provided for @balanceYouOwe.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe customer'**
+  String get balanceYouOwe;
+
+  /// No description provided for @balanceSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Settled'**
+  String get balanceSettled;
+
+  /// No description provided for @ledgerInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How this ledger works'**
+  String get ledgerInfoTitle;
+
+  /// No description provided for @statusConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get statusConfirmed;
+
+  /// No description provided for @statusConfirmedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Both parties agreed. Entry is locked and cannot be changed.'**
+  String get statusConfirmedDesc;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusPendingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting customer confirmation. Auto-confirmed after 72 hours.'**
+  String get statusPendingDesc;
+
+  /// No description provided for @statusDisputed.
+  ///
+  /// In en, this message translates to:
+  /// **'Disputed'**
+  String get statusDisputed;
+
+  /// No description provided for @statusDisputedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer raised a dispute. Vendor review required.'**
+  String get statusDisputedDesc;
+
+  /// No description provided for @statusAutoConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Confirmed'**
+  String get statusAutoConfirmed;
+
+  /// No description provided for @entryTypeCreditLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit Entry'**
+  String get entryTypeCreditLabel;
+
+  /// No description provided for @entryTypePaymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Received'**
+  String get entryTypePaymentLabel;
+
+  /// No description provided for @entryDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry Details'**
+  String get entryDetails;
+
+  /// No description provided for @entryAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get entryAmount;
+
+  /// No description provided for @entryType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get entryType;
+
+  /// No description provided for @entryTypeCreditGiven.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit (Given)'**
+  String get entryTypeCreditGiven;
+
+  /// No description provided for @entryTypePaymentReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment (Received)'**
+  String get entryTypePaymentReceived;
+
+  /// No description provided for @entryDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get entryDate;
+
+  /// No description provided for @entryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get entryDescription;
+
+  /// No description provided for @entryQuantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get entryQuantity;
+
+  /// No description provided for @entryConfirmedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed At'**
+  String get entryConfirmedAt;
+
+  /// No description provided for @entryDisputeReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute Reason'**
+  String get entryDisputeReason;
+
+  /// No description provided for @entryFor.
+  ///
+  /// In en, this message translates to:
+  /// **'for {name}'**
+  String entryFor(String name);
+
+  /// No description provided for @descriptionOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Description (optional)'**
+  String get descriptionOptional;
+
+  /// No description provided for @quantityOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity (optional)'**
+  String get quantityOptional;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 2L Milk, Monthly groceries'**
+  String get descriptionHint;
+
+  /// No description provided for @quantityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 2'**
+  String get quantityHint;
+
+  /// No description provided for @addCreditEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'ADD CREDIT ENTRY'**
+  String get addCreditEntry;
+
+  /// No description provided for @noLedgerTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet'**
+  String get noLedgerTransactions;
+
+  /// No description provided for @noLedgerTransactionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a credit or payment entry to get started.'**
+  String get noLedgerTransactionsSubtitle;
+
+  /// No description provided for @confirmEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Entry'**
+  String get confirmEntryTitle;
+
+  /// No description provided for @confirmEntryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to confirm ₹{amount} entry? This action cannot be undone.'**
+  String confirmEntryMessage(String amount);
+
+  /// No description provided for @dispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispute'**
+  String get dispute;
+
+  /// No description provided for @raiseDisputeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Raise a Dispute'**
+  String get raiseDisputeTitle;
+
+  /// No description provided for @raiseDisputeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what is incorrect about this entry.'**
+  String get raiseDisputeSubtitle;
+
+  /// No description provided for @raiseDisputeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Amount should be ₹50, not ₹60'**
+  String get raiseDisputeHint;
+
+  /// No description provided for @submitDispute.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Dispute'**
+  String get submitDispute;
+
   /// No description provided for @staffAndLabour.
   ///
   /// In en, this message translates to:
@@ -457,6 +781,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pay Salary'**
   String get paySalary;
+
+  /// No description provided for @noStaffAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff added yet'**
+  String get noStaffAdded;
+
+  /// No description provided for @noStaffAddedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the button below to add your first staff member.'**
+  String get noStaffAddedSubtitle;
+
+  /// No description provided for @present.
+  ///
+  /// In en, this message translates to:
+  /// **'Present'**
+  String get present;
+
+  /// No description provided for @absent.
+  ///
+  /// In en, this message translates to:
+  /// **'Absent'**
+  String get absent;
+
+  /// No description provided for @halfDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Half Day'**
+  String get halfDay;
+
+  /// No description provided for @paySalaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Salary'**
+  String get paySalaryTitle;
+
+  /// No description provided for @unpaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unpaid: ₹{amount}'**
+  String unpaidLabel(String amount);
+
+  /// No description provided for @upiTransactionIdOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI Transaction ID (optional)'**
+  String get upiTransactionIdOptional;
+
+  /// No description provided for @noDues.
+  ///
+  /// In en, this message translates to:
+  /// **'No Dues'**
+  String get noDues;
+
+  /// No description provided for @staffPayAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay ₹{amount}'**
+  String staffPayAmount(String amount);
+
+  /// No description provided for @staffJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {date}'**
+  String staffJoined(String date);
+
+  /// No description provided for @staffSalaryPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'₹{amount}/day'**
+  String staffSalaryPerDay(String amount);
+
+  /// No description provided for @staffSalaryPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'₹{amount}/month'**
+  String staffSalaryPerMonth(String amount);
+
+  /// No description provided for @staffPayButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay'**
+  String get staffPayButton;
 
   /// No description provided for @businessReports.
   ///
@@ -512,6 +920,42 @@ abstract class AppLocalizations {
   /// **'App Language'**
   String get appLanguage;
 
+  /// No description provided for @selectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguage;
+
+  /// No description provided for @settingsManagePayments.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage payment accounts'**
+  String get settingsManagePayments;
+
+  /// No description provided for @settingsManageAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage alerts and reminders'**
+  String get settingsManageAlerts;
+
+  /// No description provided for @settingsAppPinFingerprint.
+  ///
+  /// In en, this message translates to:
+  /// **'App PIN and Fingerprint'**
+  String get settingsAppPinFingerprint;
+
+  /// No description provided for @settingsFaqsContact.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQs and Contact Us'**
+  String get settingsFaqsContact;
+
+  /// No description provided for @settingsVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String settingsVersion(String version);
+
   /// No description provided for @myUpiIds.
   ///
   /// In en, this message translates to:
@@ -560,6 +1004,30 @@ abstract class AppLocalizations {
   /// **'You will see ledger updates, payment alerts and reminders here.'**
   String get noNotificationsSubtitle;
 
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String hoursAgo(int count);
+
   /// No description provided for @payments.
   ///
   /// In en, this message translates to:
@@ -596,6 +1064,12 @@ abstract class AppLocalizations {
   /// **'SCAN & PAY'**
   String get scanAndPay;
 
+  /// No description provided for @scanUpiDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan any UPI QR to pay your vendor'**
+  String get scanUpiDesc;
+
   /// No description provided for @noTransactionsTitle.
   ///
   /// In en, this message translates to:
@@ -607,6 +1081,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your payment history will appear here.'**
   String get noTransactionsSubtitle;
+
+  /// No description provided for @paymentStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paymentStatusPaid;
+
+  /// No description provided for @paymentStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get paymentStatusFailed;
+
+  /// No description provided for @paymentStatusRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get paymentStatusRefunded;
 
   /// No description provided for @appointments.
   ///
@@ -668,6 +1160,48 @@ abstract class AppLocalizations {
   /// **'Book an appointment with your vendor to get started.'**
   String get noAppointmentsSubtitle;
 
+  /// No description provided for @cancelAppointmentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Appointment?'**
+  String get cancelAppointmentTitle;
+
+  /// No description provided for @cancelAppointmentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel your appointment on {date} at {time}?'**
+  String cancelAppointmentMessage(String date, String time);
+
+  /// No description provided for @bookingStatusConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed'**
+  String get bookingStatusConfirmed;
+
+  /// No description provided for @bookingStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get bookingStatusPending;
+
+  /// No description provided for @bookingStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get bookingStatusCancelled;
+
+  /// No description provided for @bookingStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get bookingStatusCompleted;
+
+  /// No description provided for @bookingStatusDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get bookingStatusDone;
+
   /// No description provided for @upiPayment.
   ///
   /// In en, this message translates to:
@@ -709,6 +1243,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter UPI ID'**
   String get enterUpiId;
+
+  /// No description provided for @addNoteOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a note (optional)'**
+  String get addNoteOptional;
+
+  /// No description provided for @payAmountButton.
+  ///
+  /// In en, this message translates to:
+  /// **'PAY ₹{amount}'**
+  String payAmountButton(String amount);
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'DONE'**
+  String get done;
+
+  /// No description provided for @paymentSomethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get paymentSomethingWentWrong;
+
+  /// No description provided for @upiAppComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'{app} integration coming soon'**
+  String upiAppComingSoon(String app);
+
+  /// No description provided for @pleaseEnterUpiId.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a UPI ID'**
+  String get pleaseEnterUpiId;
+
+  /// No description provided for @paidToRecipient.
+  ///
+  /// In en, this message translates to:
+  /// **'₹{amount} paid to {name}'**
+  String paidToRecipient(String amount, String name);
+
+  /// No description provided for @orDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'OR'**
+  String get orDivider;
 
   /// No description provided for @addNewCustomer.
   ///
@@ -877,6 +1459,222 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ADD STAFF'**
   String get addStaffButton;
+
+  /// No description provided for @noteOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get noteOptional;
+
+  /// No description provided for @amountRupees.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount (₹)'**
+  String get amountRupees;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
+
+  /// No description provided for @alignBillInFrame.
+  ///
+  /// In en, this message translates to:
+  /// **'Align bill within the frame'**
+  String get alignBillInFrame;
+
+  /// No description provided for @verifyAndLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify & Login'**
+  String get verifyAndLogin;
+
+  /// No description provided for @voiceListening.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening...'**
+  String get voiceListening;
+
+  /// No description provided for @voiceThinking.
+  ///
+  /// In en, this message translates to:
+  /// **'Thinking...'**
+  String get voiceThinking;
+
+  /// No description provided for @voiceDetectedEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Detected Entry'**
+  String get voiceDetectedEntry;
+
+  /// No description provided for @voiceConfirmEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'CONFIRM ENTRY'**
+  String get voiceConfirmEntry;
+
+  /// No description provided for @item.
+  ///
+  /// In en, this message translates to:
+  /// **'Item'**
+  String get item;
+
+  /// No description provided for @totalOutstandingBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Outstanding Balance'**
+  String get totalOutstandingBalance;
+
+  /// No description provided for @payAllDues.
+  ///
+  /// In en, this message translates to:
+  /// **'PAY ALL DUES'**
+  String get payAllDues;
+
+  /// No description provided for @myKhatas.
+  ///
+  /// In en, this message translates to:
+  /// **'My Khatas'**
+  String get myKhatas;
+
+  /// No description provided for @noVendorsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No vendors found'**
+  String get noVendorsFound;
+
+  /// No description provided for @verifyBillDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify Bill Details'**
+  String get verifyBillDetails;
+
+  /// No description provided for @scannedBillPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanned Bill Preview'**
+  String get scannedBillPreview;
+
+  /// No description provided for @descriptionItemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Description / Item Details'**
+  String get descriptionItemDetails;
+
+  /// No description provided for @selectCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Customer'**
+  String get selectCustomer;
+
+  /// No description provided for @searchCustomerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search or select customer'**
+  String get searchCustomerHint;
+
+  /// No description provided for @saveToKhata.
+  ///
+  /// In en, this message translates to:
+  /// **'SAVE TO KHATA'**
+  String get saveToKhata;
+
+  /// No description provided for @allCustomersReport.
+  ///
+  /// In en, this message translates to:
+  /// **'All Customers Report'**
+  String get allCustomersReport;
+
+  /// No description provided for @collectedInMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Collected in {month}'**
+  String collectedInMonth(String month);
+
+  /// No description provided for @notificationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Settings'**
+  String get notificationSettings;
+
+  /// No description provided for @securityPin.
+  ///
+  /// In en, this message translates to:
+  /// **'Security & PIN'**
+  String get securityPin;
+
+  /// No description provided for @bookingActions.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Actions'**
+  String get bookingActions;
+
+  /// No description provided for @confirmBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Booking'**
+  String get confirmBooking;
+
+  /// No description provided for @markComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Complete'**
+  String get markComplete;
+
+  /// No description provided for @confirmBookingMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the appointment on {date} at {time} for {customer}?'**
+  String confirmBookingMessage(String date, String time, String customer);
+
+  /// No description provided for @bookingUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking updated successfully'**
+  String get bookingUpdated;
+
+  /// No description provided for @bookingUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update booking'**
+  String get bookingUpdateFailed;
+
+  /// No description provided for @markAttendanceFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Attendance — {date}'**
+  String markAttendanceFor(String date);
+
+  /// No description provided for @allCustomers.
+  ///
+  /// In en, this message translates to:
+  /// **'All Customers'**
+  String get allCustomers;
+
+  /// No description provided for @noCustomersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No customers yet'**
+  String get noCustomersYet;
+
+  /// No description provided for @noCustomersYetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first customer to get started'**
+  String get noCustomersYetSubtitle;
 }
 
 class _AppLocalizationsDelegate

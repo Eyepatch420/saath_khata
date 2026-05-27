@@ -31,7 +31,7 @@ class _NotificationsView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
+
       appBar: AppBar(
         title: Text(l10n.notifications),
         actions: [
@@ -87,7 +87,8 @@ class _NotificationsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final grouped = _groupByDate(notifications);
+    final l10n = AppLocalizations.of(context)!;
+    final grouped = _groupByDate(notifications, l10n);
     final dates = grouped.keys.toList();
 
     return ListView.builder(
@@ -116,7 +117,8 @@ class _NotificationsList extends StatelessWidget {
     );
   }
 
-  Map<String, List<AppNotification>> _groupByDate(List<AppNotification> notifications) {
+  Map<String, List<AppNotification>> _groupByDate(
+      List<AppNotification> notifications, AppLocalizations l10n) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
@@ -126,9 +128,9 @@ class _NotificationsList extends StatelessWidget {
       final nDate = DateTime(n.createdAt.year, n.createdAt.month, n.createdAt.day);
       final String label;
       if (nDate == today) {
-        label = 'Today';
+        label = l10n.today;
       } else if (nDate == yesterday) {
-        label = 'Yesterday';
+        label = l10n.yesterday;
       } else {
         label = DateFormat('dd MMM yyyy').format(n.createdAt);
       }
@@ -157,7 +159,7 @@ class _NotificationCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: notification.isRead
-              ? AppColors.surface
+              ? Theme.of(context).colorScheme.surface
               : AppColors.primary.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(16),
           border: notification.isRead
@@ -217,7 +219,7 @@ class _NotificationCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _formatTime(notification.createdAt),
+                    _formatTime(notification.createdAt, AppLocalizations.of(context)!),
                     style: AppTypography.bodySmall.copyWith(
                       fontSize: 11,
                       color: AppColors.textHint,
@@ -278,11 +280,11 @@ class _NotificationCard extends StatelessWidget {
     }
   }
 
-  String _formatTime(DateTime dt) {
+  String _formatTime(DateTime dt, AppLocalizations l10n) {
     final now = DateTime.now();
     final diff = now.difference(dt);
-    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
-    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    if (diff.inMinutes < 60) return l10n.minutesAgo(diff.inMinutes);
+    if (diff.inHours < 24) return l10n.hoursAgo(diff.inHours);
     return DateFormat('hh:mm a').format(dt);
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -11,50 +12,97 @@ import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
 import '../bloc/booking_state.dart';
 
-class CustomerBookingsScreen extends StatelessWidget {
+class CustomerBookingsScreen extends StatefulWidget {
   const CustomerBookingsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => BookingBloc(getIt())..add(LoadCustomerBookings()),
-      child: const _CustomerBookingsView(),
-    );
-  }
+  State<CustomerBookingsScreen> createState() => _CustomerBookingsScreenState();
 }
 
-class _CustomerBookingsView extends StatelessWidget {
-  const _CustomerBookingsView();
+class _CustomerBookingsScreenState extends State<CustomerBookingsScreen>
+    with WidgetsBindingObserver {
+  late final BookingBloc _bloc;
+  Timer? _pollTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _bloc = BookingBloc(getIt())..add(LoadCustomerBookings());
+    _startPolling();
+  }
+
+  void _startPolling() {
+    _pollTimer?.cancel();
+    // Refresh every 15 seconds while screen is visible so vendor status changes
+    // appear without the customer needing to pull-to-refresh.
+    _pollTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (mounted) _bloc.add(LoadCustomerBookings());
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _bloc.add(LoadCustomerBookings());
+      _startPolling();
+    } else if (state == AppLifecycleState.paused) {
+      _pollTimer?.cancel();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _pollTimer?.cancel();
+    _bloc.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: Text(l10n.myAppointments)),
-      body: BlocBuilder<BookingBloc, BookingState>(
-        builder: (context, state) {
-          if (state is BookingLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is BookingError) {
-            return ErrorStateWidget(
-              message: state.message,
-              onRetry: () => context.read<BookingBloc>().add(LoadCustomerBookings()),
-            );
-          }
-          if (state is BookingLoaded) {
-            if (state.bookings.isEmpty) {
-              return EmptyStateWidget(
-                icon: Icons.calendar_today_rounded,
-                title: l10n.noAppointmentsTitle,
-                subtitle: l10n.noAppointmentsSubtitle,
+    return BlocProvider.value(
+      value: _bloc,
+      child: Scaffold(
+        appBar: AppBar(title: Text(l10n.myAppointments)),
+        body: BlocBuilder<BookingBloc, BookingState>(
+          builder: (context, state) {
+            if (state is BookingLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is BookingError) {
+              return ErrorStateWidget(
+                message: state.message,
+                onRetry: () => _bloc.add(LoadCustomerBookings()),
               );
             }
-            return _BookingsList(bookings: state.bookings);
-          }
-          return const SizedBox();
-        },
+            if (state is BookingLoaded) {
+              if (state.bookings.isEmpty) {
+                return RefreshIndicator(
+                  onRefresh: () async => _bloc.add(LoadCustomerBookings()),
+                  child: ListView(
+                    children: [
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.6,
+                        child: EmptyStateWidget(
+                          icon: Icons.calendar_today_rounded,
+                          title: l10n.noAppointmentsTitle,
+                          subtitle: l10n.noAppointmentsSubtitle,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return RefreshIndicator(
+                onRefresh: () async => _bloc.add(LoadCustomerBookings()),
+                child: _BookingsList(bookings: state.bookings),
+              );
+            }
+            return const SizedBox();
+          },
+        ),
       ),
     );
   }
@@ -68,12 +116,14 @@ class _BookingsList extends StatelessWidget {
   Widget build(BuildContext context) {
     final upcoming = bookings
         .where((b) =>
-            b.status != BookingStatus.cancelled && b.status != BookingStatus.completed)
+            b.status != BookingStatus.cancelled &&
+            b.status != BookingStatus.completed)
         .toList()
       ..sort((a, b) => a.date.compareTo(b.date));
     final past = bookings
         .where((b) =>
-            b.status == BookingStatus.cancelled || b.status == BookingStatus.completed)
+            b.status == BookingStatus.cancelled ||
+            b.status == BookingStatus.completed)
         .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
 
@@ -81,7 +131,8 @@ class _BookingsList extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       children: [
         if (upcoming.isNotEmpty) ...[
-          Text('Upcoming', style: AppTypography.labelLarge),
+          Text(AppLocalizations.of(context)!.upcoming,
+              style: AppTypography.labelLarge),
           const SizedBox(height: 12),
           ...upcoming.map((b) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -90,7 +141,9 @@ class _BookingsList extends StatelessWidget {
         ],
         if (past.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text('Past', style: AppTypography.labelLarge.copyWith(color: AppColors.textSecondary)),
+          Text(AppLocalizations.of(context)!.past,
+              style: AppTypography.labelLarge
+                  .copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 12),
           ...past.map((b) => Padding(
                 padding: const EdgeInsets.only(bottom: 12),
@@ -114,7 +167,7 @@ class _CustomerBookingCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -135,7 +188,8 @@ class _CustomerBookingCard extends StatelessWidget {
                   color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.calendar_today_rounded, color: AppColors.primary, size: 20),
+                child: const Icon(Icons.calendar_today_rounded,
+                    color: AppColors.primary, size: 20),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -154,7 +208,8 @@ class _CustomerBookingCard extends StatelessWidget {
           const Divider(height: 20),
           Row(
             children: [
-              const Icon(Icons.access_time_rounded, size: 14, color: AppColors.textHint),
+              const Icon(Icons.access_time_rounded,
+                  size: 14, color: AppColors.textHint),
               const SizedBox(width: 6),
               Text(
                 '${_formatDate(booking.date)} at ${booking.startTime}',
@@ -166,12 +221,14 @@ class _CustomerBookingCard extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                const Icon(Icons.notes_rounded, size: 14, color: AppColors.textHint),
+                const Icon(Icons.notes_rounded,
+                    size: 14, color: AppColors.textHint),
                 const SizedBox(width: 6),
                 Expanded(
                   child: Text(
                     booking.notes!,
-                    style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.bodySmall
+                        .copyWith(color: AppColors.textSecondary),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -186,10 +243,12 @@ class _CustomerBookingCard extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: () => _confirmCancel(context, booking),
                 icon: const Icon(Icons.cancel_outlined, size: 16),
-                label: const Text('Cancel'),
+                label:
+                    Text(AppLocalizations.of(context)!.cancelBooking),
                 style: TextButton.styleFrom(
                   foregroundColor: AppColors.error,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 ),
               ),
             ),
@@ -200,15 +259,17 @@ class _CustomerBookingCard extends StatelessWidget {
   }
 
   void _confirmCancel(BuildContext context, BookingModel booking) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Cancel Appointment?'),
-        content: Text('Cancel your appointment on ${_formatDate(booking.date)} at ${booking.startTime}?'),
+        title: Text(l10n.cancelAppointmentTitle),
+        content: Text(l10n.cancelAppointmentMessage(
+            _formatDate(booking.date), booking.startTime)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Keep'),
+            child: Text(l10n.keepBooking),
           ),
           TextButton(
             onPressed: () {
@@ -216,7 +277,7 @@ class _CustomerBookingCard extends StatelessWidget {
               context.read<BookingBloc>().add(CancelBooking(booking.id));
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Cancel Booking'),
+            child: Text(l10n.cancelBooking),
           ),
         ],
       ),
@@ -225,7 +286,10 @@ class _CustomerBookingCard extends StatelessWidget {
 
   String _formatDate(String dateStr) {
     final dt = DateTime.parse(dateStr);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+    ];
     return '${dt.day} ${months[dt.month - 1]}';
   }
 }
@@ -236,11 +300,12 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final (label, color) = switch (status) {
-      BookingStatus.confirmed => ('Confirmed', AppColors.success),
-      BookingStatus.pending => ('Pending', AppColors.warning),
-      BookingStatus.cancelled => ('Cancelled', AppColors.error),
-      BookingStatus.completed => ('Completed', AppColors.primary),
+      BookingStatus.confirmed => (l10n.bookingStatusConfirmed, AppColors.success),
+      BookingStatus.pending => (l10n.bookingStatusPending, AppColors.warning),
+      BookingStatus.cancelled => (l10n.bookingStatusCancelled, AppColors.error),
+      BookingStatus.completed => (l10n.bookingStatusCompleted, AppColors.primary),
     };
 
     return Container(

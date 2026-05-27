@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../bloc/customer_bloc.dart';
 import '../bloc/customer_event.dart';
 import '../bloc/customer_state.dart';
@@ -26,20 +27,24 @@ class CustomerDashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('SaathKhata', style: AppTypography.h3),
-            Text('Customer Mode',
-                style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
+            Text(l10n.appTitle, style: AppTypography.h3),
+            Text(
+              l10n.customerMode,
+              style:
+                  AppTypography.bodySmall.copyWith(color: AppColors.primary),
+            ),
           ],
         ),
         actions: [
           IconButton(
-              onPressed: () {}, icon: const Icon(Icons.notifications_none_rounded)),
+              onPressed: () {},
+              icon: const Icon(Icons.notifications_none_rounded)),
         ],
       ),
       body: BlocBuilder<CustomerBloc, CustomerState>(
@@ -54,13 +59,14 @@ class CustomerDashboardView extends StatelessWidget {
                 children: [
                   TotalDueCard(amount: state.totalDue),
                   const SizedBox(height: 24),
-                  Text('My Vendors', style: AppTypography.h3),
+                  Text(l10n.myVendors, style: AppTypography.h3),
                   const SizedBox(height: 12),
                   ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: state.vendors.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final vendor = state.vendors[index];
                       return VendorTile(vendor: vendor);

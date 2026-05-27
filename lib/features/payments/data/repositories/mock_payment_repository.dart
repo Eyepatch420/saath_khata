@@ -49,6 +49,29 @@ class MockPaymentRepository implements PaymentRepository {
   }
 
   @override
+  Future<List<PaymentTransaction>> getPaymentsForLink(String linkId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return List.unmodifiable(_transactions.where((t) => t.linkId == linkId));
+  }
+
+  @override
+  Future<PaymentTransaction> settleBalance(String linkId) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    final settled = PaymentTransaction(
+      id: 'settle${DateTime.now().millisecondsSinceEpoch}',
+      linkId: linkId,
+      vendorId: 'v_mock',
+      customerId: 'c_mock',
+      amount: 0,
+      paymentMethod: PaymentMethod.upi,
+      status: PaymentStatus.success,
+      createdAt: DateTime.now().toIso8601String(),
+    );
+    _transactions.insert(0, settled);
+    return settled;
+  }
+
+  @override
   Future<PaymentTransaction> recordPayment(PaymentTransaction transaction) async {
     await Future.delayed(const Duration(milliseconds: 300));
     final saved = PaymentTransaction(

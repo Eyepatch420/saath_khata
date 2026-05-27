@@ -1,5 +1,6 @@
 import '../../domain/repositories/ledger_repository.dart';
 import '../../../../shared/models/ledger_entry.dart';
+import '../../../../shared/models/ledger_balance.dart';
 
 class MockLedgerRepository implements LedgerRepository {
   final List<LedgerEntry> _entries = [
@@ -122,6 +123,27 @@ class MockLedgerRepository implements LedgerRepository {
     );
     _entries[index] = confirmed;
     return confirmed;
+  }
+
+  @override
+  Future<LedgerBalance> getBalance(String linkId) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final entries = await getEntries(linkId);
+    double credit = 0;
+    double paid = 0;
+    for (final e in entries) {
+      if (e.type == EntryType.credit) credit += e.amount;
+      if (e.type == EntryType.payment) paid += e.amount;
+    }
+    return LedgerBalance(
+      linkId: linkId,
+      balance: credit - paid,
+      pendingCount: entries.where((e) => e.status == EntryStatus.pending).length,
+      confirmedCount: entries.where((e) => e.status == EntryStatus.confirmed).length,
+      disputedCount: entries.where((e) => e.status == EntryStatus.disputed).length,
+      totalCreditAmount: credit,
+      totalPaymentAmount: paid,
+    );
   }
 
   @override

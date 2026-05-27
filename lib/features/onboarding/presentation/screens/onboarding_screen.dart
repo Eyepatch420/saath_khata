@@ -3,7 +3,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/services/storage_service.dart';
 import '../../../../core/widgets/primary_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -17,10 +19,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
+  Future<void> _finishOnboarding() async {
+    await getIt<StorageService>().markOnboardingSeen();
+    if (!mounted) return;
+    context.go(AppRouter.roleSelection);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     final List<Map<String, String>> onboardingData = [
       {
         'title': l10n.onboarding1Title,
@@ -40,7 +48,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -49,14 +56,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Align(
                 alignment: Alignment.topRight,
                 child: TextButton(
-                  onPressed: () => context.go(AppRouter.roleSelection),
-                  child: Text(l10n.skip, style: AppTypography.bodyMedium.copyWith(color: AppColors.primary)),
+                  onPressed: _finishOnboarding,
+                  child: Text(
+                    l10n.skip,
+                    style: AppTypography.bodyMedium
+                        .copyWith(color: AppColors.primary),
+                  ),
                 ),
               ),
               Expanded(
                 child: PageView.builder(
                   controller: _pageController,
-                  onPageChanged: (value) => setState(() => _currentPage = value),
+                  onPageChanged: (value) =>
+                      setState(() => _currentPage = value),
                   itemCount: onboardingData.length,
                   itemBuilder: (context, index) => Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -75,7 +87,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Text(
                         onboardingData[index]['subtitle']!,
                         textAlign: TextAlign.center,
-                        style: AppTypography.bodyLarge.copyWith(color: AppColors.textSecondary),
+                        style: AppTypography.bodyLarge
+                            .copyWith(color: AppColors.textSecondary),
                       ),
                     ],
                   ),
@@ -90,7 +103,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     height: 8,
                     width: _currentPage == index ? 24 : 8,
                     decoration: BoxDecoration(
-                      color: _currentPage == index ? AppColors.primary : AppColors.divider,
+                      color: _currentPage == index
+                          ? AppColors.primary
+                          : AppColors.divider,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -98,10 +113,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
               const SizedBox(height: 40),
               PrimaryButton(
-                label: _currentPage == onboardingData.length - 1 ? l10n.getStarted.toUpperCase() : l10n.next.toUpperCase(),
+                label: _currentPage == onboardingData.length - 1
+                    ? l10n.getStarted.toUpperCase()
+                    : l10n.next.toUpperCase(),
                 onPressed: () {
                   if (_currentPage == onboardingData.length - 1) {
-                    context.go(AppRouter.roleSelection);
+                    _finishOnboarding();
                   } else {
                     _pageController.nextPage(
                       duration: const Duration(milliseconds: 300),

@@ -23,6 +23,7 @@ import '../../features/customer/presentation/screens/payments_screen.dart';
 import '../../features/customer/presentation/screens/customer_profile_screen.dart';
 
 import '../../features/reports/presentation/screens/all_customers_report_screen.dart';
+import '../../features/vendor/presentation/screens/all_customers_screen.dart';
 import '../../features/reports/presentation/screens/customer_detail_report_screen.dart';
 
 import '../../features/bill_ocr/presentation/screens/scan_bill_screen.dart';
@@ -30,10 +31,15 @@ import '../../features/bill_ocr/presentation/screens/bill_details_form_screen.da
 
 import '../../features/auth/presentation/screens/language_selection_screen.dart';
 import '../../features/auth/presentation/screens/profile_setup_screen.dart';
+import '../../features/auth/presentation/screens/edit_profile_screen.dart';
+import '../../features/auth/data/models/user_model.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/booking/presentation/screens/vendor_bookings_screen.dart';
 import '../../features/booking/presentation/screens/customer_bookings_screen.dart';
 import '../../features/payments/presentation/screens/upi_payment_screen.dart';
+import '../../features/auth/presentation/bloc/auth_state.dart';
+import '../di/injection.dart';
+import 'auth_state_notifier.dart';
 
 class AppRouter {
   static const String splash = '/';
@@ -57,12 +63,45 @@ class AppRouter {
   static const String customerBookings = '/customer/booking';
   static const String upiPayment = '/upi-payment';
   static const String reports = '/reports';
+  static const String allCustomers = '/vendor/customers';
   static const String allCustomersReport = '/reports/all-customers';
   static const String customerDetailReport = '/reports/customer-detail';
   static const String settings = '/settings';
+  static const String editProfile = '/edit-profile';
+
+  // Routes accessible without authentication
+  static const _publicRoutes = {
+    splash,
+    languageSelection,
+    onboarding,
+    roleSelection,
+    login,
+    profileSetup,
+  };
 
   static final GoRouter router = GoRouter(
     initialLocation: splash,
+    refreshListenable: getIt<AuthStateNotifier>(),
+    redirect: (context, state) {
+      final authState = getIt<AuthStateNotifier>().authState;
+      final location = state.uri.path;
+      final isPublic = _publicRoutes.contains(location) ||
+          location.startsWith(profileSetup);
+
+      if (authState is AuthAuthenticated) {
+        // Send authenticated users away from public auth screens
+        if (isPublic && location != splash) {
+          return authState.user.isVendor ? vendorHome : customerHome;
+        }
+      }
+
+      if (authState is AuthUnauthenticated) {
+        // Block protected routes for unauthenticated users
+        if (!isPublic) return roleSelection;
+      }
+
+      return null; // no redirect
+    },
     routes: [
       GoRoute(
         path: splash,
@@ -104,6 +143,10 @@ class AppRouter {
           GoRoute(
             path: reports,
             builder: (context, state) => const ReportsScreen(),
+          ),
+          GoRoute(
+            path: allCustomers,
+            builder: (context, state) => const AllCustomersScreen(),
           ),
           GoRoute(
             path: allCustomersReport,
@@ -162,8 +205,6 @@ class AppRouter {
         path: sharedLedger,
         builder: (context, state) {
           final extras = state.extra as Map<String, dynamic>;
-          // Navigate with: context.push(AppRouter.sharedLedger,
-          //   extra: {'linkId': link.linkId, 'name': link.customer.name})
           return SharedLedgerScreen(
             linkId: extras['linkId'] as String,
             customerName: extras['name'] as String,
@@ -196,6 +237,13 @@ class AppRouter {
       GoRoute(
         path: billDetailsForm,
         builder: (context, state) => const BillDetailsFormScreen(),
+      ),
+      GoRoute(
+        path: editProfile,
+        builder: (context, state) {
+          final user = state.extra as UserModel;
+          return EditProfileScreen(user: user);
+        },
       ),
     ],
   );

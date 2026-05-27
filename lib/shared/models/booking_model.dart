@@ -2,6 +2,14 @@ import 'package:equatable/equatable.dart';
 
 enum BookingStatus { pending, confirmed, cancelled, completed }
 
+extension BookingStatusX on BookingStatus {
+  String toJson() => name;
+}
+
+BookingStatus _bookingStatusFromJson(String v) =>
+    BookingStatus.values.firstWhere((e) => e.name == v,
+        orElse: () => BookingStatus.pending);
+
 class AppointmentSlot extends Equatable {
   final String id;
   final String vendorId;
@@ -18,6 +26,16 @@ class AppointmentSlot extends Equatable {
     required this.durationMinutes,
     this.isAvailable = true,
   });
+
+  factory AppointmentSlot.fromJson(Map<String, dynamic> json) =>
+      AppointmentSlot(
+        id: json['id'] as String,
+        vendorId: json['vendorId'] as String,
+        startTime: json['startTime'] as String,
+        endTime: json['endTime'] as String,
+        durationMinutes: json['durationMinutes'] as int,
+        isAvailable: json['isAvailable'] as bool? ?? true,
+      );
 
   @override
   List<Object?> get props =>
@@ -39,6 +57,22 @@ class BookingModel extends Equatable {
   final BookingStatus status;
   final String? notes;
   final String createdAt; // ISO 8601
+
+  factory BookingModel.fromJson(Map<String, dynamic> json) => BookingModel(
+        id: json['id'] as String,
+        vendorId: json['vendorId'] as String,
+        vendorName: json['vendorName'] as String,
+        customerId: json['customerId'] as String,
+        customerName: json['customerName'] as String,
+        slotId: json['slotId'] as String?,
+        date: json['date'] as String,
+        startTime: json['startTime'] as String,
+        endTime: json['endTime'] as String,
+        serviceType: json['serviceType'] as String?,
+        status: _bookingStatusFromJson(json['status'] as String),
+        notes: json['notes'] as String?,
+        createdAt: json['createdAt'] as String,
+      );
 
   const BookingModel({
     required this.id,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class VoiceEntryScreen extends StatefulWidget {
   const VoiceEntryScreen({super.key});
@@ -27,10 +28,13 @@ class _VoiceEntryScreenState extends State<VoiceEntryScreen> {
       body: Column(
         children: [
           const Spacer(),
-          Text(
-            isListening ? 'Listening...' : 'Thinking...',
-            style: AppTypography.h2.copyWith(color: Colors.white70),
-          ),
+          Builder(builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return Text(
+              isListening ? l10n.voiceListening : l10n.voiceThinking,
+              style: AppTypography.h2.copyWith(color: Colors.white70),
+            );
+          }),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40),
@@ -49,25 +53,28 @@ class _VoiceEntryScreenState extends State<VoiceEntryScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('Detected Entry', style: AppTypography.bodySmall),
-                const SizedBox(height: 16),
-                _DetectionField(label: 'Customer', value: 'Sujeet Kumar'),
-                _DetectionField(label: 'Item', value: '2L Milk'),
-                _DetectionField(label: 'Amount', value: '₹60'),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Builder(builder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(l10n.voiceDetectedEntry, style: AppTypography.bodySmall),
+                  const SizedBox(height: 16),
+                  _DetectionField(label: l10n.customer, value: 'Sujeet Kumar'),
+                  _DetectionField(label: l10n.item, value: '2L Milk'),
+                  _DetectionField(label: l10n.entryAmount, value: '₹60'),
+                  const SizedBox(height: 24),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: Text(l10n.voiceConfirmEntry),
                   ),
-                  child: const Text('CONFIRM ENTRY'),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
           ),
         ],
       ),

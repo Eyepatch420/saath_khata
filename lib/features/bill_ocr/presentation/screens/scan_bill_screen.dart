@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ScanBillScreen extends StatefulWidget {
   const ScanBillScreen({super.key});
@@ -41,7 +42,7 @@ class _ScanBillScreenState extends State<ScanBillScreen> {
                         onPressed: () => context.pop(),
                         icon: const Icon(Icons.close, color: Colors.white),
                       ),
-                      Text('Scan Bill', style: AppTypography.h3.copyWith(color: Colors.white)),
+                      Text(AppLocalizations.of(context)!.scanBill, style: AppTypography.h3.copyWith(color: Colors.white)),
                       const IconButton(
                         onPressed: null,
                         icon: Icon(Icons.flash_on, color: Colors.white),
@@ -100,7 +101,7 @@ class _ScanBillScreenState extends State<ScanBillScreen> {
                   child: Column(
                     children: [
                       Text(
-                        'Align bill within the frame',
+                        AppLocalizations.of(context)!.alignBillInFrame,
                         style: AppTypography.bodyMedium.copyWith(color: Colors.white70),
                       ),
                       const SizedBox(height: 24),

@@ -20,7 +20,7 @@ class CustomerDetailReportScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+
       appBar: AppBar(
         title: Text('${customer['name']} Report'),
       ),
@@ -96,7 +96,7 @@ class _MiniStatCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       width: isWide ? double.infinity : null,
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -123,7 +123,7 @@ class _HistoryItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

@@ -1,33 +1,96 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
 import 'core/router/app_router.dart';
+import 'core/router/auth_state_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'core/di/injection.dart';
 import 'core/localization/locale_provider.dart';
+import 'core/services/storage_service.dart';
+import 'core/utils/app_logger.dart';
+import 'core/utils/bloc_observer.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
+  AppLogger.i('App', '═══════════════════════════════════════');
+  AppLogger.i('App', '  SaathKhata starting up');
+  AppLogger.i('App', '═══════════════════════════════════════');
+
+  // Wire global BLoC observer before any BLoC is created
+  Bloc.observer = AppBlocObserver();
+  AppLogger.i('App', 'BlocObserver registered');
+
+  AppLogger.i('App', 'Initialising dependencies...');
   await configureDependencies();
-  
+  AppLogger.i('App', 'Dependencies ready');
+
+  // Bridge AuthBloc → AuthStateNotifier so GoRouter re-evaluates redirect
+  final authBloc = getIt<AuthBloc>();
+  final authNotifier = getIt<AuthStateNotifier>();
+  authBloc.stream.listen(authNotifier.onAuthStateChanged);
+  AppLogger.i('App', 'Auth→Router bridge connected');
+
+  AppLogger.i('App', 'Launching UI');
+
   runApp(
     ChangeNotifierProvider(
-      create: (context) => LocaleProvider(),
-      child: const SaathKhataApp(),
+      create: (_) => LocaleProvider(getIt<StorageService>()),
+      child: BlocProvider<AuthBloc>.value(
+        value: authBloc,
+        child: const SaathKhataApp(),
+      ),
     ),
   );
 }
 
-class SaathKhataApp extends StatelessWidget {
+class SaathKhataApp extends StatefulWidget {
   const SaathKhataApp({super.key});
+
+  @override
+  State<SaathKhataApp> createState() => _SaathKhataAppState();
+}
+
+class _SaathKhataAppState extends State<SaathKhataApp>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    AppLogger.i('Lifecycle', 'App widget mounted — observer registered');
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    AppLogger.i('Lifecycle', 'App widget disposed');
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        AppLogger.i('Lifecycle', '▶ App RESUMED (foreground)');
+      case AppLifecycleState.inactive:
+        AppLogger.w('Lifecycle', '⏸ App INACTIVE (transitioning)');
+      case AppLifecycleState.paused:
+        AppLogger.w('Lifecycle', '⏸ App PAUSED (background / sleep)');
+      case AppLifecycleState.detached:
+        AppLogger.w('Lifecycle', '⏹ App DETACHED (process may be killed)');
+      case AppLifecycleState.hidden:
+        AppLogger.w('Lifecycle', '🙈 App HIDDEN');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: const Size(390, 844), // iPhone 14 Pro standard from PRD
+      designSize: const Size(390, 844),
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
@@ -37,9 +100,10 @@ class SaathKhataApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,
+          themeMode: ThemeMode.system,
           routerConfig: AppRouter.router,
           locale: localeProvider.locale,
-          localizationsDelegates: [
+          localizationsDelegates: const [
             AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,

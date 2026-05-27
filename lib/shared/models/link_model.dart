@@ -16,6 +16,14 @@ class UserSummary extends Equatable {
     this.upiId,
   });
 
+  factory UserSummary.fromJson(Map<String, dynamic> json) => UserSummary(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        mobile: json['mobile'] as String?,
+        profilePhotoUrl: json['profilePhotoUrl'] as String?,
+        upiId: json['upiId'] as String?,
+      );
+
   @override
   List<Object?> get props => [id, name, mobile, profilePhotoUrl, upiId];
 }
@@ -34,6 +42,16 @@ class VendorSummary extends UserSummary {
     this.businessName,
     this.businessCategory,
   });
+
+  factory VendorSummary.fromJson(Map<String, dynamic> json) => VendorSummary(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        mobile: json['mobile'] as String?,
+        profilePhotoUrl: json['profilePhotoUrl'] as String?,
+        upiId: json['upiId'] as String?,
+        businessName: json['businessName'] as String?,
+        businessCategory: json['businessCategory'] as String?,
+      );
 
   @override
   List<Object?> get props => [
@@ -57,6 +75,14 @@ class CustomerLinkItem extends Equatable {
     required this.createdAt,
   });
 
+  factory CustomerLinkItem.fromJson(Map<String, dynamic> json) =>
+      CustomerLinkItem(
+        linkId: json['linkId'] as String,
+        balance: (json['balance'] as num).toDouble(),
+        customer: UserSummary.fromJson(json['customer'] as Map<String, dynamic>),
+        createdAt: json['createdAt'] as String,
+      );
+
   @override
   List<Object?> get props => [linkId, balance, customer, createdAt];
 }
@@ -74,6 +100,13 @@ class VendorLinkItem extends Equatable {
     required this.vendor,
     required this.createdAt,
   });
+
+  factory VendorLinkItem.fromJson(Map<String, dynamic> json) => VendorLinkItem(
+        linkId: json['linkId'] as String,
+        balance: (json['balance'] as num).toDouble(),
+        vendor: VendorSummary.fromJson(json['vendor'] as Map<String, dynamic>),
+        createdAt: json['createdAt'] as String,
+      );
 
   @override
   List<Object?> get props => [linkId, balance, vendor, createdAt];

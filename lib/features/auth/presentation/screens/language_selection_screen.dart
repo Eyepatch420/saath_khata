@@ -7,29 +7,54 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/localization/locale_provider.dart';
 import '../../../../l10n/app_localizations.dart';
 
-class LanguageSelectionScreen extends StatelessWidget {
+class LanguageSelectionScreen extends StatefulWidget {
   const LanguageSelectionScreen({super.key});
 
-  final List<Map<String, String>> languages = const [
-    {'name': 'English', 'native': 'English', 'code': 'en'},
-    {'name': 'Hindi', 'native': 'हिन्दी', 'code': 'hi'},
-    {'name': 'Bengali', 'native': 'বাংলা', 'code': 'bn'},
-    {'name': 'Marathi', 'native': 'मराठी', 'code': 'mr'},
-    {'name': 'Tamil', 'native': 'தமிழ்', 'code': 'ta'},
-    {'name': 'Telugu', 'native': 'తెలుగు', 'code': 'te'},
-    {'name': 'Kannada', 'native': 'ಕನ್ನಡ', 'code': 'kn'},
-    {'name': 'Gujarati', 'native': 'ગુજરાતી', 'code': 'gu'},
-    {'name': 'Punjabi', 'native': 'ਪੰਜਾਬी', 'code': 'pa'},
-    {'name': 'Malayalam', 'native': 'മലയാളം', 'code': 'ml'},
-    {'name': 'Bhojpuri', 'native': 'भोजपुरी', 'code': 'hi'}, // Fallback to hi if not fully supported
-    {'name': 'Maithili', 'native': 'मैथिली', 'code': 'hi'}, // Fallback to hi if not fully supported
+  @override
+  State<LanguageSelectionScreen> createState() => _LanguageSelectionScreenState();
+}
+
+class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
+  // 'code' is a unique tile identifier; 'locale' is the Flutter locale to apply.
+  // Bhojpuri and Maithili use Devanagari and fall back to Hindi localization.
+  static const List<Map<String, String>> _languages = [
+    {'name': 'English', 'native': 'English', 'code': 'en', 'locale': 'en'},
+    {'name': 'Hindi', 'native': 'हिन्दी', 'code': 'hi', 'locale': 'hi'},
+    {'name': 'Bengali', 'native': 'বাংলা', 'code': 'bn', 'locale': 'bn'},
+    {'name': 'Marathi', 'native': 'मराठी', 'code': 'mr', 'locale': 'mr'},
+    {'name': 'Tamil', 'native': 'தமிழ்', 'code': 'ta', 'locale': 'ta'},
+    {'name': 'Telugu', 'native': 'తెలుగు', 'code': 'te', 'locale': 'te'},
+    {'name': 'Kannada', 'native': 'ಕನ್ನಡ', 'code': 'kn', 'locale': 'kn'},
+    {'name': 'Gujarati', 'native': 'ગુજરાતી', 'code': 'gu', 'locale': 'gu'},
+    {'name': 'Punjabi', 'native': 'ਪੰਜਾਬੀ', 'code': 'pa', 'locale': 'pa'},
+    {'name': 'Malayalam', 'native': 'മലയാളം', 'code': 'ml', 'locale': 'ml'},
+    {'name': 'Bhojpuri', 'native': 'भोजपुरी', 'code': 'bho', 'locale': 'hi'},
+    {'name': 'Maithili', 'native': 'मैथिली', 'code': 'mai', 'locale': 'hi'},
   ];
+
+  String? _selectedCode;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_selectedCode == null) {
+      final currentLocale = context.read<LocaleProvider>().locale.languageCode;
+      // Pre-select the canonical tile for the active locale (first match).
+      final match = _languages.firstWhere(
+        (l) => l['code'] == currentLocale,
+        orElse: () => _languages.firstWhere(
+          (l) => l['locale'] == currentLocale,
+          orElse: () => _languages.first,
+        ),
+      );
+      _selectedCode = match['code'];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -38,7 +63,13 @@ class LanguageSelectionScreen extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
               Text(l10n.chooseLanguage, style: AppTypography.h1),
-              Text('आपकी भाषा चुनें', style: AppTypography.h3.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.normal)),
+              Text(
+                'आपकी भाषा चुनें',
+                style: AppTypography.h3.copyWith(
+                  color: AppColors.textSecondary,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
               const SizedBox(height: 32),
               Expanded(
                 child: GridView.builder(
@@ -48,26 +79,48 @@ class LanguageSelectionScreen extends StatelessWidget {
                     mainAxisSpacing: 16,
                     childAspectRatio: 2,
                   ),
-                  itemCount: languages.length,
+                  itemCount: _languages.length,
                   itemBuilder: (context, index) {
-                    final lang = languages[index];
+                    final lang = _languages[index];
+                    final isSelected = _selectedCode == lang['code'];
                     return InkWell(
                       onTap: () {
-                        context.read<LocaleProvider>().setLocale(Locale(lang['code']!));
-                        context.go(AppRouter.onboarding);
+                        setState(() => _selectedCode = lang['code']);
+                        // Apply locale immediately so the app reacts globally.
+                        context
+                            .read<LocaleProvider>()
+                            .setLocale(Locale(lang['locale']!));
                       },
                       borderRadius: BorderRadius.circular(12),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: AppColors.surface,
+                          color: isSelected
+                              ? AppColors.primary.withValues(alpha: 0.12)
+                              : Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.divider),
+                          border: Border.all(
+                            color: isSelected ? AppColors.primary : AppColors.divider,
+                            width: isSelected ? 2 : 1,
+                          ),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(lang['native']!, style: AppTypography.labelLarge.copyWith(fontSize: 16)),
-                            Text(lang['name']!, style: AppTypography.bodySmall),
+                            Text(
+                              lang['native']!,
+                              style: AppTypography.labelLarge.copyWith(
+                                fontSize: 16,
+                                color: isSelected ? AppColors.primary : null,
+                              ),
+                            ),
+                            Text(
+                              lang['name']!,
+                              style: AppTypography.bodySmall.copyWith(
+                                color: isSelected
+                                    ? AppColors.primary.withValues(alpha: 0.7)
+                                    : AppColors.textHint,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -75,6 +128,31 @@ class LanguageSelectionScreen extends StatelessWidget {
                   },
                 ),
               ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _selectedCode == null
+                      ? null
+                      : () => context.go(AppRouter.onboarding),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.3),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(
+                    l10n.continueButton,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
             ],
           ),
         ),

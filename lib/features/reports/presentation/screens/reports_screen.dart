@@ -3,15 +3,17 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class ReportsScreen extends StatelessWidget {
   const ReportsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(title: const Text('Business Reports')),
+
+      appBar: AppBar(title: Text(l10n.businessReports)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -19,19 +21,19 @@ class ReportsScreen extends StatelessWidget {
           children: [
             _RevenueChart(),
             const SizedBox(height: 24),
-            Text('Collection Summary', style: AppTypography.h3),
+            Text(l10n.collectionSummary, style: AppTypography.h3),
             const SizedBox(height: 16),
-            _SummaryCard(label: 'Total Outstanding', value: '₹45,200', color: AppColors.error),
+            _SummaryCard(label: l10n.totalOutstanding, value: '₹45,200', color: AppColors.error),
             const SizedBox(height: 12),
-            _SummaryCard(label: 'Total Collected (May)', value: '₹1,12,000', color: AppColors.success),
+            _SummaryCard(label: l10n.totalCollected, value: '₹1,12,000', color: AppColors.success),
             const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Top Customers', style: AppTypography.h3),
+                Text(l10n.topCustomers, style: AppTypography.h3),
                 TextButton(
                   onPressed: () => context.push(AppRouter.allCustomersReport),
-                  child: const Text('See All'),
+                  child: Text(l10n.seeAll),
                 ),
               ],
             ),
@@ -48,6 +50,7 @@ class ReportsScreen extends StatelessWidget {
 class _RevenueChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       height: 200,
       padding: const EdgeInsets.all(16),
@@ -58,7 +61,7 @@ class _RevenueChart extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Revenue Trend', style: AppTypography.bodySmall.copyWith(color: Colors.white70)),
+          Text(l10n.revenueTrend, style: AppTypography.bodySmall.copyWith(color: Colors.white70)),
           const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -106,7 +109,7 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(

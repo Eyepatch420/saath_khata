@@ -1,41 +1,129 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../auth/data/models/user_model.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_event.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
 
 class CustomerProfileScreen extends StatelessWidget {
   const CustomerProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Profile'),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundColor: AppColors.primary,
-              child: Icon(Icons.person_rounded, size: 60, color: Colors.white),
+    final l10n = AppLocalizations.of(context)!;
+    return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (_, current) =>
+          current is AuthAuthenticated || current is AuthUnauthenticated,
+      builder: (context, state) {
+        final user = state is AuthAuthenticated ? state.user : null;
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Profile'),
+            actions: [
+              if (user != null)
+                IconButton(
+                  icon: const Icon(Icons.edit_rounded),
+                  tooltip: 'Edit Profile',
+                  onPressed: () =>
+                      context.push(AppRouter.editProfile, extra: user),
+                ),
+            ],
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              children: [
+                _buildAvatar(user),
+                const SizedBox(height: 16),
+                Text(user?.name ?? '...', style: AppTypography.h2),
+                if (user?.mobile != null)
+                  Text(
+                    user!.mobile!,
+                    style: AppTypography.bodyMedium
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                Text(
+                  user?.email ?? '',
+                  style: AppTypography.bodySmall
+                      .copyWith(color: AppColors.textHint),
+                ),
+                const SizedBox(height: 32),
+                _ProfileItem(
+                  icon: Icons.notifications_rounded,
+                  title: l10n.notificationSettings,
+                ),
+                _ProfileItem(
+                  icon: Icons.language_rounded,
+                  title: l10n.appLanguage,
+                ),
+                _ProfileItem(
+                  icon: Icons.security_rounded,
+                  title: l10n.securityPin,
+                ),
+                _ProfileItem(
+                  icon: Icons.help_outline_rounded,
+                  title: l10n.helpSupport,
+                ),
+                const SizedBox(height: 32),
+                TextButton(
+                  onPressed: () => _confirmLogout(context, l10n),
+                  child: Text(
+                    l10n.logout,
+                    style: const TextStyle(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Text('John Doe', style: AppTypography.h2),
-            Text('+91 9876543210', style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary)),
-            const SizedBox(height: 32),
-            _ProfileItem(icon: Icons.notifications_rounded, title: 'Notification Settings'),
-            _ProfileItem(icon: Icons.language_rounded, title: 'Language'),
-            _ProfileItem(icon: Icons.security_rounded, title: 'Security & PIN'),
-            _ProfileItem(icon: Icons.help_outline_rounded, title: 'Help & Support'),
-            const SizedBox(height: 32),
-            TextButton(
-              onPressed: () {},
-              child: const Text('Logout', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.bold)),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAvatar(UserModel? user) {
+    if (user?.profilePhotoUrl != null) {
+      return CircleAvatar(
+        radius: 50,
+        backgroundImage: NetworkImage(user!.profilePhotoUrl!),
+      );
+    }
+    return const CircleAvatar(
+      radius: 50,
+      backgroundColor: AppColors.customerAccent,
+      child: Icon(Icons.person_rounded, size: 60, color: Colors.white),
+    );
+  }
+
+  void _confirmLogout(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.logout),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<AuthBloc>().add(const AuthLogoutRequested());
+            },
+            child: Text(
+              l10n.logout,
+              style: const TextStyle(color: AppColors.error),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

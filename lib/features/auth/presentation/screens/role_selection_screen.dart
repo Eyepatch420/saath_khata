@@ -12,7 +12,6 @@ class RoleSelectionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -39,7 +38,7 @@ class RoleSelectionScreen extends StatelessWidget {
                 title: l10n.customerRoleTitle,
                 subtitle: l10n.customerRoleSubtitle,
                 icon: Icons.person_search_rounded,
-                color: AppColors.secondary,
+                color: AppColors.customerAccent,
                 onTap: () => context.push(AppRouter.login, extra: 'customer'),
               ),
               const Spacer(),
@@ -80,9 +79,9 @@ class _RoleCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.divider),
+          border: Border.all(color: Theme.of(context).dividerColor),
           boxShadow: [
             BoxShadow(
               color: color.withValues(alpha: 0.05),

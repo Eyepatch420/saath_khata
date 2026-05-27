@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 
 class TotalDueCard extends StatelessWidget {
   final double amount;
@@ -8,6 +9,7 @@ class TotalDueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -22,7 +24,7 @@ class TotalDueCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          Text('Total Outstanding Balance',
+          Text(l10n.totalOutstandingBalance,
               style: AppTypography.bodySmall.copyWith(color: Colors.white70)),
           const SizedBox(height: 8),
           Text('₹${amount.toStringAsFixed(2)}',
@@ -36,7 +38,7 @@ class TotalDueCard extends StatelessWidget {
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,
               ),
-              child: const Text('PAY ALL DUES'),
+              child: Text(l10n.payAllDues),
             ),
           ),
         ],

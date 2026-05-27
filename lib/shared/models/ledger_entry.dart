@@ -3,6 +3,24 @@ import 'package:equatable/equatable.dart';
 enum EntryType { credit, payment, advance, adjustment }
 enum EntryStatus { pending, confirmed, disputed, autoConfirmed }
 
+extension EntryTypeX on EntryType {
+  String toJson() => name; // credit, payment, advance, adjustment — all match
+}
+
+extension EntryStatusX on EntryStatus {
+  String toJson() => this == EntryStatus.autoConfirmed ? 'auto_confirmed' : name;
+}
+
+EntryType _entryTypeFromJson(String v) =>
+    EntryType.values.firstWhere((e) => e.name == v,
+        orElse: () => EntryType.credit);
+
+EntryStatus _entryStatusFromJson(String v) {
+  if (v == 'auto_confirmed') return EntryStatus.autoConfirmed;
+  return EntryStatus.values.firstWhere((e) => e.name == v,
+      orElse: () => EntryStatus.pending);
+}
+
 class LedgerEntry extends Equatable {
   final String id;
   final String linkId;
@@ -37,6 +55,28 @@ class LedgerEntry extends Equatable {
     this.disputeReason,
     this.attachmentUrl,
   });
+
+  factory LedgerEntry.fromJson(Map<String, dynamic> json) => LedgerEntry(
+        id: json['id'] as String,
+        linkId: json['linkId'] as String,
+        vendorId: json['vendorId'] as String?,
+        customerId: json['customerId'] as String?,
+        amount: (json['amount'] as num).toDouble(),
+        type: _entryTypeFromJson(json['type'] as String),
+        date: DateTime.parse(json['date'] as String),
+        description: json['description'] as String?,
+        quantity: json['quantity'] != null
+            ? (json['quantity'] as num).toDouble()
+            : null,
+        unit: json['unit'] as String?,
+        status: _entryStatusFromJson(json['status'] as String),
+        confirmedAt: json['confirmedAt'] != null
+            ? DateTime.parse(json['confirmedAt'] as String)
+            : null,
+        isLocked: json['isLocked'] as bool? ?? false,
+        disputeReason: json['disputeReason'] as String?,
+        attachmentUrl: json['attachmentUrl'] as String?,
+      );
 
   LedgerEntry copyWith({
     EntryStatus? status,

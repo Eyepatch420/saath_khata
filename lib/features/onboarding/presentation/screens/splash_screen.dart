@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../core/services/storage_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,11 +17,36 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        context.go(AppRouter.languageSelection);
-      }
-    });
+    _navigate();
+  }
+
+  Future<void> _navigate() async {
+    // Minimum branding delay
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+
+    final storage = getIt<StorageService>();
+    final hasSeenOnboarding = await storage.hasSeenOnboarding();
+
+    if (!mounted) return;
+
+    if (!hasSeenOnboarding) {
+      // First launch: show language selection → onboarding → role selection
+      context.go(AppRouter.languageSelection);
+      return;
+    }
+
+    // Returning user: check if still logged in
+    final accessToken = await storage.getAccessToken();
+    final role = await storage.getUserRole();
+
+    if (!mounted) return;
+
+    if (accessToken != null && role != null) {
+      context.go(role == 'vendor' ? AppRouter.vendorHome : AppRouter.customerHome);
+    } else {
+      context.go(AppRouter.roleSelection);
+    }
   }
 
   @override

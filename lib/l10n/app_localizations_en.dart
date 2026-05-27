@@ -48,6 +48,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chooseLanguage => 'Choose Your Language';
 
   @override
+  String get continueButton => 'Continue';
+
+  @override
   String get chooseRole => 'Choose Your Role';
 
   @override
@@ -80,16 +83,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginTitle => 'Login to SaathKhata';
 
   @override
-  String get verifyOtp => 'Verify OTP';
-
-  @override
-  String get enterMobile => 'Enter your mobile number to continue';
+  String get enterMobile => 'Enter your credentials to continue';
 
   @override
   String get mobileNumber => 'Mobile Number';
 
   @override
   String get sendOtp => 'Send OTP';
+
+  @override
+  String get verifyOtp => 'Verify OTP';
 
   @override
   String get verifyAndContinue => 'Verify & Continue';
@@ -101,6 +104,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String otpSentTo(String phoneNumber) {
     return 'Enter the 6-digit code sent to +91 $phoneNumber';
   }
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get passwordHint => 'Enter your password';
+
+  @override
+  String get loginButton => 'LOGIN';
+
+  @override
+  String get noAccount => 'Don\'t have an account?';
+
+  @override
+  String get signUp => 'Sign Up';
+
+  @override
+  String get pleaseEnterCredentials => 'Please enter email and password';
+
+  @override
+  String get fillRequiredFields => 'Please fill in name, email and password';
+
+  @override
+  String get passwordMinChars => 'Minimum 8 characters';
 
   @override
   String get completeProfile => 'Complete Profile';
@@ -142,6 +172,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customerDashboard => 'Customer Dashboard';
 
   @override
+  String get customerMode => 'Customer Mode';
+
+  @override
+  String get myVendors => 'My Vendors';
+
+  @override
   String get outstanding => 'Outstanding';
 
   @override
@@ -166,6 +202,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewAll => 'View All';
 
   @override
+  String customerAddedSnackbar(String name) {
+    return '$name added';
+  }
+
+  @override
   String get sharedLedger => 'Shared Ledger';
 
   @override
@@ -181,6 +222,138 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recordPayment => 'RECORD PAYMENT';
 
   @override
+  String get giveCreditSheet => 'Give Credit';
+
+  @override
+  String get recordPaymentSheet => 'Record Payment';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get balanceCustomerOwes => 'Customer owes you';
+
+  @override
+  String get balanceYouOwe => 'You owe customer';
+
+  @override
+  String get balanceSettled => 'Settled';
+
+  @override
+  String get ledgerInfoTitle => 'How this ledger works';
+
+  @override
+  String get statusConfirmed => 'Confirmed';
+
+  @override
+  String get statusConfirmedDesc =>
+      'Both parties agreed. Entry is locked and cannot be changed.';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusPendingDesc =>
+      'Awaiting customer confirmation. Auto-confirmed after 72 hours.';
+
+  @override
+  String get statusDisputed => 'Disputed';
+
+  @override
+  String get statusDisputedDesc =>
+      'Customer raised a dispute. Vendor review required.';
+
+  @override
+  String get statusAutoConfirmed => 'Auto-Confirmed';
+
+  @override
+  String get entryTypeCreditLabel => 'Credit Entry';
+
+  @override
+  String get entryTypePaymentLabel => 'Payment Received';
+
+  @override
+  String get entryDetails => 'Entry Details';
+
+  @override
+  String get entryAmount => 'Amount';
+
+  @override
+  String get entryType => 'Type';
+
+  @override
+  String get entryTypeCreditGiven => 'Credit (Given)';
+
+  @override
+  String get entryTypePaymentReceived => 'Payment (Received)';
+
+  @override
+  String get entryDate => 'Date';
+
+  @override
+  String get entryDescription => 'Description';
+
+  @override
+  String get entryQuantity => 'Quantity';
+
+  @override
+  String get entryConfirmedAt => 'Confirmed At';
+
+  @override
+  String get entryDisputeReason => 'Dispute Reason';
+
+  @override
+  String entryFor(String name) {
+    return 'for $name';
+  }
+
+  @override
+  String get descriptionOptional => 'Description (optional)';
+
+  @override
+  String get quantityOptional => 'Quantity (optional)';
+
+  @override
+  String get descriptionHint => 'e.g. 2L Milk, Monthly groceries';
+
+  @override
+  String get quantityHint => 'e.g. 2';
+
+  @override
+  String get addCreditEntry => 'ADD CREDIT ENTRY';
+
+  @override
+  String get noLedgerTransactions => 'No transactions yet';
+
+  @override
+  String get noLedgerTransactionsSubtitle =>
+      'Add a credit or payment entry to get started.';
+
+  @override
+  String get confirmEntryTitle => 'Confirm Entry';
+
+  @override
+  String confirmEntryMessage(String amount) {
+    return 'Are you sure you want to confirm ₹$amount entry? This action cannot be undone.';
+  }
+
+  @override
+  String get dispute => 'Dispute';
+
+  @override
+  String get raiseDisputeTitle => 'Raise a Dispute';
+
+  @override
+  String get raiseDisputeSubtitle =>
+      'Describe what is incorrect about this entry.';
+
+  @override
+  String get raiseDisputeHint => 'e.g. Amount should be ₹50, not ₹60';
+
+  @override
+  String get submitDispute => 'Submit Dispute';
+
+  @override
   String get staffAndLabour => 'Staff & Labour';
 
   @override
@@ -194,6 +367,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paySalary => 'Pay Salary';
+
+  @override
+  String get noStaffAdded => 'No staff added yet';
+
+  @override
+  String get noStaffAddedSubtitle =>
+      'Tap the button below to add your first staff member.';
+
+  @override
+  String get present => 'Present';
+
+  @override
+  String get absent => 'Absent';
+
+  @override
+  String get halfDay => 'Half Day';
+
+  @override
+  String get paySalaryTitle => 'Pay Salary';
+
+  @override
+  String unpaidLabel(String amount) {
+    return 'Unpaid: ₹$amount';
+  }
+
+  @override
+  String get upiTransactionIdOptional => 'UPI Transaction ID (optional)';
+
+  @override
+  String get noDues => 'No Dues';
+
+  @override
+  String staffPayAmount(String amount) {
+    return 'Pay ₹$amount';
+  }
+
+  @override
+  String staffJoined(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String staffSalaryPerDay(String amount) {
+    return '₹$amount/day';
+  }
+
+  @override
+  String staffSalaryPerMonth(String amount) {
+    return '₹$amount/month';
+  }
+
+  @override
+  String get staffPayButton => 'Pay';
 
   @override
   String get businessReports => 'Business Reports';
@@ -223,6 +449,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appLanguage => 'App Language';
 
   @override
+  String get selectLanguage => 'Select Language';
+
+  @override
+  String get settingsManagePayments => 'Manage payment accounts';
+
+  @override
+  String get settingsManageAlerts => 'Manage alerts and reminders';
+
+  @override
+  String get settingsAppPinFingerprint => 'App PIN and Fingerprint';
+
+  @override
+  String get settingsFaqsContact => 'FAQs and Contact Us';
+
+  @override
+  String settingsVersion(String version) {
+    return 'Version $version';
+  }
+
+  @override
   String get myUpiIds => 'My UPI IDs';
 
   @override
@@ -248,6 +494,22 @@ class AppLocalizationsEn extends AppLocalizations {
       'You will see ledger updates, payment alerts and reminders here.';
 
   @override
+  String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String minutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
   String get payments => 'Payments';
 
   @override
@@ -266,10 +528,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scanAndPay => 'SCAN & PAY';
 
   @override
+  String get scanUpiDesc => 'Scan any UPI QR to pay your vendor';
+
+  @override
   String get noTransactionsTitle => 'No transactions yet';
 
   @override
   String get noTransactionsSubtitle => 'Your payment history will appear here.';
+
+  @override
+  String get paymentStatusPaid => 'Paid';
+
+  @override
+  String get paymentStatusFailed => 'Failed';
+
+  @override
+  String get paymentStatusRefunded => 'Refunded';
 
   @override
   String get appointments => 'Appointments';
@@ -304,6 +578,29 @@ class AppLocalizationsEn extends AppLocalizations {
       'Book an appointment with your vendor to get started.';
 
   @override
+  String get cancelAppointmentTitle => 'Cancel Appointment?';
+
+  @override
+  String cancelAppointmentMessage(String date, String time) {
+    return 'Cancel your appointment on $date at $time?';
+  }
+
+  @override
+  String get bookingStatusConfirmed => 'Confirmed';
+
+  @override
+  String get bookingStatusPending => 'Pending';
+
+  @override
+  String get bookingStatusCancelled => 'Cancelled';
+
+  @override
+  String get bookingStatusCompleted => 'Completed';
+
+  @override
+  String get bookingStatusDone => 'Done';
+
+  @override
   String get upiPayment => 'UPI Payment';
 
   @override
@@ -323,6 +620,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get enterUpiId => 'Enter UPI ID';
+
+  @override
+  String get addNoteOptional => 'Add a note (optional)';
+
+  @override
+  String payAmountButton(String amount) {
+    return 'PAY ₹$amount';
+  }
+
+  @override
+  String get done => 'DONE';
+
+  @override
+  String get paymentSomethingWentWrong =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String upiAppComingSoon(String app) {
+    return '$app integration coming soon';
+  }
+
+  @override
+  String get pleaseEnterUpiId => 'Please enter a UPI ID';
+
+  @override
+  String paidToRecipient(String amount, String name) {
+    return '₹$amount paid to $name';
+  }
+
+  @override
+  String get orDivider => 'OR';
 
   @override
   String get addNewCustomer => 'Add New Customer';
@@ -407,4 +735,118 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addStaffButton => 'ADD STAFF';
+
+  @override
+  String get noteOptional => 'Note (optional)';
+
+  @override
+  String get amountRupees => 'Amount (₹)';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get alignBillInFrame => 'Align bill within the frame';
+
+  @override
+  String get verifyAndLogin => 'Verify & Login';
+
+  @override
+  String get voiceListening => 'Listening...';
+
+  @override
+  String get voiceThinking => 'Thinking...';
+
+  @override
+  String get voiceDetectedEntry => 'Detected Entry';
+
+  @override
+  String get voiceConfirmEntry => 'CONFIRM ENTRY';
+
+  @override
+  String get item => 'Item';
+
+  @override
+  String get totalOutstandingBalance => 'Total Outstanding Balance';
+
+  @override
+  String get payAllDues => 'PAY ALL DUES';
+
+  @override
+  String get myKhatas => 'My Khatas';
+
+  @override
+  String get noVendorsFound => 'No vendors found';
+
+  @override
+  String get verifyBillDetails => 'Verify Bill Details';
+
+  @override
+  String get scannedBillPreview => 'Scanned Bill Preview';
+
+  @override
+  String get descriptionItemDetails => 'Description / Item Details';
+
+  @override
+  String get selectCustomer => 'Select Customer';
+
+  @override
+  String get searchCustomerHint => 'Search or select customer';
+
+  @override
+  String get saveToKhata => 'SAVE TO KHATA';
+
+  @override
+  String get allCustomersReport => 'All Customers Report';
+
+  @override
+  String collectedInMonth(String month) {
+    return 'Collected in $month';
+  }
+
+  @override
+  String get notificationSettings => 'Notification Settings';
+
+  @override
+  String get securityPin => 'Security & PIN';
+
+  @override
+  String get bookingActions => 'Booking Actions';
+
+  @override
+  String get confirmBooking => 'Confirm Booking';
+
+  @override
+  String get markComplete => 'Mark as Complete';
+
+  @override
+  String confirmBookingMessage(String date, String time, String customer) {
+    return 'Confirm the appointment on $date at $time for $customer?';
+  }
+
+  @override
+  String get bookingUpdated => 'Booking updated successfully';
+
+  @override
+  String get bookingUpdateFailed => 'Failed to update booking';
+
+  @override
+  String markAttendanceFor(String date) {
+    return 'Mark Attendance — $date';
+  }
+
+  @override
+  String get allCustomers => 'All Customers';
+
+  @override
+  String get noCustomersYet => 'No customers yet';
+
+  @override
+  String get noCustomersYetSubtitle => 'Add your first customer to get started';
 }

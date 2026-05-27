@@ -47,7 +47,6 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
 
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(l10n.upiPayment)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -73,9 +72,9 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
             const SizedBox(height: 16),
             TextField(
               controller: _noteCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Add a note (optional)',
-                prefixIcon: Icon(Icons.note_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.addNoteOptional,
+                prefixIcon: const Icon(Icons.note_rounded),
               ),
             ),
             const SizedBox(height: 32),
@@ -95,7 +94,7 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
                         child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                       )
                     : Text(
-                        'PAY ₹${widget.amount.toStringAsFixed(0)}',
+                        l10n.payAmountButton(widget.amount.toStringAsFixed(0)),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -126,7 +125,7 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
     HapticFeedback.lightImpact();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$app integration coming soon'),
+        content: Text(AppLocalizations.of(context)!.upiAppComingSoon(app)),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -135,7 +134,7 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
   Future<void> _initiatePayment() async {
     if (_upiCtrl.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a UPI ID')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterUpiId)),
       );
       return;
     }
@@ -238,7 +237,8 @@ class _OrDivider extends StatelessWidget {
         const Expanded(child: Divider()),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text('OR', style: AppTypography.bodySmall.copyWith(color: AppColors.textHint)),
+          child: Text(AppLocalizations.of(context)!.orDivider,
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textHint)),
         ),
         const Expanded(child: Divider()),
       ],
@@ -254,7 +254,6 @@ class _SuccessView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -274,7 +273,7 @@ class _SuccessView extends StatelessWidget {
               Text(AppLocalizations.of(context)!.paymentSuccessful, style: AppTypography.h3),
               const SizedBox(height: 8),
               Text(
-                '₹${amount.toStringAsFixed(0)} paid to $recipient',
+                AppLocalizations.of(context)!.paidToRecipient(amount.toStringAsFixed(0), recipient),
                 style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
@@ -288,7 +287,8 @@ class _SuccessView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  child: const Text('DONE', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: Text(AppLocalizations.of(context)!.done,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -306,7 +306,6 @@ class _FailureView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
@@ -326,7 +325,7 @@ class _FailureView extends StatelessWidget {
               Text(AppLocalizations.of(context)!.paymentFailed, style: AppTypography.h3),
               const SizedBox(height: 8),
               Text(
-                'Something went wrong. Please try again.',
+                AppLocalizations.of(context)!.paymentSomethingWentWrong,
                 style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
               ),
@@ -339,7 +338,7 @@ class _FailureView extends StatelessWidget {
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
-                      child: const Text('Cancel'),
+                      child: Text(AppLocalizations.of(context)!.cancel),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -351,7 +350,8 @@ class _FailureView extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Retry', style: TextStyle(color: Colors.white)),
+                      child: Text(AppLocalizations.of(context)!.retryPayment,
+                          style: const TextStyle(color: Colors.white)),
                     ),
                   ),
                 ],

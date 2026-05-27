@@ -1,10 +1,10 @@
 {
   "@@locale": "en",
+
   "appTitle": "SaathKhata",
-  "@appTitle": {
-    "description": "The name of the application"
-  },
+  "@appTitle": { "description": "The name of the application" },
   "tagline": "Ek Khata, Dono Ka",
+
   "onboarding1Title": "Two-Sided Shared Ledger",
   "onboarding1Subtitle": "One Ledger for both Vendor and Customer. Both see the same truth.",
   "onboarding2Title": "Voice & Bill OCR",
@@ -16,6 +16,7 @@
   "skip": "Skip",
 
   "chooseLanguage": "Choose Your Language",
+  "continueButton": "Continue",
   "chooseRole": "Choose Your Role",
   "vendor": "Vendor",
   "customer": "Customer",
@@ -27,20 +28,25 @@
   "customerRoleSubtitle": "Track my khata with local vendors and pay via UPI.",
 
   "loginTitle": "Login to SaathKhata",
-  "verifyOtp": "Verify OTP",
-  "enterMobile": "Enter your mobile number to continue",
+  "enterMobile": "Enter your credentials to continue",
   "mobileNumber": "Mobile Number",
   "sendOtp": "Send OTP",
+  "verifyOtp": "Verify OTP",
   "verifyAndContinue": "Verify & Continue",
   "changePhoneNumber": "Change Phone Number",
   "otpSentTo": "Enter the 6-digit code sent to +91 {phoneNumber}",
   "@otpSentTo": {
-    "placeholders": {
-      "phoneNumber": {
-        "type": "String"
-      }
-    }
+    "placeholders": { "phoneNumber": { "type": "String" } }
   },
+  "email": "Email",
+  "password": "Password",
+  "passwordHint": "Enter your password",
+  "loginButton": "LOGIN",
+  "noAccount": "Don't have an account?",
+  "signUp": "Sign Up",
+  "pleaseEnterCredentials": "Please enter email and password",
+  "fillRequiredFields": "Please fill in name, email and password",
+  "passwordMinChars": "Minimum 8 characters",
 
   "completeProfile": "Complete Profile",
   "enterYourName": "Enter your name",
@@ -56,6 +62,8 @@
 
   "vendorDashboard": "Vendor Dashboard",
   "customerDashboard": "Customer Dashboard",
+  "customerMode": "Customer Mode",
+  "myVendors": "My Vendors",
   "outstanding": "Outstanding",
   "collectedToday": "Collected Today",
   "quickActions": "Quick Actions",
@@ -64,18 +72,98 @@
   "addNew": "Add New",
   "recentCustomers": "Recent Customers",
   "viewAll": "View All",
+  "customerAddedSnackbar": "{name} added",
+  "@customerAddedSnackbar": {
+    "placeholders": { "name": { "type": "String" } }
+  },
 
   "sharedLedger": "Shared Ledger",
   "totalBalance": "TOTAL BALANCE",
   "statement": "Statement",
   "giveCredit": "GIVE CREDIT",
   "recordPayment": "RECORD PAYMENT",
+  "giveCreditSheet": "Give Credit",
+  "recordPaymentSheet": "Record Payment",
+  "filterAll": "All",
+  "balanceCustomerOwes": "Customer owes you",
+  "balanceYouOwe": "You owe customer",
+  "balanceSettled": "Settled",
+  "ledgerInfoTitle": "How this ledger works",
+  "statusConfirmed": "Confirmed",
+  "statusConfirmedDesc": "Both parties agreed. Entry is locked and cannot be changed.",
+  "statusPending": "Pending",
+  "statusPendingDesc": "Awaiting customer confirmation. Auto-confirmed after 72 hours.",
+  "statusDisputed": "Disputed",
+  "statusDisputedDesc": "Customer raised a dispute. Vendor review required.",
+  "statusAutoConfirmed": "Auto-Confirmed",
+  "entryTypeCreditLabel": "Credit Entry",
+  "entryTypePaymentLabel": "Payment Received",
+  "entryDetails": "Entry Details",
+  "entryAmount": "Amount",
+  "entryType": "Type",
+  "entryTypeCreditGiven": "Credit (Given)",
+  "entryTypePaymentReceived": "Payment (Received)",
+  "entryDate": "Date",
+  "entryDescription": "Description",
+  "entryQuantity": "Quantity",
+  "entryConfirmedAt": "Confirmed At",
+  "entryDisputeReason": "Dispute Reason",
+  "entryFor": "for {name}",
+  "@entryFor": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "descriptionOptional": "Description (optional)",
+  "quantityOptional": "Quantity (optional)",
+  "descriptionHint": "e.g. 2L Milk, Monthly groceries",
+  "quantityHint": "e.g. 2",
+  "addCreditEntry": "ADD CREDIT ENTRY",
+  "noLedgerTransactions": "No transactions yet",
+  "noLedgerTransactionsSubtitle": "Add a credit or payment entry to get started.",
+  "confirmEntryTitle": "Confirm Entry",
+  "confirmEntryMessage": "Are you sure you want to confirm ₹{amount} entry? This action cannot be undone.",
+  "@confirmEntryMessage": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "dispute": "Dispute",
+  "raiseDisputeTitle": "Raise a Dispute",
+  "raiseDisputeSubtitle": "Describe what is incorrect about this entry.",
+  "raiseDisputeHint": "e.g. Amount should be ₹50, not ₹60",
+  "submitDispute": "Submit Dispute",
 
   "staffAndLabour": "Staff & Labour",
   "addStaff": "Add Staff",
   "presentToday": "Present Today",
   "unpaidSalary": "Unpaid Salary",
   "paySalary": "Pay Salary",
+  "noStaffAdded": "No staff added yet",
+  "noStaffAddedSubtitle": "Tap the button below to add your first staff member.",
+  "present": "Present",
+  "absent": "Absent",
+  "halfDay": "Half Day",
+  "paySalaryTitle": "Pay Salary",
+  "unpaidLabel": "Unpaid: ₹{amount}",
+  "@unpaidLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "upiTransactionIdOptional": "UPI Transaction ID (optional)",
+  "noDues": "No Dues",
+  "staffPayAmount": "Pay ₹{amount}",
+  "@staffPayAmount": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "staffJoined": "Joined {date}",
+  "@staffJoined": {
+    "placeholders": { "date": { "type": "String" } }
+  },
+  "staffSalaryPerDay": "₹{amount}/day",
+  "@staffSalaryPerDay": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "staffSalaryPerMonth": "₹{amount}/month",
+  "@staffSalaryPerMonth": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "staffPayButton": "Pay",
 
   "businessReports": "Business Reports",
   "revenueTrend": "Revenue Trend",
@@ -87,6 +175,15 @@
 
   "settings": "Settings",
   "appLanguage": "App Language",
+  "selectLanguage": "Select Language",
+  "settingsManagePayments": "Manage payment accounts",
+  "settingsManageAlerts": "Manage alerts and reminders",
+  "settingsAppPinFingerprint": "App PIN and Fingerprint",
+  "settingsFaqsContact": "FAQs and Contact Us",
+  "settingsVersion": "Version {version}",
+  "@settingsVersion": {
+    "placeholders": { "version": { "type": "String" } }
+  },
   "myUpiIds": "My UPI IDs",
   "notifications": "Notifications",
   "security": "Security",
@@ -96,6 +193,16 @@
   "markAllRead": "Mark all read",
   "noNotificationsTitle": "No notifications yet",
   "noNotificationsSubtitle": "You will see ledger updates, payment alerts and reminders here.",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "minutesAgo": "{count}m ago",
+  "@minutesAgo": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "hoursAgo": "{count}h ago",
+  "@hoursAgo": {
+    "placeholders": { "count": { "type": "int" } }
+  },
 
   "payments": "Payments",
   "transactionHistory": "Transaction History",
@@ -103,8 +210,12 @@
   "pending": "Pending",
   "quickPay": "Quick Pay",
   "scanAndPay": "SCAN & PAY",
+  "scanUpiDesc": "Scan any UPI QR to pay your vendor",
   "noTransactionsTitle": "No transactions yet",
   "noTransactionsSubtitle": "Your payment history will appear here.",
+  "paymentStatusPaid": "Paid",
+  "paymentStatusFailed": "Failed",
+  "paymentStatusRefunded": "Refunded",
 
   "appointments": "Appointments",
   "myAppointments": "My Appointments",
@@ -116,6 +227,19 @@
   "noBookingsTodaySubtitle": "Customers can book appointments through the app.",
   "noAppointmentsTitle": "No appointments yet",
   "noAppointmentsSubtitle": "Book an appointment with your vendor to get started.",
+  "cancelAppointmentTitle": "Cancel Appointment?",
+  "cancelAppointmentMessage": "Cancel your appointment on {date} at {time}?",
+  "@cancelAppointmentMessage": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "bookingStatusConfirmed": "Confirmed",
+  "bookingStatusPending": "Pending",
+  "bookingStatusCancelled": "Cancelled",
+  "bookingStatusCompleted": "Completed",
+  "bookingStatusDone": "Done",
 
   "upiPayment": "UPI Payment",
   "amountToPay": "Amount to pay",
@@ -124,6 +248,26 @@
   "paymentFailed": "Payment Failed",
   "retryPayment": "Retry",
   "enterUpiId": "Enter UPI ID",
+  "addNoteOptional": "Add a note (optional)",
+  "payAmountButton": "PAY ₹{amount}",
+  "@payAmountButton": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "done": "DONE",
+  "paymentSomethingWentWrong": "Something went wrong. Please try again.",
+  "upiAppComingSoon": "{app} integration coming soon",
+  "@upiAppComingSoon": {
+    "placeholders": { "app": { "type": "String" } }
+  },
+  "pleaseEnterUpiId": "Please enter a UPI ID",
+  "paidToRecipient": "₹{amount} paid to {name}",
+  "@paidToRecipient": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "name": { "type": "String" }
+    }
+  },
+  "orDivider": "OR",
 
   "addNewCustomer": "Add New Customer",
   "customerName": "Customer Name",
@@ -153,5 +297,71 @@
   "monthlySalary": "Monthly Salary",
   "dailyWageAmount": "Daily Wage (₹)",
   "monthlySalaryAmount": "Monthly Salary (₹)",
-  "addStaffButton": "ADD STAFF"
+  "addStaffButton": "ADD STAFF",
+  "noteOptional": "Note (optional)",
+  "amountRupees": "Amount (₹)",
+
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "tryAgain": "Try Again",
+  "alignBillInFrame": "Align bill within the frame",
+
+  "verifyAndLogin": "Verify & Login",
+
+  "voiceListening": "Listening...",
+  "voiceThinking": "Thinking...",
+  "voiceDetectedEntry": "Detected Entry",
+  "voiceConfirmEntry": "CONFIRM ENTRY",
+  "item": "Item",
+
+  "totalOutstandingBalance": "Total Outstanding Balance",
+  "payAllDues": "PAY ALL DUES",
+
+  "myKhatas": "My Khatas",
+  "noVendorsFound": "No vendors found",
+
+  "verifyBillDetails": "Verify Bill Details",
+  "scannedBillPreview": "Scanned Bill Preview",
+  "descriptionItemDetails": "Description / Item Details",
+  "selectCustomer": "Select Customer",
+  "searchCustomerHint": "Search or select customer",
+  "saveToKhata": "SAVE TO KHATA",
+
+  "allCustomersReport": "All Customers Report",
+  "collectedInMonth": "Collected in {month}",
+  "@collectedInMonth": {
+    "placeholders": {
+      "month": { "type": "String" }
+    }
+  },
+
+  "notificationSettings": "Notification Settings",
+  "securityPin": "Security & PIN",
+
+  "bookingActions": "Booking Actions",
+  "confirmBooking": "Confirm Booking",
+  "markComplete": "Mark as Complete",
+  "confirmBookingMessage": "Confirm the appointment on {date} at {time} for {customer}?",
+  "@confirmBookingMessage": {
+    "placeholders": {
+      "date": { "type": "String" },
+      "time": { "type": "String" },
+      "customer": { "type": "String" }
+    }
+  },
+  "bookingUpdated": "Booking updated successfully",
+  "bookingUpdateFailed": "Failed to update booking",
+
+  "markAttendanceFor": "Mark Attendance — {date}",
+  "@markAttendanceFor": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "allCustomers": "All Customers",
+  "@allCustomers": {},
+  "noCustomersYet": "No customers yet",
+  "@noCustomersYet": {},
+  "noCustomersYetSubtitle": "Add your first customer to get started",
+  "@noCustomersYetSubtitle": {}
 }

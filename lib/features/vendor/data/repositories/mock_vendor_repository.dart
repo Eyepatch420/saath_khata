@@ -1,5 +1,6 @@
 import '../../domain/repositories/vendor_repository.dart';
 import '../../../../shared/models/link_model.dart';
+import '../../../../shared/models/report_models.dart';
 
 class MockVendorRepository implements VendorRepository {
   final List<CustomerLinkItem> _links = [
@@ -62,5 +63,18 @@ class MockVendorRepository implements VendorRepository {
   Future<void> deactivateLink(String linkId) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _links.removeWhere((l) => l.linkId == linkId);
+  }
+
+  @override
+  Future<VendorSummaryReport> getVendorSummary() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final total = _links.fold(0.0, (sum, l) => sum + l.balance);
+    return VendorSummaryReport(
+      totalOutstanding: total,
+      totalCollectedThisMonth: 0,
+      totalCreditThisMonth: 0,
+      activeCustomerCount: _links.length,
+      topCustomers: [],
+    );
   }
 }

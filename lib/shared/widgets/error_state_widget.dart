@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 
 class ErrorStateWidget extends StatelessWidget {
   final String message;
@@ -28,7 +29,7 @@ class ErrorStateWidget extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onRetry,
                 icon: const Icon(Icons.refresh_rounded),
-                label: const Text('Try Again'),
+                label: Text(AppLocalizations.of(context)!.tryAgain),
               ),
             ],
           ],
