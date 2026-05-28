@@ -128,7 +128,7 @@ class _BookingsList extends StatelessWidget {
       ..sort((a, b) => b.date.compareTo(a.date));
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
       children: [
         if (upcoming.isNotEmpty) ...[
           Text(AppLocalizations.of(context)!.upcoming,

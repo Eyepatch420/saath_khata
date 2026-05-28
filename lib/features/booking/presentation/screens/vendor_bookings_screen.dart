@@ -90,7 +90,7 @@ class _BookingsContent extends StatelessWidget {
                   subtitle: l10n.noBookingsTodaySubtitle,
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
                   itemCount: state.bookings.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) =>
@@ -246,6 +246,7 @@ class _BookingCard extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),

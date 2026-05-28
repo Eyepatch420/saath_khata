@@ -5,7 +5,8 @@ import '../../../../l10n/app_localizations.dart';
 
 class TotalDueCard extends StatelessWidget {
   final double amount;
-  const TotalDueCard({super.key, required this.amount});
+  final VoidCallback? onPayAllDues;
+  const TotalDueCard({super.key, required this.amount, this.onPayAllDues});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class TotalDueCard extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: onPayAllDues,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: Colors.white,

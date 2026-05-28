@@ -10,6 +10,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
 import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
 import '../bloc/ledger_state.dart';
@@ -17,11 +19,13 @@ import '../bloc/ledger_state.dart';
 class SharedLedgerScreen extends StatefulWidget {
   final String linkId;
   final String customerName;
+  final bool isVendorView;
 
   const SharedLedgerScreen({
     super.key,
     required this.linkId,
     required this.customerName,
+    this.isVendorView = true,
   });
 
   @override
@@ -74,7 +78,7 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _bloc,
-      child: SharedLedgerView(customerName: widget.customerName, linkId: widget.linkId),
+      child: SharedLedgerView(customerName: widget.customerName, linkId: widget.linkId, isVendorView: widget.isVendorView),
     );
   }
 }
@@ -82,13 +86,16 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
 class SharedLedgerView extends StatelessWidget {
   final String customerName;
   final String linkId;
+  final bool isVendorView;
 
   const SharedLedgerView(
-      {super.key, required this.customerName, required this.linkId});
+      {super.key, required this.customerName, required this.linkId, this.isVendorView = true});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authState = context.read<AuthBloc>().state;
+    final currentUserId = authState is AuthAuthenticated ? authState.user.id : '';
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -114,12 +121,13 @@ class SharedLedgerView extends StatelessWidget {
           _BalanceHeader(linkId: linkId),
           _FilterBar(),
           Expanded(
-              child: _LedgerList(linkId: linkId, customerName: customerName)),
+              child: _LedgerList(linkId: linkId, customerName: customerName, currentUserId: currentUserId)),
         ],
       ),
       bottomNavigationBar: _LedgerActions(
         linkId: linkId,
         customerName: customerName,
+        isVendorView: isVendorView,
       ),
     );
   }
@@ -372,9 +380,10 @@ class _FilterChip extends StatelessWidget {
 class _LedgerList extends StatelessWidget {
   final String linkId;
   final String customerName;
+  final String currentUserId;
 
   const _LedgerList(
-      {required this.linkId, required this.customerName});
+      {required this.linkId, required this.customerName, required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
@@ -435,6 +444,7 @@ class _LedgerList extends StatelessWidget {
         return _EntryCard(
           entry: entries[index],
           customerName: customerName,
+          currentUserId: currentUserId,
         );
       },
     );
@@ -444,9 +454,10 @@ class _LedgerList extends StatelessWidget {
 class _EntryCard extends StatelessWidget {
   final LedgerEntry entry;
   final String customerName;
+  final String currentUserId;
 
   const _EntryCard(
-      {required this.entry, required this.customerName});
+      {required this.entry, required this.customerName, required this.currentUserId});
 
   @override
   Widget build(BuildContext context) {
@@ -527,7 +538,8 @@ class _EntryCard extends StatelessWidget {
               ],
             ),
             if (entry.status == EntryStatus.pending &&
-                !entry.isLocked) ...[
+                !entry.isLocked &&
+                entry.createdBy != currentUserId) ...[
               const Divider(height: 20),
               Row(
                 children: [
@@ -816,9 +828,10 @@ class _StatusChip extends StatelessWidget {
 class _LedgerActions extends StatelessWidget {
   final String linkId;
   final String customerName;
+  final bool isVendorView;
 
   const _LedgerActions(
-      {required this.linkId, required this.customerName});
+      {required this.linkId, required this.customerName, this.isVendorView = true});
 
   @override
   Widget build(BuildContext context) {
@@ -850,21 +863,23 @@ class _LedgerActions extends StatelessWidget {
               label: Text(l10n.recordPayment),
             ),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () =>
-                  _showAddEntrySheet(context, l10n, EntryType.credit),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+          if (isVendorView) ...[
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: () =>
+                    _showAddEntrySheet(context, l10n, EntryType.credit),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                icon: const Icon(Icons.arrow_upward_rounded,
+                    size: 18, color: Colors.white),
+                label: Text(l10n.giveCredit,
+                    style: const TextStyle(color: Colors.white)),
               ),
-              icon: const Icon(Icons.arrow_upward_rounded,
-                  size: 18, color: Colors.white),
-              label: Text(l10n.giveCredit,
-                  style: const TextStyle(color: Colors.white)),
             ),
-          ),
+          ],
         ],
       ),
     );

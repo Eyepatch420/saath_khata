@@ -50,11 +50,14 @@ class _StaffView extends StatelessWidget {
           return const SizedBox();
         },
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddStaffSheet(context),
-        label: Text(l10n.addStaff),
-        icon: const Icon(Icons.person_add_rounded),
-        backgroundColor: AppColors.primary,
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 88),
+        child: FloatingActionButton.extended(
+          onPressed: () => _showAddStaffSheet(context),
+          label: Text(l10n.addStaff),
+          icon: const Icon(Icons.person_add_rounded),
+          backgroundColor: AppColors.primary,
+        ),
       ),
     );
   }
@@ -70,6 +73,7 @@ class _StaffView extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -194,7 +198,7 @@ class _StaffContent extends StatelessWidget {
         _StaffSummaryBar(state: state),
         Expanded(
           child: ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
             itemCount: state.staffList.length,
             separatorBuilder: (context, index) => const SizedBox(height: 12),
             itemBuilder: (context, index) {

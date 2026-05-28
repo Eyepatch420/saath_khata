@@ -16,7 +16,7 @@ class VendorTile extends StatelessWidget {
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
-        extra: {'linkId': vendor.linkId, 'name': info.name},
+        extra: {'linkId': vendor.linkId, 'name': info.name, 'isVendorView': false},
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(
@@ -51,6 +51,40 @@ class VendorTile extends StatelessWidget {
                     style: AppTypography.labelLarge.copyWith(color: AppColors.error)),
                 Text(AppLocalizations.of(context)!.outstanding,
                     style: const TextStyle(fontSize: 10, color: AppColors.textHint)),
+                const SizedBox(height: 6),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => context.push(
+                    AppRouter.bookAppointment,
+                    extra: {'vendorId': info.id, 'vendorName': info.name},
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.calendar_today_rounded,
+                            size: 11, color: AppColors.primary),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Book',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(width: 8),

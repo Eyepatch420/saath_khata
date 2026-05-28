@@ -15,7 +15,7 @@ class ReportsScreen extends StatelessWidget {
 
       appBar: AppBar(title: Text(l10n.businessReports)),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

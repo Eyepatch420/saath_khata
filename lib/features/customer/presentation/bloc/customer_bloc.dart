@@ -16,7 +16,8 @@ class CustomerBloc extends Bloc<CustomerEvent, CustomerState> {
       try {
         final vendors = await _repository.getLinkedVendors();
         AppLogger.i(_m, 'Dashboard loaded — ${vendors.length} linked vendors');
-        emit(CustomerLoaded(vendors: vendors, totalDue: 2450.0));
+        final totalDue = vendors.fold(0.0, (sum, v) => sum + v.balance);
+        emit(CustomerLoaded(vendors: vendors, totalDue: totalDue));
       } catch (e) {
         AppLogger.e(_m, 'Dashboard load failed', e);
         emit(const CustomerError('Failed to load dashboard'));

@@ -63,7 +63,7 @@ class _PaymentsContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

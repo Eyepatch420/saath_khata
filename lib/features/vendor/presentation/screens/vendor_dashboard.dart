@@ -16,12 +16,7 @@ class VendorDashboard extends StatelessWidget {
   const VendorDashboard({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => VendorBloc(getIt())..add(LoadVendorDashboard()),
-      child: const VendorDashboardView(),
-    );
-  }
+  Widget build(BuildContext context) => const VendorDashboardView();
 }
 
 class VendorDashboardView extends StatelessWidget {
@@ -59,7 +54,7 @@ class VendorDashboardView extends StatelessWidget {
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(20),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -105,7 +100,7 @@ class VendorDashboardView extends StatelessWidget {
                         _QuickAction(
                           icon: Icons.person_add_rounded,
                           label: l10n.addNew,
-                          onTap: () => _showAddCustomerSheet(context),
+                          onTap: () => showVendorAddCustomerSheet(context),
                         ),
                       ],
                     ),
@@ -142,98 +137,93 @@ class VendorDashboardView extends StatelessWidget {
         },
       ),
       bottomNavigationBar: null,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddCustomerSheet(context),
-        backgroundColor: AppColors.primary,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: Text(l10n.addNew.toUpperCase(), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-      ),
     );
   }
+}
 
-  void _showAddCustomerSheet(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final emailCtrl = TextEditingController();
-    final bloc = context.read<VendorBloc>();
-    bool isLoading = false;
+void showVendorAddCustomerSheet(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+  final emailCtrl = TextEditingController();
+  final bloc = context.read<VendorBloc>();
+  bool isLoading = false;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.addNewCustomer, style: AppTypography.h3),
-              const SizedBox(height: 20),
-              TextField(
-                controller: emailCtrl,
-                keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Customer Email',
-                  prefixIcon: Icon(Icons.email_outlined),
-                ),
+  showModalBottomSheet(
+    context: context,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setSheetState) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.addNewCustomer, style: AppTypography.h3),
+            const SizedBox(height: 20),
+            TextField(
+              controller: emailCtrl,
+              keyboardType: TextInputType.emailAddress,
+              decoration: const InputDecoration(
+                labelText: 'Customer Email',
+                prefixIcon: Icon(Icons.email_outlined),
               ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          final email = emailCtrl.text.trim();
-                          if (email.isEmpty) return;
-                          setSheetState(() => isLoading = true);
-                          try {
-                            await getIt<VendorRepository>().linkCustomer(email);
-                            if (context.mounted) {
-                              Navigator.pop(ctx);
-                              bloc.add(LoadVendorDashboard());
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Customer added successfully')),
-                              );
-                            }
-                          } catch (e) {
-                            setSheetState(() => isLoading = false);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(e.toString().replaceFirst('Exception: ', '')),
-                                ),
-                              );
-                            }
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        final email = emailCtrl.text.trim();
+                        if (email.isEmpty) return;
+                        setSheetState(() => isLoading = true);
+                        try {
+                          await getIt<VendorRepository>().linkCustomer(email);
+                          if (context.mounted) {
+                            Navigator.pop(ctx);
+                            bloc.add(LoadVendorDashboard());
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Customer added successfully')),
+                            );
                           }
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: isLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                        )
-                      : Text(l10n.addCustomer, style: const TextStyle(color: Colors.white)),
+                        } catch (e) {
+                          setSheetState(() => isLoading = false);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(e.toString().replaceFirst('Exception: ', '')),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
+                child: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                      )
+                    : Text(l10n.addCustomer, style: const TextStyle(color: Colors.white)),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
 }
 
 
@@ -285,7 +275,7 @@ class _CustomerTile extends StatelessWidget {
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
-        extra: {'linkId': customer.linkId, 'name': info.name},
+        extra: {'linkId': customer.linkId, 'name': info.name, 'isVendorView': true},
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(

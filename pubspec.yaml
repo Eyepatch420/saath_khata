@@ -41,6 +41,7 @@ dependencies:
   
   # Icons & Extra UI
   font_awesome_flutter: ^10.7.0
+  rive: ^0.13.0
 
   # Networking
   dio: ^5.8.0+1
@@ -51,6 +52,15 @@ dependencies:
 
   # Image picking (profile photo)
   image_picker: ^1.1.2
+
+  # Map & Location
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+  geolocator: ^13.0.1
+  http: ^1.2.2
+
+  # Environment variables
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +73,7 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
+    - .env
     - assets/images/
     - assets/icons/
     - assets/animations/

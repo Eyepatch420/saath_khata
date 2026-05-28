@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/models/booking_model.dart';
+import '../../../../shared/models/link_model.dart';
+import '../../../booking/presentation/bloc/booking_bloc.dart';
+import '../../../booking/presentation/bloc/booking_event.dart';
+import '../../../booking/presentation/bloc/booking_state.dart';
+import '../../../payments/presentation/screens/upi_payment_screen.dart';
 import '../bloc/customer_bloc.dart';
 import '../bloc/customer_event.dart';
 import '../bloc/customer_state.dart';
@@ -53,11 +61,18 @@ class CustomerDashboardView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is CustomerLoaded) {
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  TotalDueCard(amount: state.totalDue),
+                  TotalDueCard(
+                    amount: state.totalDue,
+                    onPayAllDues: state.totalDue > 0
+                        ? () => _showPayAllDuesSheet(context, state.vendors)
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                  const _UpcomingAppointmentsCard(),
                   const SizedBox(height: 24),
                   Text(l10n.myVendors, style: AppTypography.h3),
                   const SizedBox(height: 12),
@@ -81,4 +96,324 @@ class CustomerDashboardView extends StatelessWidget {
       ),
     );
   }
+
+  void _showPayAllDuesSheet(BuildContext context, List<VendorLinkItem> vendors) {
+    final pending = vendors.where((v) => v.balance > 0).toList();
+    if (pending.isEmpty) return;
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _PayAllDuesSheet(vendors: pending),
+    );
+  }
+}
+
+class _UpcomingAppointmentsCard extends StatelessWidget {
+  const _UpcomingAppointmentsCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => BookingBloc(getIt())..add(LoadCustomerBookings()),
+      child: BlocBuilder<BookingBloc, BookingState>(
+        builder: (context, state) {
+          final int upcoming;
+          final BookingModel? next;
+
+          if (state is BookingLoaded) {
+            final active = state.bookings
+                .where((b) =>
+                    b.status == BookingStatus.pending ||
+                    b.status == BookingStatus.confirmed)
+                .toList()
+              ..sort((a, b) => a.date.compareTo(b.date));
+            upcoming = active.length;
+            next = active.isNotEmpty ? active.first : null;
+          } else {
+            upcoming = 0;
+            next = null;
+          }
+
+          final surface = Theme.of(context).colorScheme.surface;
+
+          return InkWell(
+            onTap: () => context.go(AppRouter.customerBookings),
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+              decoration: BoxDecoration(
+                color: surface,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Icon(Icons.calendar_month_rounded,
+                        color: AppColors.primary, size: 22),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('My Appointments', style: AppTypography.labelLarge),
+                        const SizedBox(height: 2),
+                        if (state is BookingLoading)
+                          Text('Loading...', style: AppTypography.bodySmall.copyWith(color: AppColors.textHint))
+                        else if (next != null)
+                          Text(
+                            'Next: ${next.vendorName} · ${_fmtDate(next.date)} at ${next.startTime}',
+                            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        else
+                          Text('No upcoming appointments',
+                              style: AppTypography.bodySmall.copyWith(color: AppColors.textHint)),
+                      ],
+                    ),
+                  ),
+                  if (upcoming > 0)
+                    Container(
+                      margin: const EdgeInsets.only(right: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '$upcoming',
+                        style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  String _fmtDate(String dateStr) {
+    final dt = DateTime.parse(dateStr);
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return '${dt.day} ${months[dt.month - 1]}';
+  }
+}
+
+class _PayAllDuesSheet extends StatefulWidget {
+  final List<VendorLinkItem> vendors;
+  const _PayAllDuesSheet({required this.vendors});
+
+  @override
+  State<_PayAllDuesSheet> createState() => _PayAllDuesSheetState();
+}
+
+class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
+  int _currentIndex = 0;
+  int _paidCount = 0;
+
+  bool get _isDone => _currentIndex >= widget.vendors.length;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_isDone) return _buildDoneView(context);
+
+    final vendor = widget.vendors[_currentIndex];
+    final info = vendor.vendor;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Pay Dues', style: AppTypography.h3),
+              Text(
+                '${_currentIndex + 1} of ${widget.vendors.length}',
+                style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(4),
+            child: LinearProgressIndicator(
+              value: _currentIndex / widget.vendors.length,
+              minHeight: 6,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+              valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+                  child: Text(
+                    info.name[0],
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(info.name, style: AppTypography.labelLarge),
+                      if (info.businessName != null)
+                        Text(
+                          info.businessName!,
+                          style: AppTypography.bodySmall
+                              .copyWith(color: AppColors.textHint),
+                        ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      '₹${vendor.balance.toStringAsFixed(0)}',
+                      style: AppTypography.h3.copyWith(color: AppColors.error),
+                    ),
+                    Text(
+                      'outstanding',
+                      style: AppTypography.bodySmall
+                          .copyWith(color: AppColors.textHint, fontSize: 10),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: () => _payViaUpi(context, vendor),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              icon: const Icon(Icons.payment_rounded, color: Colors.white, size: 20),
+              label: Text(
+                'Pay ₹${vendor.balance.toStringAsFixed(0)} via UPI',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: _skip,
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.textHint,
+                side: BorderSide(color: AppColors.textHint.withValues(alpha: 0.4)),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: const Text('Skip for now'),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDoneView(BuildContext context) {
+    final skipped = widget.vendors.length - _paidCount;
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 72,
+            height: 72,
+            decoration: const BoxDecoration(
+              color: AppColors.success,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check_rounded, color: Colors.white, size: 40),
+          ),
+          const SizedBox(height: 16),
+          Text('All Done!', style: AppTypography.h3),
+          const SizedBox(height: 8),
+          Text(
+            skipped > 0
+                ? 'Paid $_paidCount vendor${_paidCount != 1 ? 's' : ''}, skipped $skipped.'
+                : 'Paid all $_paidCount vendor${_paidCount != 1 ? 's' : ''}.',
+            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 24),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+              ),
+              child: const Text('Done', style: TextStyle(color: Colors.white)),
+            ),
+          ),
+          const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _payViaUpi(BuildContext context, VendorLinkItem vendor) async {
+    final result = await Navigator.of(context, rootNavigator: true).push<bool>(
+      MaterialPageRoute(
+        builder: (_) => UpiPaymentScreen(
+          amount: vendor.balance,
+          recipientName: vendor.vendor.name,
+          upiId: vendor.vendor.upiId,
+        ),
+      ),
+    );
+    if (!mounted) return;
+    if (result == true) _paidCount++;
+    setState(() => _currentIndex++);
+  }
+
+  void _skip() => setState(() => _currentIndex++);
 }

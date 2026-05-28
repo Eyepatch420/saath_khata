@@ -110,7 +110,9 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
     try {
       await _repository.paySalary(event.staffId, event.amount, event.upiTransactionId);
       AppLogger.i(_m, 'Salary paid — staffId:${event.staffId}');
-      if (current is StaffLoaded) {
+      if (current is StaffDetailLoaded) {
+        add(LoadAttendance(staffId: event.staffId, year: current.year, month: current.month));
+      } else if (current is StaffLoaded) {
         final updated = current.staffList.map((s) {
           return s.id == event.staffId ? s.copyWith(unpaidSalary: 0) : s;
         }).toList();
@@ -130,10 +132,15 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
 
   Future<void> _onAddAdvance(AddAdvance event, Emitter<StaffState> emit) async {
     AppLogger.i(_m, 'Adding advance — staffId:${event.staffId} amount:${event.amount}');
+    final current = state;
     try {
       await _repository.addAdvance(event.staffId, event.amount, event.note);
       AppLogger.i(_m, 'Advance recorded');
-      add(LoadStaff());
+      if (current is StaffDetailLoaded) {
+        add(LoadAttendance(staffId: event.staffId, year: current.year, month: current.month));
+      } else {
+        add(LoadStaff());
+      }
     } catch (e) {
       AppLogger.e(_m, 'Add advance failed', e);
     }

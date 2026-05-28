@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -12,10 +13,12 @@ import 'core/services/storage_service.dart';
 import 'core/utils/app_logger.dart';
 import 'core/utils/bloc_observer.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/bloc/auth_event.dart';
 import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
 
   AppLogger.i('App', '═══════════════════════════════════════');
   AppLogger.i('App', '  SaathKhata starting up');
@@ -34,6 +37,9 @@ void main() async {
   final authNotifier = getIt<AuthStateNotifier>();
   authBloc.stream.listen(authNotifier.onAuthStateChanged);
   AppLogger.i('App', 'Auth→Router bridge connected');
+
+  // Populate the bloc from stored session on every cold start
+  authBloc.add(const AuthCheckStatusRequested());
 
   AppLogger.i('App', 'Launching UI');
 

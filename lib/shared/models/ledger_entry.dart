@@ -37,6 +37,7 @@ class LedgerEntry extends Equatable {
   final bool isLocked;
   final String? disputeReason;
   final String? attachmentUrl;
+  final String createdBy;
 
   const LedgerEntry({
     required this.id,
@@ -54,6 +55,7 @@ class LedgerEntry extends Equatable {
     this.isLocked = false,
     this.disputeReason,
     this.attachmentUrl,
+    required this.createdBy,
   });
 
   factory LedgerEntry.fromJson(Map<String, dynamic> json) => LedgerEntry(
@@ -76,6 +78,7 @@ class LedgerEntry extends Equatable {
         isLocked: json['isLocked'] as bool? ?? false,
         disputeReason: json['disputeReason'] as String?,
         attachmentUrl: json['attachmentUrl'] as String?,
+        createdBy: json['createdBy'] as String? ?? '',
       );
 
   LedgerEntry copyWith({
@@ -100,6 +103,7 @@ class LedgerEntry extends Equatable {
       isLocked: isLocked ?? this.isLocked,
       disputeReason: disputeReason ?? this.disputeReason,
       attachmentUrl: attachmentUrl,
+      createdBy: createdBy,
     );
   }
 
@@ -120,5 +124,6 @@ class LedgerEntry extends Equatable {
         isLocked,
         disputeReason,
         attachmentUrl,
+        createdBy,
       ];
 }

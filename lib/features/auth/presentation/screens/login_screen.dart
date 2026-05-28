@@ -59,8 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
             elevation: 0,
             backgroundColor: Colors.transparent,
           ),
-          body: Padding(
+          body: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -122,7 +123,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
                 ),
-                const Spacer(),
+                const SizedBox(height: 32),
                 PrimaryButton(
                   label: l10n.loginButton,
                   isLoading: isLoading,

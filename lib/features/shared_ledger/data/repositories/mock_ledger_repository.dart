@@ -18,6 +18,7 @@ class MockLedgerRepository implements LedgerRepository {
       status: EntryStatus.confirmed,
       isLocked: true,
       confirmedAt: DateTime.now().subtract(const Duration(days: 1)),
+      createdBy: 'v1',
     ),
     LedgerEntry(
       id: 'e2',
@@ -32,6 +33,7 @@ class MockLedgerRepository implements LedgerRepository {
       unit: 'litre',
       status: EntryStatus.pending,
       isLocked: false,
+      createdBy: 'v1',
     ),
     LedgerEntry(
       id: 'e3',
@@ -45,6 +47,7 @@ class MockLedgerRepository implements LedgerRepository {
       status: EntryStatus.confirmed,
       isLocked: true,
       confirmedAt: DateTime.now().subtract(const Duration(days: 2)),
+      createdBy: 'c1',
     ),
     LedgerEntry(
       id: 'e4',
@@ -57,6 +60,7 @@ class MockLedgerRepository implements LedgerRepository {
       description: '2L Milk + Paneer 100g',
       status: EntryStatus.pending,
       isLocked: false,
+      createdBy: 'v1',
     ),
     LedgerEntry(
       id: 'e5',
@@ -70,6 +74,7 @@ class MockLedgerRepository implements LedgerRepository {
       status: EntryStatus.disputed,
       isLocked: false,
       disputeReason: 'Amount should be ₹40, not ₹45',
+      createdBy: 'v1',
     ),
   ];
 
@@ -96,6 +101,7 @@ class MockLedgerRepository implements LedgerRepository {
       unit: entry.unit,
       status: EntryStatus.pending,
       isLocked: false,
+      createdBy: entry.createdBy,
     );
     _entries.add(newEntry);
     return newEntry;
@@ -120,6 +126,7 @@ class MockLedgerRepository implements LedgerRepository {
       status: EntryStatus.confirmed,
       isLocked: true,
       confirmedAt: DateTime.now(),
+      createdBy: _entries[index].createdBy,
     );
     _entries[index] = confirmed;
     return confirmed;
@@ -165,6 +172,7 @@ class MockLedgerRepository implements LedgerRepository {
       status: EntryStatus.disputed,
       isLocked: false,
       disputeReason: reason,
+      createdBy: _entries[index].createdBy,
     );
     _entries[index] = disputed;
     return disputed;

@@ -14,6 +14,35 @@ class StaffRepositoryImpl implements StaffRepository {
   String _fmtDate(DateTime d) =>
       '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
+  /// Normalises a date key from the backend to "YYYY-MM-DD".
+  /// The backend may return an ISO string ("2026-05-01T00:00:00.000Z"),
+  /// a plain date string ("2026-05-01"), or a JS Date toString like
+  /// "Fri May 01 2026 00:00:00 GMT+0000" where split('T') breaks at 'GMT'.
+  String _normalizeDateKey(String key) {
+    // Already in YYYY-MM-DD
+    if (RegExp(r'^\d{4}-\d{2}-\d{2}$').hasMatch(key)) return key;
+    // ISO datetime: "2026-05-01T..."
+    if (key.length >= 10 && key[4] == '-' && key[7] == '-') return key.substring(0, 10);
+    // JS Date.toString(): "Fri May 01 2026 00:00:00 GMT..."
+    try {
+      final parts = key.split(' ');
+      // parts: ["Fri", "May", "01", "2026", ...]
+      if (parts.length >= 4) {
+        const months = {
+          'Jan': '01', 'Feb': '02', 'Mar': '03', 'Apr': '04',
+          'May': '05', 'Jun': '06', 'Jul': '07', 'Aug': '08',
+          'Sep': '09', 'Oct': '10', 'Nov': '11', 'Dec': '12',
+        };
+        final month = months[parts[1]];
+        final day = parts[2].padLeft(2, '0');
+        final year = parts[3];
+        if (month != null) return '$year-$month-$day';
+      }
+    } catch (_) {}
+    // Last resort: take first 10 chars
+    return key.substring(0, 10);
+  }
+
   // ─── Interface ─────────────────────────────────────────────────────────────
 
   @override
@@ -101,7 +130,7 @@ class StaffRepositoryImpl implements StaffRepository {
       return raw.map(
         // Normalize keys: strip any accidental time component from DATE strings
         (key, value) => MapEntry(
-          key.contains('T') ? key.split('T')[0] : key,
+          _normalizeDateKey(key),
           AttendanceStatusX.fromString(value as String),
         ),
       );

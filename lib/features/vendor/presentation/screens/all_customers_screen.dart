@@ -66,7 +66,7 @@ class _AllCustomersView extends StatelessWidget {
               onRefresh: () async =>
                   context.read<VendorBloc>().add(LoadVendorDashboard()),
               child: ListView.separated(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
                 itemCount: state.customers.length,
                 separatorBuilder: (_, i) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
@@ -93,7 +93,7 @@ class _CustomerTile extends StatelessWidget {
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
-        extra: {'linkId': customer.linkId, 'name': info.name},
+        extra: {'linkId': customer.linkId, 'name': info.name, 'isVendorView': true},
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(

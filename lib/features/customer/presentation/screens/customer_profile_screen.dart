@@ -35,7 +35,7 @@ class CustomerProfileScreen extends StatelessWidget {
             ],
           ),
           body: SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
             child: Column(
               children: [
                 _buildAvatar(user),

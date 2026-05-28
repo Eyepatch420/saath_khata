@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../shared/animations/rive/app_rive_icon.dart';
+import '../../shared/widgets/app_bottom_nav_bar.dart';
 import '../../features/onboarding/presentation/screens/splash_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../constants/app_colors.dart';
+import '../../features/vendor/presentation/bloc/vendor_bloc.dart';
+import '../../features/vendor/presentation/bloc/vendor_event.dart';
 import '../../features/vendor/presentation/screens/vendor_dashboard.dart';
 import '../../features/customer/presentation/screens/customer_dashboard.dart';
 
@@ -16,7 +22,6 @@ import '../../features/staff/presentation/screens/staff_management_screen.dart';
 import '../../features/reports/presentation/screens/reports_screen.dart';
 
 import '../../features/settings/presentation/screens/settings_screen.dart';
-import '../constants/app_colors.dart';
 
 import '../../features/customer/presentation/screens/my_khatas_screen.dart';
 import '../../features/customer/presentation/screens/payments_screen.dart';
@@ -36,6 +41,9 @@ import '../../features/auth/data/models/user_model.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/booking/presentation/screens/vendor_bookings_screen.dart';
 import '../../features/booking/presentation/screens/customer_bookings_screen.dart';
+import '../../features/booking/presentation/screens/book_appointment_screen.dart';
+import '../../features/location/presentation/screens/location_picker_screen.dart';
+import '../../shared/models/location_model.dart';
 import '../../features/payments/presentation/screens/upi_payment_screen.dart';
 import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../di/injection.dart';
@@ -68,6 +76,8 @@ class AppRouter {
   static const String customerDetailReport = '/reports/customer-detail';
   static const String settings = '/settings';
   static const String editProfile = '/edit-profile';
+  static const String bookAppointment = '/book-appointment';
+  static const String locationPicker = '/location-picker';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -208,6 +218,7 @@ class AppRouter {
           return SharedLedgerScreen(
             linkId: extras['linkId'] as String,
             customerName: extras['name'] as String,
+            isVendorView: extras['isVendorView'] as bool? ?? true,
           );
         },
       ),
@@ -245,6 +256,22 @@ class AppRouter {
           return EditProfileScreen(user: user);
         },
       ),
+      GoRoute(
+        path: bookAppointment,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, dynamic>;
+          return BookAppointmentScreen(
+            vendorId: extras['vendorId'] as String,
+            vendorName: extras['vendorName'] as String,
+          );
+        },
+      ),
+      GoRoute(
+        path: locationPicker,
+        builder: (context, state) => LocationPickerScreen(
+          initialLocation: state.extra as LocationData?,
+        ),
+      ),
     ],
   );
 }
@@ -255,22 +282,37 @@ class VendorMainWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textHint,
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (index) => _onTap(context, index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.people_rounded), label: 'Staff'),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: 'Booking'),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart_rounded), label: 'Reports'),
-          BottomNavigationBarItem(icon: Icon(Icons.settings_rounded), label: 'Settings'),
-        ],
-      ),
+    return BlocProvider(
+      create: (_) => VendorBloc(getIt())..add(LoadVendorDashboard()),
+      child: Builder(builder: (ctx) {
+        final location = GoRouterState.of(ctx).uri.path;
+        return Scaffold(
+          extendBody: true,
+          body: child,
+          bottomNavigationBar: AppBottomNavBar(
+            currentIndex: _calculateSelectedIndex(ctx),
+            onTap: (index) => _onTap(ctx, index),
+            items: const [
+              AppNavItem(riveIcon: AppRiveIcon.home,  label: 'Home'),
+              AppNavItem(riveIcon: AppRiveIcon.user,  label: 'Staff'),
+              AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Booking'),
+              AppNavItem(riveIcon: AppRiveIcon.stars, label: 'Reports'),
+              AppNavItem(riveIcon: AppRiveIcon.gear,  label: 'Settings'),
+            ],
+          ),
+          floatingActionButton: location == AppRouter.vendorHome
+              ? FloatingActionButton.extended(
+                  onPressed: () => showVendorAddCustomerSheet(ctx),
+                  backgroundColor: AppColors.primary,
+                  icon: const Icon(Icons.person_add_rounded, color: Colors.white),
+                  label: const Text(
+                    'ADD CUSTOMER',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                )
+              : null,
+        );
+      }),
     );
   }
 
@@ -312,18 +354,17 @@ class CustomerMainWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textHint,
+      bottomNavigationBar: AppBottomNavBar(
         currentIndex: _calculateSelectedIndex(context),
         onTap: (index) => _onTap(context, index),
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.menu_book_rounded), label: 'My Khatas'),
-          BottomNavigationBarItem(icon: Icon(Icons.payment_rounded), label: 'Payments'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_rounded), label: 'Profile'),
+          AppNavItem(riveIcon: AppRiveIcon.home,     label: 'Home'),
+          AppNavItem(riveIcon: AppRiveIcon.message,  label: 'My Khatas'),
+          AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Bookings'),
+          AppNavItem(riveIcon: AppRiveIcon.zap,      label: 'Payments'),
+          AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
         ],
       ),
     );
@@ -333,8 +374,9 @@ class CustomerMainWrapper extends StatelessWidget {
     final String location = GoRouterState.of(context).uri.path;
     if (location == AppRouter.customerHome) return 0;
     if (location == AppRouter.customerKhatas) return 1;
-    if (location == AppRouter.customerPayments) return 2;
-    if (location == AppRouter.customerProfile) return 3;
+    if (location == AppRouter.customerBookings) return 2;
+    if (location == AppRouter.customerPayments) return 3;
+    if (location == AppRouter.customerProfile) return 4;
     return 0;
   }
 
@@ -347,9 +389,12 @@ class CustomerMainWrapper extends StatelessWidget {
         context.go(AppRouter.customerKhatas);
         break;
       case 2:
-        context.go(AppRouter.customerPayments);
+        context.go(AppRouter.customerBookings);
         break;
       case 3:
+        context.go(AppRouter.customerPayments);
+        break;
+      case 4:
         context.go(AppRouter.customerProfile);
         break;
     }
