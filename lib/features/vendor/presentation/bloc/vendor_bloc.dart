@@ -10,27 +10,57 @@ class VendorBloc extends Bloc<VendorEvent, VendorState> {
   static const _m = 'Vendor';
 
   VendorBloc(this._repository) : super(VendorInitial()) {
-    on<LoadVendorDashboard>((event, emit) async {
-      AppLogger.i(_m, 'Loading vendor dashboard...');
-      emit(VendorLoading());
-      try {
-        final results = await Future.wait([
-          _repository.getLinkedCustomers(),
-          _repository.getVendorSummary(),
-        ]);
-        final customers = results[0] as List;
-        final summary = results[1] as dynamic;
-        AppLogger.i(_m, 'Dashboard loaded — ${customers.length} customers, '
-            'outstanding:${summary.totalOutstanding}, collected:${summary.totalCollectedThisMonth}');
-        emit(VendorLoaded(
-          customers: customers.cast(),
-          totalOutstanding: summary.totalOutstanding as double,
-          todayCollection: summary.totalCollectedThisMonth as double,
-        ));
-      } catch (e) {
-        AppLogger.e(_m, 'Dashboard load failed', e);
-        emit(const VendorError('Failed to load dashboard'));
-      }
-    });
+    on<LoadVendorDashboard>(_onLoadDashboard);
+    on<RemindAllRequested>(_onRemindAll);
+  }
+
+  Future<void> _onLoadDashboard(
+    LoadVendorDashboard event,
+    Emitter<VendorState> emit,
+  ) async {
+    AppLogger.i(_m, 'Loading vendor dashboard...');
+    emit(VendorLoading());
+    try {
+      final results = await Future.wait([
+        _repository.getLinkedCustomers(),
+        _repository.getVendorSummary(),
+      ]);
+      final customers = results[0] as List;
+      final summary = results[1] as dynamic;
+      AppLogger.i(_m, 'Dashboard loaded — ${customers.length} customers, '
+          'outstanding:${summary.totalOutstanding}, collected:${summary.totalCollectedThisMonth}');
+      emit(VendorLoaded(
+        customers: customers.cast(),
+        totalOutstanding: summary.totalOutstanding as double,
+        todayCollection: summary.totalCollectedThisMonth as double,
+      ));
+    } catch (e) {
+      AppLogger.e(_m, 'Dashboard load failed', e);
+      emit(const VendorError('Failed to load dashboard'));
+    }
+  }
+
+  Future<void> _onRemindAll(
+    RemindAllRequested event,
+    Emitter<VendorState> emit,
+  ) async {
+    final current = state;
+    if (current is! VendorLoaded) return;
+    if (current.remindAllStatus == RemindAllStatus.loading) return;
+
+    AppLogger.i(_m, 'Remind-all requested');
+    emit(current.copyWith(remindAllStatus: RemindAllStatus.loading));
+
+    try {
+      final result = await _repository.remindAll();
+      AppLogger.i(_m, 'Remind-all done — queued:${result.queued}');
+      emit(current.copyWith(
+        remindAllStatus: RemindAllStatus.success,
+        remindAllQueued: result.queued,
+      ));
+    } catch (e) {
+      AppLogger.e(_m, 'Remind-all failed', e);
+      emit(current.copyWith(remindAllStatus: RemindAllStatus.failure));
+    }
   }
 }

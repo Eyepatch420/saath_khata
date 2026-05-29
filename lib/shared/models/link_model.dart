@@ -87,6 +87,22 @@ class CustomerLinkItem extends Equatable {
   List<Object?> get props => [linkId, balance, customer, createdAt];
 }
 
+/// Response from POST /api/v1/links/remind-all
+class RemindAllResult extends Equatable {
+  final int queued;
+  final int customersCount;
+
+  const RemindAllResult({required this.queued, required this.customersCount});
+
+  factory RemindAllResult.fromJson(Map<String, dynamic> json) => RemindAllResult(
+        queued: json['queued'] as int,
+        customersCount: json['customersCount'] as int? ?? json['queued'] as int,
+      );
+
+  @override
+  List<Object?> get props => [queued, customersCount];
+}
+
 /// What a customer sees in GET /api/v1/links/vendors
 class VendorLinkItem extends Equatable {
   final String linkId;

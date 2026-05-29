@@ -31,6 +31,7 @@ import '../router/auth_state_notifier.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/vendor/presentation/bloc/vendor_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -66,6 +67,8 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<BookingRepository>(() => BookingRepositoryImpl(apiClient));
   getIt.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(apiClient));
   AppLogger.i(module, 'All repositories registered (7 lazy singletons)');
+
+  getIt.registerLazySingleton<VendorBloc>(() => VendorBloc(getIt<VendorRepository>()));
 
   AppLogger.i(module, 'Registering LedgerSocketService');
   getIt.registerLazySingleton<LedgerSocketService>(() => LedgerSocketService());

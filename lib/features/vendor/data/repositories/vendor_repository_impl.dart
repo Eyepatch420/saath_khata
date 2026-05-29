@@ -64,6 +64,16 @@ class VendorRepositoryImpl implements VendorRepository {
   }
 
   @override
+  Future<RemindAllResult> remindAll() async {
+    try {
+      final response = await _api.post(ApiEndpoints.remindAll);
+      return RemindAllResult.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<PaginatedList<CollectedTodayItem>> getCollectedToday({
     required int page,
     required int limit,

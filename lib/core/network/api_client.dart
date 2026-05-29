@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
 import '../services/storage_service.dart';
 import '../utils/app_logger.dart';
@@ -9,6 +10,11 @@ const _redactedKeys = {'password', 'refreshToken', 'accessToken', 'Authorization
 class ApiClient {
   late final Dio _dio;
   final StorageService _storage;
+
+  // Serialises token refresh: only one POST /auth/refresh in flight at a time.
+  // Concurrent 401s wait on this future and reuse the single new token.
+  bool _isRefreshing = false;
+  Completer<String?>? _refreshCompleter;
 
   ApiClient(this._storage) {
     _dio = Dio(BaseOptions(
@@ -46,6 +52,13 @@ class ApiClient {
       return;
     }
 
+    // Prevent the refresh call itself from re-triggering refresh on failure.
+    if (err.requestOptions.path == ApiEndpoints.refresh) {
+      await _storage.clearAll();
+      handler.next(err);
+      return;
+    }
+
     AppLogger.w('API', '401 on ${err.requestOptions.path} — attempting token refresh');
 
     final refreshToken = await _storage.getRefreshToken();
@@ -55,6 +68,25 @@ class ApiClient {
       handler.next(err);
       return;
     }
+
+    // If a refresh is already in flight, wait for it instead of firing another.
+    if (_isRefreshing) {
+      final newToken = await _refreshCompleter!.future;
+      if (newToken == null) {
+        handler.next(err);
+        return;
+      }
+      err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
+      try {
+        handler.resolve(await _dio.fetch(err.requestOptions));
+      } catch (e) {
+        handler.next(err);
+      }
+      return;
+    }
+
+    _isRefreshing = true;
+    _refreshCompleter = Completer<String?>();
 
     try {
       final response = await _dio.post(
@@ -72,16 +104,20 @@ class ApiClient {
         expiresIn: tokens['expiresIn'] as int,
       );
 
-      AppLogger.i('API', 'Token refreshed — retrying ${err.requestOptions.method} ${err.requestOptions.path}');
-      err.requestOptions.headers['Authorization'] =
-          'Bearer ${tokens['accessToken']}';
+      final newToken = tokens['accessToken'] as String;
+      _refreshCompleter!.complete(newToken);
 
-      final retried = await _dio.fetch(err.requestOptions);
-      handler.resolve(retried);
+      AppLogger.i('API', 'Token refreshed — retrying ${err.requestOptions.method} ${err.requestOptions.path}');
+      err.requestOptions.headers['Authorization'] = 'Bearer $newToken';
+      handler.resolve(await _dio.fetch(err.requestOptions));
     } catch (e) {
       AppLogger.e('API', 'Token refresh failed — clearing session', e);
       await _storage.clearAll();
+      _refreshCompleter!.complete(null);
       handler.next(err);
+    } finally {
+      _isRefreshing = false;
+      _refreshCompleter = null;
     }
   }
 

@@ -79,6 +79,13 @@ class MockVendorRepository implements VendorRepository {
   }
 
   @override
+  Future<RemindAllResult> remindAll() async {
+    await Future.delayed(const Duration(milliseconds: 600));
+    final count = _links.where((l) => l.balance > 0).length;
+    return RemindAllResult(queued: count, customersCount: count);
+  }
+
+  @override
   Future<PaginatedList<CollectedTodayItem>> getCollectedToday({
     required int page,
     required int limit,

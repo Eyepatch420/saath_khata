@@ -25,14 +25,15 @@ class VendorDashboardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.appTitle, style: AppTypography.h3),
-            Text(l10n.vendorDashboard, style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
+            Text(l10n.vendorDashboard,
+                style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
           ],
         ),
         actions: [
@@ -43,7 +44,35 @@ class VendorDashboardView extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: BlocBuilder<VendorBloc, VendorState>(
+      body: BlocConsumer<VendorBloc, VendorState>(
+        listenWhen: (prev, curr) {
+          if (prev is VendorLoaded && curr is VendorLoaded) {
+            return prev.remindAllStatus != curr.remindAllStatus &&
+                curr.remindAllStatus != RemindAllStatus.loading;
+          }
+          return false;
+        },
+        listener: (context, state) {
+          if (state is VendorLoaded) {
+            final messenger = ScaffoldMessenger.of(context);
+            if (state.remindAllStatus == RemindAllStatus.success) {
+              final count = state.remindAllQueued;
+              messenger.showSnackBar(SnackBar(
+                content: Text(count == 0
+                    ? 'No customers with outstanding balance'
+                    : 'Reminders sent to $count customer${count == 1 ? '' : 's'}'),
+                backgroundColor: AppColors.success,
+                behavior: SnackBarBehavior.floating,
+              ));
+            } else if (state.remindAllStatus == RemindAllStatus.failure) {
+              messenger.showSnackBar(const SnackBar(
+                content: Text('Failed to send reminders. Please try again.'),
+                backgroundColor: AppColors.error,
+                behavior: SnackBarBehavior.floating,
+              ));
+            }
+          }
+        },
         builder: (context, state) {
           if (state is VendorLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -54,7 +83,8 @@ class VendorDashboardView extends StatelessWidget {
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
+                padding: EdgeInsets.fromLTRB(
+                    20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -65,7 +95,8 @@ class VendorDashboardView extends StatelessWidget {
                         Expanded(
                           child: StatCard(
                             title: l10n.outstanding,
-                            value: '₹${state.totalOutstanding.toStringAsFixed(0)}',
+                            value:
+                                '₹${state.totalOutstanding.toStringAsFixed(0)}',
                             color: AppColors.error,
                             icon: Icons.account_balance_wallet_rounded,
                           ),
@@ -74,7 +105,8 @@ class VendorDashboardView extends StatelessWidget {
                         Expanded(
                           child: StatCard(
                             title: l10n.collectedToday,
-                            value: '₹${state.todayCollection.toStringAsFixed(0)}',
+                            value:
+                                '₹${state.todayCollection.toStringAsFixed(0)}',
                             color: AppColors.success,
                             icon: Icons.payments_rounded,
                           ),
@@ -85,22 +117,38 @@ class VendorDashboardView extends StatelessWidget {
                     Text(l10n.quickActions, style: AppTypography.h3),
                     const SizedBox(height: 12),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _QuickAction(
-                          icon: Icons.camera_alt_rounded,
-                          label: l10n.scanBill,
-                          onTap: () => context.push(AppRouter.scanBill),
+                        Expanded(
+                          child: _ActionCard(
+                            icon: Icons.notifications_active_rounded,
+                            label: l10n.remindAll,
+                            subtitle: 'Notify customers with dues',
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF00C896), Color(0xFF00A878)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            isLoading:
+                                state.remindAllStatus == RemindAllStatus.loading,
+                            onTap: () => context
+                                .read<VendorBloc>()
+                                .add(RemindAllRequested()),
+                          ),
                         ),
-                        _QuickAction(
-                          icon: Icons.notifications_active_rounded,
-                          label: l10n.remindAll,
-                          onTap: () {},
-                        ),
-                        _QuickAction(
-                          icon: Icons.person_add_rounded,
-                          label: l10n.addNew,
-                          onTap: () => showVendorAddCustomerSheet(context),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _ActionCard(
+                            icon: Icons.person_add_rounded,
+                            label: l10n.addNew,
+                            subtitle: 'Link a new customer',
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFF1A3A4A), Color(0xFF0F2027)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            isLoading: false,
+                            onTap: () => showVendorAddCustomerSheet(context),
+                          ),
                         ),
                       ],
                     ),
@@ -120,7 +168,8 @@ class VendorDashboardView extends StatelessWidget {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: state.customers.length,
-                      separatorBuilder: (context, index) => const SizedBox(height: 12),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final customer = state.customers[index];
                         return _CustomerTile(customer: customer);
@@ -140,6 +189,8 @@ class VendorDashboardView extends StatelessWidget {
     );
   }
 }
+
+// ─── Add Customer Bottom Sheet ────────────────────────────────────────────────
 
 void showVendorAddCustomerSheet(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
@@ -192,7 +243,8 @@ void showVendorAddCustomerSheet(BuildContext context) {
                             Navigator.pop(ctx);
                             bloc.add(LoadVendorDashboard());
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Customer added successfully')),
+                              const SnackBar(
+                                  content: Text('Customer added successfully')),
                             );
                           }
                         } catch (e) {
@@ -200,7 +252,9 @@ void showVendorAddCustomerSheet(BuildContext context) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(e.toString().replaceFirst('Exception: ', '')),
+                                content: Text(e
+                                    .toString()
+                                    .replaceFirst('Exception: ', '')),
                               ),
                             );
                           }
@@ -214,9 +268,11 @@ void showVendorAddCustomerSheet(BuildContext context) {
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
-                    : Text(l10n.addCustomer, style: const TextStyle(color: Colors.white)),
+                    : Text(l10n.addCustomer,
+                        style: const TextStyle(color: Colors.white)),
               ),
             ),
           ],
@@ -226,42 +282,101 @@ void showVendorAddCustomerSheet(BuildContext context) {
   );
 }
 
+// ─── Action Card ──────────────────────────────────────────────────────────────
 
-class _QuickAction extends StatelessWidget {
+class _ActionCard extends StatelessWidget {
   final IconData icon;
   final String label;
+  final String subtitle;
+  final Gradient gradient;
+  final bool isLoading;
   final VoidCallback onTap;
 
-  const _QuickAction({
+  const _ActionCard({
     required this.icon,
     required this.label,
+    required this.subtitle,
+    required this.gradient,
+    required this.isLoading,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
-              ],
-            ),
-            child: Icon(icon, color: AppColors.primary),
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: isLoading ? null : onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Ink(
+          decoration: BoxDecoration(
+            gradient: gradient,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.15),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          const SizedBox(height: 8),
-          Text(label, style: AppTypography.bodySmall.copyWith(fontSize: 10)),
-        ],
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : Icon(icon, color: Colors.white, size: 22),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    color: Colors.white.withValues(alpha: 0.6),
+                    size: 18,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                label,
+                style: AppTypography.labelLarge.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: AppTypography.bodySmall.copyWith(
+                  color: Colors.white.withValues(alpha: 0.75),
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 }
+
+// ─── Customer Tile ────────────────────────────────────────────────────────────
 
 class _CustomerTile extends StatelessWidget {
   final dynamic customer;
@@ -270,12 +385,16 @@ class _CustomerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final info = customer.customer; // CustomerLinkItem.customer → UserSummary
+    final info = customer.customer;
     final surface = Theme.of(context).colorScheme.surface;
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
-        extra: {'linkId': customer.linkId, 'name': info.name, 'isVendorView': true},
+        extra: {
+          'linkId': customer.linkId,
+          'name': info.name,
+          'isVendorView': true
+        },
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(
@@ -290,7 +409,8 @@ class _CustomerTile extends StatelessWidget {
               backgroundColor: AppColors.primary.withValues(alpha: 0.15),
               child: Text(
                 info.name[0],
-                style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    color: AppColors.primary, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(width: 16),
@@ -308,8 +428,10 @@ class _CustomerTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text('₹${customer.balance.toStringAsFixed(0)}',
-                    style: AppTypography.labelLarge.copyWith(color: AppColors.error)),
-                const Icon(Icons.chevron_right_rounded, color: AppColors.textHint, size: 16),
+                    style: AppTypography.labelLarge
+                        .copyWith(color: AppColors.error)),
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.textHint, size: 16),
               ],
             ),
           ],

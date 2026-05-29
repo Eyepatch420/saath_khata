@@ -6,6 +6,7 @@ abstract class VendorRepository {
   Future<CustomerLinkItem> linkCustomer(String customerEmail);
   Future<void> deactivateLink(String linkId);
   Future<VendorSummaryReport> getVendorSummary();
+  Future<RemindAllResult> remindAll();
 
   /// GET /api/v1/reports/collected-today — payments received today (paginated)
   Future<PaginatedList<CollectedTodayItem>> getCollectedToday({

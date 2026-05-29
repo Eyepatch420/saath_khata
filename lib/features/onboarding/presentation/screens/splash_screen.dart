@@ -36,15 +36,14 @@ class _SplashScreenState extends State<SplashScreen> {
       return;
     }
 
-    // Returning user: check if still logged in
+    // If the user is already authenticated, the router redirect (driven by
+    // AuthBloc) will navigate them to the correct home screen automatically.
+    // We only need to handle the unauthenticated case here.
     final accessToken = await storage.getAccessToken();
-    final role = await storage.getUserRole();
 
     if (!mounted) return;
 
-    if (accessToken != null && role != null) {
-      context.go(role == 'vendor' ? AppRouter.vendorHome : AppRouter.customerHome);
-    } else {
+    if (accessToken == null) {
       context.go(AppRouter.roleSelection);
     }
   }

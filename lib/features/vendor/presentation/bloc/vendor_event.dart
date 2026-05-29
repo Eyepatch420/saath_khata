@@ -8,3 +8,5 @@ abstract class VendorEvent extends Equatable {
 }
 
 class LoadVendorDashboard extends VendorEvent {}
+
+class RemindAllRequested extends VendorEvent {}

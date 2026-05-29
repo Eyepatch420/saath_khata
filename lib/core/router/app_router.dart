@@ -276,19 +276,30 @@ class AppRouter {
   );
 }
 
-class VendorMainWrapper extends StatelessWidget {
+class VendorMainWrapper extends StatefulWidget {
   final Widget child;
   const VendorMainWrapper({super.key, required this.child});
 
   @override
+  State<VendorMainWrapper> createState() => _VendorMainWrapperState();
+}
+
+class _VendorMainWrapperState extends State<VendorMainWrapper> {
+  @override
+  void initState() {
+    super.initState();
+    getIt<VendorBloc>().add(LoadVendorDashboard());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => VendorBloc(getIt())..add(LoadVendorDashboard()),
+    return BlocProvider.value(
+      value: getIt<VendorBloc>(),
       child: Builder(builder: (ctx) {
         final location = GoRouterState.of(ctx).uri.path;
         return Scaffold(
           extendBody: true,
-          body: child,
+          body: widget.child,
           bottomNavigationBar: AppBottomNavBar(
             currentIndex: _calculateSelectedIndex(ctx),
             onTap: (index) => _onTap(ctx, index),

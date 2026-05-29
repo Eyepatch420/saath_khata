@@ -10,6 +10,9 @@ class AuthStateNotifier extends ChangeNotifier {
 
   void onAuthStateChanged(AuthState state) {
     _authState = state;
+    // Skip intermediate states — the router only needs to react to
+    // AuthAuthenticated / AuthUnauthenticated / AuthError.
+    if (state is AuthInitial || state is AuthLoading) return;
     notifyListeners();
   }
 }
