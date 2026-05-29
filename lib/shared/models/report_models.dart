@@ -1,5 +1,41 @@
 import 'package:equatable/equatable.dart';
 
+class PaginatedList<T> {
+  final List<T> items;
+  final bool hasMore;
+
+  const PaginatedList({required this.items, required this.hasMore});
+}
+
+/// One row in GET /reports/collected-today
+class CollectedTodayItem extends Equatable {
+  final String linkId;
+  final String customerName;
+  final String? customerPhone;
+  final double amount;
+  final String paidAt;
+
+  const CollectedTodayItem({
+    required this.linkId,
+    required this.customerName,
+    this.customerPhone,
+    required this.amount,
+    required this.paidAt,
+  });
+
+  factory CollectedTodayItem.fromJson(Map<String, dynamic> json) =>
+      CollectedTodayItem(
+        linkId: json['linkId'] as String,
+        customerName: json['customerName'] as String,
+        customerPhone: json['customerPhone'] as String?,
+        amount: (json['amount'] as num).toDouble(),
+        paidAt: json['paidAt'] as String,
+      );
+
+  @override
+  List<Object?> get props => [linkId, customerName, customerPhone, amount, paidAt];
+}
+
 /// GET /reports/summary
 class VendorSummaryReport extends Equatable {
   final double totalOutstanding;

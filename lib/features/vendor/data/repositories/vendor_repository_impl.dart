@@ -62,4 +62,44 @@ class VendorRepositoryImpl implements VendorRepository {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
+
+  @override
+  Future<PaginatedList<CollectedTodayItem>> getCollectedToday({
+    required int page,
+    required int limit,
+  }) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.reportCustomers,
+        queryParameters: {'type': 'collected-today', 'page': page, 'limit': limit},
+      );
+      final data = ApiClient.extractData(response);
+      final items = (data['items'] as List)
+          .map((e) => CollectedTodayItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+      return PaginatedList(items: items, hasMore: data['hasMore'] as bool? ?? false);
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<PaginatedList<CustomerReportItem>> getOutstandingCustomers({
+    required int page,
+    required int limit,
+  }) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.reportCustomers,
+        queryParameters: {'page': page, 'limit': limit},
+      );
+      final data = ApiClient.extractData(response);
+      final items = (data['items'] as List)
+          .map((e) => CustomerReportItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+      return PaginatedList(items: items, hasMore: data['hasMore'] as bool? ?? false);
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
 }

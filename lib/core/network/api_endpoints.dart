@@ -52,6 +52,9 @@ class ApiEndpoints {
   static const String customerBookings = '/bookings/customer';
   static String bookingById(String id) => '/bookings/$id';
 
+  // Device tokens (push notifications)
+  static const String registerDevice = '/devices/token';
+
   // Reports (vendor-only)
   static const String reportSummary = '/reports/summary';
   static const String reportCustomers = '/reports/customers';

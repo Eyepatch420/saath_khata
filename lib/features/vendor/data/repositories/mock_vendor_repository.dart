@@ -77,4 +77,55 @@ class MockVendorRepository implements VendorRepository {
       topCustomers: [],
     );
   }
+
+  @override
+  Future<PaginatedList<CollectedTodayItem>> getCollectedToday({
+    required int page,
+    required int limit,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (page > 1) return const PaginatedList(items: [], hasMore: false);
+    return PaginatedList(
+      hasMore: false,
+      items: [
+        CollectedTodayItem(
+          linkId: 'link1',
+          customerName: 'Sujeet Kumar',
+          customerPhone: '9876543210',
+          amount: 500.0,
+          paidAt: DateTime.now().toIso8601String(),
+        ),
+        CollectedTodayItem(
+          linkId: 'link2',
+          customerName: 'Ramesh Singh',
+          customerPhone: '9988776655',
+          amount: 1200.0,
+          paidAt: DateTime.now().subtract(const Duration(hours: 1)).toIso8601String(),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<PaginatedList<CustomerReportItem>> getOutstandingCustomers({
+    required int page,
+    required int limit,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    if (page > 1) return const PaginatedList(items: [], hasMore: false);
+    return PaginatedList(
+      hasMore: false,
+      items: _links
+          .where((l) => l.balance > 0)
+          .map((l) => CustomerReportItem(
+                linkId: l.linkId,
+                customerId: l.customer.id,
+                customerName: l.customer.name,
+                customerPhone: l.customer.mobile,
+                balance: l.balance,
+                collectedThisMonth: 0,
+              ))
+          .toList(),
+    );
+  }
 }
