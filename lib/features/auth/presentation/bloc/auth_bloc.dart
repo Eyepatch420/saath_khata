@@ -2,7 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/services/storage_service.dart';
 import '../../../../core/services/ledger_socket_service.dart';
+import '../../../../core/services/push_notification_service.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../notifications/presentation/bloc/notification_bloc.dart';
+import '../../../notifications/presentation/bloc/notification_event.dart';
 import '../../domain/repositories/auth_repository.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
@@ -39,6 +42,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final accessToken = await _storage.getAccessToken();
         if (accessToken != null) {
           getIt<LedgerSocketService>().connect(accessToken);
+          await getIt<PushNotificationService>().initialize();
+          getIt<NotificationBloc>().add(LoadUnreadCount());
         }
         emit(AuthAuthenticated(user));
       } else {
@@ -82,6 +87,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _storage.saveFullUser(result.user);
       AppLogger.i(_m, 'Login success — ${result.user.email} (${result.user.role})');
       getIt<LedgerSocketService>().connect(result.tokens.accessToken);
+      await getIt<PushNotificationService>().initialize();
+      getIt<NotificationBloc>().add(LoadUnreadCount());
       emit(AuthAuthenticated(result.user));
     } catch (e) {
       AppLogger.e(_m, 'Login failed: ${event.email}', e);
@@ -116,6 +123,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       await _storage.saveFullUser(result.user);
       AppLogger.i(_m, 'Signup success — ${result.user.email} id:${result.user.id}');
       getIt<LedgerSocketService>().connect(result.tokens.accessToken);
+      await getIt<PushNotificationService>().initialize();
+      getIt<NotificationBloc>().add(LoadUnreadCount());
       emit(AuthAuthenticated(result.user));
     } catch (e) {
       AppLogger.e(_m, 'Signup failed: ${event.email}', e);

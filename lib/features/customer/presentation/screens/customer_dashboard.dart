@@ -17,6 +17,8 @@ import '../bloc/customer_event.dart';
 import '../bloc/customer_state.dart';
 import '../widgets/total_due_card.dart';
 import '../widgets/vendor_tile.dart';
+import '../../../notifications/presentation/bloc/notification_bloc.dart';
+import '../../../notifications/presentation/bloc/notification_state.dart';
 
 class CustomerDashboard extends StatelessWidget {
   const CustomerDashboard({super.key});
@@ -50,9 +52,28 @@ class CustomerDashboardView extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.notifications_none_rounded)),
+          BlocBuilder<NotificationBloc, NotificationState>(
+            bloc: getIt<NotificationBloc>(),
+            builder: (context, state) {
+              final count =
+                  state is NotificationLoaded ? state.unreadCount : 0;
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () => context.push(AppRouter.notifications),
+                    icon: const Icon(Icons.notifications_none_rounded),
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: _NotifBadge(count: count),
+                    ),
+                ],
+              );
+            },
+          ),
         ],
       ),
       body: SafeArea(child: BlocBuilder<CustomerBloc, CustomerState>(
@@ -417,4 +438,33 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
   }
 
   void _skip() => setState(() => _currentIndex++);
+}
+
+// ─── Notification Badge ───────────────────────────────────────────────────────
+
+class _NotifBadge extends StatelessWidget {
+  final int count;
+  const _NotifBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: const BoxDecoration(
+        color: AppColors.error,
+        shape: BoxShape.circle,
+      ),
+      child: Text(
+        count > 99 ? '99+' : '$count',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+          height: 1.6,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
 }

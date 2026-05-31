@@ -17,6 +17,15 @@ class NotificationLoaded extends NotificationState {
 
   const NotificationLoaded({required this.notifications, required this.unreadCount});
 
+  NotificationLoaded copyWith({
+    List<AppNotification>? notifications,
+    int? unreadCount,
+  }) =>
+      NotificationLoaded(
+        notifications: notifications ?? this.notifications,
+        unreadCount: unreadCount ?? this.unreadCount,
+      );
+
   @override
   List<Object?> get props => [notifications, unreadCount];
 }

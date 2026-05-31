@@ -17,8 +17,10 @@ class NotificationsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => NotificationBloc(getIt())..add(LoadNotifications()),
+    // Use the singleton NotificationBloc from DI so the badge count on dashboards
+    // stays in sync with what's shown in this screen.
+    return BlocProvider.value(
+      value: getIt<NotificationBloc>()..add(LoadNotifications()),
       child: const _NotificationsView(),
     );
   }

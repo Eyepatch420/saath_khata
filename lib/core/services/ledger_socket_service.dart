@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:socket_io_client/socket_io_client.dart' as io;
 import '../network/api_endpoints.dart';
 import '../utils/app_logger.dart';
@@ -9,6 +10,13 @@ class LedgerSocketService {
 
   io.Socket? _socket;
   bool _connected = false;
+
+  // Broadcast stream of raw 'notification:new' payloads from the server.
+  // PushNotificationService subscribes to this to parse and deliver notifications.
+  final _notifController =
+      StreamController<Map<String, dynamic>>.broadcast();
+  Stream<Map<String, dynamic>> get notificationStream =>
+      _notifController.stream;
 
   static String get _socketUrl =>
       // Strip /api/v1 — socket.io runs at the root of the HTTP server
@@ -36,6 +44,12 @@ class LedgerSocketService {
       ..onConnect((_) {
         _connected = true;
         AppLogger.i(_m, 'Connected');
+      })
+      ..on('notification:new', (raw) {
+        if (raw is Map<String, dynamic>) {
+          AppLogger.v(_m, 'Received notification:new');
+          _notifController.add(raw);
+        }
       })
       ..onDisconnect((reason) {
         _connected = false;
@@ -86,6 +100,11 @@ class LedgerSocketService {
     _socket?.disconnect();
     _socket = null;
     _connected = false;
+  }
+
+  void dispose() {
+    _notifController.close();
+    disconnect();
   }
 
   bool get isConnected => _connected;

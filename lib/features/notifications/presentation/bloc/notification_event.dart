@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../../../shared/models/notification_model.dart';
 
 abstract class NotificationEvent extends Equatable {
   const NotificationEvent();
@@ -16,3 +17,14 @@ class MarkNotificationRead extends NotificationEvent {
 }
 
 class MarkAllNotificationsRead extends NotificationEvent {}
+
+/// Fired when a new notification arrives via WebSocket (foreground delivery).
+class NotificationArrived extends NotificationEvent {
+  final AppNotification notification;
+  const NotificationArrived(this.notification);
+  @override
+  List<Object?> get props => [notification];
+}
+
+/// Lightweight refresh of only the unread count — used on startup for the badge.
+class LoadUnreadCount extends NotificationEvent {}

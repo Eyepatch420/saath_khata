@@ -32,6 +32,8 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/vendor/presentation/bloc/vendor_bloc.dart';
+import '../../features/notifications/presentation/bloc/notification_bloc.dart';
+import '../services/push_notification_service.dart';
 
 final getIt = GetIt.instance;
 
@@ -69,6 +71,20 @@ Future<void> configureDependencies() async {
   AppLogger.i(module, 'All repositories registered (7 lazy singletons)');
 
   getIt.registerLazySingleton<VendorBloc>(() => VendorBloc(getIt<VendorRepository>()));
+
+  // PushNotificationService depends on LedgerSocketService for the WebSocket notification stream.
+  getIt.registerLazySingleton<PushNotificationService>(
+    () => PushNotificationService(getIt<LedgerSocketService>()),
+  );
+
+  // NotificationBloc is a singleton so all screens share the same unread count
+  // and notification list — updates propagate to both the badge and the screen.
+  getIt.registerLazySingleton<NotificationBloc>(
+    () => NotificationBloc(
+      getIt<NotificationRepository>(),
+      getIt<PushNotificationService>(),
+    ),
+  );
 
   AppLogger.i(module, 'Registering LedgerSocketService');
   getIt.registerLazySingleton<LedgerSocketService>(() => LedgerSocketService());
