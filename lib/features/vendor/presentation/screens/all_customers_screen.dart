@@ -17,8 +17,9 @@ class AllCustomersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => VendorBloc(getIt())..add(LoadVendorDashboard()),
+    // Reuse the singleton VendorBloc provided by VendorMainWrapper — no fresh load needed.
+    return BlocProvider.value(
+      value: getIt<VendorBloc>(),
       child: const _AllCustomersView(),
     );
   }

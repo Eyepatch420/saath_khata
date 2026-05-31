@@ -32,7 +32,7 @@ class VendorBloc extends Bloc<VendorEvent, VendorState> {
       emit(VendorLoaded(
         customers: customers.cast(),
         totalOutstanding: summary.totalOutstanding as double,
-        todayCollection: summary.totalCollectedThisMonth as double,
+        todayCollection: summary.totalCollectedToday as double,
       ));
     } catch (e) {
       AppLogger.e(_m, 'Dashboard load failed', e);

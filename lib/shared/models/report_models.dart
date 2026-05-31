@@ -40,6 +40,7 @@ class CollectedTodayItem extends Equatable {
 class VendorSummaryReport extends Equatable {
   final double totalOutstanding;
   final double totalCollectedThisMonth;
+  final double totalCollectedToday;
   final double totalCreditThisMonth;
   final int activeCustomerCount;
   final List<CustomerReportItem> topCustomers;
@@ -47,6 +48,7 @@ class VendorSummaryReport extends Equatable {
   const VendorSummaryReport({
     required this.totalOutstanding,
     required this.totalCollectedThisMonth,
+    required this.totalCollectedToday,
     required this.totalCreditThisMonth,
     required this.activeCustomerCount,
     required this.topCustomers,
@@ -57,6 +59,8 @@ class VendorSummaryReport extends Equatable {
         totalOutstanding: (json['totalOutstanding'] as num).toDouble(),
         totalCollectedThisMonth:
             (json['totalCollectedThisMonth'] as num).toDouble(),
+        totalCollectedToday:
+            (json['totalCollectedToday'] as num).toDouble(),
         totalCreditThisMonth:
             (json['totalCreditThisMonth'] as num).toDouble(),
         activeCustomerCount: json['activeCustomerCount'] as int,
@@ -69,6 +73,7 @@ class VendorSummaryReport extends Equatable {
   List<Object?> get props => [
         totalOutstanding,
         totalCollectedThisMonth,
+        totalCollectedToday,
         totalCreditThisMonth,
         activeCustomerCount,
         topCustomers,

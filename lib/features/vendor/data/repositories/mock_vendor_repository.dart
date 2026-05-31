@@ -72,6 +72,7 @@ class MockVendorRepository implements VendorRepository {
     return VendorSummaryReport(
       totalOutstanding: total,
       totalCollectedThisMonth: 0,
+      totalCollectedToday: 0,
       totalCreditThisMonth: 0,
       activeCustomerCount: _links.length,
       topCustomers: [],
@@ -134,5 +135,44 @@ class MockVendorRepository implements VendorRepository {
               ))
           .toList(),
     );
+  }
+
+  @override
+  Future<List<CustomerReportItem>> getAllCustomersReport() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return _links
+        .map((l) => CustomerReportItem(
+              linkId: l.linkId,
+              customerId: l.customer.id,
+              customerName: l.customer.name,
+              customerPhone: l.customer.mobile,
+              balance: l.balance,
+              collectedThisMonth: 0,
+            ))
+        .toList();
+  }
+
+  @override
+  Future<CustomerDetailReport> getCustomerDetail(String linkId) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    final link = _links.firstWhere((l) => l.linkId == linkId);
+    return CustomerDetailReport(
+      linkId: linkId,
+      customerId: link.customer.id,
+      customerName: link.customer.name,
+      balance: link.balance,
+      totalCredit: link.balance,
+      totalPaid: 0,
+      pendingCount: 0,
+      confirmedCount: 0,
+      disputedCount: 0,
+      monthlyBreakdown: [],
+    );
+  }
+
+  @override
+  Future<MonthlyRevenueReport> getMonthlyRevenue(int year) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return MonthlyRevenueReport(year: year, months: []);
   }
 }

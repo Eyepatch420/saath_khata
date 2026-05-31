@@ -177,8 +177,11 @@ class AppRouter {
           GoRoute(
             path: customerDetailReport,
             builder: (context, state) {
-              final customer = state.extra as Map<String, dynamic>;
-              return CustomerDetailReportScreen(customer: customer);
+              final extras = state.extra as Map<String, dynamic>;
+              return CustomerDetailReportScreen(
+                linkId: extras['linkId'] as String,
+                customerName: extras['name'] as String,
+              );
             },
           ),
           GoRoute(

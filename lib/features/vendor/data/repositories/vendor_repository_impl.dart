@@ -112,4 +112,40 @@ class VendorRepositoryImpl implements VendorRepository {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
+
+  @override
+  Future<List<CustomerReportItem>> getAllCustomersReport() async {
+    try {
+      final response = await _api.get(ApiEndpoints.reportCustomers);
+      final data = ApiClient.extractData(response);
+      return (data as List)
+          .map((e) => CustomerReportItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<CustomerDetailReport> getCustomerDetail(String linkId) async {
+    try {
+      final response = await _api.get(ApiEndpoints.reportCustomerDetail(linkId));
+      return CustomerDetailReport.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<MonthlyRevenueReport> getMonthlyRevenue(int year) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.reportMonthly,
+        queryParameters: {'year': year},
+      );
+      return MonthlyRevenueReport.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
 }
