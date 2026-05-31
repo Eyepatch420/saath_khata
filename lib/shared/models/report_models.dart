@@ -7,6 +7,11 @@ class PaginatedList<T> {
   const PaginatedList({required this.items, required this.hasMore});
 }
 
+// Null-safe helper — avoids `type 'Null' is not a subtype of type 'num'` crashes
+// when the API returns a cached response that predates a new field being added.
+double _d(dynamic v) => (v as num? ?? 0).toDouble();
+int _i(dynamic v) => (v as num?)?.toInt() ?? 0;
+
 /// One row in GET /reports/collected-today
 class CollectedTodayItem extends Equatable {
   final String linkId;
@@ -28,7 +33,7 @@ class CollectedTodayItem extends Equatable {
         linkId: json['linkId'] as String,
         customerName: json['customerName'] as String,
         customerPhone: json['customerPhone'] as String?,
-        amount: (json['amount'] as num).toDouble(),
+        amount: _d(json['amount']),
         paidAt: json['paidAt'] as String,
       );
 
@@ -56,15 +61,13 @@ class VendorSummaryReport extends Equatable {
 
   factory VendorSummaryReport.fromJson(Map<String, dynamic> json) =>
       VendorSummaryReport(
-        totalOutstanding: (json['totalOutstanding'] as num).toDouble(),
-        totalCollectedThisMonth:
-            (json['totalCollectedThisMonth'] as num).toDouble(),
-        totalCollectedToday:
-            (json['totalCollectedToday'] as num).toDouble(),
-        totalCreditThisMonth:
-            (json['totalCreditThisMonth'] as num).toDouble(),
-        activeCustomerCount: json['activeCustomerCount'] as int,
-        topCustomers: (json['topCustomers'] as List)
+        totalOutstanding: _d(json['totalOutstanding']),
+        totalCollectedThisMonth: _d(json['totalCollectedThisMonth']),
+        // May be absent in cached responses predating this field — default to 0.
+        totalCollectedToday: _d(json['totalCollectedToday']),
+        totalCreditThisMonth: _d(json['totalCreditThisMonth']),
+        activeCustomerCount: _i(json['activeCustomerCount']),
+        topCustomers: ((json['topCustomers'] as List?) ?? [])
             .map((e) => CustomerReportItem.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
@@ -80,7 +83,7 @@ class VendorSummaryReport extends Equatable {
       ];
 }
 
-/// One row in GET /reports/customers  (also used inside VendorSummaryReport.topCustomers)
+/// One row in GET /reports/customers (also used in VendorSummaryReport.topCustomers)
 class CustomerReportItem extends Equatable {
   final String linkId;
   final String customerId;
@@ -107,8 +110,8 @@ class CustomerReportItem extends Equatable {
         customerName: json['customerName'] as String,
         customerPhone: json['customerPhone'] as String?,
         profilePhotoUrl: json['profilePhotoUrl'] as String?,
-        balance: (json['balance'] as num).toDouble(),
-        collectedThisMonth: (json['collectedThisMonth'] as num).toDouble(),
+        balance: _d(json['balance']),
+        collectedThisMonth: _d(json['collectedThisMonth']),
       );
 
   @override
@@ -154,13 +157,13 @@ class CustomerDetailReport extends Equatable {
         linkId: json['linkId'] as String,
         customerId: json['customerId'] as String,
         customerName: json['customerName'] as String,
-        balance: (json['balance'] as num).toDouble(),
-        totalCredit: (json['totalCredit'] as num).toDouble(),
-        totalPaid: (json['totalPaid'] as num).toDouble(),
-        pendingCount: json['pendingCount'] as int,
-        confirmedCount: json['confirmedCount'] as int,
-        disputedCount: json['disputedCount'] as int,
-        monthlyBreakdown: (json['monthlyBreakdown'] as List)
+        balance: _d(json['balance']),
+        totalCredit: _d(json['totalCredit']),
+        totalPaid: _d(json['totalPaid']),
+        pendingCount: _i(json['pendingCount']),
+        confirmedCount: _i(json['confirmedCount']),
+        disputedCount: _i(json['disputedCount']),
+        monthlyBreakdown: ((json['monthlyBreakdown'] as List?) ?? [])
             .map((e) => MonthlyPaymentData.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
@@ -194,8 +197,8 @@ class MonthlyPaymentData extends Equatable {
   factory MonthlyPaymentData.fromJson(Map<String, dynamic> json) =>
       MonthlyPaymentData(
         month: json['month'] as String,
-        totalPaid: (json['totalPaid'] as num).toDouble(),
-        transactionCount: json['transactionCount'] as int,
+        totalPaid: _d(json['totalPaid']),
+        transactionCount: _i(json['transactionCount']),
       );
 
   @override
@@ -211,8 +214,8 @@ class MonthlyRevenueReport extends Equatable {
 
   factory MonthlyRevenueReport.fromJson(Map<String, dynamic> json) =>
       MonthlyRevenueReport(
-        year: json['year'] as int,
-        months: (json['months'] as List)
+        year: _i(json['year']),
+        months: ((json['months'] as List?) ?? [])
             .map((e) => MonthlyRevenueData.fromJson(e as Map<String, dynamic>))
             .toList(),
       );
@@ -235,8 +238,8 @@ class MonthlyRevenueData extends Equatable {
   factory MonthlyRevenueData.fromJson(Map<String, dynamic> json) =>
       MonthlyRevenueData(
         month: json['month'] as String,
-        totalCollected: (json['totalCollected'] as num).toDouble(),
-        activeCustomers: json['activeCustomers'] as int,
+        totalCollected: _d(json['totalCollected']),
+        activeCustomers: _i(json['activeCustomers']),
       );
 
   @override

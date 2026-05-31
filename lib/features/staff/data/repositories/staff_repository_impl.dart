@@ -163,4 +163,14 @@ class StaffRepositoryImpl implements StaffRepository {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
+
+  @override
+  Future<StaffModel> accrueSalary(String staffId) async {
+    try {
+      final response = await _api.post(ApiEndpoints.staffAccrue(staffId));
+      return StaffModel.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
 }

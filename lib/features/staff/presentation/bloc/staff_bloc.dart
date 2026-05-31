@@ -17,6 +17,7 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
     on<LoadAttendance>(_onLoadAttendance);
     on<PaySalary>(_onPaySalary);
     on<AddAdvance>(_onAddAdvance);
+    on<AccrueSalary>(_onAccrueSalary);
   }
 
   Future<void> _onLoad(LoadStaff event, Emitter<StaffState> emit) async {
@@ -79,23 +80,8 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
           month: current.month,
         ));
       } else if (current is StaffLoaded) {
-        // Quick attendance from list — update presentToday badge immediately
-        final now = DateTime.now();
-        final isToday = event.date.year == now.year &&
-            event.date.month == now.month &&
-            event.date.day == now.day;
-        if (isToday) {
-          final isPresent = event.status == AttendanceStatus.present ||
-              event.status == AttendanceStatus.halfDay;
-          final updated = current.staffList.map((s) {
-            return s.id == event.staffId ? s.copyWith(presentToday: isPresent) : s;
-          }).toList();
-          emit(StaffLoaded(
-            staffList: updated,
-            presentCount: updated.where((s) => s.presentToday).length,
-            totalUnpaidSalary: updated.fold(0, (sum, s) => sum + s.unpaidSalary),
-          ));
-        }
+        // Reload list so both presentToday and unpaidSalary (affected for daily staff) are fresh
+        add(LoadStaff());
       }
     } catch (e) {
       AppLogger.e(_m, 'Mark attendance failed', e);
@@ -139,10 +125,13 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
       await _repository.paySalary(event.staffId, event.amount, event.upiTransactionId);
       AppLogger.i(_m, 'Salary paid — staffId:${event.staffId}');
       if (current is StaffDetailLoaded) {
+        // StaffActionLoading was emitted above — existing will be null in LoadAttendance handler
+        // which forces a full getStaffList() refetch to get the accurate unpaidSalary.
         add(LoadAttendance(staffId: event.staffId, year: current.year, month: current.month));
       } else if (current is StaffLoaded) {
         final updated = current.staffList.map((s) {
-          return s.id == event.staffId ? s.copyWith(unpaidSalary: 0) : s;
+          if (s.id != event.staffId) return s;
+          return s.copyWith(unpaidSalary: (s.unpaidSalary - event.amount).clamp(0, double.infinity));
         }).toList();
         emit(StaffLoaded(
           staffList: updated,
@@ -165,12 +154,44 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
       await _repository.addAdvance(event.staffId, event.amount, event.note);
       AppLogger.i(_m, 'Advance recorded');
       if (current is StaffDetailLoaded) {
-        add(LoadAttendance(staffId: event.staffId, year: current.year, month: current.month));
+        // Optimistically update advanceTaken so the UI reflects it immediately.
+        // Attendance data is unchanged — no reload needed.
+        emit(StaffDetailLoaded(
+          staff: current.staff.copyWith(
+            advanceTaken: current.staff.advanceTaken + event.amount,
+          ),
+          attendance: current.attendance,
+          year: current.year,
+          month: current.month,
+        ));
       } else {
         add(LoadStaff());
       }
     } catch (e) {
       AppLogger.e(_m, 'Add advance failed', e);
+    }
+  }
+
+  Future<void> _onAccrueSalary(AccrueSalary event, Emitter<StaffState> emit) async {
+    AppLogger.i(_m, 'Accruing salary — staffId:${event.staffId}');
+    final current = state;
+    emit(StaffActionLoading());
+    try {
+      final updated = await _repository.accrueSalary(event.staffId);
+      AppLogger.i(_m, 'Salary accrued — unpaidSalary:${updated.unpaidSalary}');
+      if (current is StaffDetailLoaded) {
+        emit(StaffDetailLoaded(
+          staff: updated,
+          attendance: current.attendance,
+          year: current.year,
+          month: current.month,
+        ));
+      } else {
+        add(LoadStaff());
+      }
+    } catch (e) {
+      AppLogger.e(_m, 'Accrue salary failed', e);
+      emit(const StaffError('Failed to accrue salary'));
     }
   }
 }

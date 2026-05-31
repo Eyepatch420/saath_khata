@@ -359,5 +359,22 @@
   "noCustomersYet": "अभी तक कोई ग्राहक नहीं",
   "@noCustomersYet": {},
   "noCustomersYetSubtitle": "शुरू करने के लिए अपना पहला ग्राहक जोड़ें",
-  "@noCustomersYetSubtitle": {}
+  "@noCustomersYetSubtitle": {},
+  "invalidPhone": "6–9 से शुरू होने वाला 10 अंकों का वैध मोबाइल नंबर दर्ज करें",
+  "@invalidPhone": {},
+  "accrueMonthSalary": "माह की तनख्वाह जोड़ें (₹{amount})",
+  "@accrueMonthSalary": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "accrueMonthSalaryTitle": "माह की तनख्वाह जोड़ें",
+  "@accrueMonthSalaryTitle": {},
+  "accrueMonthSalaryConfirm": "{name} के बकाया में इस महीने ₹{amount} जोड़ें?",
+  "@accrueMonthSalaryConfirm": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "amount": { "type": "String" }
+    }
+  }
 }

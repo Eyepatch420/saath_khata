@@ -8,4 +8,5 @@ abstract class StaffRepository {
   Future<Map<String, AttendanceStatus>> getAttendanceForMonth(String staffId, int year, int month);
   Future<void> paySalary(String staffId, double amount, String? upiTransactionId);
   Future<void> addAdvance(String staffId, double amount, String? note);
+  Future<StaffModel> accrueSalary(String staffId);
 }

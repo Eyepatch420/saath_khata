@@ -78,7 +78,7 @@ class CustomerLinkItem extends Equatable {
   factory CustomerLinkItem.fromJson(Map<String, dynamic> json) =>
       CustomerLinkItem(
         linkId: json['linkId'] as String,
-        balance: (json['balance'] as num).toDouble(),
+        balance: (json['balance'] as num? ?? 0).toDouble(),
         customer: UserSummary.fromJson(json['customer'] as Map<String, dynamic>),
         createdAt: json['createdAt'] as String,
       );
@@ -119,7 +119,7 @@ class VendorLinkItem extends Equatable {
 
   factory VendorLinkItem.fromJson(Map<String, dynamic> json) => VendorLinkItem(
         linkId: json['linkId'] as String,
-        balance: (json['balance'] as num).toDouble(),
+        balance: (json['balance'] as num? ?? 0).toDouble(),
         vendor: VendorSummary.fromJson(json['vendor'] as Map<String, dynamic>),
         createdAt: json['createdAt'] as String,
       );

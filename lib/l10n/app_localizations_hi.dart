@@ -846,4 +846,21 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get noCustomersYetSubtitle =>
       'शुरू करने के लिए अपना पहला ग्राहक जोड़ें';
+
+  @override
+  String get invalidPhone =>
+      '6–9 से शुरू होने वाला 10 अंकों का वैध मोबाइल नंबर दर्ज करें';
+
+  @override
+  String accrueMonthSalary(String amount) {
+    return 'माह की तनख्वाह जोड़ें (₹$amount)';
+  }
+
+  @override
+  String get accrueMonthSalaryTitle => 'माह की तनख्वाह जोड़ें';
+
+  @override
+  String accrueMonthSalaryConfirm(String name, String amount) {
+    return '$name के बकाया में इस महीने ₹$amount जोड़ें?';
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/utils/app_logger.dart';
 import '../../../../features/vendor/domain/repositories/vendor_repository.dart';
 import '../../../../shared/models/report_models.dart';
 
@@ -39,15 +40,23 @@ class CustomerDetailError extends CustomerDetailState {
 class CustomerDetailCubit extends Cubit<CustomerDetailState> {
   final VendorRepository _repository;
 
+  static const _m = 'CustomerDetail';
+
   CustomerDetailCubit(this._repository) : super(CustomerDetailInitial());
 
   Future<void> load(String linkId) async {
+    AppLogger.i(_m, 'Loading customer detail — linkId:$linkId');
     emit(CustomerDetailLoading());
     try {
       final detail = await _repository.getCustomerDetail(linkId);
+      AppLogger.i(_m,
+          'Loaded — customer:${detail.customerName} '
+          'balance:${detail.balance} months:${detail.monthlyBreakdown.length}');
       emit(CustomerDetailLoaded(detail));
-    } catch (e) {
-      emit(CustomerDetailError(e.toString().replaceFirst('Exception: ', '')));
+    } catch (e, st) {
+      AppLogger.e(_m, 'Load failed — linkId:$linkId', e);
+      emit(CustomerDetailError(
+          e.toString().replaceFirst('Exception: ', '')));
     }
   }
 }

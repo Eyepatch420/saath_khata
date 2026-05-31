@@ -150,14 +150,26 @@ class _StaffView extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (nameCtrl.text.trim().isEmpty) return;
+                    final name = nameCtrl.text.trim();
+                    final phone = phoneCtrl.text.trim();
                     final salary = double.tryParse(salaryCtrl.text) ?? 0;
+                    if (name.isEmpty) return;
+                    if (!RegExp(r'^[6-9]\d{9}$').hasMatch(phone)) {
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        SnackBar(
+                          content: Text(l10n.invalidPhone),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                      return;
+                    }
+                    if (salary <= 0) return;
                     Navigator.pop(ctx);
                     bloc.add(AddStaff(StaffModel(
                       id: '',
-                      vendorId: 'v1',
-                      name: nameCtrl.text.trim(),
-                      phone: phoneCtrl.text.trim(),
+                      vendorId: '',
+                      name: name,
+                      phone: phone,
                       role: selectedRole,
                       salaryType: selectedType,
                       salaryAmount: salary,

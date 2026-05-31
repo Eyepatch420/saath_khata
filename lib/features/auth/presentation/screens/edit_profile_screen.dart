@@ -118,13 +118,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             .postFormData(ApiEndpoints.uploadPhoto, formData: formData);
       } catch (e) {
         if (!mounted) return;
-        setState(() => _isSaving = false);
+        // Photo upload failed — show a warning but continue saving the
+        // rest of the profile. Don't block the user from updating their name,
+        // UPI ID, etc. just because Cloudinary is unavailable.
         final msg = e.toString().contains('SERVICE_UNAVAILABLE') ||
-                e.toString().contains('not available')
-            ? 'Photo upload is not available right now'
-            : 'Photo upload failed — please try again';
-        AppToast.show(context, msg, type: ToastType.error);
-        return;
+                e.toString().contains('not available') ||
+                e.toString().contains('unavailable')
+            ? 'Photo upload unavailable — other changes will be saved'
+            : 'Photo upload failed — other changes will still be saved';
+        AppToast.show(context, msg, type: ToastType.warning);
+        // fall through to save the rest of the profile
       }
     }
 

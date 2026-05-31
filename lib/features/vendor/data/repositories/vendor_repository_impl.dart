@@ -117,8 +117,12 @@ class VendorRepositoryImpl implements VendorRepository {
   Future<List<CustomerReportItem>> getAllCustomersReport() async {
     try {
       final response = await _api.get(ApiEndpoints.reportCustomers);
-      final data = ApiClient.extractData(response);
-      return (data as List)
+      // The /reports/customers endpoint returns data as a JSON array, not an
+      // object — extractData() casts to Map which would throw. Read the list
+      // directly from the response body instead.
+      final list =
+          (response.data as Map<String, dynamic>)['data'] as List;
+      return list
           .map((e) => CustomerReportItem.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {

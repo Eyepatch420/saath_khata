@@ -849,4 +849,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noCustomersYetSubtitle => 'Add your first customer to get started';
+
+  @override
+  String get invalidPhone =>
+      'Enter a valid 10-digit mobile number starting with 6–9';
+
+  @override
+  String accrueMonthSalary(String amount) {
+    return 'Add Month\'s Salary (₹$amount)';
+  }
+
+  @override
+  String get accrueMonthSalaryTitle => 'Add Month\'s Salary';
+
+  @override
+  String accrueMonthSalaryConfirm(String name, String amount) {
+    return 'Add ₹$amount to $name\'s unpaid balance for this month?';
+  }
 }

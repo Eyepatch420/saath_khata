@@ -363,5 +363,22 @@
   "noCustomersYet": "No customers yet",
   "@noCustomersYet": {},
   "noCustomersYetSubtitle": "Add your first customer to get started",
-  "@noCustomersYetSubtitle": {}
+  "@noCustomersYetSubtitle": {},
+  "invalidPhone": "Enter a valid 10-digit mobile number starting with 6–9",
+  "@invalidPhone": {},
+  "accrueMonthSalary": "Add Month's Salary (₹{amount})",
+  "@accrueMonthSalary": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "accrueMonthSalaryTitle": "Add Month's Salary",
+  "@accrueMonthSalaryTitle": {},
+  "accrueMonthSalaryConfirm": "Add ₹{amount} to {name}'s unpaid balance for this month?",
+  "@accrueMonthSalaryConfirm": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "amount": { "type": "String" }
+    }
+  }
 }

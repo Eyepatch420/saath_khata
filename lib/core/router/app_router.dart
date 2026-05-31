@@ -91,6 +91,7 @@ class AppRouter {
     roleSelection,
     login,
     profileSetup,
+    locationPicker,
   };
 
   static final GoRouter router = GoRouter(

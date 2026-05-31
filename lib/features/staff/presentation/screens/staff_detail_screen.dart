@@ -742,38 +742,87 @@ class _ActionButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Row(
+    return Column(
       children: [
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: () => _showAdvanceSheet(context, staff),
-            icon: const Icon(Icons.add_card_rounded, size: 18),
-            label: Text(l10n.addAdvance),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.warning,
-              side: const BorderSide(color: AppColors.warning),
-              padding: const EdgeInsets.symmetric(vertical: 12),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () => _showAdvanceSheet(context, staff),
+                icon: const Icon(Icons.add_card_rounded, size: 18),
+                label: Text(l10n.addAdvance),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppColors.warning,
+                  side: const BorderSide(color: AppColors.warning),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: staff.unpaidSalary > 0
+                    ? () => _showPaySalaryFromButtons(context, staff)
+                    : null,
+                icon: const Icon(Icons.payment_rounded, size: 18),
+                label: Text(staff.unpaidSalary > 0
+                    ? l10n.staffPayAmount(staff.unpaidSalary.toStringAsFixed(0))
+                    : l10n.noDues),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
+            ),
+          ],
+        ),
+        if (staff.salaryType == SalaryType.monthly && staff.isActive) ...[
+          const SizedBox(height: 10),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _confirmAccrue(context, staff),
+              icon: const Icon(Icons.receipt_long_rounded, size: 18),
+              label: Text(l10n.accrueMonthSalary(staff.salaryAmount.toStringAsFixed(0))),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.primary,
+                side: const BorderSide(color: AppColors.primary),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+              ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton.icon(
-            onPressed: staff.unpaidSalary > 0
-                ? () => _showPaySalaryFromButtons(context, staff)
-                : null,
-            icon: const Icon(Icons.payment_rounded, size: 18),
-            label: Text(staff.unpaidSalary > 0
-                ? l10n.staffPayAmount(staff.unpaidSalary.toStringAsFixed(0))
-                : l10n.noDues),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-            ),
-          ),
-        ),
+        ],
       ],
+    );
+  }
+
+  void _confirmAccrue(BuildContext context, StaffModel staff) {
+    final bloc = context.read<StaffBloc>();
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.accrueMonthSalaryTitle),
+        content: Text(l10n.accrueMonthSalaryConfirm(
+          staff.name,
+          staff.salaryAmount.toStringAsFixed(0),
+        )),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              bloc.add(AccrueSalary(staffId: staff.id));
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
+            child: Text(l10n.confirm, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

@@ -53,3 +53,10 @@ class AddAdvance extends StaffEvent {
   @override
   List<Object?> get props => [staffId, amount];
 }
+
+class AccrueSalary extends StaffEvent {
+  final String staffId;
+  const AccrueSalary({required this.staffId});
+  @override
+  List<Object?> get props => [staffId];
+}

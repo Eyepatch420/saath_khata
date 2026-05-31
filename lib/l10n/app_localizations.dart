@@ -1675,6 +1675,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add your first customer to get started'**
   String get noCustomersYetSubtitle;
+
+  /// No description provided for @invalidPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid 10-digit mobile number starting with 6–9'**
+  String get invalidPhone;
+
+  /// No description provided for @accrueMonthSalary.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Month\'s Salary (₹{amount})'**
+  String accrueMonthSalary(String amount);
+
+  /// No description provided for @accrueMonthSalaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Month\'s Salary'**
+  String get accrueMonthSalaryTitle;
+
+  /// No description provided for @accrueMonthSalaryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Add ₹{amount} to {name}\'s unpaid balance for this month?'**
+  String accrueMonthSalaryConfirm(String name, String amount);
 }
 
 class _AppLocalizationsDelegate
