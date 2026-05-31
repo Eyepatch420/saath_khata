@@ -8,6 +8,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/network/api_client.dart';
@@ -183,31 +184,17 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     final confirm = _confirmPasswordController.text;
 
     if (name.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(ctx)!.fillRequiredFields),
-        ),
-      );
+      AppToast.show(ctx, AppLocalizations.of(ctx)!.fillRequiredFields, type: ToastType.warning);
       return;
     }
 
     if (password != confirm) {
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        const SnackBar(
-          content: Text('Passwords do not match'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      AppToast.show(ctx, 'Passwords do not match', type: ToastType.error);
       return;
     }
 
     if (password.length < 8) {
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        const SnackBar(
-          content: Text('Password must be at least 8 characters'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      AppToast.show(ctx, 'Password must be at least 8 characters', type: ToastType.error);
       return;
     }
 
@@ -241,12 +228,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         if (state is AuthAuthenticated) {
           _uploadPhotoThenNavigate(state);
         } else if (state is AuthError) {
-          ScaffoldMessenger.of(ctx).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          AppToast.show(ctx, state.message, type: ToastType.error);
         }
       },
       builder: (ctx, state) {
@@ -257,7 +239,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
         return Scaffold(
           appBar: AppBar(title: Text(l10n.completeProfile)),
-          body: SingleChildScrollView(
+          body: SafeArea(child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -449,6 +431,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 const SizedBox(height: 16),
               ],
             ),
+          ),
           ),
         );
       },

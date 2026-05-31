@@ -67,7 +67,7 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
       AppLogger.i(_m, 'Attendance marked');
 
       if (current is StaffDetailLoaded) {
-        // Optimistic in-place update keeps the calendar visible without a full reload
+        // Optimistic in-place update on the calendar
         final key =
             '${event.date.year}-${event.date.month.toString().padLeft(2, '0')}-${event.date.day.toString().padLeft(2, '0')}';
         final updated = Map<String, AttendanceStatus>.from(current.attendance)
@@ -78,6 +78,24 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
           year: current.year,
           month: current.month,
         ));
+      } else if (current is StaffLoaded) {
+        // Quick attendance from list — update presentToday badge immediately
+        final now = DateTime.now();
+        final isToday = event.date.year == now.year &&
+            event.date.month == now.month &&
+            event.date.day == now.day;
+        if (isToday) {
+          final isPresent = event.status == AttendanceStatus.present ||
+              event.status == AttendanceStatus.halfDay;
+          final updated = current.staffList.map((s) {
+            return s.id == event.staffId ? s.copyWith(presentToday: isPresent) : s;
+          }).toList();
+          emit(StaffLoaded(
+            staffList: updated,
+            presentCount: updated.where((s) => s.presentToday).length,
+            totalUnpaidSalary: updated.fold(0, (sum, s) => sum + s.unpaidSalary),
+          ));
+        }
       }
     } catch (e) {
       AppLogger.e(_m, 'Mark attendance failed', e);
@@ -86,9 +104,19 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
 
   Future<void> _onLoadAttendance(LoadAttendance event, Emitter<StaffState> emit) async {
     AppLogger.i(_m, 'Loading attendance — staffId:${event.staffId} ${event.year}/${event.month}');
+    // Keep existing staff data visible during month navigation if we already have it
+    final existing = state is StaffDetailLoaded ? (state as StaffDetailLoaded).staff : null;
     try {
-      final staff = await _repository.getStaffList();
-      final target = staff.firstWhere((s) => s.id == event.staffId);
+      // Use provided staff model if available — avoids an extra list fetch
+      final StaffModel target;
+      if (event.staff != null) {
+        target = event.staff!;
+      } else if (existing != null && existing.id == event.staffId) {
+        target = existing;
+      } else {
+        final list = await _repository.getStaffList();
+        target = list.firstWhere((s) => s.id == event.staffId);
+      }
       final attendance = await _repository.getAttendanceForMonth(event.staffId, event.year, event.month);
       AppLogger.i(_m, 'Attendance loaded — ${attendance.length} records for ${target.name}');
       emit(StaffDetailLoaded(

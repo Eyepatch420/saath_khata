@@ -66,7 +66,7 @@ class _CustomerBookingsScreenState extends State<CustomerBookingsScreen>
       value: _bloc,
       child: Scaffold(
         appBar: AppBar(title: Text(l10n.myAppointments)),
-        body: BlocBuilder<BookingBloc, BookingState>(
+        body: SafeArea(child: BlocBuilder<BookingBloc, BookingState>(
           builder: (context, state) {
             if (state is BookingLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -102,6 +102,7 @@ class _CustomerBookingsScreenState extends State<CustomerBookingsScreen>
             }
             return const SizedBox();
           },
+        ),
         ),
       ),
     );

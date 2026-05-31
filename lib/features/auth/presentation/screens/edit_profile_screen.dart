@@ -13,6 +13,7 @@ import '../../data/models/user_model.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../../../../shared/widgets/app_toast.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserModel user;
@@ -122,7 +123,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 e.toString().contains('not available')
             ? 'Photo upload is not available right now'
             : 'Photo upload failed — please try again';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        AppToast.show(context, msg, type: ToastType.error);
         return;
       }
     }
@@ -154,15 +155,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       listener: (context, state) {
         if (state is AuthAuthenticated) {
           setState(() => _isSaving = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile updated successfully')),
-          );
+          AppToast.show(context, 'Profile updated successfully', type: ToastType.success);
           context.pop();
         } else if (state is AuthError) {
           setState(() => _isSaving = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
+          AppToast.show(context, state.message, type: ToastType.error);
         }
       },
       child: Scaffold(
@@ -192,7 +189,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
+        body: SafeArea(child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -311,6 +308,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
             ),
           ),
+        ),
         ),
       ),
     );

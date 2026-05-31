@@ -52,7 +52,7 @@ class _NotificationsView extends StatelessWidget {
           ),
         ],
       ),
-      body: BlocBuilder<NotificationBloc, NotificationState>(
+      body: SafeArea(child: BlocBuilder<NotificationBloc, NotificationState>(
         builder: (context, state) {
           if (state is NotificationLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -76,6 +76,7 @@ class _NotificationsView extends StatelessWidget {
           }
           return const SizedBox();
         },
+      ),
       ),
     );
   }

@@ -29,6 +29,8 @@ import '../../features/customer/presentation/screens/customer_profile_screen.dar
 
 import '../../features/reports/presentation/screens/all_customers_report_screen.dart';
 import '../../features/vendor/presentation/screens/all_customers_screen.dart';
+import '../../features/vendor/presentation/screens/outstanding_list_screen.dart';
+import '../../features/vendor/presentation/screens/collected_today_screen.dart';
 import '../../features/reports/presentation/screens/customer_detail_report_screen.dart';
 
 import '../../features/bill_ocr/presentation/screens/scan_bill_screen.dart';
@@ -72,6 +74,8 @@ class AppRouter {
   static const String upiPayment = '/upi-payment';
   static const String reports = '/reports';
   static const String allCustomers = '/vendor/customers';
+  static const String outstandingList = '/vendor/outstanding';
+  static const String collectedToday = '/vendor/collected-today';
   static const String allCustomersReport = '/reports/all-customers';
   static const String customerDetailReport = '/reports/customer-detail';
   static const String settings = '/settings';
@@ -99,8 +103,8 @@ class AppRouter {
           location.startsWith(profileSetup);
 
       if (authState is AuthAuthenticated) {
-        // Send authenticated users away from public auth screens
-        if (isPublic && location != splash) {
+        // Redirect authenticated users off any public/auth screen
+        if (isPublic) {
           return authState.user.isVendor ? vendorHome : customerHome;
         }
       }
@@ -157,6 +161,14 @@ class AppRouter {
           GoRoute(
             path: allCustomers,
             builder: (context, state) => const AllCustomersScreen(),
+          ),
+          GoRoute(
+            path: outstandingList,
+            builder: (context, state) => const OutstandingListScreen(),
+          ),
+          GoRoute(
+            path: collectedToday,
+            builder: (context, state) => const CollectedTodayScreen(),
           ),
           GoRoute(
             path: allCustomersReport,

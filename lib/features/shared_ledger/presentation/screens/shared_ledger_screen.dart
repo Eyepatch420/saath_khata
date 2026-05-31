@@ -116,13 +116,14 @@ class SharedLedgerView extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
+      body: SafeArea(child: Column(
         children: [
           _BalanceHeader(linkId: linkId),
           _FilterBar(),
           Expanded(
               child: _LedgerList(linkId: linkId, customerName: customerName, currentUserId: currentUserId)),
         ],
+      ),
       ),
       bottomNavigationBar: _LedgerActions(
         linkId: linkId,

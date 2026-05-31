@@ -98,7 +98,7 @@ class _OutstandingListScreenState extends State<OutstandingListScreen> {
           ],
         ),
       ),
-      body: _buildBody(),
+      body: SafeArea(child: _buildBody()),
     );
   }
 

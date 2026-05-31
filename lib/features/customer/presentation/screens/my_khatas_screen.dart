@@ -18,7 +18,7 @@ class MyKhatasScreen extends StatelessWidget {
         appBar: AppBar(
           title: Text(AppLocalizations.of(context)!.myKhatas),
         ),
-        body: BlocBuilder<CustomerBloc, CustomerState>(
+        body: SafeArea(child: BlocBuilder<CustomerBloc, CustomerState>(
           builder: (context, state) {
             if (state is CustomerLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -37,6 +37,7 @@ class MyKhatasScreen extends StatelessWidget {
             }
             return const SizedBox();
           },
+        ),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import 'package:intl/intl.dart';
@@ -32,15 +33,10 @@ class _VendorBookingsView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.appointments)),
-      body: BlocConsumer<BookingBloc, BookingState>(
+      body: SafeArea(child: BlocConsumer<BookingBloc, BookingState>(
         listener: (context, state) {
           if (state is BookingActionError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
+            AppToast.show(context, state.message, type: ToastType.error);
           }
         },
         builder: (context, state) {
@@ -67,6 +63,7 @@ class _VendorBookingsView extends StatelessWidget {
           }
           return const SizedBox();
         },
+      ),
       ),
     );
   }

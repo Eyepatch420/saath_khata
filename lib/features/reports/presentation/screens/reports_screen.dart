@@ -14,7 +14,7 @@ class ReportsScreen extends StatelessWidget {
     return Scaffold(
 
       appBar: AppBar(title: Text(l10n.businessReports)),
-      body: SingleChildScrollView(
+      body: SafeArea(child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,6 +42,7 @@ class ReportsScreen extends StatelessWidget {
             _TopCustomerItem(name: 'Ramesh Singh', value: '₹8,200'),
           ],
         ),
+      ),
       ),
     );
   }

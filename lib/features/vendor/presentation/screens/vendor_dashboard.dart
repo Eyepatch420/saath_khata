@@ -11,6 +11,7 @@ import '../bloc/vendor_bloc.dart';
 import '../bloc/vendor_event.dart';
 import '../bloc/vendor_state.dart';
 import '../widgets/stat_card.dart';
+import '../../../../shared/widgets/app_toast.dart';
 
 class VendorDashboard extends StatelessWidget {
   const VendorDashboard({super.key});
@@ -44,7 +45,7 @@ class VendorDashboardView extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: BlocConsumer<VendorBloc, VendorState>(
+      body: SafeArea(child: BlocConsumer<VendorBloc, VendorState>(
         listenWhen: (prev, curr) {
           if (prev is VendorLoaded && curr is VendorLoaded) {
             return prev.remindAllStatus != curr.remindAllStatus &&
@@ -54,22 +55,21 @@ class VendorDashboardView extends StatelessWidget {
         },
         listener: (context, state) {
           if (state is VendorLoaded) {
-            final messenger = ScaffoldMessenger.of(context);
             if (state.remindAllStatus == RemindAllStatus.success) {
               final count = state.remindAllQueued;
-              messenger.showSnackBar(SnackBar(
-                content: Text(count == 0
+              AppToast.show(
+                context,
+                count == 0
                     ? 'No customers with outstanding balance'
-                    : 'Reminders sent to $count customer${count == 1 ? '' : 's'}'),
-                backgroundColor: AppColors.success,
-                behavior: SnackBarBehavior.floating,
-              ));
+                    : 'Reminders sent to $count customer${count == 1 ? '' : 's'}',
+                type: ToastType.success,
+              );
             } else if (state.remindAllStatus == RemindAllStatus.failure) {
-              messenger.showSnackBar(const SnackBar(
-                content: Text('Failed to send reminders. Please try again.'),
-                backgroundColor: AppColors.error,
-                behavior: SnackBarBehavior.floating,
-              ));
+              AppToast.show(
+                context,
+                'Failed to send reminders. Please try again.',
+                type: ToastType.error,
+              );
             }
           }
         },
@@ -99,6 +99,7 @@ class VendorDashboardView extends StatelessWidget {
                                 '₹${state.totalOutstanding.toStringAsFixed(0)}',
                             color: AppColors.error,
                             icon: Icons.account_balance_wallet_rounded,
+                            onTap: () => context.push(AppRouter.outstandingList),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -109,6 +110,7 @@ class VendorDashboardView extends StatelessWidget {
                                 '₹${state.todayCollection.toStringAsFixed(0)}',
                             color: AppColors.success,
                             icon: Icons.payments_rounded,
+                            onTap: () => context.push(AppRouter.collectedToday),
                           ),
                         ),
                       ],
@@ -185,6 +187,7 @@ class VendorDashboardView extends StatelessWidget {
           return const SizedBox();
         },
       ),
+      ),
       bottomNavigationBar: null,
     );
   }
@@ -242,21 +245,12 @@ void showVendorAddCustomerSheet(BuildContext context) {
                           if (context.mounted) {
                             Navigator.pop(ctx);
                             bloc.add(LoadVendorDashboard());
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Customer added successfully')),
-                            );
+                            AppToast.show(context, 'Customer added successfully', type: ToastType.success);
                           }
                         } catch (e) {
                           setSheetState(() => isLoading = false);
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(e
-                                    .toString()
-                                    .replaceFirst('Exception: ', '')),
-                              ),
-                            );
+                            AppToast.show(context, e.toString().replaceFirst('Exception: ', ''), type: ToastType.error);
                           }
                         }
                       },

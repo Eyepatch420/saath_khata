@@ -25,7 +25,7 @@ class _VoiceEntryScreenState extends State<VoiceEntryScreen> {
           onPressed: () => Navigator.pop(context),
         ),
       ),
-      body: Column(
+      body: SafeArea(child: Column(
         children: [
           const Spacer(),
           Builder(builder: (context) {
@@ -77,6 +77,7 @@ class _VoiceEntryScreenState extends State<VoiceEntryScreen> {
             }),
           ),
         ],
+      ),
       ),
     );
   }

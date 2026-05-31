@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
@@ -105,20 +106,10 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
       listenWhen: (_, c) => c is BookingCreated || c is BookingError,
       listener: (context, state) {
         if (state is BookingCreated) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Booking confirmed!'),
-              backgroundColor: AppColors.success,
-            ),
-          );
+          AppToast.show(context, 'Booking confirmed!', type: ToastType.success);
           context.go(AppRouter.customerBookings);
         } else if (state is BookingError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          AppToast.show(context, state.message, type: ToastType.error);
         }
       },
       child: Scaffold(
@@ -136,7 +127,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
           ),
           titleSpacing: 0,
         ),
-        body: Column(
+        body: SafeArea(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _DateStrip(
@@ -182,6 +173,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

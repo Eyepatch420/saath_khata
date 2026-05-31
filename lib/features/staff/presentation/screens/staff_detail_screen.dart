@@ -25,6 +25,7 @@ class StaffDetailScreen extends StatelessWidget {
           staffId: staff.id,
           year: now.year,
           month: now.month,
+          staff: staff,
         )),
       child: _StaffDetailView(initialStaff: staff),
     );
@@ -60,7 +61,7 @@ class _StaffDetailView extends StatelessWidget {
                 ),
             ],
           ),
-          body: state is StaffLoading
+          body: SafeArea(child: state is StaffLoading
               ? const Center(child: CircularProgressIndicator())
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
@@ -87,6 +88,7 @@ class _StaffDetailView extends StatelessWidget {
                     ],
                   ),
                 ),
+          ),
         );
       },
     );

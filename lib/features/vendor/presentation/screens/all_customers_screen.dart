@@ -43,7 +43,7 @@ class _AllCustomersView extends StatelessWidget {
           ],
         ),
       ),
-      body: BlocBuilder<VendorBloc, VendorState>(
+      body: SafeArea(child: BlocBuilder<VendorBloc, VendorState>(
         builder: (context, state) {
           if (state is VendorLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -78,6 +78,7 @@ class _AllCustomersView extends StatelessWidget {
           }
           return const SizedBox();
         },
+      ),
       ),
     );
   }

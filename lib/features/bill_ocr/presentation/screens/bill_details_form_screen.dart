@@ -24,7 +24,7 @@ class _BillDetailsFormScreenState extends State<BillDetailsFormScreen> {
       appBar: AppBar(
         title: Text(l10n.verifyBillDetails),
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,6 +81,7 @@ class _BillDetailsFormScreenState extends State<BillDetailsFormScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

@@ -24,7 +24,7 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
-      body: SingleChildScrollView(
+      body: SafeArea(child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
         child: Column(
           children: [
@@ -89,6 +89,7 @@ class SettingsScreen extends StatelessWidget {
                 style: AppTypography.bodySmall),
           ],
         ),
+      ),
       ),
     );
   }

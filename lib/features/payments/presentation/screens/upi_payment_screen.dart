@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_toast.dart';
 
 class UpiPaymentScreen extends StatefulWidget {
   final double amount;
@@ -48,7 +49,7 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.upiPayment)),
-      body: SingleChildScrollView(
+      body: SafeArea(child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -118,24 +119,23 @@ class _UpiPaymentScreenState extends State<UpiPaymentScreen> {
           ],
         ),
       ),
+      ),
     );
   }
 
   void _onUpiAppSelected(String app) {
     HapticFeedback.lightImpact();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(AppLocalizations.of(context)!.upiAppComingSoon(app)),
-        duration: const Duration(seconds: 2),
-      ),
+    AppToast.show(
+      context,
+      AppLocalizations.of(context)!.upiAppComingSoon(app),
+      type: ToastType.info,
+      duration: const Duration(seconds: 2),
     );
   }
 
   Future<void> _initiatePayment() async {
     if (_upiCtrl.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.pleaseEnterUpiId)),
-      );
+      AppToast.show(context, AppLocalizations.of(context)!.pleaseEnterUpiId, type: ToastType.warning);
       return;
     }
     setState(() => _isProcessing = true);
@@ -254,7 +254,7 @@ class _SuccessView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: SafeArea(child: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Column(
@@ -295,6 +295,7 @@ class _SuccessView extends StatelessWidget {
           ),
         ),
       ),
+      ),
     );
   }
 }
@@ -306,7 +307,7 @@ class _FailureView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: SafeArea(child: Center(
         child: Padding(
           padding: const EdgeInsets.all(32),
           child: Column(
@@ -359,6 +360,7 @@ class _FailureView extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

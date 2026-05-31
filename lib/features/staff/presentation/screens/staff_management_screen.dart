@@ -33,7 +33,7 @@ class _StaffView extends StatelessWidget {
     return Scaffold(
 
       appBar: AppBar(title: Text(l10n.staffAndLabour)),
-      body: BlocBuilder<StaffBloc, StaffState>(
+      body: SafeArea(child: BlocBuilder<StaffBloc, StaffState>(
         builder: (context, state) {
           if (state is StaffLoading || state is StaffActionLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -49,6 +49,7 @@ class _StaffView extends StatelessWidget {
           }
           return const SizedBox();
         },
+      ),
       ),
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 88),
@@ -290,7 +291,9 @@ class _StaffCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => StaffDetailScreen(staff: staff)),
-      ),
+      ).then((_) {
+        if (context.mounted) context.read<StaffBloc>().add(LoadStaff());
+      }),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

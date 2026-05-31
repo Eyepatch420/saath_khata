@@ -10,6 +10,7 @@ import '../../../../core/widgets/custom_text_field.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
+import '../../../../shared/widgets/app_toast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -43,12 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
             state.user.isVendor ? AppRouter.vendorHome : AppRouter.customerHome,
           );
         } else if (state is AuthError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: AppColors.error,
-            ),
-          );
+          AppToast.show(context, state.message, type: ToastType.error);
         }
       },
       builder: (context, state) {
@@ -59,7 +55,7 @@ class _LoginScreenState extends State<LoginScreen> {
             elevation: 0,
             backgroundColor: Colors.transparent,
           ),
-          body: SingleChildScrollView(
+          body: SafeArea(child: SingleChildScrollView(
             padding: const EdgeInsets.all(24.0),
             keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
             child: Column(
@@ -133,11 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           final email = _emailController.text.trim();
                           final password = _passwordController.text;
                           if (email.isEmpty || password.isEmpty) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l10n.pleaseEnterCredentials),
-                              ),
-                            );
+                            AppToast.show(context, l10n.pleaseEnterCredentials, type: ToastType.warning);
                             return;
                           }
                           context.read<AuthBloc>().add(
@@ -177,6 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 8),
               ],
             ),
+          ),
           ),
         );
       },

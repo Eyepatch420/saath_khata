@@ -98,7 +98,7 @@ class _CollectedTodayScreenState extends State<CollectedTodayScreen> {
           ],
         ),
       ),
-      body: _buildBody(),
+      body: SafeArea(child: _buildBody()),
     );
   }
 

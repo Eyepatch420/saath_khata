@@ -29,7 +29,9 @@ class LoadAttendance extends StaffEvent {
   final String staffId;
   final int year;
   final int month;
-  const LoadAttendance({required this.staffId, required this.year, required this.month});
+  // Optionally provide the staff model to skip the extra list fetch
+  final StaffModel? staff;
+  const LoadAttendance({required this.staffId, required this.year, required this.month, this.staff});
   @override
   List<Object?> get props => [staffId, year, month];
 }

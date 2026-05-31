@@ -34,7 +34,7 @@ class _PaymentsView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.payments)),
-      body: BlocBuilder<PaymentBloc, PaymentState>(
+      body: SafeArea(child: BlocBuilder<PaymentBloc, PaymentState>(
         builder: (context, state) {
           if (state is PaymentLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -50,6 +50,7 @@ class _PaymentsView extends StatelessWidget {
           }
           return const SizedBox();
         },
+      ),
       ),
     );
   }

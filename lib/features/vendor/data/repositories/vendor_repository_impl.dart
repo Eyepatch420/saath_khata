@@ -80,8 +80,8 @@ class VendorRepositoryImpl implements VendorRepository {
   }) async {
     try {
       final response = await _api.get(
-        ApiEndpoints.reportCustomers,
-        queryParameters: {'type': 'collected-today', 'page': page, 'limit': limit},
+        ApiEndpoints.reportCollectedToday,
+        queryParameters: {'page': page, 'limit': limit},
       );
       final data = ApiClient.extractData(response);
       final items = (data['items'] as List)
@@ -100,7 +100,7 @@ class VendorRepositoryImpl implements VendorRepository {
   }) async {
     try {
       final response = await _api.get(
-        ApiEndpoints.reportCustomers,
+        ApiEndpoints.reportOutstanding,
         queryParameters: {'page': page, 'limit': limit},
       );
       final data = ApiClient.extractData(response);

@@ -24,7 +24,7 @@ class CustomerDetailReportScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('${customer['name']} Report'),
       ),
-      body: SingleChildScrollView(
+      body: SafeArea(child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,6 +72,7 @@ class CustomerDetailReportScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

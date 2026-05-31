@@ -60,5 +60,7 @@ class ApiEndpoints {
   static const String reportSummary = '/reports/summary';
   static const String reportCustomers = '/reports/customers';
   static String reportCustomerDetail(String linkId) => '/reports/customers/$linkId';
+  static const String reportOutstanding = '/reports/outstanding';
+  static const String reportCollectedToday = '/reports/collected-today';
   static const String reportMonthly = '/reports/monthly';
 }

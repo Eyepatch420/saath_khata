@@ -27,7 +27,7 @@ class AllCustomersReportScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(l10n.allCustomersReport),
       ),
-      body: Column(
+      body: SafeArea(child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(16),
@@ -52,6 +52,7 @@ class AllCustomersReportScreen extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

@@ -55,7 +55,7 @@ class CustomerDashboardView extends StatelessWidget {
               icon: const Icon(Icons.notifications_none_rounded)),
         ],
       ),
-      body: BlocBuilder<CustomerBloc, CustomerState>(
+      body: SafeArea(child: BlocBuilder<CustomerBloc, CustomerState>(
         builder: (context, state) {
           if (state is CustomerLoading) {
             return const Center(child: CircularProgressIndicator());
@@ -93,6 +93,7 @@ class CustomerDashboardView extends StatelessWidget {
           }
           return const SizedBox();
         },
+      ),
       ),
     );
   }
