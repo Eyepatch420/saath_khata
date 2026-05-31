@@ -105,7 +105,8 @@ class _DetailBody extends StatelessWidget {
             children: [
               Expanded(
                 child: _StatCard(
-                  title: 'Total Billed',
+                  title: 'Billed (net)',
+                  subtitle: 'excl. disputed',
                   value: '₹${detail.totalCredit.toStringAsFixed(0)}',
                   color: AppColors.error,
                   icon: Icons.receipt_long_rounded,
@@ -114,7 +115,8 @@ class _DetailBody extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _StatCard(
-                  title: 'Total Paid',
+                  title: 'Received',
+                  subtitle: 'payments & adj.',
                   value: '₹${detail.totalPaid.toStringAsFixed(0)}',
                   color: AppColors.success,
                   icon: Icons.payments_rounded,
@@ -122,7 +124,13 @@ class _DetailBody extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          _BalanceCheck(
+            billed: detail.totalCredit,
+            received: detail.totalPaid,
+            balance: detail.balance,
+          ),
+          const SizedBox(height: 4),
           _EntryCountsRow(
             pending: detail.pendingCount,
             confirmed: detail.confirmedCount,
@@ -190,6 +198,7 @@ class _BalanceHero extends StatelessWidget {
 
 class _StatCard extends StatelessWidget {
   final String title;
+  final String? subtitle;
   final String value;
   final Color color;
   final IconData icon;
@@ -199,6 +208,7 @@ class _StatCard extends StatelessWidget {
     required this.value,
     required this.color,
     required this.icon,
+    this.subtitle,
   });
 
   @override
@@ -214,12 +224,59 @@ class _StatCard extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 20),
           const SizedBox(height: 10),
-          Text(value,
-              style: AppTypography.h3.copyWith(color: color)),
-          const SizedBox(height: 4),
+          Text(value, style: AppTypography.h3.copyWith(color: color)),
+          const SizedBox(height: 2),
           Text(title,
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textHint)),
+          if (subtitle != null)
+            Text(subtitle!,
+                style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textHint,
+                    fontSize: 10)),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Balance Check Row ────────────────────────────────────────────────────────
+
+class _BalanceCheck extends StatelessWidget {
+  final double billed;
+  final double received;
+  final double balance;
+
+  const _BalanceCheck({
+    required this.billed,
+    required this.received,
+    required this.balance,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    // computed should equal balance from the server
+    final computed = billed - received;
+    final matches = (computed - balance).abs() < 0.5;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            '₹${billed.toStringAsFixed(0)} − ₹${received.toStringAsFixed(0)} = ₹${computed.toStringAsFixed(0)}',
+            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(width: 6),
+          Icon(
+            matches ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
+            size: 14,
+            color: matches ? AppColors.success : AppColors.warning,
+          ),
         ],
       ),
     );
