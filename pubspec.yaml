@@ -59,6 +59,10 @@ dependencies:
   geolocator: ^13.0.1
   http: ^1.2.2
 
+  # PDF generation & sharing
+  pdf: ^3.12.0
+  printing: ^5.14.3
+
   # Environment variables
   flutter_dotenv: ^5.2.1
 

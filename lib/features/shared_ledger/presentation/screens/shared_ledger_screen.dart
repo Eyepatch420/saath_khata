@@ -8,10 +8,12 @@ import '../../../../core/services/ledger_socket_service.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../services/ledger_statement_service.dart';
 import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
 import '../bloc/ledger_state.dart';
@@ -118,7 +120,11 @@ class SharedLedgerView extends StatelessWidget {
       ),
       body: SafeArea(child: Column(
         children: [
-          _BalanceHeader(linkId: linkId),
+          _BalanceHeader(
+            linkId: linkId,
+            customerName: customerName,
+            isVendorView: isVendorView,
+          ),
           _FilterBar(),
           Expanded(
               child: _LedgerList(linkId: linkId, customerName: customerName, currentUserId: currentUserId)),
@@ -212,7 +218,14 @@ class _InfoRow extends StatelessWidget {
 
 class _BalanceHeader extends StatelessWidget {
   final String linkId;
-  const _BalanceHeader({required this.linkId});
+  final String customerName;
+  final bool isVendorView;
+
+  const _BalanceHeader({
+    required this.linkId,
+    required this.customerName,
+    required this.isVendorView,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -220,8 +233,15 @@ class _BalanceHeader extends StatelessWidget {
     return BlocBuilder<LedgerBloc, LedgerState>(
       builder: (context, state) {
         double balance = 0;
-        if (state is LedgerLoaded) balance = state.balance;
-        if (state is LedgerActionLoading) balance = state.balance;
+        List<LedgerEntry> allEntries = const [];
+        if (state is LedgerLoaded) {
+          balance = state.balance;
+          allEntries = state.allEntries;
+        }
+        if (state is LedgerActionLoading) {
+          balance = state.balance;
+          allEntries = state.entries;
+        }
 
         final balanceLabel = balance > 0
             ? l10n.balanceCustomerOwes
@@ -264,7 +284,9 @@ class _BalanceHeader extends StatelessWidget {
                 ],
               ),
               ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: allEntries.isEmpty
+                    ? null
+                    : () => _exportStatement(context, allEntries, balance),
                 icon: const Icon(Icons.picture_as_pdf_rounded, size: 16),
                 label: Text(l10n.statement),
                 style: ElevatedButton.styleFrom(
@@ -278,6 +300,31 @@ class _BalanceHeader extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _exportStatement(
+    BuildContext context,
+    List<LedgerEntry> entries,
+    double balance,
+  ) async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthAuthenticated) return;
+
+    AppToast.show(context, 'Generating statement…', type: ToastType.info);
+
+    try {
+      await LedgerStatementService.generateAndShare(
+        currentUser: authState.user,
+        counterpartyName: customerName,
+        entries: entries,
+        balance: balance,
+        isVendorView: isVendorView,
+      );
+    } catch (e) {
+      if (context.mounted) {
+        AppToast.show(context, 'Failed to generate PDF', type: ToastType.error);
+      }
+    }
   }
 }
 

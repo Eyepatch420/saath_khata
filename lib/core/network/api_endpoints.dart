@@ -10,6 +10,11 @@ class ApiEndpoints {
   static const String me = '/auth/me';
   static const String updateProfile = '/auth/profile';
   static const String uploadPhoto = '/auth/profile/photo';
+  static const String changePassword = '/auth/change-password';
+
+  // Content (public)
+  static const String termsAndConditions = '/content/terms';
+  static const String privacyPolicy = '/content/privacy';
 
   // Links
   static const String links = '/links';

@@ -817,6 +817,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String get securityPin => 'Security & PIN';
 
   @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get termsAndConditions => 'Terms & Conditions';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get accountSettings => 'Account Settings';
+
+  @override
+  String get legalInfo => 'Legal';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmNewPassword => 'Confirm New Password';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get changePasswordButton => 'CHANGE PASSWORD';
+
+  @override
+  String get passwordChangedSuccess => 'Password changed successfully';
+
+  @override
+  String get loadingContent => 'Loading...';
+
+  @override
+  String get failedToLoad => 'Failed to load content. Please try again.';
+
+  @override
   String get bookingActions => 'Booking Actions';
 
   @override

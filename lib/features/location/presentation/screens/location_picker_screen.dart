@@ -179,6 +179,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 userAgentPackageName: 'com.saathkhata.app',
                 maxZoom: 19,
               ),
+              SimpleAttributionWidget(
+                source: const Text('© OpenStreetMap contributors'),
+              ),
             ],
           ),
 

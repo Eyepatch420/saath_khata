@@ -10,9 +10,9 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../data/models/user_model.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
-import '../bloc/auth_state.dart';
 import '../../../../shared/widgets/app_toast.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -106,93 +106,105 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
 
-    if (_pickedImage != null) {
-      try {
-        final formData = FormData.fromMap({
-          'photo': await MultipartFile.fromFile(
-            _pickedImage!.path,
-            filename: 'profile.jpg',
-          ),
-        });
-        await getIt<ApiClient>()
-            .postFormData(ApiEndpoints.uploadPhoto, formData: formData);
-      } catch (e) {
-        if (!mounted) return;
-        // Photo upload failed — show a warning but continue saving the
-        // rest of the profile. Don't block the user from updating their name,
-        // UPI ID, etc. just because Cloudinary is unavailable.
-        final msg = e.toString().contains('SERVICE_UNAVAILABLE') ||
-                e.toString().contains('not available') ||
-                e.toString().contains('unavailable')
-            ? 'Photo upload unavailable — other changes will be saved'
-            : 'Photo upload failed — other changes will still be saved';
-        AppToast.show(context, msg, type: ToastType.warning);
-        // fall through to save the rest of the profile
+    try {
+      // ── Step 1: upload photo if one was picked ──────────────────────────────
+      if (_pickedImage != null) {
+        try {
+          final formData = FormData.fromMap({
+            'photo': await MultipartFile.fromFile(
+              _pickedImage!.path,
+              filename: 'profile.jpg',
+            ),
+          });
+          await getIt<ApiClient>()
+              .postFormData(ApiEndpoints.uploadPhoto, formData: formData);
+        } catch (e) {
+          if (!mounted) return;
+          final msg = e.toString().contains('SERVICE_UNAVAILABLE') ||
+                  e.toString().contains('not available') ||
+                  e.toString().contains('unavailable')
+              ? 'Photo upload unavailable — other changes will be saved'
+              : 'Photo upload failed — other changes will still be saved';
+          AppToast.show(context, msg, type: ToastType.warning);
+          // continue to save the text fields
+        }
       }
-    }
 
-    if (!mounted) return;
-    context.read<AuthBloc>().add(AuthProfileUpdateRequested(
-      name: _nameCtrl.text.trim(),
-      mobile:
-          _mobileCtrl.text.trim().isEmpty ? null : _mobileCtrl.text.trim(),
-      upiId: _upiCtrl.text.trim().isEmpty ? null : _upiCtrl.text.trim(),
-      businessName: widget.user.isVendor && _bizNameCtrl.text.trim().isNotEmpty
-          ? _bizNameCtrl.text.trim()
-          : null,
-      businessCategory: widget.user.isVendor &&
-              _bizCategoryCtrl.text.trim().isNotEmpty
-          ? _bizCategoryCtrl.text.trim()
-          : null,
-      businessAddress:
-          widget.user.isVendor && _bizAddressCtrl.text.trim().isNotEmpty
-              ? _bizAddressCtrl.text.trim()
-              : null,
-    ));
+      if (!mounted) return;
+
+      // ── Step 2: update profile fields directly via repository ──────────────
+      final updated = await getIt<AuthRepository>().updateProfile(
+        name: _nameCtrl.text.trim(),
+        mobile: _mobileCtrl.text.trim().isEmpty
+            ? null
+            : _mobileCtrl.text.trim(),
+        upiId:
+            _upiCtrl.text.trim().isEmpty ? null : _upiCtrl.text.trim(),
+        businessName:
+            widget.user.isVendor && _bizNameCtrl.text.trim().isNotEmpty
+                ? _bizNameCtrl.text.trim()
+                : null,
+        businessCategory: widget.user.isVendor &&
+                _bizCategoryCtrl.text.trim().isNotEmpty
+            ? _bizCategoryCtrl.text.trim()
+            : null,
+        businessAddress:
+            widget.user.isVendor && _bizAddressCtrl.text.trim().isNotEmpty
+                ? _bizAddressCtrl.text.trim()
+                : null,
+      );
+
+      if (!mounted) return;
+
+      // ── Step 3: sync updated user into the bloc (no loading flash) ─────────
+      context.read<AuthBloc>().add(AuthUserUpdated(updated));
+
+      AppToast.show(context, 'Profile updated successfully',
+          type: ToastType.success);
+      context.pop();
+    } on Exception catch (e) {
+      if (!mounted) return;
+      AppToast.show(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+        type: ToastType.error,
+      );
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthBloc, AuthState>(
-      listenWhen: (previous, current) => previous is AuthLoading,
-      listener: (context, state) {
-        if (state is AuthAuthenticated) {
-          setState(() => _isSaving = false);
-          AppToast.show(context, 'Profile updated successfully', type: ToastType.success);
-          context.pop();
-        } else if (state is AuthError) {
-          setState(() => _isSaving = false);
-          AppToast.show(context, state.message, type: ToastType.error);
-        }
-      },
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Edit Profile'),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: _isSaving
-                  ? const Center(
-                      child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    )
-                  : TextButton(
-                      onPressed: _save,
-                      child: const Text(
-                        'Save',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Edit Profile'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: _isSaving
+                ? const Center(
+                    child: SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  )
+                : TextButton(
+                    onPressed: _save,
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-            ),
-          ],
-        ),
-        body: SafeArea(child: SingleChildScrollView(
+                  ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Form(
             key: _formKey,
@@ -311,7 +323,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ],
             ),
           ),
-        ),
         ),
       ),
     );

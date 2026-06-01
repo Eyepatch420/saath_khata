@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/localization/locale_provider.dart';
+import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/data/models/user_model.dart';
@@ -24,72 +25,124 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settings)),
-      body: SafeArea(child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
-        child: Column(
-          children: [
-            const _ProfileHeader(),
-            const SizedBox(height: 24),
-            _SettingsTile(
-              icon: Icons.language_rounded,
-              title: l10n.appLanguage,
-              subtitle: currentLang,
-              onTap: () => _showLanguagePicker(context, l10n, localeProvider),
-            ),
-            _SettingsTile(
-              icon: Icons.account_balance_wallet_rounded,
-              title: l10n.myUpiIds,
-              subtitle: l10n.settingsManagePayments,
-              onTap: () {},
-            ),
-            _SettingsTile(
-              icon: Icons.notifications_active_rounded,
-              title: l10n.notifications,
-              subtitle: l10n.settingsManageAlerts,
-              onTap: () {},
-            ),
-            _SettingsTile(
-              icon: Icons.security_rounded,
-              title: l10n.security,
-              subtitle: l10n.settingsAppPinFingerprint,
-              onTap: () {},
-            ),
-            _SettingsTile(
-              icon: Icons.help_outline_rounded,
-              title: l10n.helpSupport,
-              subtitle: l10n.settingsFaqsContact,
-              onTap: () {},
-            ),
-            const SizedBox(height: 40),
-            BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                final isLoggingOut = state is AuthLoading;
-                return TextButton(
-                  onPressed: isLoggingOut
-                      ? null
-                      : () => _confirmLogout(context, l10n),
-                  child: isLoggingOut
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(
-                          l10n.logout,
-                          style: const TextStyle(
-                            color: AppColors.error,
-                            fontWeight: FontWeight.bold,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+              20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const _ProfileHeader(),
+              const SizedBox(height: 24),
+              _SectionLabel(label: l10n.accountSettings),
+              const SizedBox(height: 8),
+              _SettingsTile(
+                icon: Icons.person_outline_rounded,
+                title: l10n.editProfile,
+                subtitle: 'Update your name, photo and details',
+                onTap: () {
+                  final authState = context.read<AuthBloc>().state;
+                  if (authState is AuthAuthenticated) {
+                    context.push(AppRouter.editProfile,
+                        extra: authState.user);
+                  }
+                },
+              ),
+              _SettingsTile(
+                icon: Icons.lock_outline_rounded,
+                title: l10n.changePassword,
+                subtitle: 'Update your account password',
+                onTap: () => context.push(AppRouter.changePassword),
+              ),
+              _SettingsTile(
+                icon: Icons.language_rounded,
+                title: l10n.appLanguage,
+                subtitle: currentLang,
+                onTap: () => _showLanguagePicker(context, l10n, localeProvider),
+              ),
+              _SettingsTile(
+                icon: Icons.account_balance_wallet_rounded,
+                title: l10n.myUpiIds,
+                subtitle: l10n.settingsManagePayments,
+                onTap: () {},
+              ),
+              _SettingsTile(
+                icon: Icons.notifications_active_rounded,
+                title: l10n.notifications,
+                subtitle: l10n.settingsManageAlerts,
+                onTap: () {},
+              ),
+              _SettingsTile(
+                icon: Icons.security_rounded,
+                title: l10n.security,
+                subtitle: l10n.settingsAppPinFingerprint,
+                onTap: () {},
+              ),
+              _SettingsTile(
+                icon: Icons.help_outline_rounded,
+                title: l10n.helpSupport,
+                subtitle: l10n.settingsFaqsContact,
+                onTap: () {},
+              ),
+              const SizedBox(height: 12),
+              _SectionLabel(label: l10n.legalInfo),
+              const SizedBox(height: 8),
+              _SettingsTile(
+                icon: Icons.description_outlined,
+                title: l10n.termsAndConditions,
+                subtitle: 'Read our terms of service',
+                onTap: () => context.push(
+                  AppRouter.policy,
+                  extra: {
+                    'title': l10n.termsAndConditions,
+                    'endpoint': ApiEndpoints.termsAndConditions,
+                  },
+                ),
+              ),
+              _SettingsTile(
+                icon: Icons.privacy_tip_outlined,
+                title: l10n.privacyPolicy,
+                subtitle: 'How we handle your data',
+                onTap: () => context.push(
+                  AppRouter.policy,
+                  extra: {
+                    'title': l10n.privacyPolicy,
+                    'endpoint': ApiEndpoints.privacyPolicy,
+                  },
+                ),
+              ),
+              const SizedBox(height: 32),
+              BlocBuilder<AuthBloc, AuthState>(
+                builder: (context, state) {
+                  final isLoggingOut = state is AuthLoading;
+                  return TextButton(
+                    onPressed: isLoggingOut
+                        ? null
+                        : () => _confirmLogout(context, l10n),
+                    child: isLoggingOut
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child:
+                                CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(
+                            l10n.logout,
+                            style: const TextStyle(
+                              color: AppColors.error,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                );
-              },
-            ),
-            const SizedBox(height: 8),
-            Text(l10n.settingsVersion('1.0.0'),
-                style: AppTypography.bodySmall),
-          ],
+                  );
+                },
+              ),
+              const SizedBox(height: 8),
+              Text(l10n.settingsVersion('1.0.0'),
+                  style: AppTypography.bodySmall,
+                  textAlign: TextAlign.center),
+            ],
+          ),
         ),
-      ),
       ),
     );
   }
@@ -142,6 +195,26 @@ class SettingsScreen extends StatelessWidget {
             child: const Text('हिंदी'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SectionLabel extends StatelessWidget {
+  final String label;
+  const _SectionLabel({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 4, bottom: 4),
+      child: Text(
+        label.toUpperCase(),
+        style: AppTypography.bodySmall.copyWith(
+          color: AppColors.textHint,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.8,
+        ),
       ),
     );
   }
@@ -226,8 +299,8 @@ class _SettingsTile extends StatelessWidget {
         leading: Icon(icon, color: AppColors.primary),
         title: Text(title, style: AppTypography.labelLarge),
         subtitle: Text(subtitle, style: AppTypography.bodySmall),
-        trailing: const Icon(Icons.chevron_right_rounded,
-            color: AppColors.textHint),
+        trailing:
+            const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
       ),
     );
   }

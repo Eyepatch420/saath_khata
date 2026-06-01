@@ -27,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthSignupRequested>(_onSignup);
     on<AuthLogoutRequested>(_onLogout);
     on<AuthProfileUpdateRequested>(_onUpdateProfile);
+    on<AuthUserUpdated>(_onUserUpdated);
   }
 
   Future<void> _onCheckStatus(
@@ -151,6 +152,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AppLogger.i(_m, 'Local session cleared — unauthenticated');
       emit(const AuthUnauthenticated());
     }
+  }
+
+  Future<void> _onUserUpdated(
+    AuthUserUpdated event,
+    Emitter<AuthState> emit,
+  ) async {
+    await _storage.saveFullUser(event.user);
+    emit(AuthAuthenticated(event.user));
   }
 
   Future<void> _onUpdateProfile(

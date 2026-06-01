@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import '../../data/models/user_model.dart';
 
 abstract class AuthEvent extends Equatable {
   const AuthEvent();
@@ -80,4 +81,14 @@ class AuthProfileUpdateRequested extends AuthEvent {
   @override
   List<Object?> get props =>
       [name, mobile, upiId, businessName, businessCategory, businessAddress];
+}
+
+/// Lightweight event: used after a direct API call succeeds to sync
+/// the in-memory bloc state without re-triggering the full update flow.
+class AuthUserUpdated extends AuthEvent {
+  final UserModel user;
+  const AuthUserUpdated(this.user);
+
+  @override
+  List<Object?> get props => [user];
 }

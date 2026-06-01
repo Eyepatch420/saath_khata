@@ -48,6 +48,8 @@ import '../../features/location/presentation/screens/location_picker_screen.dart
 import '../../shared/models/location_model.dart';
 import '../../features/payments/presentation/screens/upi_payment_screen.dart';
 import '../../features/auth/presentation/bloc/auth_state.dart';
+import '../../features/auth/presentation/screens/change_password_screen.dart';
+import '../../features/settings/presentation/screens/policy_screen.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
 
@@ -82,6 +84,8 @@ class AppRouter {
   static const String editProfile = '/edit-profile';
   static const String bookAppointment = '/book-appointment';
   static const String locationPicker = '/location-picker';
+  static const String changePassword = '/change-password';
+  static const String policy = '/policy';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -270,6 +274,20 @@ class AppRouter {
         builder: (context, state) {
           final user = state.extra as UserModel;
           return EditProfileScreen(user: user);
+        },
+      ),
+      GoRoute(
+        path: changePassword,
+        builder: (context, state) => const ChangePasswordScreen(),
+      ),
+      GoRoute(
+        path: policy,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, dynamic>;
+          return PolicyScreen(
+            title: extras['title'] as String,
+            endpoint: extras['endpoint'] as String,
+          );
         },
       ),
       GoRoute(

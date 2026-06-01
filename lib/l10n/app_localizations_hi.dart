@@ -813,6 +813,49 @@ class AppLocalizationsHi extends AppLocalizations {
   String get securityPin => 'सुरक्षा और पिन';
 
   @override
+  String get editProfile => 'प्रोफ़ाइल संपादित करें';
+
+  @override
+  String get changePassword => 'पासवर्ड बदलें';
+
+  @override
+  String get termsAndConditions => 'नियम और शर्तें';
+
+  @override
+  String get privacyPolicy => 'गोपनीयता नीति';
+
+  @override
+  String get accountSettings => 'खाता सेटिंग';
+
+  @override
+  String get legalInfo => 'कानूनी';
+
+  @override
+  String get currentPassword => 'वर्तमान पासवर्ड';
+
+  @override
+  String get newPassword => 'नया पासवर्ड';
+
+  @override
+  String get confirmNewPassword => 'नया पासवर्ड दोबारा दर्ज करें';
+
+  @override
+  String get passwordsDoNotMatch => 'पासवर्ड मेल नहीं खाते';
+
+  @override
+  String get changePasswordButton => 'पासवर्ड बदलें';
+
+  @override
+  String get passwordChangedSuccess => 'पासवर्ड सफलतापूर्वक बदला गया';
+
+  @override
+  String get loadingContent => 'लोड हो रहा है...';
+
+  @override
+  String get failedToLoad =>
+      'सामग्री लोड करने में विफल। कृपया पुनः प्रयास करें।';
+
+  @override
   String get bookingActions => 'बुकिंग कार्रवाई';
 
   @override

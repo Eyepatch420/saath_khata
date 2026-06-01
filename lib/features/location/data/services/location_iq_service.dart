@@ -1,29 +1,35 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../../../../shared/models/location_model.dart';
 
+/// Geocoding via Nominatim (OpenStreetMap) — free, no API key required.
+/// Tiles via openstreetmap.org — free for reasonable usage.
+///
+/// Nominatim usage policy: max 1 req/sec, must set a meaningful User-Agent.
 class LocationIQService {
-  static String get _key => dotenv.env['LOCATIONIQ_API_KEY'] ?? '';
+  static const _userAgent = 'SaathKhata/1.0 (wwwamaanansari0@gmail.com)';
+  static const _nominatimBase = 'https://nominatim.openstreetmap.org';
 
-  static const _baseUrl = 'https://us1.locationiq.com/v1';
-  static const _headers = {'User-Agent': 'SaathKhata/1.0'};
+  static const _headers = {
+    'User-Agent': _userAgent,
+    'Accept-Language': 'en',
+  };
 
-  /// Tile URL template for flutter_map.
+  /// OSM tile URL template for flutter_map — no API key needed.
   static String tileUrlTemplate() =>
-      'https://tiles.locationiq.com/v3/streets/r/{z}/{x}/{y}.png?key=$_key';
+      'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-  /// Forward autocomplete — returns up to 6 suggestions for [query].
+  /// Forward search/autocomplete via Nominatim — returns up to 6 suggestions.
+  /// Caller MUST debounce (≥500 ms) — Nominatim forbids keystroke-by-keystroke calls.
   static Future<List<LocationSuggestion>> autocomplete(String query) async {
-    if (_key.isEmpty || query.trim().length < 3) return [];
+    if (query.trim().length < 3) return [];
     try {
-      final uri = Uri.parse('$_baseUrl/autocomplete').replace(
+      final uri = Uri.parse('$_nominatimBase/search').replace(
         queryParameters: {
-          'key': _key,
           'q': query.trim(),
+          'format': 'jsonv2',
           'limit': '6',
-          'dedupe': '1',
-          'normalizecity': '1',
+          'addressdetails': '1',
         },
       );
       final response = await http
@@ -40,17 +46,16 @@ class LocationIQService {
     }
   }
 
-  /// Reverse geocode [lat]/[lng] → [LocationData].
+  /// Reverse geocode [lat]/[lng] → [LocationData] via Nominatim.
   static Future<LocationData?> reverseGeocode(double lat, double lng) async {
-    if (_key.isEmpty) return null;
     try {
-      final uri = Uri.parse('$_baseUrl/reverse').replace(
+      final uri = Uri.parse('$_nominatimBase/reverse').replace(
         queryParameters: {
-          'key': _key,
           'lat': lat.toStringAsFixed(7),
           'lon': lng.toStringAsFixed(7),
-          'format': 'json',
-          'normalizecity': '1',
+          'format': 'jsonv2',
+          'addressdetails': '1',
+          'zoom': '18',
         },
       );
       final response = await http
