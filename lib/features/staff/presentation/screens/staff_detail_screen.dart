@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoPicker, FixedExtentScrollController;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -78,6 +79,7 @@ class _StaffDetailView extends StatelessWidget {
                         attendance: attendance,
                         year: year,
                         month: month,
+                        joinDate: staff.joinDate,
                         onMonthChanged: (y, m) => context.read<StaffBloc>().add(
                               LoadAttendance(staffId: staff.id, year: y, month: m),
                             ),
@@ -103,6 +105,7 @@ class _StaffDetailView extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -377,11 +380,12 @@ class _SalaryStat extends StatelessWidget {
   }
 }
 
-class _AttendanceCalendar extends StatelessWidget {
+class _AttendanceCalendar extends StatefulWidget {
   final String staffId;
   final Map<String, AttendanceStatus> attendance;
   final int year;
   final int month;
+  final DateTime joinDate;
   final void Function(int year, int month) onMonthChanged;
 
   const _AttendanceCalendar({
@@ -389,16 +393,126 @@ class _AttendanceCalendar extends StatelessWidget {
     required this.attendance,
     required this.year,
     required this.month,
+    required this.joinDate,
     required this.onMonthChanged,
   });
+
+  @override
+  State<_AttendanceCalendar> createState() => _AttendanceCalendarState();
+}
+
+class _AttendanceCalendarState extends State<_AttendanceCalendar> {
+  void _showMonthYearPicker(BuildContext context) {
+    final now = DateTime.now();
+    final firstYear = widget.joinDate.year;
+    final lastYear = now.year;
+
+    // Build list of valid (year, month) pairs
+    final months = <DateTime>[];
+    for (int y = firstYear; y <= lastYear; y++) {
+      final startMonth = (y == firstYear) ? widget.joinDate.month : 1;
+      final endMonth = (y == lastYear) ? now.month : 12;
+      for (int m = startMonth; m <= endMonth; m++) {
+        months.add(DateTime(y, m));
+      }
+    }
+
+    int selectedIndex =
+        months.indexWhere((d) => d.year == widget.year && d.month == widget.month);
+    if (selectedIndex < 0) selectedIndex = months.length - 1;
+
+    final locale = Localizations.localeOf(context).toString();
+
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        int pickerIndex = selectedIndex;
+        return SafeArea(
+          child: SizedBox(
+            height: 300,
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(ctx),
+                        child: const Text('Cancel'),
+                      ),
+                      Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.divider,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          widget.onMonthChanged(
+                            months[pickerIndex].year,
+                            months[pickerIndex].month,
+                          );
+                        },
+                        child: Text(
+                          'Done',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: CupertinoPicker(
+                    scrollController: FixedExtentScrollController(
+                      initialItem: selectedIndex,
+                    ),
+                    itemExtent: 44,
+                    onSelectedItemChanged: (i) => pickerIndex = i,
+                    children: months
+                        .map((d) => Center(
+                              child: Text(
+                                DateFormat('MMMM yyyy', locale).format(d),
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
-    final monthLabel = DateFormat('MMMM yyyy', locale).format(DateTime(year, month));
-    final daysInMonth = DateTime(year, month + 1, 0).day;
-    final firstWeekday = DateTime(year, month, 1).weekday % 7;
+    final monthLabel =
+        DateFormat('MMMM yyyy', locale).format(DateTime(widget.year, widget.month));
+    final daysInMonth = DateTime(widget.year, widget.month + 1, 0).day;
+    final firstWeekday = DateTime(widget.year, widget.month, 1).weekday % 7;
+
+    final now = DateTime.now();
+    final joinFirst = DateTime(widget.joinDate.year, widget.joinDate.month);
+    final current = DateTime(widget.year, widget.month);
+    final canGoPrev = current.isAfter(joinFirst);
+    final canGoNext = current.year < now.year ||
+        (current.year == now.year && current.month < now.month);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -414,30 +528,50 @@ class _AttendanceCalendar extends StatelessWidget {
               Text(l10n.attendanceTitle, style: AppTypography.labelLarge),
               const Spacer(),
               IconButton(
-                icon: const Icon(Icons.chevron_left_rounded, size: 20),
-                onPressed: () {
-                  final prev = DateTime(year, month - 1);
-                  onMonthChanged(prev.year, prev.month);
-                },
+                icon: Icon(
+                  Icons.chevron_left_rounded,
+                  size: 20,
+                  color: canGoPrev ? null : AppColors.textHint,
+                ),
+                onPressed: canGoPrev
+                    ? () {
+                        final prev = DateTime(widget.year, widget.month - 1);
+                        widget.onMonthChanged(prev.year, prev.month);
+                      }
+                    : null,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
               const SizedBox(width: 8),
-              Text(
-                monthLabel,
-                style: AppTypography.bodySmall.copyWith(fontWeight: FontWeight.w600),
+              GestureDetector(
+                onTap: () => _showMonthYearPicker(context),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      monthLabel,
+                      style: AppTypography.bodySmall.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_drop_down_rounded, size: 18),
+                  ],
+                ),
               ),
               const SizedBox(width: 8),
               IconButton(
-                icon: const Icon(Icons.chevron_right_rounded, size: 20),
-                onPressed: () {
-                  final next = DateTime(year, month + 1);
-                  final now = DateTime.now();
-                  if (next.year < now.year ||
-                      (next.year == now.year && next.month <= now.month)) {
-                    onMonthChanged(next.year, next.month);
-                  }
-                },
+                icon: Icon(
+                  Icons.chevron_right_rounded,
+                  size: 20,
+                  color: canGoNext ? null : AppColors.textHint,
+                ),
+                onPressed: canGoNext
+                    ? () {
+                        final next = DateTime(widget.year, widget.month + 1);
+                        widget.onMonthChanged(next.year, next.month);
+                      }
+                    : null,
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
@@ -472,20 +606,21 @@ class _AttendanceCalendar extends StatelessWidget {
               if (index < firstWeekday) return const SizedBox();
               final day = index - firstWeekday + 1;
               final key =
-                  '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
-              final status = attendance[key];
-              final now = DateTime.now();
-              final cellDate = DateTime(year, month, day);
-              final isToday = now.year == year && now.month == month && now.day == day;
-              // Only allow marking attendance for today or past dates
-              final isFuture = cellDate.isAfter(DateTime(now.year, now.month, now.day));
+                  '${widget.year}-${widget.month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+              final status = widget.attendance[key];
+              final cellDate = DateTime(widget.year, widget.month, day);
+              final isToday = now.year == widget.year &&
+                  now.month == widget.month &&
+                  now.day == day;
+              final isFuture =
+                  cellDate.isAfter(DateTime(now.year, now.month, now.day));
               return _DayCell(
                 day: day,
                 status: status,
                 isToday: isToday,
                 onTap: isFuture
                     ? null
-                    : () => _showMarkSheet(context, staffId, cellDate, status),
+                    : () => _showMarkSheet(context, widget.staffId, cellDate, status),
               );
             },
           ),
@@ -504,11 +639,11 @@ class _AttendanceCalendar extends StatelessWidget {
   ) {
     final l10n = AppLocalizations.of(context)!;
     final bloc = context.read<StaffBloc>();
-    final dateLabel =
-        '${date.day}/${date.month}/${date.year}';
+    final dateLabel = '${date.day}/${date.month}/${date.year}';
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -834,6 +969,7 @@ class _ActionButtons extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
@@ -903,6 +1039,7 @@ class _ActionButtons extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),

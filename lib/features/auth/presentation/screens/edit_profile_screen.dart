@@ -9,11 +9,14 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../shared/models/location_model.dart';
+import '../../../../shared/widgets/app_toast.dart';
+import '../../../../shared/widgets/location_picker_tile.dart';
 import '../../data/models/user_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
-import '../../../../shared/widgets/app_toast.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserModel user;
@@ -27,10 +30,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameCtrl;
   late final TextEditingController _mobileCtrl;
-  late final TextEditingController _upiCtrl;
+  late final TextEditingController _upiCtrl; // customers only
   late final TextEditingController _bizNameCtrl;
   late final TextEditingController _bizCategoryCtrl;
-  late final TextEditingController _bizAddressCtrl;
+
+  // Vendor location state
+  LocationData? _pickedLocation;
 
   File? _pickedImage;
   bool _isSaving = false;
@@ -44,8 +49,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _bizNameCtrl = TextEditingController(text: widget.user.businessName ?? '');
     _bizCategoryCtrl =
         TextEditingController(text: widget.user.businessCategory ?? '');
-    _bizAddressCtrl =
-        TextEditingController(text: widget.user.businessAddress ?? '');
+
+    // Pre-populate location if vendor already has coordinates
+    if (widget.user.isVendor &&
+        widget.user.businessLatitude != null &&
+        widget.user.businessLongitude != null) {
+      _pickedLocation = LocationData(
+        lat: widget.user.businessLatitude!,
+        lng: widget.user.businessLongitude!,
+        displayName: widget.user.businessAddress ?? '',
+      );
+    }
   }
 
   @override
@@ -55,7 +69,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _upiCtrl.dispose();
     _bizNameCtrl.dispose();
     _bizCategoryCtrl.dispose();
-    _bizAddressCtrl.dispose();
     super.dispose();
   }
 
@@ -71,6 +84,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _showPhotoOptions() {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       builder: (ctx) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -106,6 +120,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
 
+    bool photoUploadFailed = false;
+
     try {
       // ── Step 1: upload photo if one was picked ──────────────────────────────
       if (_pickedImage != null) {
@@ -118,49 +134,54 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           });
           await getIt<ApiClient>()
               .postFormData(ApiEndpoints.uploadPhoto, formData: formData);
-        } catch (e) {
-          if (!mounted) return;
-          final msg = e.toString().contains('SERVICE_UNAVAILABLE') ||
-                  e.toString().contains('not available') ||
-                  e.toString().contains('unavailable')
-              ? 'Photo upload unavailable — other changes will be saved'
-              : 'Photo upload failed — other changes will still be saved';
-          AppToast.show(context, msg, type: ToastType.warning);
-          // continue to save the text fields
+        } catch (_) {
+          photoUploadFailed = true;
         }
       }
 
       if (!mounted) return;
 
-      // ── Step 2: update profile fields directly via repository ──────────────
+      // ── Step 2: update profile fields ──────────────────────────────────────
       final updated = await getIt<AuthRepository>().updateProfile(
         name: _nameCtrl.text.trim(),
         mobile: _mobileCtrl.text.trim().isEmpty
             ? null
             : _mobileCtrl.text.trim(),
-        upiId:
-            _upiCtrl.text.trim().isEmpty ? null : _upiCtrl.text.trim(),
+        // Customer UPI only — vendors manage UPI IDs via UpiManagementScreen
+        upiId: !widget.user.isVendor && _upiCtrl.text.trim().isNotEmpty
+            ? _upiCtrl.text.trim()
+            : null,
         businessName:
             widget.user.isVendor && _bizNameCtrl.text.trim().isNotEmpty
                 ? _bizNameCtrl.text.trim()
                 : null,
-        businessCategory: widget.user.isVendor &&
-                _bizCategoryCtrl.text.trim().isNotEmpty
-            ? _bizCategoryCtrl.text.trim()
-            : null,
-        businessAddress:
-            widget.user.isVendor && _bizAddressCtrl.text.trim().isNotEmpty
-                ? _bizAddressCtrl.text.trim()
+        businessCategory:
+            widget.user.isVendor && _bizCategoryCtrl.text.trim().isNotEmpty
+                ? _bizCategoryCtrl.text.trim()
                 : null,
+        businessAddress: widget.user.isVendor
+            ? (_pickedLocation?.displayName ?? widget.user.businessAddress)
+            : null,
+        businessLatitude:
+            widget.user.isVendor ? _pickedLocation?.lat : null,
+        businessLongitude:
+            widget.user.isVendor ? _pickedLocation?.lng : null,
       );
 
       if (!mounted) return;
 
-      // ── Step 3: sync updated user into the bloc (no loading flash) ─────────
       context.read<AuthBloc>().add(AuthUserUpdated(updated));
 
-      AppToast.show(context, 'Profile updated successfully',
-          type: ToastType.success);
+      if (photoUploadFailed) {
+        AppToast.show(
+          context,
+          'Profile saved — photo could not be uploaded right now',
+          type: ToastType.warning,
+        );
+      } else {
+        AppToast.show(context, 'Profile updated successfully',
+            type: ToastType.success);
+      }
       context.pop();
     } on Exception catch (e) {
       if (!mounted) return;
@@ -211,6 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // ── Avatar ───────────────────────────────────────────────────
                 Center(
                   child: GestureDetector(
                     onTap: _showPhotoOptions,
@@ -248,6 +270,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
+
+                // ── Personal info ─────────────────────────────────────────────
                 Text(
                   'Personal Info',
                   style: AppTypography.labelLarge.copyWith(
@@ -275,15 +299,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                   keyboardType: TextInputType.phone,
                 ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _upiCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'UPI ID',
-                    hintText: 'e.g. name@upi',
-                    prefixIcon: Icon(Icons.account_balance_wallet_outlined),
+
+                // ── Customer-only: single UPI field ───────────────────────────
+                if (!widget.user.isVendor) ...[
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _upiCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'UPI ID',
+                      hintText: 'e.g. name@upi',
+                      prefixIcon:
+                          Icon(Icons.account_balance_wallet_outlined),
+                    ),
                   ),
-                ),
+                ],
+
+                // ── Vendor-only: business info ─────────────────────────────────
                 if (widget.user.isVendor) ...[
                   const SizedBox(height: 32),
                   Text(
@@ -310,13 +341,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _bizAddressCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Business Address',
-                      prefixIcon: Icon(Icons.location_on_outlined),
-                    ),
-                    maxLines: 2,
+                  // Location picker replaces the plain text address field
+                  LocationPickerTile(
+                    location: _pickedLocation,
+                    onTap: () async {
+                      final result = await context.push<LocationData>(
+                        AppRouter.locationPicker,
+                        extra: _pickedLocation,
+                      );
+                      if (result != null) {
+                        setState(() => _pickedLocation = result);
+                      }
+                    },
                   ),
                 ],
                 const SizedBox(height: 32),

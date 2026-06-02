@@ -49,6 +49,7 @@ import '../../shared/models/location_model.dart';
 import '../../features/payments/presentation/screens/upi_payment_screen.dart';
 import '../../features/auth/presentation/bloc/auth_state.dart';
 import '../../features/auth/presentation/screens/change_password_screen.dart';
+import '../../features/auth/presentation/screens/upi_management_screen.dart';
 import '../../features/settings/presentation/screens/policy_screen.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
@@ -86,6 +87,7 @@ class AppRouter {
   static const String locationPicker = '/location-picker';
   static const String changePassword = '/change-password';
   static const String policy = '/policy';
+  static const String upiManagement = '/upi-management';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -305,6 +307,13 @@ class AppRouter {
         builder: (context, state) => LocationPickerScreen(
           initialLocation: state.extra as LocationData?,
         ),
+      ),
+      GoRoute(
+        path: upiManagement,
+        builder: (context, state) {
+          final user = state.extra as UserModel;
+          return UpiManagementScreen(user: user);
+        },
       ),
     ],
   );

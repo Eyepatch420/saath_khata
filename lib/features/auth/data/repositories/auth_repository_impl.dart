@@ -3,6 +3,7 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../models/auth_response_model.dart';
+import '../models/upi_id_model.dart';
 import '../models/user_model.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -87,6 +88,9 @@ class AuthRepositoryImpl implements AuthRepository {
     String? businessName,
     String? businessCategory,
     String? businessAddress,
+    double? businessLatitude,
+    double? businessLongitude,
+    List<UpiIdModel>? upiIds,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
@@ -95,9 +99,13 @@ class AuthRepositoryImpl implements AuthRepository {
     if (businessName != null) body['businessName'] = businessName;
     if (businessCategory != null) body['businessCategory'] = businessCategory;
     if (businessAddress != null) body['businessAddress'] = businessAddress;
+    if (businessLatitude != null) body['businessLatitude'] = businessLatitude;
+    if (businessLongitude != null) body['businessLongitude'] = businessLongitude;
+    if (upiIds != null) {
+      body['upiIds'] = upiIds.map((u) => u.toJson()).toList();
+    }
 
     try {
-      // PATCH /auth/profile returns UserProfileResponse directly (not wrapped in user+tokens)
       final response = await _api.patch(ApiEndpoints.updateProfile, data: body);
       return UserModel.fromJson(ApiClient.extractData(response));
     } on DioException catch (e) {

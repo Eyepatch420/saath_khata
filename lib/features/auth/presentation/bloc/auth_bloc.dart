@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/services/storage_service.dart';
@@ -42,6 +43,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AppLogger.i(_m, 'Session restored — ${user.email} (${user.role})');
         final accessToken = await _storage.getAccessToken();
         if (accessToken != null) {
+          if (kDebugMode) {
+            AppLogger.i(_m, '🔑 [DEBUG] Bearer token: $accessToken');
+          }
           getIt<LedgerSocketService>().connect(accessToken);
           await getIt<PushNotificationService>().initialize();
           getIt<NotificationBloc>().add(LoadUnreadCount());
@@ -87,6 +91,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
       await _storage.saveFullUser(result.user);
       AppLogger.i(_m, 'Login success — ${result.user.email} (${result.user.role})');
+      if (kDebugMode) {
+        AppLogger.i(_m, '🔑 [DEBUG] Bearer token: ${result.tokens.accessToken}');
+      }
       getIt<LedgerSocketService>().connect(result.tokens.accessToken);
       await getIt<PushNotificationService>().initialize();
       getIt<NotificationBloc>().add(LoadUnreadCount());

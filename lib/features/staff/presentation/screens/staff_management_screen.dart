@@ -300,8 +300,7 @@ class _StaffCard extends StatelessWidget {
         : l10n.staffSalaryPerMonth(staff.salaryAmount.toStringAsFixed(0));
 
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
+      onTap: () => Navigator.of(context, rootNavigator: true).push(
         MaterialPageRoute(builder: (_) => StaffDetailScreen(staff: staff)),
       ).then((_) {
         if (context.mounted) context.read<StaffBloc>().add(LoadStaff());

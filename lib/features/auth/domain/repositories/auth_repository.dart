@@ -1,4 +1,5 @@
 import '../../data/models/auth_response_model.dart';
+import '../../data/models/upi_id_model.dart';
 import '../../data/models/user_model.dart';
 
 abstract class AuthRepository {
@@ -22,6 +23,9 @@ abstract class AuthRepository {
   Future<void> logout({required String refreshToken});
 
   /// PATCH /auth/profile — updates editable fields, returns refreshed user.
+  ///
+  /// [upiId] is only used for customers (single UPI).
+  /// [upiIds] is only used for vendors — replaces the entire UPI ID list atomically.
   Future<UserModel> updateProfile({
     String? name,
     String? mobile,
@@ -29,5 +33,8 @@ abstract class AuthRepository {
     String? businessName,
     String? businessCategory,
     String? businessAddress,
+    double? businessLatitude,
+    double? businessLongitude,
+    List<UpiIdModel>? upiIds,
   });
 }

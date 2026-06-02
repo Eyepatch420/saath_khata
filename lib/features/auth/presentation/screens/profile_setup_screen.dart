@@ -17,6 +17,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../../../shared/models/location_model.dart';
+import '../../../../shared/widgets/location_picker_tile.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -96,6 +97,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   void _showPhotoOptions() {
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -372,7 +374,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         : (val) => setState(() => _selectedCategory = val),
                   ),
                   const SizedBox(height: 20),
-                  _LocationPickerTile(
+                  LocationPickerTile(
                     location: _pickedLocation,
                     enabled: !isLoading,
                     onTap: () async {
@@ -435,91 +437,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           ),
         );
       },
-    );
-  }
-}
-
-// ── Location picker tile ─────────────────────────────────────────────────────
-
-class _LocationPickerTile extends StatelessWidget {
-  final LocationData? location;
-  final bool enabled;
-  final VoidCallback onTap;
-
-  const _LocationPickerTile({
-    required this.location,
-    required this.enabled,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final hasLocation = location != null;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('Business Address', style: AppTypography.labelLarge),
-        const SizedBox(height: 8),
-        InkWell(
-          onTap: enabled ? onTap : null,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: hasLocation
-                    ? AppColors.primary.withValues(alpha: 0.5)
-                    : Colors.transparent,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  hasLocation
-                      ? Icons.location_on_rounded
-                      : Icons.add_location_alt_outlined,
-                  color: hasLocation ? AppColors.primary : AppColors.textHint,
-                  size: 22,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: hasLocation
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              location!.shortAddress,
-                              style: AppTypography.bodyMedium,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'Lat ${location!.lat.toStringAsFixed(5)}  ·  '
-                              'Lng ${location!.lng.toStringAsFixed(5)}',
-                              style: AppTypography.bodySmall
-                                  .copyWith(color: AppColors.textHint),
-                            ),
-                          ],
-                        )
-                      : Text(
-                          'Tap to pick on map',
-                          style: AppTypography.bodyMedium
-                              .copyWith(color: AppColors.textHint),
-                        ),
-                ),
-                Icon(
-                  Icons.chevron_right_rounded,
-                  color: AppColors.textHint,
-                  size: 20,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

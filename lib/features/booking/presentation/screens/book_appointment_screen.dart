@@ -77,6 +77,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
 
     showModalBottomSheet<void>(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (_) => BlocProvider.value(

@@ -1,3 +1,4 @@
+import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -64,19 +65,13 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.account_balance_wallet_rounded,
                 title: l10n.myUpiIds,
                 subtitle: l10n.settingsManagePayments,
-                onTap: () {},
-              ),
-              _SettingsTile(
-                icon: Icons.notifications_active_rounded,
-                title: l10n.notifications,
-                subtitle: l10n.settingsManageAlerts,
-                onTap: () {},
-              ),
-              _SettingsTile(
-                icon: Icons.security_rounded,
-                title: l10n.security,
-                subtitle: l10n.settingsAppPinFingerprint,
-                onTap: () {},
+                onTap: () {
+                  final authState = context.read<AuthBloc>().state;
+                  if (authState is AuthAuthenticated) {
+                    context.push(AppRouter.upiManagement,
+                        extra: authState.user);
+                  }
+                },
               ),
               _SettingsTile(
                 icon: Icons.help_outline_rounded,
@@ -175,26 +170,123 @@ class SettingsScreen extends StatelessWidget {
 
   void _showLanguagePicker(
       BuildContext context, AppLocalizations l10n, LocaleProvider provider) {
-    showDialog(
+    const languages = [
+      {'locale': 'en', 'native': 'English', 'label': 'English'},
+      {'locale': 'hi', 'native': 'हिन्दी', 'label': 'Hindi'},
+      {'locale': 'bn', 'native': 'বাংলা', 'label': 'Bengali'},
+      {'locale': 'mr', 'native': 'मराठी', 'label': 'Marathi'},
+      {'locale': 'ta', 'native': 'தமிழ்', 'label': 'Tamil'},
+      {'locale': 'te', 'native': 'తెలుగు', 'label': 'Telugu'},
+      {'locale': 'kn', 'native': 'ಕನ್ನಡ', 'label': 'Kannada'},
+      {'locale': 'gu', 'native': 'ગુજરાતી', 'label': 'Gujarati'},
+      {'locale': 'pa', 'native': 'ਪੰਜਾਬੀ', 'label': 'Punjabi'},
+      {'locale': 'ml', 'native': 'മലയാളം', 'label': 'Malayalam'},
+      {'locale': 'hi', 'native': 'भोजपुरी', 'label': 'Bhojpuri'},
+      {'locale': 'hi', 'native': 'मैथिली', 'label': 'Maithili'},
+    ];
+    final currentCode = provider.locale.languageCode;
+    final initialIndex =
+        languages.indexWhere((l) => l['locale'] == currentCode).clamp(0, languages.length - 1);
+    int selectedIndex = initialIndex;
+    final controller = FixedExtentScrollController(initialItem: initialIndex);
+
+    showGeneralDialog(
       context: context,
-      builder: (ctx) => SimpleDialog(
-        title: Text(l10n.selectLanguage),
-        children: [
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(ctx);
-              provider.setLocale(const Locale('en'));
-            },
-            child: const Text('English'),
+      useRootNavigator: true,
+      barrierDismissible: true,
+      barrierLabel: 'language-picker',
+      barrierColor: Colors.transparent,
+      transitionDuration: const Duration(milliseconds: 280),
+      transitionBuilder: (ctx, animation, _, child) {
+        final curved = CurvedAnimation(
+          parent: animation,
+          curve: Curves.easeOutBack,
+          reverseCurve: Curves.easeInCubic,
+        );
+        return BackdropFilter(
+          filter: ImageFilter.blur(
+            sigmaX: 8 * animation.value,
+            sigmaY: 8 * animation.value,
           ),
-          SimpleDialogOption(
-            onPressed: () {
-              Navigator.pop(ctx);
-              provider.setLocale(const Locale('hi'));
-            },
-            child: const Text('हिंदी'),
+          child: FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(scale: curved, child: child),
           ),
-        ],
+        );
+      },
+      pageBuilder: (ctx, anim, secondAnim) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        insetPadding: const EdgeInsets.symmetric(horizontal: 40),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(l10n.selectLanguage, style: AppTypography.h3),
+              const SizedBox(height: 16),
+              SizedBox(
+                height: 200,
+                child: ListWheelScrollView.useDelegate(
+                  controller: controller,
+                  itemExtent: 52,
+                  physics: const FixedExtentScrollPhysics(),
+                  onSelectedItemChanged: (index) => selectedIndex = index,
+                  childDelegate: ListWheelChildBuilderDelegate(
+                    childCount: languages.length,
+                    builder: (_, index) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(languages[index]['native']!,
+                              style: AppTypography.labelLarge.copyWith(fontSize: 16)),
+                          Text(languages[index]['label']!,
+                              style: AppTypography.bodySmall
+                                  .copyWith(color: AppColors.textHint)),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: Text(l10n.cancel),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(ctx);
+                        provider.setLocale(
+                          Locale(languages[selectedIndex]['locale']!),
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('Done',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
