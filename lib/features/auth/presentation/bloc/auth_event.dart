@@ -16,18 +16,19 @@ class AuthLoginRequested extends AuthEvent {
   final String email;
   final String password;
 
-  /// The role the user chose on the role-selection screen ('vendor' or 'customer').
-  /// After the API responds we verify the account role matches — if not, we reject.
-  final String expectedRole;
+  /// The role the user selected on the role-selection screen ('vendor' or 'customer').
+  /// Sent directly to the backend — the server looks up the account that matches
+  /// (email, role) and returns a 401 if no such account exists.
+  final String role;
 
   const AuthLoginRequested({
     required this.email,
     required this.password,
-    required this.expectedRole,
+    required this.role,
   });
 
   @override
-  List<Object?> get props => [email, password, expectedRole];
+  List<Object?> get props => [email, password, role];
 }
 
 class AuthSignupRequested extends AuthEvent {

@@ -6,6 +6,7 @@ abstract class AuthRepository {
   Future<AuthResponseModel> login({
     required String email,
     required String password,
+    required String role,
   });
 
   Future<AuthResponseModel> signup({

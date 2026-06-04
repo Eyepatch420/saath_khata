@@ -65,24 +65,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthLoginRequested event,
     Emitter<AuthState> emit,
   ) async {
-    AppLogger.i(_m, 'Login attempt: ${event.email} as ${event.expectedRole}');
+    AppLogger.i(_m, 'Login attempt: ${event.email} as ${event.role}');
     emit(const AuthLoading());
     try {
       final result = await _authRepository.login(
         email: event.email,
         password: event.password,
+        role: event.role,
       );
-
-      if (result.user.role != event.expectedRole) {
-        final actual   = result.user.role == 'vendor' ? 'Vendor / Seller' : 'Customer';
-        final expected = event.expectedRole == 'vendor' ? 'Vendor / Seller' : 'Customer';
-        AppLogger.w(_m, 'Role mismatch — account is $actual but selected $expected');
-        emit(AuthError(
-          'This email is registered as a $actual account.\n'
-          'Please go back and tap "$actual" instead of "$expected".',
-        ));
-        return;
-      }
 
       await _storage.saveTokens(
         accessToken: result.tokens.accessToken,

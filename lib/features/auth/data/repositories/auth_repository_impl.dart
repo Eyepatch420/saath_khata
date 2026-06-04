@@ -15,11 +15,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthResponseModel> login({
     required String email,
     required String password,
+    required String role,
   }) async {
     try {
       final response = await _api.post(
         ApiEndpoints.login,
-        data: {'email': email, 'password': password},
+        data: {'email': email, 'password': password, 'role': role},
       );
       return AuthResponseModel.fromJson(ApiClient.extractData(response));
     } on DioException catch (e) {
@@ -59,14 +60,7 @@ class AuthRepositoryImpl implements AuthRepository {
       final response = await _api.post(ApiEndpoints.signup, data: body);
       return AuthResponseModel.fromJson(ApiClient.extractData(response));
     } on DioException catch (e) {
-      final raw = ApiClient.extractErrorMessage(e);
-      if (raw.toLowerCase().contains('already exists')) {
-        throw Exception(
-          'This email is already registered. Each email can only have one '
-          'account (vendor or customer). Please use a different email address.',
-        );
-      }
-      throw Exception(raw);
+      throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
 
@@ -74,7 +68,9 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> logout({required String refreshToken}) async {
     try {
       await _api.post(
-          ApiEndpoints.logout, data: {'refreshToken': refreshToken});
+        ApiEndpoints.logout,
+        data: {'refreshToken': refreshToken},
+      );
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
@@ -100,7 +96,8 @@ class AuthRepositoryImpl implements AuthRepository {
     if (businessCategory != null) body['businessCategory'] = businessCategory;
     if (businessAddress != null) body['businessAddress'] = businessAddress;
     if (businessLatitude != null) body['businessLatitude'] = businessLatitude;
-    if (businessLongitude != null) body['businessLongitude'] = businessLongitude;
+    if (businessLongitude != null)
+      body['businessLongitude'] = businessLongitude;
     if (upiIds != null) {
       body['upiIds'] = upiIds.map((u) => u.toJson()).toList();
     }

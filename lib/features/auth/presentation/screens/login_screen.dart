@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 AuthLoginRequested(
                                   email: email,
                                   password: password,
-                                  expectedRole: role,
+                                  role: role,
                                 ),
                               );
                         },
