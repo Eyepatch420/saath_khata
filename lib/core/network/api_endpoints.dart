@@ -61,6 +61,10 @@ class ApiEndpoints {
   // Device tokens (push notifications)
   static const String registerDevice = '/devices/token';
 
+  // Search (authenticated — both roles)
+  static const String searchVendors = '/search/vendors';
+  static String vendorPublicProfile(String vendorId) => '/search/vendors/$vendorId';
+
   // Reports (vendor-only)
   static const String reportSummary = '/reports/summary';
   static const String reportCustomers = '/reports/customers';

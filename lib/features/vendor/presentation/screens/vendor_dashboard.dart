@@ -12,8 +12,10 @@ import '../bloc/vendor_event.dart';
 import '../bloc/vendor_state.dart';
 import '../widgets/stat_card.dart';
 import '../../../../shared/widgets/app_toast.dart';
+import '../../../../shared/widgets/search_bar_pill.dart';
 import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../notifications/presentation/bloc/notification_state.dart';
+import '../../../search/presentation/screens/vendor_search_screen.dart';
 
 class VendorDashboard extends StatelessWidget {
   const VendorDashboard({super.key});
@@ -108,6 +110,8 @@ class VendorDashboardView extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SearchBarPill(viewAs: SearchViewAs.vendor),
+                    const SizedBox(height: 24),
                     Text(l10n.collectionSummary, style: AppTypography.h3),
                     const SizedBox(height: 16),
                     Row(

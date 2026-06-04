@@ -22,6 +22,10 @@ import '../../features/booking/domain/repositories/booking_repository.dart';
 import '../../features/payments/data/repositories/payment_repository_impl.dart';
 import '../../features/payments/domain/repositories/payment_repository.dart';
 
+import '../../features/search/data/repositories/search_repository_impl.dart';
+import '../../features/search/domain/repositories/search_repository.dart';
+import '../../features/search/presentation/bloc/search_cubit.dart';
+
 // Auth + network
 import '../services/storage_service.dart';
 import '../services/ledger_socket_service.dart';
@@ -68,7 +72,12 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(apiClient));
   getIt.registerLazySingleton<BookingRepository>(() => BookingRepositoryImpl(apiClient));
   getIt.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(apiClient));
-  AppLogger.i(module, 'All repositories registered (7 lazy singletons)');
+  getIt.registerLazySingleton<SearchRepository>(() => SearchRepositoryImpl(apiClient));
+  AppLogger.i(module, 'All repositories registered (8 lazy singletons)');
+
+  // SearchCubit is a factory — each search screen gets a fresh instance with
+  // its own debounce timer and state, discarded when the screen is popped.
+  getIt.registerFactory<SearchCubit>(() => SearchCubit(getIt<SearchRepository>()));
 
   getIt.registerLazySingleton<VendorBloc>(() => VendorBloc(getIt<VendorRepository>()));
 

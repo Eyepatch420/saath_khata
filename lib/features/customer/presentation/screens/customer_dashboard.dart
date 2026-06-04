@@ -17,8 +17,10 @@ import '../bloc/customer_event.dart';
 import '../bloc/customer_state.dart';
 import '../widgets/total_due_card.dart';
 import '../widgets/vendor_tile.dart';
+import '../../../../shared/widgets/search_bar_pill.dart';
 import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../notifications/presentation/bloc/notification_state.dart';
+import '../../../search/presentation/screens/vendor_search_screen.dart';
 
 class CustomerDashboard extends StatelessWidget {
   const CustomerDashboard({super.key});
@@ -86,6 +88,8 @@ class CustomerDashboardView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  const SearchBarPill(viewAs: SearchViewAs.customer),
+                  const SizedBox(height: 16),
                   TotalDueCard(
                     amount: state.totalDue,
                     onPayAllDues: state.totalDue > 0
