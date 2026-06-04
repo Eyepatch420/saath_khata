@@ -35,13 +35,12 @@ class ReportsDashboardLoaded extends ReportsDashboardState {
     MonthlyRevenueReport? monthlyRevenue,
     int? year,
     bool? yearChanging,
-  }) =>
-      ReportsDashboardLoaded(
-        summary: summary ?? this.summary,
-        monthlyRevenue: monthlyRevenue ?? this.monthlyRevenue,
-        year: year ?? this.year,
-        yearChanging: yearChanging ?? this.yearChanging,
-      );
+  }) => ReportsDashboardLoaded(
+    summary: summary ?? this.summary,
+    monthlyRevenue: monthlyRevenue ?? this.monthlyRevenue,
+    year: year ?? this.year,
+    yearChanging: yearChanging ?? this.yearChanging,
+  );
 
   @override
   List<Object?> get props => [summary, monthlyRevenue, year, yearChanging];
@@ -76,19 +75,22 @@ class ReportsDashboardCubit extends Cubit<ReportsDashboardState> {
       ]);
       final summary = results[0] as VendorSummaryReport;
       final monthly = results[1] as MonthlyRevenueReport;
-      AppLogger.i(_m,
-          'Loaded — outstanding:${summary.totalOutstanding} '
-          'collectedToday:${summary.totalCollectedToday} '
-          'months:${monthly.months.length}');
-      emit(ReportsDashboardLoaded(
-        summary: summary,
-        monthlyRevenue: monthly,
-        year: year,
-      ));
-    } catch (e, st) {
+      AppLogger.i(
+        _m,
+        'Loaded — outstanding:${summary.totalOutstanding} '
+        'collectedToday:${summary.totalCollectedToday} '
+        'months:${monthly.months.length}',
+      );
+      emit(
+        ReportsDashboardLoaded(
+          summary: summary,
+          monthlyRevenue: monthly,
+          year: year,
+        ),
+      );
+    } catch (e) {
       AppLogger.e(_m, 'Load failed', e);
-      emit(ReportsDashboardError(
-          e.toString().replaceFirst('Exception: ', '')));
+      emit(ReportsDashboardError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
@@ -100,9 +102,14 @@ class ReportsDashboardCubit extends Cubit<ReportsDashboardState> {
     try {
       final monthly = await _repository.getMonthlyRevenue(year);
       AppLogger.i(_m, 'Year changed — months:${monthly.months.length}');
-      emit(current.copyWith(
-          monthlyRevenue: monthly, year: year, yearChanging: false));
-    } catch (e, st) {
+      emit(
+        current.copyWith(
+          monthlyRevenue: monthly,
+          year: year,
+          yearChanging: false,
+        ),
+      );
+    } catch (e) {
       AppLogger.e(_m, 'Year change failed', e);
       emit(current.copyWith(yearChanging: false));
     }

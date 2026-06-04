@@ -49,14 +49,15 @@ class CustomerDetailCubit extends Cubit<CustomerDetailState> {
     emit(CustomerDetailLoading());
     try {
       final detail = await _repository.getCustomerDetail(linkId);
-      AppLogger.i(_m,
-          'Loaded — customer:${detail.customerName} '
-          'balance:${detail.balance} months:${detail.monthlyBreakdown.length}');
+      AppLogger.i(
+        _m,
+        'Loaded — customer:${detail.customerName} '
+        'balance:${detail.balance} months:${detail.monthlyBreakdown.length}',
+      );
       emit(CustomerDetailLoaded(detail));
-    } catch (e, st) {
+    } catch (e) {
       AppLogger.e(_m, 'Load failed — linkId:$linkId', e);
-      emit(CustomerDetailError(
-          e.toString().replaceFirst('Exception: ', '')));
+      emit(CustomerDetailError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 }

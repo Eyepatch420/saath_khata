@@ -3,8 +3,8 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
-import '../../../features/auth/data/models/user_model.dart';
-import '../../../shared/models/ledger_entry.dart';
+import '../../../auth/data/models/user_model.dart';
+import '../../../../shared/models/ledger_entry.dart';
 
 /// Generates and shares a professional PDF statement for a shared ledger.
 class LedgerStatementService {
@@ -35,18 +35,14 @@ class LedgerStatementService {
     final italic = await PdfGoogleFonts.notoSansItalic();
 
     final doc = pw.Document(
-      theme: pw.ThemeData.withFont(
-        base: regular,
-        bold: bold,
-        italic: italic,
-      ),
+      theme: pw.ThemeData.withFont(base: regular, bold: bold, italic: italic),
     );
 
     // Derive party labels
     final vendorName = isVendorView
         ? (currentUser.businessName?.isNotEmpty == true
-            ? currentUser.businessName!
-            : currentUser.name)
+              ? currentUser.businessName!
+              : currentUser.name)
         : counterpartyName;
     final customerName = isVendorView ? counterpartyName : currentUser.name;
 
@@ -77,7 +73,9 @@ class LedgerStatementService {
       }
     }
 
-    final generatedOn = DateFormat('dd MMM yyyy, hh:mm a').format(DateTime.now());
+    final generatedOn = DateFormat(
+      'dd MMM yyyy, hh:mm a',
+    ).format(DateTime.now());
     final statementTitle =
         'Saath Khata Statement — $vendorName & $customerName';
 
@@ -85,12 +83,20 @@ class LedgerStatementService {
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
-        header: (ctx) => _buildHeader(ctx, vendorName, customerName, generatedOn),
+        header: (ctx) =>
+            _buildHeader(ctx, vendorName, customerName, generatedOn),
         footer: (ctx) => _buildFooter(ctx),
         build: (ctx) => [
           pw.SizedBox(height: 8),
-          _summarySection(balance, totalCredit, totalPayment,
-              pendingCount, confirmedCount, disputedCount, isVendorView),
+          _summarySection(
+            balance,
+            totalCredit,
+            totalPayment,
+            pendingCount,
+            confirmedCount,
+            disputedCount,
+            isVendorView,
+          ),
           pw.SizedBox(height: 20),
           _transactionTable(sorted),
           pw.SizedBox(height: 16),
@@ -101,7 +107,8 @@ class LedgerStatementService {
 
     await Printing.sharePdf(
       bytes: await doc.save(),
-      filename: '${statementTitle.replaceAll(RegExp(r'[^a-zA-Z0-9 _-]'), '_')}.pdf',
+      filename:
+          '${statementTitle.replaceAll(RegExp(r'[^a-zA-Z0-9 _-]'), '_')}.pdf',
     );
   }
 
@@ -170,12 +177,16 @@ class LedgerStatementService {
                   pw.Text(
                     'Generated on',
                     style: const pw.TextStyle(
-                        fontSize: 8, color: PdfColor.fromInt(0xFFB0BEC5)),
+                      fontSize: 8,
+                      color: PdfColor.fromInt(0xFFB0BEC5),
+                    ),
                   ),
                   pw.Text(
                     generatedOn,
                     style: const pw.TextStyle(
-                        fontSize: 9, color: PdfColors.white),
+                      fontSize: 9,
+                      color: PdfColors.white,
+                    ),
                   ),
                 ],
               ),
@@ -299,10 +310,13 @@ class LedgerStatementService {
     final balanceLabel = balance > 0
         ? 'Customer Owes'
         : balance < 0
-            ? 'You Owe'
-            : 'Settled';
-    final balanceColor =
-        balance > 0 ? _errorRed : balance < 0 ? _successGreen : _teal;
+        ? 'You Owe'
+        : 'Settled';
+    final balanceColor = balance > 0
+        ? _errorRed
+        : balance < 0
+        ? _successGreen
+        : _teal;
 
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
@@ -319,8 +333,9 @@ class LedgerStatementService {
                 padding: const pw.EdgeInsets.all(16),
                 decoration: pw.BoxDecoration(
                   color: balanceColor.shade(0.08),
-                  borderRadius:
-                      const pw.BorderRadius.all(pw.Radius.circular(8)),
+                  borderRadius: const pw.BorderRadius.all(
+                    pw.Radius.circular(8),
+                  ),
                   border: pw.Border.all(color: balanceColor.shade(0.3)),
                 ),
                 child: pw.Column(
@@ -329,7 +344,9 @@ class LedgerStatementService {
                     pw.Text(
                       'Current Balance',
                       style: const pw.TextStyle(
-                          fontSize: 9, color: _textSecondary),
+                        fontSize: 9,
+                        color: _textSecondary,
+                      ),
                     ),
                     pw.SizedBox(height: 4),
                     pw.Text(
@@ -343,11 +360,14 @@ class LedgerStatementService {
                     pw.SizedBox(height: 4),
                     pw.Container(
                       padding: const pw.EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: pw.BoxDecoration(
                         color: balanceColor.shade(0.15),
-                        borderRadius:
-                            const pw.BorderRadius.all(pw.Radius.circular(4)),
+                        borderRadius: const pw.BorderRadius.all(
+                          pw.Radius.circular(4),
+                        ),
                       ),
                       child: pw.Text(
                         balanceLabel,
@@ -402,8 +422,10 @@ class LedgerStatementService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text(label,
-              style: const pw.TextStyle(fontSize: 9, color: _textSecondary)),
+          pw.Text(
+            label,
+            style: const pw.TextStyle(fontSize: 9, color: _textSecondary),
+          ),
           pw.Text(
             '₹${_currencyFmt.format(amount)}',
             style: pw.TextStyle(
@@ -435,10 +457,7 @@ class LedgerStatementService {
                 color: color,
               ),
             ),
-            pw.Text(
-              label,
-              style: pw.TextStyle(fontSize: 8, color: color),
-            ),
+            pw.Text(label, style: pw.TextStyle(fontSize: 8, color: color)),
           ],
         ),
       ),
@@ -454,9 +473,11 @@ class LedgerStatementService {
       ),
     );
 
-    pw.Widget cell(String text,
-        {pw.TextStyle? style,
-        pw.Alignment alignment = pw.Alignment.centerLeft}) {
+    pw.Widget cell(
+      String text, {
+      pw.TextStyle? style,
+      pw.Alignment alignment = pw.Alignment.centerLeft,
+    }) {
       return pw.Padding(
         padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         child: pw.Align(
@@ -471,11 +492,48 @@ class LedgerStatementService {
       pw.TableRow(
         decoration: headerDecor,
         children: [
-          cell('Date', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
-          cell('Description', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
-          cell('Type', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
-          cell('Amount', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: PdfColors.white), alignment: pw.Alignment.centerRight),
-          cell('Status', style: pw.TextStyle(fontSize: 9, fontWeight: pw.FontWeight.bold, color: PdfColors.white), alignment: pw.Alignment.center),
+          cell(
+            'Date',
+            style: pw.TextStyle(
+              fontSize: 9,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.white,
+            ),
+          ),
+          cell(
+            'Description',
+            style: pw.TextStyle(
+              fontSize: 9,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.white,
+            ),
+          ),
+          cell(
+            'Type',
+            style: pw.TextStyle(
+              fontSize: 9,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.white,
+            ),
+          ),
+          cell(
+            'Amount',
+            style: pw.TextStyle(
+              fontSize: 9,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.white,
+            ),
+            alignment: pw.Alignment.centerRight,
+          ),
+          cell(
+            'Status',
+            style: pw.TextStyle(
+              fontSize: 9,
+              fontWeight: pw.FontWeight.bold,
+              color: PdfColors.white,
+            ),
+            alignment: pw.Alignment.center,
+          ),
         ],
       ),
     ];
@@ -502,7 +560,10 @@ class LedgerStatementService {
                   ? e.description!
                   : (isCredit ? 'Credit Given' : 'Payment Received'),
               style: pw.TextStyle(
-                  fontSize: 8.5, color: _navy, fontWeight: pw.FontWeight.bold),
+                fontSize: 8.5,
+                color: _navy,
+                fontWeight: pw.FontWeight.bold,
+              ),
             ),
             cell(
               isCredit ? 'Credit' : 'Payment',
@@ -518,16 +579,22 @@ class LedgerStatementService {
               alignment: pw.Alignment.centerRight,
             ),
             pw.Padding(
-              padding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 5),
+              padding: const pw.EdgeInsets.symmetric(
+                horizontal: 6,
+                vertical: 5,
+              ),
               child: pw.Align(
                 alignment: pw.Alignment.center,
                 child: pw.Container(
-                  padding:
-                      const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const pw.EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: pw.BoxDecoration(
                     color: statusColor.shade(0.12),
-                    borderRadius:
-                        const pw.BorderRadius.all(pw.Radius.circular(4)),
+                    borderRadius: const pw.BorderRadius.all(
+                      pw.Radius.circular(4),
+                    ),
                   ),
                   child: pw.Text(
                     statusLabel,
@@ -553,11 +620,11 @@ class LedgerStatementService {
         pw.Table(
           border: pw.TableBorder.all(color: _divider, width: 0.5),
           columnWidths: {
-            0: const pw.FixedColumnWidth(68),  // Date
-            1: const pw.FlexColumnWidth(2.5),  // Description
-            2: const pw.FixedColumnWidth(52),  // Type
-            3: const pw.FixedColumnWidth(72),  // Amount
-            4: const pw.FixedColumnWidth(60),  // Status
+            0: const pw.FixedColumnWidth(68), // Date
+            1: const pw.FlexColumnWidth(2.5), // Description
+            2: const pw.FixedColumnWidth(52), // Type
+            3: const pw.FixedColumnWidth(72), // Amount
+            4: const pw.FixedColumnWidth(60), // Status
           },
           children: rows,
         ),
@@ -586,11 +653,14 @@ class LedgerStatementService {
               border: pw.Border.all(color: _textSecondary, width: 0.8),
             ),
             child: pw.Center(
-              child: pw.Text('i',
-                  style: pw.TextStyle(
-                      fontSize: 8,
-                      color: _textSecondary,
-                      fontWeight: pw.FontWeight.bold)),
+              child: pw.Text(
+                'i',
+                style: pw.TextStyle(
+                  fontSize: 8,
+                  color: _textSecondary,
+                  fontWeight: pw.FontWeight.bold,
+                ),
+              ),
             ),
           ),
           pw.SizedBox(width: 8),

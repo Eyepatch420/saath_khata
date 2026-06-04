@@ -6,6 +6,11 @@ import '../../../../core/di/injection.dart';
 import '../../../../features/vendor/domain/repositories/vendor_repository.dart';
 import '../../../../shared/models/report_models.dart';
 import '../bloc/customer_detail_cubit.dart';
+import 'customer_detail_report_screen/widgets/balance_check.dart';
+import 'customer_detail_report_screen/widgets/balance_hero.dart';
+import 'customer_detail_report_screen/widgets/entry_counts_row.dart';
+import 'customer_detail_report_screen/widgets/monthly_row.dart';
+import 'customer_detail_report_screen/widgets/stat_card.dart';
 
 class CustomerDetailReportScreen extends StatelessWidget {
   final String linkId;
@@ -22,7 +27,8 @@ class CustomerDetailReportScreen extends StatelessWidget {
     return BlocProvider(
       create: (_) =>
           CustomerDetailCubit(getIt<VendorRepository>())..load(linkId),
-      child: _CustomerDetailView(linkId: linkId, customerName: customerName),
+      child:
+          _CustomerDetailView(linkId: linkId, customerName: customerName),
     );
   }
 }
@@ -83,8 +89,6 @@ class _CustomerDetailView extends StatelessWidget {
   }
 }
 
-// ─── Detail Body ──────────────────────────────────────────────────────────────
-
 class _DetailBody extends StatelessWidget {
   final CustomerDetailReport detail;
   const _DetailBody({required this.detail});
@@ -97,14 +101,14 @@ class _DetailBody extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _BalanceHero(balance: detail.balance),
+          BalanceHero(balance: detail.balance),
           const SizedBox(height: 20),
           Text('Overview', style: AppTypography.h3),
           const SizedBox(height: 12),
           Row(
             children: [
               Expanded(
-                child: _StatCard(
+                child: ReportsStatCard(
                   title: 'Billed (net)',
                   subtitle: 'excl. disputed',
                   value: '₹${detail.totalCredit.toStringAsFixed(0)}',
@@ -114,7 +118,7 @@ class _DetailBody extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: _StatCard(
+                child: ReportsStatCard(
                   title: 'Received',
                   subtitle: 'payments & adj.',
                   value: '₹${detail.totalPaid.toStringAsFixed(0)}',
@@ -125,13 +129,13 @@ class _DetailBody extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          _BalanceCheck(
+          BalanceCheck(
             billed: detail.totalCredit,
             received: detail.totalPaid,
             balance: detail.balance,
           ),
           const SizedBox(height: 4),
-          _EntryCountsRow(
+          EntryCountsRow(
             pending: detail.pendingCount,
             confirmed: detail.confirmedCount,
             disputed: detail.disputedCount,
@@ -140,278 +144,9 @@ class _DetailBody extends StatelessWidget {
             const SizedBox(height: 24),
             Text('Payment History (6 months)', style: AppTypography.h3),
             const SizedBox(height: 12),
-            ...detail.monthlyBreakdown.map((m) => _MonthlyRow(data: m)),
+            ...detail.monthlyBreakdown.map((m) => MonthlyRow(data: m)),
           ],
         ],
-      ),
-    );
-  }
-}
-
-// ─── Balance Hero Card ────────────────────────────────────────────────────────
-
-class _BalanceHero extends StatelessWidget {
-  final double balance;
-  const _BalanceHero({required this.balance});
-
-  @override
-  Widget build(BuildContext context) {
-    final hasBalance = balance > 0;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: hasBalance
-              ? [const Color(0xFFD32F2F), const Color(0xFFB71C1C)]
-              : [const Color(0xFF1B5E20), const Color(0xFF2E7D32)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Current Balance',
-            style: AppTypography.bodySmall.copyWith(color: Colors.white70),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '₹${balance.toStringAsFixed(0)}',
-            style: AppTypography.h1.copyWith(
-                color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            hasBalance ? 'Outstanding' : 'Settled',
-            style: AppTypography.bodySmall.copyWith(color: Colors.white60),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-
-class _StatCard extends StatelessWidget {
-  final String title;
-  final String? subtitle;
-  final String value;
-  final Color color;
-  final IconData icon;
-
-  const _StatCard({
-    required this.title,
-    required this.value,
-    required this.color,
-    required this.icon,
-    this.subtitle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: color, size: 20),
-          const SizedBox(height: 10),
-          Text(value, style: AppTypography.h3.copyWith(color: color)),
-          const SizedBox(height: 2),
-          Text(title,
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textHint)),
-          if (subtitle != null)
-            Text(subtitle!,
-                style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textHint,
-                    fontSize: 10)),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Balance Check Row ────────────────────────────────────────────────────────
-
-class _BalanceCheck extends StatelessWidget {
-  final double billed;
-  final double received;
-  final double balance;
-
-  const _BalanceCheck({
-    required this.billed,
-    required this.received,
-    required this.balance,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    // computed should equal balance from the server
-    final computed = billed - received;
-    final matches = (computed - balance).abs() < 0.5;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            '₹${billed.toStringAsFixed(0)} − ₹${received.toStringAsFixed(0)} = ₹${computed.toStringAsFixed(0)}',
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
-          ),
-          const SizedBox(width: 6),
-          Icon(
-            matches ? Icons.check_circle_rounded : Icons.warning_amber_rounded,
-            size: 14,
-            color: matches ? AppColors.success : AppColors.warning,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─── Entry Counts Row ─────────────────────────────────────────────────────────
-
-class _EntryCountsRow extends StatelessWidget {
-  final int pending;
-  final int confirmed;
-  final int disputed;
-
-  const _EntryCountsRow({
-    required this.pending,
-    required this.confirmed,
-    required this.disputed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _CountChip(label: 'Pending', count: pending, color: Colors.orange),
-          _Divider(),
-          _CountChip(
-              label: 'Confirmed', count: confirmed, color: AppColors.success),
-          _Divider(),
-          _CountChip(
-              label: 'Disputed', count: disputed, color: AppColors.error),
-        ],
-      ),
-    );
-  }
-}
-
-class _CountChip extends StatelessWidget {
-  final String label;
-  final int count;
-  final Color color;
-
-  const _CountChip(
-      {required this.label, required this.count, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Text('$count',
-            style: AppTypography.h3.copyWith(color: color)),
-        Text(label,
-            style: AppTypography.bodySmall
-                .copyWith(color: AppColors.textHint)),
-      ],
-    );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: 1, height: 36, color: AppColors.textHint.withValues(alpha: 0.2));
-  }
-}
-
-// ─── Monthly Row ──────────────────────────────────────────────────────────────
-
-class _MonthlyRow extends StatelessWidget {
-  final MonthlyPaymentData data;
-  const _MonthlyRow({required this.data});
-
-  static const _months = [
-    '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
-
-  String _formatMonth(String yyyyMm) {
-    final parts = yyyyMm.split('-');
-    if (parts.length != 2) return yyyyMm;
-    final m = int.tryParse(parts[1]) ?? 0;
-    final y = parts[0];
-    return '${(m >= 0 && m < _months.length) ? _months[m] : ''} $y';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.success.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.payments_rounded,
-                  color: AppColors.success, size: 20),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(_formatMonth(data.month),
-                      style: AppTypography.labelLarge),
-                  Text(
-                      '${data.transactionCount} payment${data.transactionCount == 1 ? '' : 's'}',
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textHint)),
-                ],
-              ),
-            ),
-            Text(
-              '₹${data.totalPaid.toStringAsFixed(0)}',
-              style: AppTypography.labelLarge
-                  .copyWith(color: AppColors.success),
-            ),
-          ],
-        ),
       ),
     );
   }

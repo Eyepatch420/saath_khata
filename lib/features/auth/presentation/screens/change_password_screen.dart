@@ -7,6 +7,7 @@ import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
+import 'change_password_screen/widgets/password_field.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
   const ChangePasswordScreen({super.key});
@@ -88,7 +89,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       .copyWith(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: 32),
-                _PasswordField(
+                PasswordField(
                   controller: _currentCtrl,
                   label: l10n.currentPassword,
                   visible: _showCurrent,
@@ -98,7 +99,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                       (v == null || v.isEmpty) ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
-                _PasswordField(
+                PasswordField(
                   controller: _newCtrl,
                   label: l10n.newPassword,
                   visible: _showNew,
@@ -110,14 +111,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                _PasswordField(
+                PasswordField(
                   controller: _confirmCtrl,
                   label: l10n.confirmNewPassword,
                   visible: _showConfirm,
                   onToggle: () =>
                       setState(() => _showConfirm = !_showConfirm),
                   validator: (v) {
-                    if (v != _newCtrl.text) return l10n.passwordsDoNotMatch;
+                    if (v != _newCtrl.text) {
+                      return l10n.passwordsDoNotMatch;
+                    }
                     return null;
                   },
                 ),
@@ -126,7 +129,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   onPressed: _isLoading ? null : _submit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -151,39 +155,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PasswordField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final bool visible;
-  final VoidCallback onToggle;
-  final String? Function(String?) validator;
-
-  const _PasswordField({
-    required this.controller,
-    required this.label,
-    required this.visible,
-    required this.onToggle,
-    required this.validator,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      obscureText: !visible,
-      validator: validator,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        suffixIcon: IconButton(
-          icon: Icon(visible ? Icons.visibility_off : Icons.visibility),
-          onPressed: onToggle,
         ),
       ),
     );

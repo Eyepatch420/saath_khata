@@ -42,7 +42,8 @@ class AllCustomersReportCubit extends Cubit<AllCustomersReportState> {
 
   static const _m = 'AllCustomersReport';
 
-  AllCustomersReportCubit(this._repository) : super(AllCustomersReportInitial());
+  AllCustomersReportCubit(this._repository)
+    : super(AllCustomersReportInitial());
 
   Future<void> load() async {
     AppLogger.i(_m, 'Loading all customers report');
@@ -51,10 +52,11 @@ class AllCustomersReportCubit extends Cubit<AllCustomersReportState> {
       final customers = await _repository.getAllCustomersReport();
       AppLogger.i(_m, 'Loaded ${customers.length} customers');
       emit(AllCustomersReportLoaded(customers));
-    } catch (e, st) {
+    } catch (e) {
       AppLogger.e(_m, 'Load failed', e);
-      emit(AllCustomersReportError(
-          e.toString().replaceFirst('Exception: ', '')));
+      emit(
+        AllCustomersReportError(e.toString().replaceFirst('Exception: ', '')),
+      );
     }
   }
 }
