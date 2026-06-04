@@ -310,7 +310,6 @@ class _ProfileScaffold extends StatelessWidget {
     required String? upiId,
   }) {
     return BlocBuilder<AuthBloc, AuthState>(
-      bloc: getIt<AuthBloc>(),
       builder: (ctx, authState) {
         final user =
             authState is AuthAuthenticated ? authState.user : null;
