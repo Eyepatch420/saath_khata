@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
+import '../../domain/models/vendor_public_profile.dart';
 import '../../domain/models/vendor_search_result.dart';
 import '../../domain/repositories/search_repository.dart';
 
@@ -35,6 +36,20 @@ class SearchRepositoryImpl implements SearchRepository {
           .toList();
 
       return results;
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<VendorPublicProfile> getVendorProfile(String vendorUserId) async {
+    try {
+      final response = await _api.get(
+        ApiEndpoints.vendorPublicProfile(vendorUserId),
+      );
+      return VendorPublicProfile.fromJson(
+        Map<String, dynamic>.from(ApiClient.extractData(response) as Map),
+      );
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }

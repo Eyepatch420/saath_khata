@@ -52,6 +52,8 @@ import '../../features/auth/presentation/screens/change_password_screen.dart';
 import '../../features/auth/presentation/screens/upi_management_screen.dart';
 import '../../features/settings/presentation/screens/policy_screen.dart';
 import '../../features/search/presentation/screens/vendor_search_screen.dart';
+import '../../features/search/presentation/screens/vendor_profile_screen.dart';
+import '../../features/search/domain/models/vendor_search_result.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
 
@@ -90,6 +92,7 @@ class AppRouter {
   static const String policy = '/policy';
   static const String upiManagement = '/upi-management';
   static const String vendorSearch = '/vendor-search';
+  static const String vendorProfile = '/vendor-profile';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -322,6 +325,16 @@ class AppRouter {
         builder: (context, state) {
           final viewAs = state.extra as SearchViewAs? ?? SearchViewAs.vendor;
           return VendorSearchScreen(viewAs: viewAs);
+        },
+      ),
+      GoRoute(
+        path: vendorProfile,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, dynamic>;
+          return VendorProfileScreen(
+            preview: extras['result'] as VendorSearchResult,
+            viewAs: extras['viewAs'] as SearchViewAs,
+          );
         },
       ),
     ],

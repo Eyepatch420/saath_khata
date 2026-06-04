@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../core/utils/app_logger.dart';
 import '../../domain/models/vendor_search_result.dart';
 import '../bloc/search_cubit.dart';
 import '../bloc/search_state.dart';
@@ -255,18 +257,16 @@ class _ResultCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final surface = Theme.of(context).colorScheme.surface;
-    final initial = (result.businessName?.isNotEmpty == true
-            ? result.businessName!
-            : result.name)[0]
-        .toUpperCase();
+    final initial = result.avatarInitial;
 
     return Material(
       color: surface,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
-        onTap: () {
-          // TODO: navigate to vendor public profile screen when built
-        },
+        onTap: () => context.push(
+          AppRouter.vendorProfile,
+          extra: {'result': result, 'viewAs': viewAs},
+        ),
         borderRadius: BorderRadius.circular(16),
         splashColor: accent.withValues(alpha: 0.06),
         child: Padding(
@@ -274,40 +274,16 @@ class _ResultCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Avatar
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: accent.withValues(alpha: 0.12),
-                  shape: BoxShape.circle,
+              // Avatar — Hero so it can fly to the profile screen header
+              Hero(
+                tag: 'vendor_avatar_${result.userId}',
+                child: _VendorAvatar(
+                  userId: result.userId,
+                  photoUrl: result.profilePhotoUrl,
+                  initial: initial,
+                  accent: accent,
+                  size: 48,
                 ),
-                alignment: Alignment.center,
-                child: result.profilePhotoUrl != null
-                    ? ClipOval(
-                        child: Image.network(
-                          result.profilePhotoUrl!,
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                          errorBuilder: (errCtx, error, stackTrace) => Text(
-                            initial,
-                            style: TextStyle(
-                              color: accent,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
-                      )
-                    : Text(
-                        initial,
-                        style: TextStyle(
-                          color: accent,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
               ),
               const SizedBox(width: 14),
               // Details
@@ -459,6 +435,93 @@ class _EmptyResult extends StatelessWidget {
                 .copyWith(color: AppColors.textHint, height: 1.5),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ── Shared avatar widget (used in cards + profile header) ─────────────────────
+
+/// Renders a circular vendor avatar: profile photo if available, initial letter
+/// fallback. Handles loading state and logs failures for debugging.
+class _VendorAvatar extends StatelessWidget {
+  final String userId;
+  final String? photoUrl;
+  final String initial;
+  final Color accent;
+  final double size;
+
+  const _VendorAvatar({
+    required this.userId,
+    required this.photoUrl,
+    required this.initial,
+    required this.accent,
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: accent.withValues(alpha: 0.12),
+        shape: BoxShape.circle,
+      ),
+      clipBehavior: Clip.antiAlias,
+      alignment: Alignment.center,
+      child: photoUrl != null
+          ? Image.network(
+              photoUrl!,
+              width: size,
+              height: size,
+              fit: BoxFit.cover,
+              loadingBuilder: (ctx, child, progress) {
+                if (progress == null) return child;
+                return _InitialFallback(
+                  initial: initial,
+                  accent: accent,
+                  size: size,
+                );
+              },
+              errorBuilder: (ctx, error, stack) {
+                AppLogger.w(
+                  'VendorAvatar',
+                  'Photo failed to load for $userId — $error',
+                );
+                return _InitialFallback(
+                  initial: initial,
+                  accent: accent,
+                  size: size,
+                );
+              },
+            )
+          : _InitialFallback(initial: initial, accent: accent, size: size),
+    );
+  }
+}
+
+class _InitialFallback extends StatelessWidget {
+  final String initial;
+  final Color accent;
+  final double size;
+
+  const _InitialFallback({
+    required this.initial,
+    required this.accent,
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        initial,
+        style: TextStyle(
+          color: accent,
+          fontWeight: FontWeight.bold,
+          fontSize: size * 0.38,
+        ),
       ),
     );
   }

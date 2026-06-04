@@ -1,4 +1,6 @@
-class VendorSearchResult {
+/// Full public profile returned by GET /search/vendors/:vendorId.
+/// Includes UPI ID (for payment initiation) unlike the search list result.
+class VendorPublicProfile {
   final String userId;
   final String name;
   final String? profilePhotoUrl;
@@ -7,7 +9,7 @@ class VendorSearchResult {
   final String? businessCategory;
   final String? businessAddress;
 
-  const VendorSearchResult({
+  const VendorPublicProfile({
     required this.userId,
     required this.name,
     this.profilePhotoUrl,
@@ -17,8 +19,8 @@ class VendorSearchResult {
     this.businessAddress,
   });
 
-  factory VendorSearchResult.fromJson(Map<String, dynamic> json) {
-    return VendorSearchResult(
+  factory VendorPublicProfile.fromJson(Map<String, dynamic> json) {
+    return VendorPublicProfile(
       userId: json['userId'] as String,
       name: json['name'] as String,
       profilePhotoUrl: json['profilePhotoUrl'] as String?,
