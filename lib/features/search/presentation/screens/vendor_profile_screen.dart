@@ -7,6 +7,8 @@ import '../../../../core/di/injection.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../link_requests/presentation/bloc/link_request_cubit.dart';
+import '../../../link_requests/presentation/bloc/link_request_state.dart';
 import '../../domain/models/vendor_public_profile.dart';
 import '../../domain/models/vendor_search_result.dart';
 import '../../domain/repositories/search_repository.dart';
@@ -45,13 +47,52 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
         getIt<SearchRepository>().getVendorProfile(widget.preview.userId);
   }
 
+  SendLinkRequestCubit get _sendCubit => getIt<SendLinkRequestCubit>();
+
   @override
   Widget build(BuildContext context) {
-    final preview = widget.preview;
+    return BlocProvider.value(
+      value: _sendCubit,
+      child: _ProfileScaffold(
+        preview: widget.preview,
+        viewAs: widget.viewAs,
+        profileFuture: _profileFuture,
+        accent: _accent,
+      ),
+    );
+  }
+}
 
-    return Scaffold(
-      body: FutureBuilder<VendorPublicProfile>(
-        future: _profileFuture,
+class _ProfileScaffold extends StatelessWidget {
+  final VendorSearchResult preview;
+  final SearchViewAs viewAs;
+  final Future<VendorPublicProfile> profileFuture;
+  final Color accent;
+
+  const _ProfileScaffold({
+    required this.preview,
+    required this.viewAs,
+    required this.profileFuture,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<SendLinkRequestCubit, SendRequestState>(
+      listener: (ctx, state) {
+        if (state is SendRequestSuccess) {
+          AppToast.show(
+            ctx,
+            'Request sent! ${preview.displayName} will be notified.',
+            type: ToastType.success,
+          );
+        } else if (state is SendRequestError) {
+          AppToast.show(ctx, state.message, type: ToastType.error);
+        }
+      },
+      child: Scaffold(
+        body: FutureBuilder<VendorPublicProfile>(
+        future: profileFuture,
         builder: (ctx, snap) {
           // Use preview data until full profile arrives
           final name = snap.data?.name ?? preview.name;
@@ -96,6 +137,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
             ],
           );
         },
+        ),
       ),
     );
   }
@@ -228,13 +270,13 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                 decoration: BoxDecoration(
-                  color: _accent.withValues(alpha: 0.12),
+                  color: accent.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(50),
                 ),
                 child: Text(
                   category,
                   style: TextStyle(
-                    color: _accent,
+                    color: accent,
                     fontWeight: FontWeight.w600,
                     fontSize: 13,
                   ),
@@ -245,7 +287,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
 
           // Info cards
           _InfoSection(
-            accent: _accent,
+            accent: accent,
             address: address,
             upiId: upiId,
             isLoadingExtra: snap.connectionState == ConnectionState.waiting,
@@ -273,21 +315,22 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
         final user =
             authState is AuthAuthenticated ? authState.user : null;
 
-        if (widget.viewAs == SearchViewAs.customer && user != null) {
+        if (viewAs == SearchViewAs.customer && user != null) {
           return _CustomerCta(
             user: user,
             vendorName: displayName,
-            accent: _accent,
+            vendorId: preview.userId,
+            accent: accent,
             upiId: upiId,
           );
         }
 
-        if (widget.viewAs == SearchViewAs.vendor && user != null) {
+        if (viewAs == SearchViewAs.vendor && user != null) {
           return _VendorCta(
             user: user,
             upiId: upiId,
             vendorName: displayName,
-            accent: _accent,
+            accent: accent,
           );
         }
 
@@ -433,174 +476,93 @@ class _InfoItem extends StatelessWidget {
 // ── Customer CTA ─────────────────────────────────────────────────────────────
 
 class _CustomerCta extends StatelessWidget {
-  final dynamic user; // UserModel
+  final dynamic user;
   final String vendorName;
+  final String vendorId;
   final Color accent;
   final String? upiId;
 
   const _CustomerCta({
     required this.user,
     required this.vendorName,
+    required this.vendorId,
     required this.accent,
     required this.upiId,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Primary: share email so vendor can add them
-        ElevatedButton.icon(
-          onPressed: () => _showShareEmailSheet(context),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: accent,
-            padding: const EdgeInsets.symmetric(vertical: 15),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
-          ),
-          icon: const Icon(Icons.handshake_rounded,
-              color: Colors.white, size: 20),
-          label: const Text(
-            'Start a Ledger with this Vendor',
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.w600),
-          ),
-        ),
-        // Secondary: pay via UPI (if available)
-        if (upiId != null && upiId!.isNotEmpty) ...[
-          const SizedBox(height: 12),
-          OutlinedButton.icon(
-            onPressed: () => _copyUpi(context),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              side: BorderSide(color: accent.withValues(alpha: 0.5)),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
-            ),
-            icon: Icon(Icons.payment_rounded, color: accent, size: 20),
-            label: Text(
-              'Pay via UPI',
-              style: TextStyle(color: accent, fontWeight: FontWeight.w600),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
+    return BlocBuilder<SendLinkRequestCubit, SendRequestState>(
+      builder: (ctx, state) {
+        final sent = state is SendRequestSuccess;
+        final sending = state is SendRequestSending;
 
-  void _copyUpi(BuildContext context) {
-    Clipboard.setData(ClipboardData(text: upiId!));
-    AppToast.show(context, 'UPI ID copied!', type: ToastType.success);
-  }
-
-  void _showShareEmailSheet(BuildContext context) {
-    final email = user.email as String;
-
-    showModalBottomSheet(
-      context: context,
-      useRootNavigator: true,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.fromLTRB(
-            24, 24, 24, MediaQuery.of(ctx).viewInsets.bottom + 32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: accent.withValues(alpha: 0.12),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(Icons.handshake_rounded,
-                      color: accent, size: 22),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Start a Ledger', style: AppTypography.h3),
-                      const SizedBox(height: 2),
-                      Text(
-                        'with $vendorName',
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textSecondary),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Share your email address with $vendorName so they can add you '
-              'as a customer. Once linked, your shared ledger will appear in '
-              'My Vendors.',
-              style: AppTypography.bodyMedium
-                  .copyWith(color: AppColors.textSecondary, height: 1.5),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: accent.withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: accent.withValues(alpha: 0.2)),
+            ElevatedButton.icon(
+              onPressed: sent || sending
+                  ? null
+                  : () => ctx
+                      .read<SendLinkRequestCubit>()
+                      .send(vendorId: vendorId),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: sent ? AppColors.success : accent,
+                disabledBackgroundColor: sent
+                    ? AppColors.success
+                    : accent.withValues(alpha: 0.4),
+                padding: const EdgeInsets.symmetric(vertical: 15),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14)),
               ),
-              child: Row(
-                children: [
-                  Icon(Icons.email_rounded,
-                      color: accent, size: 20),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(email,
-                        style: AppTypography.labelLarge
-                            .copyWith(color: accent)),
-                  ),
-                ],
+              icon: sending
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                          strokeWidth: 2, color: Colors.white),
+                    )
+                  : Icon(
+                      sent
+                          ? Icons.check_circle_rounded
+                          : Icons.handshake_rounded,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+              label: Text(
+                sent
+                    ? 'Request Sent'
+                    : sending
+                        ? 'Sending…'
+                        : 'Send Connection Request',
+                style: const TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.w600),
               ),
             ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
+            if (upiId != null && upiId!.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: email));
-                  Navigator.pop(ctx);
-                  AppToast.show(
-                    context,
-                    'Email copied! Share it with $vendorName.',
-                    type: ToastType.success,
-                  );
+                  Clipboard.setData(ClipboardData(text: upiId!));
+                  AppToast.show(ctx, 'UPI ID copied!',
+                      type: ToastType.success);
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: accent,
+                style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
+                  side:
+                      BorderSide(color: accent.withValues(alpha: 0.5)),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                 ),
-                icon: const Icon(Icons.copy_rounded,
-                    color: Colors.white, size: 18),
-                label: const Text(
-                  'Copy My Email',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600),
-                ),
+                icon: Icon(Icons.payment_rounded, color: accent, size: 20),
+                label: Text('Pay via UPI',
+                    style: TextStyle(
+                        color: accent, fontWeight: FontWeight.w600)),
               ),
-            ),
+            ],
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }

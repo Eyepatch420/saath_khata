@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/notification_model.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
@@ -147,16 +149,32 @@ class _NotificationCard extends StatelessWidget {
   final AppNotification notification;
   const _NotificationCard({required this.notification});
 
+  void _handleTap(BuildContext context) {
+    if (!notification.isRead) {
+      context.read<NotificationBloc>().add(MarkNotificationRead(notification.id));
+    }
+    final data = notification.data;
+    switch (notification.type) {
+      case NotificationType.linkRequestReceived:
+        // Vendor taps → go to approval screen
+        final requestId = data?['requestId'] as String?;
+        if (requestId != null) {
+          context.push(AppRouter.linkRequestDetail, extra: requestId);
+        }
+      case NotificationType.linkRequestAccepted:
+      case NotificationType.linkRequestDeclined:
+        // Customer taps → no specific deep-link yet, just mark read
+        break;
+      default:
+        // Ledger/payment notifications — no deep-link for now
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        if (!notification.isRead) {
-          context
-              .read<NotificationBloc>()
-              .add(MarkNotificationRead(notification.id));
-        }
-      },
+      onTap: () => _handleTap(context),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
         padding: const EdgeInsets.all(16),
@@ -257,6 +275,12 @@ class _NotificationCard extends StatelessWidget {
         return Icons.notifications_active_rounded;
       case NotificationType.monthlySummary:
         return Icons.bar_chart_rounded;
+      case NotificationType.linkRequestReceived:
+        return Icons.person_add_rounded;
+      case NotificationType.linkRequestAccepted:
+        return Icons.handshake_rounded;
+      case NotificationType.linkRequestDeclined:
+        return Icons.person_remove_rounded;
     }
   }
 
@@ -280,6 +304,12 @@ class _NotificationCard extends StatelessWidget {
         return AppColors.warning;
       case NotificationType.monthlySummary:
         return AppColors.secondary;
+      case NotificationType.linkRequestReceived:
+        return AppColors.primary;
+      case NotificationType.linkRequestAccepted:
+        return AppColors.success;
+      case NotificationType.linkRequestDeclined:
+        return AppColors.error;
     }
   }
 

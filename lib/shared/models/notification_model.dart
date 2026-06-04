@@ -13,6 +13,9 @@ enum NotificationType {
   salaryPaid,
   reminderDue,
   monthlySummary,
+  linkRequestReceived,  // vendor: customer wants to connect
+  linkRequestAccepted,  // customer: vendor approved
+  linkRequestDeclined,  // customer: vendor declined
 }
 
 NotificationType _notifTypeFromJson(String v) {
@@ -26,6 +29,9 @@ NotificationType _notifTypeFromJson(String v) {
     'salary_paid': NotificationType.salaryPaid,
     'reminder_due': NotificationType.reminderDue,
     'monthly_summary': NotificationType.monthlySummary,
+    'link_request_received': NotificationType.linkRequestReceived,
+    'link_request_accepted': NotificationType.linkRequestAccepted,
+    'link_request_declined': NotificationType.linkRequestDeclined,
   };
   return map[v] ?? NotificationType.entryAdded;
 }

@@ -54,6 +54,7 @@ import '../../features/settings/presentation/screens/policy_screen.dart';
 import '../../features/search/presentation/screens/vendor_search_screen.dart';
 import '../../features/search/presentation/screens/vendor_profile_screen.dart';
 import '../../features/search/domain/models/vendor_search_result.dart';
+import '../../features/link_requests/presentation/screens/vendor_link_request_screen.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
 
@@ -93,6 +94,7 @@ class AppRouter {
   static const String upiManagement = '/upi-management';
   static const String vendorSearch = '/vendor-search';
   static const String vendorProfile = '/vendor-profile';
+  static const String linkRequestDetail = '/link-request';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -335,6 +337,13 @@ class AppRouter {
             preview: extras['result'] as VendorSearchResult,
             viewAs: extras['viewAs'] as SearchViewAs,
           );
+        },
+      ),
+      GoRoute(
+        path: linkRequestDetail,
+        builder: (context, state) {
+          final requestId = state.extra as String;
+          return VendorLinkRequestScreen(requestId: requestId);
         },
       ),
     ],

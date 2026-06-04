@@ -26,6 +26,10 @@ import '../../features/search/data/repositories/search_repository_impl.dart';
 import '../../features/search/domain/repositories/search_repository.dart';
 import '../../features/search/presentation/bloc/search_cubit.dart';
 
+import '../../features/link_requests/data/repositories/link_request_repository_impl.dart';
+import '../../features/link_requests/domain/repositories/link_request_repository.dart';
+import '../../features/link_requests/presentation/bloc/link_request_cubit.dart';
+
 // Auth + network
 import '../services/storage_service.dart';
 import '../services/ledger_socket_service.dart';
@@ -73,11 +77,20 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<BookingRepository>(() => BookingRepositoryImpl(apiClient));
   getIt.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(apiClient));
   getIt.registerLazySingleton<SearchRepository>(() => SearchRepositoryImpl(apiClient));
-  AppLogger.i(module, 'All repositories registered (8 lazy singletons)');
+  getIt.registerLazySingleton<LinkRequestRepository>(
+      () => LinkRequestRepositoryImpl(apiClient));
+  AppLogger.i(module, 'All repositories registered (9 lazy singletons)');
 
-  // SearchCubit is a factory — each search screen gets a fresh instance with
-  // its own debounce timer and state, discarded when the screen is popped.
+  // SearchCubit — factory: fresh instance + debounce per screen
   getIt.registerFactory<SearchCubit>(() => SearchCubit(getIt<SearchRepository>()));
+
+  // SendLinkRequestCubit — factory: one per vendor profile screen open
+  getIt.registerFactory<SendLinkRequestCubit>(
+      () => SendLinkRequestCubit(getIt<LinkRequestRepository>()));
+
+  // LinkRequestCubit — factory: one per vendor approval screen
+  getIt.registerFactory<LinkRequestCubit>(
+      () => LinkRequestCubit(getIt<LinkRequestRepository>()));
 
   getIt.registerLazySingleton<VendorBloc>(() => VendorBloc(getIt<VendorRepository>()));
 
