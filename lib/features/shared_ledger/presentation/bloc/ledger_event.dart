@@ -63,6 +63,16 @@ class FilterLedger extends LedgerEvent {
   List<Object?> get props => [filterStatus];
 }
 
+/// Silent pull-to-refresh — fetches from the API without emitting LedgerLoading,
+/// so existing entries stay visible while the indicator spins at the top.
+class RefreshLedger extends LedgerEvent {
+  final String linkId;
+  const RefreshLedger(this.linkId);
+
+  @override
+  List<Object?> get props => [linkId];
+}
+
 class SocketLedgerEntryAdded extends LedgerEvent {
   final LedgerEntry entry;
   const SocketLedgerEntryAdded(this.entry);

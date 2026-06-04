@@ -16,6 +16,7 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
     on<ConfirmLedgerEntry>(_onConfirmEntry);
     on<DisputeLedgerEntry>(_onDisputeEntry);
     on<FilterLedger>(_onFilterLedger);
+    on<RefreshLedger>(_onRefreshLedger);
     on<SocketLedgerEntryAdded>(_onSocketEntryAdded);
     on<SocketLedgerEntryUpdated>(_onSocketEntryUpdated);
   }
@@ -146,6 +147,28 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
         balance: current.balance,
         activeFilter: current.activeFilter,
       ));
+    }
+  }
+
+  Future<void> _onRefreshLedger(
+      RefreshLedger event, Emitter<LedgerState> emit) async {
+    AppLogger.i(_m, 'Pull-to-refresh for linkId:${event.linkId}');
+    final current = state;
+    // Keep the existing entries visible — do NOT emit LedgerLoading
+    try {
+      final entries = await _repository.getEntries(event.linkId);
+      AppLogger.i(_m, 'Refresh done — ${entries.length} entries');
+      emit(LedgerLoaded(
+        allEntries: entries,
+        entries: current is LedgerLoaded
+            ? _applyFilter(entries, current.activeFilter)
+            : entries,
+        balance: _calcBalance(entries),
+        activeFilter: current is LedgerLoaded ? current.activeFilter : null,
+      ));
+    } catch (e) {
+      AppLogger.e(_m, 'Refresh failed', e);
+      // On failure keep existing state — don't wipe the visible data
     }
   }
 

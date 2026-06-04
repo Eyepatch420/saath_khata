@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../shared/models/ledger_entry.dart';
 import '../../../../../../shared/widgets/empty_state_widget.dart';
@@ -9,7 +10,7 @@ import '../../../bloc/ledger_event.dart';
 import '../../../bloc/ledger_state.dart';
 import 'entry_card.dart';
 
-class LedgerList extends StatelessWidget {
+class LedgerList extends StatefulWidget {
   final String linkId;
   final String customerName;
   final String currentUserId;
@@ -20,6 +21,21 @@ class LedgerList extends StatelessWidget {
     required this.customerName,
     required this.currentUserId,
   });
+
+  @override
+  State<LedgerList> createState() => _LedgerListState();
+}
+
+class _LedgerListState extends State<LedgerList> {
+  /// Pull-to-refresh: dispatch RefreshLedger and wait for the bloc to settle.
+  Future<void> _handleRefresh() async {
+    final bloc = context.read<LedgerBloc>();
+    bloc.add(RefreshLedger(widget.linkId));
+    // Wait for the next LedgerLoaded or LedgerError — whichever comes first.
+    await bloc.stream
+        .firstWhere((s) => s is LedgerLoaded || s is LedgerError)
+        .timeout(const Duration(seconds: 15));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +50,7 @@ class LedgerList extends StatelessWidget {
           return ErrorStateWidget(
             message: state.message,
             onRetry: () =>
-                context.read<LedgerBloc>().add(LoadLedger(linkId)),
+                context.read<LedgerBloc>().add(LoadLedger(widget.linkId)),
           );
         }
 
@@ -47,7 +63,7 @@ class LedgerList extends StatelessWidget {
         if (state is LedgerActionLoading) {
           return Stack(
             children: [
-              _buildList(entries),
+              _buildRefreshableList(entries),
               const Positioned.fill(
                 child: ColoredBox(
                   color: Color(0x33FFFFFF),
@@ -59,27 +75,45 @@ class LedgerList extends StatelessWidget {
         }
 
         if (entries.isEmpty) {
-          return EmptyStateWidget(
-            icon: Icons.receipt_long_rounded,
-            title: l10n.noLedgerTransactions,
-            subtitle: l10n.noLedgerTransactionsSubtitle,
+          // Wrap the empty state with a RefreshIndicator too — user can
+          // pull down to check if something has been added since loading.
+          return RefreshIndicator(
+            onRefresh: _handleRefresh,
+            color: AppColors.primary,
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: SizedBox(
+                height: 400,
+                child: EmptyStateWidget(
+                  icon: Icons.receipt_long_rounded,
+                  title: l10n.noLedgerTransactions,
+                  subtitle: l10n.noLedgerTransactionsSubtitle,
+                ),
+              ),
+            ),
           );
         }
 
-        return _buildList(entries);
+        return _buildRefreshableList(entries);
       },
     );
   }
 
-  Widget _buildList(List<LedgerEntry> entries) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(16),
-      itemCount: entries.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 12),
-      itemBuilder: (_, index) => LedgerEntryCard(
-        entry: entries[index],
-        customerName: customerName,
-        currentUserId: currentUserId,
+  Widget _buildRefreshableList(List<LedgerEntry> entries) {
+    return RefreshIndicator(
+      onRefresh: _handleRefresh,
+      color: AppColors.primary,
+      displacement: 48,
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(16),
+        itemCount: entries.length,
+        separatorBuilder: (_, idx) => const SizedBox(height: 12),
+        itemBuilder: (_, index) => LedgerEntryCard(
+          entry: entries[index],
+          customerName: widget.customerName,
+          currentUserId: widget.currentUserId,
+        ),
       ),
     );
   }
