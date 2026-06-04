@@ -27,14 +27,16 @@ class LedgerList extends StatefulWidget {
 }
 
 class _LedgerListState extends State<LedgerList> {
-  /// Pull-to-refresh: dispatch RefreshLedger and wait for the bloc to settle.
+  /// Pull-to-refresh: dispatch and release the indicator quickly.
+  ///
+  /// We do NOT use bloc.stream.firstWhere() here because LedgerLoaded extends
+  /// Equatable — if the server returns the same data Bloc deduplicates the
+  /// emission and firstWhere never fires, hanging for the full timeout.
+  /// Instead we dispatch and wait a short minimum delay so the spinner feels
+  /// intentional; the list rebuilds whenever the BLoC emits.
   Future<void> _handleRefresh() async {
-    final bloc = context.read<LedgerBloc>();
-    bloc.add(RefreshLedger(widget.linkId));
-    // Wait for the next LedgerLoaded or LedgerError — whichever comes first.
-    await bloc.stream
-        .firstWhere((s) => s is LedgerLoaded || s is LedgerError)
-        .timeout(const Duration(seconds: 15));
+    context.read<LedgerBloc>().add(RefreshLedger(widget.linkId));
+    await Future.delayed(const Duration(milliseconds: 500));
   }
 
   @override

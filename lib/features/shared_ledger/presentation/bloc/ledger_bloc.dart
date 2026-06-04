@@ -21,12 +21,21 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
     on<SocketLedgerEntryUpdated>(_onSocketEntryUpdated);
   }
 
+  /// Mirrors the backend's running-balance logic exactly so the on-screen
+  /// number matches the server's authoritative balance.
+  ///
+  ///  - Disputed entries have their balance effect REVERTED on the server,
+  ///    so they must be skipped here (otherwise the local total drifts high).
+  ///  - The backend's balanceDelta() is: credit => +amount, everything else
+  ///    (payment / advance / adjustment) => -amount. We match that — the old
+  ///    version ignored advance/adjustment, which also caused drift.
   double _calcBalance(List<LedgerEntry> entries) {
     double balance = 0;
     for (final entry in entries) {
+      if (entry.status == EntryStatus.disputed) continue;
       if (entry.type == EntryType.credit) {
         balance += entry.amount;
-      } else if (entry.type == EntryType.payment) {
+      } else {
         balance -= entry.amount;
       }
     }
@@ -62,11 +71,12 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
 
     emit(LedgerActionLoading(entries: current.entries, balance: current.balance));
     try {
+      // Only amount/type/date/description/quantity/unit are sent to the API.
+      // vendorId/customerId/createdBy are filled in by the server and come back
+      // on `created`, which replaces this transient object — so they're left null.
       final newEntry = LedgerEntry(
         id: '',
         linkId: event.linkId,
-        vendorId: event.vendorId,
-        customerId: event.customerId,
         amount: event.amount,
         type: event.type,
         date: DateTime.now(),

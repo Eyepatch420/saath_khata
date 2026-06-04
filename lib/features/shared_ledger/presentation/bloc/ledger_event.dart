@@ -23,15 +23,11 @@ class AddLedgerEntry extends LedgerEvent {
   final double? quantity;
   final String? unit;
   final String linkId;
-  final String vendorId;
-  final String customerId;
 
   const AddLedgerEntry({
     required this.amount,
     required this.type,
     required this.linkId,
-    required this.vendorId,
-    required this.customerId,
     this.description,
     this.quantity,
     this.unit,

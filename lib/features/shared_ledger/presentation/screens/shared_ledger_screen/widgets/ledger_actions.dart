@@ -172,8 +172,6 @@ class LedgerActions extends StatelessWidget {
                     amount: amount,
                     type: type,
                     linkId: linkId,
-                    vendorId: 'v1',
-                    customerId: 'c1',
                     description: descCtrl.text.trim().isEmpty
                         ? null
                         : descCtrl.text.trim(),
