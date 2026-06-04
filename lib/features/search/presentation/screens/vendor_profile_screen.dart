@@ -36,6 +36,11 @@ class VendorProfileScreen extends StatefulWidget {
 class _VendorProfileScreenState extends State<VendorProfileScreen> {
   late Future<VendorPublicProfile> _profileFuture;
 
+  // late final so the cubit is created ONCE and persists for the screen's
+  // lifetime. A getter would create a new instance on every rebuild, losing
+  // the "Request Sent" state.
+  late final SendLinkRequestCubit _sendCubit = getIt<SendLinkRequestCubit>();
+
   Color get _accent => widget.viewAs == SearchViewAs.vendor
       ? AppColors.primary
       : AppColors.customerAccent;
@@ -47,7 +52,11 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
         getIt<SearchRepository>().getVendorProfile(widget.preview.userId);
   }
 
-  SendLinkRequestCubit get _sendCubit => getIt<SendLinkRequestCubit>();
+  @override
+  void dispose() {
+    _sendCubit.close();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +96,12 @@ class _ProfileScaffold extends StatelessWidget {
             type: ToastType.success,
           );
         } else if (state is SendRequestError) {
-          AppToast.show(ctx, state.message, type: ToastType.error);
+          final msg = state.message.toLowerCase();
+          // Already linked / already pending are handled visually by the button
+          // state — no error toast needed.
+          if (!msg.contains('already linked') && !msg.contains('already pending')) {
+            AppToast.show(ctx, state.message, type: ToastType.error);
+          }
         }
       },
       child: Scaffold(
@@ -495,21 +509,52 @@ class _CustomerCta extends StatelessWidget {
       builder: (ctx, state) {
         final sent = state is SendRequestSuccess;
         final sending = state is SendRequestSending;
+        // "already linked" or "already pending" — treat as a non-error done state
+        final alreadyDone = state is SendRequestError &&
+            (state.message.toLowerCase().contains('already linked') ||
+                state.message.toLowerCase().contains('already pending'));
+
+        // Determine button appearance
+        final Color btnColor;
+        final String btnLabel;
+        final IconData btnIcon;
+        final bool disabled;
+
+        if (sent) {
+          btnColor = AppColors.success;
+          btnLabel = 'Request Sent';
+          btnIcon = Icons.check_circle_rounded;
+          disabled = true;
+        } else if (alreadyDone) {
+          // already linked → show as connected
+          btnColor = AppColors.success;
+          btnLabel = 'Already Connected';
+          btnIcon = Icons.link_rounded;
+          disabled = true;
+        } else if (sending) {
+          btnColor = accent;
+          btnLabel = 'Sending…';
+          btnIcon = Icons.hourglass_top_rounded;
+          disabled = true;
+        } else {
+          btnColor = accent;
+          btnLabel = 'Send Connection Request';
+          btnIcon = Icons.handshake_rounded;
+          disabled = false;
+        }
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ElevatedButton.icon(
-              onPressed: sent || sending
+              onPressed: disabled
                   ? null
                   : () => ctx
                       .read<SendLinkRequestCubit>()
                       .send(vendorId: vendorId),
               style: ElevatedButton.styleFrom(
-                backgroundColor: sent ? AppColors.success : accent,
-                disabledBackgroundColor: sent
-                    ? AppColors.success
-                    : accent.withValues(alpha: 0.4),
+                backgroundColor: btnColor,
+                disabledBackgroundColor: btnColor,
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14)),
@@ -521,19 +566,9 @@ class _CustomerCta extends StatelessWidget {
                       child: CircularProgressIndicator(
                           strokeWidth: 2, color: Colors.white),
                     )
-                  : Icon(
-                      sent
-                          ? Icons.check_circle_rounded
-                          : Icons.handshake_rounded,
-                      color: Colors.white,
-                      size: 20,
-                    ),
+                  : Icon(btnIcon, color: Colors.white, size: 20),
               label: Text(
-                sent
-                    ? 'Request Sent'
-                    : sending
-                        ? 'Sending…'
-                        : 'Send Connection Request',
+                btnLabel,
                 style: const TextStyle(
                     color: Colors.white, fontWeight: FontWeight.w600),
               ),
@@ -548,8 +583,7 @@ class _CustomerCta extends StatelessWidget {
                 },
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  side:
-                      BorderSide(color: accent.withValues(alpha: 0.5)),
+                  side: BorderSide(color: accent.withValues(alpha: 0.5)),
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                 ),
