@@ -47,6 +47,9 @@ dependencies:
   dio: ^5.8.0+1
   socket_io_client: ^2.0.3+1
 
+  # Voice entry (on-device speech-to-text; requests mic permission internally)
+  speech_to_text: ^7.0.0
+
   # Secure storage (tokens + onboarding flag)
   flutter_secure_storage: ^9.2.2
 

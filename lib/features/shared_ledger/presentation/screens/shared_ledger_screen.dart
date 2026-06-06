@@ -10,9 +10,11 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../../core/localization/locale_provider.dart';
 import '../../../memberships/domain/repositories/membership_repository.dart';
 import '../../../memberships/presentation/bloc/membership_cubit.dart';
 import '../../../memberships/presentation/widgets/membership_banner.dart';
+import '../../../voice_entry/presentation/widgets/voice_entry_sheet.dart';
 import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
 import 'shared_ledger_screen/widgets/balance_header.dart';
@@ -173,6 +175,21 @@ class SharedLedgerView extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+      floatingActionButton: Builder(
+        builder: (innerContext) => FloatingActionButton(
+          heroTag: 'voiceEntryFab',
+          backgroundColor: AppColors.primary,
+          tooltip: l10n.voiceConfirmEntry,
+          onPressed: () => showVoiceEntrySheet(
+            innerContext,
+            linkId: linkId,
+            isVendorView: isVendorView,
+            language: innerContext.read<LocaleProvider>().locale.languageCode,
+            ledgerBloc: innerContext.read<LedgerBloc>(),
+          ),
+          child: const Icon(Icons.mic_rounded, color: Colors.white),
         ),
       ),
       bottomNavigationBar: LedgerActions(

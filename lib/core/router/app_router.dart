@@ -15,7 +15,6 @@ import '../../features/customer/presentation/screens/customer_dashboard.dart';
 
 import '../../features/shared_ledger/presentation/screens/shared_ledger_screen.dart';
 
-import '../../features/voice_entry/presentation/screens/voice_entry_screen.dart';
 
 import '../../features/staff/presentation/screens/staff_management_screen.dart';
 
@@ -71,7 +70,6 @@ class AppRouter {
   static const String customerPayments = '/customer/payments';
   static const String customerProfile = '/customer/profile';
   static const String sharedLedger = '/ledger';
-  static const String voiceEntry = '/voice-entry';
   static const String scanBill = '/scan-bill';
   static const String billDetailsForm = '/bill-details';
   static const String staffManagement = '/staff';
@@ -265,10 +263,6 @@ class AppRouter {
             upiId: extras['upiId'] as String?,
           );
         },
-      ),
-      GoRoute(
-        path: voiceEntry,
-        builder: (context, state) => const VoiceEntryScreen(),
       ),
       GoRoute(
         path: scanBill,

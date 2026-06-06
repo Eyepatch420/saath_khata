@@ -31,6 +31,9 @@ class ApiEndpoints {
   static String disputeEntry(String linkId, String entryId) =>
       '/links/$linkId/entries/$entryId/dispute';
 
+  // Voice entry (nested under link) — LLM-normalized ledger draft
+  static String parseVoice(String linkId) => '/links/$linkId/voice/parse';
+
   // Payments (nested under link)
   static String linkPayments(String linkId) => '/links/$linkId/payments';
   static String settleLink(String linkId) => '/links/$linkId/payments/settle';
