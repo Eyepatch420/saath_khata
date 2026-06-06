@@ -69,6 +69,18 @@ class ApiEndpoints {
   static String acceptLinkRequest(String id) => '/link-requests/$id/accept';
   static String declineLinkRequest(String id) => '/link-requests/$id/decline';
 
+  // Memberships
+  static const String membershipTiers = '/memberships/tiers';
+  static String renameMembershipTier(String tierId) => '/memberships/tiers/$tierId';
+  static String membershipStatus(String linkId) => '/memberships/links/$linkId';
+  static String assignMembership(String linkId) => '/memberships/links/$linkId/assign';
+  static String requestMembership(String linkId) => '/memberships/links/$linkId/request';
+  static const String pendingMembershipRequests = '/memberships/requests/pending';
+  static String approveMembershipRequest(String id) =>
+      '/memberships/requests/$id/approve';
+  static String declineMembershipRequest(String id) =>
+      '/memberships/requests/$id/decline';
+
   // Search (authenticated — both roles)
   static const String searchVendors = '/search/vendors';
   static String vendorPublicProfile(String vendorId) => '/search/vendors/$vendorId';

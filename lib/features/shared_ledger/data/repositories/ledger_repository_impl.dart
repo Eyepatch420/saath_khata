@@ -42,7 +42,9 @@ class LedgerRepositoryImpl implements LedgerRepository {
       final body = <String, dynamic>{
         'amount': entry.amount,
         'type': entry.type.toJson(),
-        'date': entry.date.toIso8601String(),
+        // Must be UTC so the ISO string carries a 'Z' suffix — the backend's
+        // zod `.datetime()` validator rejects local strings with no timezone.
+        'date': entry.date.toUtc().toIso8601String(),
       };
       if (entry.description != null) body['description'] = entry.description;
       if (entry.quantity != null) body['quantity'] = entry.quantity;

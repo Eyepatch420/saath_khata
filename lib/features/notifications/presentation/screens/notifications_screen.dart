@@ -281,6 +281,12 @@ class _NotificationCard extends StatelessWidget {
         return Icons.handshake_rounded;
       case NotificationType.linkRequestDeclined:
         return Icons.person_remove_rounded;
+      case NotificationType.membershipRequested:
+        return Icons.upgrade_rounded;
+      case NotificationType.membershipChanged:
+        return Icons.workspace_premium_rounded;
+      case NotificationType.membershipRequestDeclined:
+        return Icons.do_not_disturb_on_rounded;
     }
   }
 
@@ -309,6 +315,12 @@ class _NotificationCard extends StatelessWidget {
       case NotificationType.linkRequestAccepted:
         return AppColors.success;
       case NotificationType.linkRequestDeclined:
+        return AppColors.error;
+      case NotificationType.membershipRequested:
+        return AppColors.primary;
+      case NotificationType.membershipChanged:
+        return AppColors.success;
+      case NotificationType.membershipRequestDeclined:
         return AppColors.error;
     }
   }

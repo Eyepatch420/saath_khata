@@ -10,6 +10,9 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../memberships/domain/repositories/membership_repository.dart';
+import '../../../memberships/presentation/bloc/membership_cubit.dart';
+import '../../../memberships/presentation/widgets/membership_banner.dart';
 import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
 import 'shared_ledger_screen/widgets/balance_header.dart';
@@ -37,14 +40,22 @@ class SharedLedgerScreen extends StatefulWidget {
 class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
   static const _m = 'LedgerScreen';
   late final LedgerBloc _bloc;
+  late final MembershipCubit _membershipCubit;
   late final LedgerSocketService _socket;
 
   @override
   void initState() {
     super.initState();
     _bloc = LedgerBloc(getIt())..add(LoadLedger(widget.linkId));
+    _membershipCubit =
+        MembershipCubit(getIt<MembershipRepository>(), widget.linkId)..load();
     _socket = getIt<LedgerSocketService>();
     _socket.joinLedger(widget.linkId);
+
+    _socket.onMembershipUpdated((_) {
+      AppLogger.v(_m, 'Socket membership:updated received');
+      _membershipCubit.reload();
+    });
 
     _socket.onEntryAdded((data) {
       try {
@@ -74,14 +85,19 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
     _socket.leaveLedger(widget.linkId);
     _socket.off('ledger:entry_added');
     _socket.off('ledger:entry_updated');
+    _socket.off('membership:updated');
+    _membershipCubit.close();
     _bloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _bloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: _bloc),
+        BlocProvider.value(value: _membershipCubit),
+      ],
       child: SharedLedgerView(
         customerName: widget.customerName,
         linkId: widget.linkId,
@@ -141,6 +157,10 @@ class SharedLedgerView extends StatelessWidget {
           children: [
             LedgerBalanceHeader(
               linkId: linkId,
+              customerName: customerName,
+              isVendorView: isVendorView,
+            ),
+            MembershipBanner(
               customerName: customerName,
               isVendorView: isVendorView,
             ),

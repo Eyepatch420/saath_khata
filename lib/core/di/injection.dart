@@ -30,6 +30,9 @@ import '../../features/link_requests/data/repositories/link_request_repository_i
 import '../../features/link_requests/domain/repositories/link_request_repository.dart';
 import '../../features/link_requests/presentation/bloc/link_request_cubit.dart';
 
+import '../../features/memberships/data/repositories/membership_repository_impl.dart';
+import '../../features/memberships/domain/repositories/membership_repository.dart';
+
 // Auth + network
 import '../services/storage_service.dart';
 import '../services/ledger_socket_service.dart';
@@ -79,7 +82,9 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<SearchRepository>(() => SearchRepositoryImpl(apiClient));
   getIt.registerLazySingleton<LinkRequestRepository>(
       () => LinkRequestRepositoryImpl(apiClient));
-  AppLogger.i(module, 'All repositories registered (9 lazy singletons)');
+  getIt.registerLazySingleton<MembershipRepository>(
+      () => MembershipRepositoryImpl(apiClient));
+  AppLogger.i(module, 'All repositories registered (10 lazy singletons)');
 
   // SearchCubit — factory: fresh instance + debounce per screen
   getIt.registerFactory<SearchCubit>(() => SearchCubit(getIt<SearchRepository>()));

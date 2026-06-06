@@ -1,7 +1,13 @@
-# Environment secrets (never commit)
+# ─── Secrets — NEVER commit ──────────────────────────────────────────────────
 .env
+.env.*
+!.env.example
+*.keystore
+*.jks
+key.properties
+**/android/key.properties
 
-# Miscellaneous
+# ─── Miscellaneous ───────────────────────────────────────────────────────────
 *.class
 *.log
 *.pyc
@@ -12,18 +18,21 @@
 Icon
 *.docx
 
-# IDE / Editor related
+# ─── IDE / Editor ────────────────────────────────────────────────────────────
 *.iml
 *.ipr
 *.iws
 .idea/
 .vscode/
 
-# Claude AI artifacts
+# ─── AI tool artifacts ───────────────────────────────────────────────────────
 .claude
 .claude/
+.cursor/
+.cursorignore
+.cursorindexingignore
 
-# Flutter / Dart / Pub related
+# ─── Flutter / Dart / Pub ────────────────────────────────────────────────────
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
@@ -35,7 +44,30 @@ Icon
 /build/
 /coverage/
 
-# Generated iOS / Xcode files
+# ─── Android / Gradle ────────────────────────────────────────────────────────
+.gradle/
+/local.properties
+**/android/local.properties
+/.idea/caches/
+/.idea/libraries/
+**/android/.gradle/
+**/android/app/debug
+**/android/app/profile
+**/android/app/release
+**/captures/
+**/.cxx/
+**/build/
+
+# ─── iOS / Xcode (generated) ─────────────────────────────────────────────────
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Pods/
+**/ios/.symlinks/
 *.pbxuser
 *.mode1v3
 *.mode2v3
@@ -44,22 +76,13 @@ Icon
 *.xcworkspace
 DerivedData/
 .idea/**/workspace.xml
-.ios/Flutter/Flutter.framework
 
-# Android / Gradle related
-.gradle/
-/local.properties
-/.idea/caches/
-/.idea/libraries/
-**/android/app/debug
-**/android/app/profile
-**/android/app/release
-**/captures/
-**/.cxx/
-**/build/
+# ─── macOS / Linux / Windows desktop (ephemeral) ─────────────────────────────
+**/macos/Flutter/ephemeral/
+**/macos/Pods/
+**/linux/flutter/ephemeral/
+**/windows/flutter/ephemeral/
 
-# Symbolication related
+# ─── Symbolication / Obfuscation ─────────────────────────────────────────────
 app.*.symbols
-
-# Obfuscation related
 app.*.map.json

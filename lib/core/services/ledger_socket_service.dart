@@ -95,6 +95,15 @@ class LedgerSocketService {
     });
   }
 
+  /// Listen for a membership change on the current ledger link (assign / request /
+  /// approve / decline). Payload carries `{ linkId }`; the client refetches status.
+  void onMembershipUpdated(void Function(Map<String, dynamic> data) handler) {
+    _socket?.on('membership:updated', (raw) {
+      AppLogger.v(_m, 'Received membership:updated');
+      if (raw is Map<String, dynamic>) handler(raw);
+    });
+  }
+
   /// Remove all listeners for a given event (call on screen dispose).
   void off(String event) {
     _socket?.off(event);
