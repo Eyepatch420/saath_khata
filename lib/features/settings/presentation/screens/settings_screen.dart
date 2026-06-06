@@ -181,8 +181,8 @@ class SettingsScreen extends StatelessWidget {
       {'locale': 'gu', 'native': 'ગુજરાતી', 'label': 'Gujarati'},
       {'locale': 'pa', 'native': 'ਪੰਜਾਬੀ', 'label': 'Punjabi'},
       {'locale': 'ml', 'native': 'മലയാളം', 'label': 'Malayalam'},
-      {'locale': 'hi', 'native': 'भोजपुरी', 'label': 'Bhojpuri'},
-      {'locale': 'hi', 'native': 'मैथिली', 'label': 'Maithili'},
+      {'locale': 'bho', 'native': 'भोजपुरी', 'label': 'Bhojpuri'},
+      {'locale': 'mai', 'native': 'मैथिली', 'label': 'Maithili'},
     ];
     final currentCode = provider.locale.languageCode;
     final initialIndex =

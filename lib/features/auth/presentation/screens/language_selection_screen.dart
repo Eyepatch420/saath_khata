@@ -16,7 +16,8 @@ class LanguageSelectionScreen extends StatefulWidget {
 
 class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
   // 'code' is a unique tile identifier; 'locale' is the Flutter locale to apply.
-  // Bhojpuri and Maithili use Devanagari and fall back to Hindi localization.
+  // Bhojpuri (bho) and Maithili (mai) have their own arb files; the high-traffic
+  // UI is translated and the long tail falls back to Hindi within those files.
   static const List<Map<String, String>> _languages = [
     {'name': 'English', 'native': 'English', 'code': 'en', 'locale': 'en'},
     {'name': 'Hindi', 'native': 'हिन्दी', 'code': 'hi', 'locale': 'hi'},
@@ -28,8 +29,8 @@ class _LanguageSelectionScreenState extends State<LanguageSelectionScreen> {
     {'name': 'Gujarati', 'native': 'ગુજરાતી', 'code': 'gu', 'locale': 'gu'},
     {'name': 'Punjabi', 'native': 'ਪੰਜਾਬੀ', 'code': 'pa', 'locale': 'pa'},
     {'name': 'Malayalam', 'native': 'മലയാളം', 'code': 'ml', 'locale': 'ml'},
-    {'name': 'Bhojpuri', 'native': 'भोजपुरी', 'code': 'bho', 'locale': 'hi'},
-    {'name': 'Maithili', 'native': 'मैथिली', 'code': 'mai', 'locale': 'hi'},
+    {'name': 'Bhojpuri', 'native': 'भोजपुरी', 'code': 'bho', 'locale': 'bho'},
+    {'name': 'Maithili', 'native': 'मैथिली', 'code': 'mai', 'locale': 'mai'},
   ];
 
   String? _selectedCode;

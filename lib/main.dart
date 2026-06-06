@@ -10,6 +10,7 @@ import 'core/router/auth_state_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'core/di/injection.dart';
 import 'core/localization/locale_provider.dart';
+import 'core/localization/fallback_material_localizations.dart';
 import 'core/services/storage_service.dart';
 import 'core/utils/app_logger.dart';
 import 'core/utils/bloc_observer.dart';
@@ -113,6 +114,9 @@ class _SaathKhataAppState extends State<SaathKhataApp>
           locale: localeProvider.locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
+            // Must precede the Global* delegates so bho/mai borrow Hindi framework
+            // strings instead of throwing (Flutter has no bho/mai bundle).
+            ...fallbackLocalizationsDelegates,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,

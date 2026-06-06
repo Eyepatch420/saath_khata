@@ -1,0 +1,447 @@
+{
+  "@@locale": "mai",
+  "appTitle": "साथखाता",
+  "tagline": "एकटा खाता, दूनू के",
+  "onboarding1Title": "दू दिस्का साझा खाता",
+  "onboarding1Subtitle": "विक्रेता आ ग्राहक दूनू लेल एकेटा खाता। दूनू एके सच देखैत छथि।",
+  "onboarding2Title": "आवाज आ बिल OCR",
+  "onboarding2Subtitle": "12 भाषा में तुरंत एंट्री बनेबा लेल बाजू वा बिल स्कैन करू।",
+  "onboarding3Title": "एक टैप UPI भुगतान",
+  "onboarding3Subtitle": "UPI सँ एक टैप में महिनाक बकाया चुका दिअ।",
+  "getStarted": "शुरू करू",
+  "next": "अगिला",
+  "skip": "छोड़ू",
+  "chooseLanguage": "अपन भाषा चुनू",
+  "continueButton": "जारी राखू",
+  "chooseRole": "अपन भूमिका चुनू",
+  "vendor": "विक्रेता",
+  "customer": "ग्राहक",
+  "welcomeToSaathKhata": "साथखाता में अहाँक स्वागत अछि",
+  "tellUsHowYouUse": "बताउ अहाँ ऐप केर उपयोग कोना करब",
+  "vendorRoleTitle": "हम एकटा विक्रेता छी",
+  "vendorRoleSubtitle": "व्यापारक खाता, कर्मचारी प्रबंधित करू आ भुगतान लिअ।",
+  "customerRoleTitle": "हम एकटा ग्राहक छी",
+  "customerRoleSubtitle": "विक्रेता सभक संग खाता ट्रैक करू आ UPI सँ भुगतान करू।",
+  "loginTitle": "साथखाता में लॉगिन करू",
+  "enterMobile": "आगाँ बढ़बा लेल जानकारी भरू",
+  "mobileNumber": "मोबाइल नंबर",
+  "sendOtp": "OTP भेजू",
+  "verifyOtp": "OTP जाँचू",
+  "verifyAndContinue": "जाँचू आ जारी राखू",
+  "changePhoneNumber": "फोन नंबर बदलू",
+  "otpSentTo": "+91 {phoneNumber} पर भेजे गए 6 अंक दर्ज करें",
+  "@otpSentTo": {
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "email": "ईमेल",
+  "password": "पासवर्ड",
+  "passwordHint": "पासवर्ड दर्ज करें",
+  "loginButton": "लॉगिन करू",
+  "noAccount": "खाता नहि अछि?",
+  "signUp": "साइन अप करू",
+  "pleaseEnterCredentials": "ईमेल और पासवर्ड दर्ज करें",
+  "fillRequiredFields": "नाम, ईमेल और पासवर्ड भरें",
+  "passwordMinChars": "कम से कम 8 अक्षर",
+  "completeProfile": "प्रोफ़ाइल पूरा करू",
+  "enterYourName": "अपन नाम भरू",
+  "fullName": "पूरा नाम",
+  "businessName": "व्यवसाय का नाम",
+  "businessCategory": "व्यवसाय श्रेणी",
+  "businessAddress": "व्यवसाय का पता (वैकल्पिक)",
+  "upiId": "UPI आईडी (भुगतान के लिए)",
+  "vendorDashboard": "विक्रेता डैशबोर्ड",
+  "customerDashboard": "ग्राहक डैशबोर्ड",
+  "customerMode": "ग्राहक मोड",
+  "myVendors": "हमर विक्रेता",
+  "outstanding": "बकाया",
+  "collectedToday": "आइ केर वसूली",
+  "quickActions": "त्वरित काज",
+  "scanBill": "बिल स्कैन करू",
+  "remindAll": "सभकेँ मोन पाड़ू",
+  "addNew": "नव जोड़ू",
+  "recentCustomers": "हाल के ग्राहक",
+  "viewAll": "सभ देखू",
+  "customerAddedSnackbar": "{name} जोड़ा गया",
+  "@customerAddedSnackbar": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sharedLedger": "साझा खाता",
+  "totalBalance": "कुल शेष",
+  "statement": "स्टेटमेंट",
+  "giveCredit": "उधार दिअ",
+  "recordPayment": "भुगतान दर्ज करू",
+  "giveCreditSheet": "उधार दिअ",
+  "recordPaymentSheet": "भुगतान दर्ज करू",
+  "filterAll": "सभ",
+  "balanceCustomerOwes": "ग्राहक पर बकाया अछि",
+  "balanceYouOwe": "अहाँ पर बकाया अछि",
+  "balanceSettled": "चुकता",
+  "ledgerInfoTitle": "यह खाता कैसे काम करता है",
+  "statusConfirmed": "पुष्टि हुई",
+  "statusConfirmedDesc": "दोनों पक्षों की सहमति। एंट्री लॉक है और बदली नहीं जा सकती।",
+  "statusPending": "लंबित",
+  "statusPendingDesc": "ग्राहक की पुष्टि का इंतज़ार। 72 घंटे में स्वतः पुष्टि।",
+  "statusDisputed": "विवादित",
+  "statusDisputedDesc": "ग्राहक ने विवाद उठाया। विक्रेता की समीक्षा आवश्यक।",
+  "statusAutoConfirmed": "स्वतः पुष्टि",
+  "entryTypeCreditLabel": "उधार एंट्री",
+  "entryTypePaymentLabel": "भुगतान प्राप्त",
+  "entryDetails": "एंट्री विवरण",
+  "entryAmount": "राशि",
+  "entryType": "प्रकार",
+  "entryTypeCreditGiven": "उधार (दिया)",
+  "entryTypePaymentReceived": "भुगतान (प्राप्त)",
+  "entryDate": "तारीख",
+  "entryDescription": "विवरण",
+  "entryQuantity": "मात्रा",
+  "entryConfirmedAt": "पुष्टि तारीख",
+  "entryDisputeReason": "विवाद कारण",
+  "entryFor": "{name} के लिए",
+  "@entryFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "descriptionOptional": "विवरण (वैकल्पिक)",
+  "quantityOptional": "मात्रा (वैकल्पिक)",
+  "descriptionHint": "जैसे: 2L दूध, मासिक राशन",
+  "quantityHint": "जैसे: 2",
+  "addCreditEntry": "उधार एंट्री जोड़ू",
+  "noLedgerTransactions": "अभी तक कोई लेनदेन नहीं",
+  "noLedgerTransactionsSubtitle": "शुरू करने के लिए उधार या भुगतान एंट्री जोड़ें।",
+  "confirmEntryTitle": "एंट्री की पुष्टि करें",
+  "confirmEntryMessage": "क्या आप ₹{amount} की एंट्री की पुष्टि करना चाहते हैं? यह पूर्ववत नहीं होगा।",
+  "@confirmEntryMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dispute": "विवाद",
+  "raiseDisputeTitle": "विवाद उठाएं",
+  "raiseDisputeSubtitle": "बताएं इस एंट्री में क्या गलत है।",
+  "raiseDisputeHint": "जैसे: राशि ₹50 होनी चाहिए, ₹60 नहीं",
+  "submitDispute": "विवाद दर्ज करू",
+  "staffAndLabour": "स्टाफ और लेबर",
+  "addStaff": "स्टाफ जोड़ू",
+  "presentToday": "आज उपस्थित",
+  "unpaidSalary": "अवैतनिक वेतन",
+  "paySalary": "वेतन दिअ",
+  "noStaffAdded": "अभी तक कोई स्टाफ नहीं",
+  "noStaffAddedSubtitle": "पहला स्टाफ जोड़ने के लिए नीचे दबाएं।",
+  "present": "उपस्थित",
+  "absent": "अनुपस्थित",
+  "halfDay": "आधा दिन",
+  "paySalaryTitle": "वेतन दें",
+  "unpaidLabel": "अवैतनिक: ₹{amount}",
+  "@unpaidLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "upiTransactionIdOptional": "UPI लेनदेन आईडी (वैकल्पिक)",
+  "noDues": "कोई बकाया नहीं",
+  "staffPayAmount": "₹{amount} दें",
+  "@staffPayAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "staffJoined": "{date} को जुड़े",
+  "@staffJoined": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "staffSalaryPerDay": "₹{amount}/दिन",
+  "@staffSalaryPerDay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "staffSalaryPerMonth": "₹{amount}/माह",
+  "@staffSalaryPerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "staffPayButton": "भुगतान",
+  "businessReports": "व्यापार रिपोर्ट",
+  "revenueTrend": "राजस्व रुझान",
+  "collectionSummary": "संग्रह सारांश",
+  "totalOutstanding": "कुल बकाया",
+  "totalCollected": "कुल संग्रह",
+  "topCustomers": "शीर्ष ग्राहक",
+  "seeAll": "सभ देखू",
+  "settings": "सेटिंग्स",
+  "appLanguage": "ऐप भाषा",
+  "selectLanguage": "भाषा चुनू",
+  "settingsManagePayments": "भुगतान खाते प्रबंधित करें",
+  "settingsManageAlerts": "अलर्ट और रिमाइंडर सेट करें",
+  "settingsAppPinFingerprint": "ऐप पिन और फिंगरप्रिंट",
+  "settingsFaqsContact": "सहायता और संपर्क",
+  "settingsVersion": "संस्करण {version}",
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "myUpiIds": "मेरी UPI आईडी",
+  "notifications": "सूचनाएं",
+  "security": "सुरक्षा",
+  "helpSupport": "सहायता",
+  "logout": "लॉगआउट",
+  "markAllRead": "सभकेँ पढ़ल चिन्हित करू",
+  "noNotificationsTitle": "अभी तक कोई सूचना नहीं",
+  "noNotificationsSubtitle": "यहाँ खाता अपडेट, भुगतान अलर्ट और रिमाइंडर दिखेंगे।",
+  "today": "आइ",
+  "yesterday": "काल्हि",
+  "minutesAgo": "{count} मिनट पहले",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} घंटे पहले",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "payments": "भुगतान",
+  "transactionHistory": "लेनदेन इतिहास",
+  "totalPaid": "कुल भुगतान",
+  "pending": "लंबित",
+  "quickPay": "त्वरित भुगतान",
+  "scanAndPay": "स्कैन और भुगतान",
+  "scanUpiDesc": "विक्रेता को भुगतान के लिए UPI QR स्कैन करें",
+  "noTransactionsTitle": "अभी तक कोई लेनदेन नहीं",
+  "noTransactionsSubtitle": "आपका भुगतान इतिहास यहाँ दिखेगा।",
+  "paymentStatusPaid": "भुगतान हुआ",
+  "paymentStatusFailed": "विफल",
+  "paymentStatusRefunded": "वापस",
+  "appointments": "अपॉइंटमेंट",
+  "myAppointments": "मेरे अपॉइंटमेंट",
+  "upcoming": "आगामी",
+  "past": "पिछले",
+  "cancelBooking": "बुकिंग रद्द करें",
+  "keepBooking": "रखें",
+  "noBookingsToday": "आज कोई बुकिंग नहीं",
+  "noBookingsTodaySubtitle": "ग्राहक ऐप से अपॉइंटमेंट बुक कर सकते हैं।",
+  "noAppointmentsTitle": "अभी तक कोई अपॉइंटमेंट नहीं",
+  "noAppointmentsSubtitle": "शुरुआत के लिए विक्रेता से अपॉइंटमेंट बुक करें।",
+  "cancelAppointmentTitle": "अपॉइंटमेंट रद्द करें?",
+  "cancelAppointmentMessage": "{date} को {time} बजे का अपॉइंटमेंट रद्द करें?",
+  "@cancelAppointmentMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingStatusConfirmed": "पुष्टि हुई",
+  "bookingStatusPending": "लंबित",
+  "bookingStatusCancelled": "रद्द",
+  "bookingStatusCompleted": "पूर्ण",
+  "bookingStatusDone": "पूर्ण",
+  "upiPayment": "UPI भुगतान",
+  "amountToPay": "भुगतान की राशि",
+  "securedByUpi": "UPI द्वारा सुरक्षित",
+  "paymentSuccessful": "भुगतान सफल!",
+  "paymentFailed": "भुगतान विफल",
+  "retryPayment": "फिर प्रयास करें",
+  "enterUpiId": "UPI आईडी दर्ज करें",
+  "addNoteOptional": "नोट जोड़ें (वैकल्पिक)",
+  "payAmountButton": "₹{amount} भुगतान करें",
+  "@payAmountButton": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "done": "भऽ गेल",
+  "paymentSomethingWentWrong": "कुछ गलत हुआ। फिर से प्रयास करें।",
+  "upiAppComingSoon": "{app} जल्द आ रहा है",
+  "@upiAppComingSoon": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterUpiId": "UPI आईडी दर्ज करें",
+  "paidToRecipient": "₹{amount}, {name} को भुगतान हुआ",
+  "@paidToRecipient": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "orDivider": "या",
+  "addNewCustomer": "नव ग्राहक जोड़ू",
+  "customerName": "ग्राहक केर नाम",
+  "mobileNo": "मोबाइल नंबर",
+  "addCustomer": "ग्राहक जोड़ू",
+  "paymentConfirmed": "भुगतान की पुष्टि करें",
+  "addAdvance": "अग्रिम जोड़ें",
+  "addAdvanceTitle": "अग्रिम जोड़ें",
+  "attendanceTitle": "उपस्थिति",
+  "salaryTitle": "वेतन सारांश",
+  "rate": "दर",
+  "daysPresent": "उपस्थित दिन",
+  "earned": "अर्जित",
+  "unpaid": "अवैतनिक",
+  "advanceTaken": "लिया गया अग्रिम",
+  "active": "सक्रिय",
+  "inactive": "निष्क्रिय",
+  "joined": "जुड़े",
+  "noPhone": "कोई फ़ोन नहीं",
+  "addNewStaff": "नया स्टाफ जोड़ें",
+  "fullNameLabel": "पूरा नाम",
+  "phoneNumber": "फ़ोन नंबर",
+  "role": "भूमिका",
+  "salaryType": "वेतन प्रकार",
+  "dailyWage": "दैनिक मजदूरी",
+  "monthlySalary": "मासिक वेतन",
+  "dailyWageAmount": "दैनिक मजदूरी (₹)",
+  "monthlySalaryAmount": "मासिक वेतन (₹)",
+  "addStaffButton": "स्टाफ जोड़ें",
+  "noteOptional": "नोट (वैकल्पिक)",
+  "amountRupees": "राशि (₹)",
+  "cancel": "रद्द करू",
+  "confirm": "पुष्टि करू",
+  "tryAgain": "फेर सँ प्रयास करू",
+  "alignBillInFrame": "बिल को फ्रेम में रखें",
+  "verifyAndLogin": "सत्यापित करें और लॉगिन करें",
+  "voiceListening": "सुनि रहल छी...",
+  "voiceThinking": "सोचि रहल छी...",
+  "voiceDetectedEntry": "पहचानी गई एंट्री",
+  "voiceConfirmEntry": "एंट्री पुष्टि करू",
+  "item": "वस्तु",
+  "totalOutstandingBalance": "कुल बकाया राशि",
+  "payAllDues": "सभ बकाया चुका दिअ",
+  "myKhatas": "हमर खाता",
+  "noVendorsFound": "कोनो विक्रेता नहि भेटल",
+  "verifyBillDetails": "बिल विवरण सत्यापित करें",
+  "scannedBillPreview": "स्कैन किया बिल",
+  "descriptionItemDetails": "विवरण / वस्तु की जानकारी",
+  "selectCustomer": "ग्राहक चुनें",
+  "searchCustomerHint": "ग्राहक खोजें या चुनें",
+  "saveToKhata": "खाते में सेव करें",
+  "allCustomersReport": "सभी ग्राहक रिपोर्ट",
+  "collectedInMonth": "{month} में संग्रह",
+  "@collectedInMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "notificationSettings": "नोटिफिकेशन सेटिंग",
+  "securityPin": "सुरक्षा और पिन",
+  "editProfile": "प्रोफ़ाइल संपादित करू",
+  "changePassword": "पासवर्ड बदलें",
+  "termsAndConditions": "नियम और शर्तें",
+  "privacyPolicy": "गोपनीयता नीति",
+  "accountSettings": "खाता सेटिंग",
+  "legalInfo": "कानूनी",
+  "currentPassword": "वर्तमान पासवर्ड",
+  "newPassword": "नया पासवर्ड",
+  "confirmNewPassword": "नया पासवर्ड दोबारा दर्ज करें",
+  "passwordsDoNotMatch": "पासवर्ड मेल नहीं खाते",
+  "changePasswordButton": "पासवर्ड बदलें",
+  "passwordChangedSuccess": "पासवर्ड सफलतापूर्वक बदला गया",
+  "loadingContent": "लोड हो रहा है...",
+  "failedToLoad": "सामग्री लोड करने में विफल। कृपया पुनः प्रयास करें।",
+  "bookingActions": "बुकिंग कार्रवाई",
+  "confirmBooking": "बुकिंग कन्फर्म करें",
+  "markComplete": "पूरा हुआ",
+  "confirmBookingMessage": "{customer} की {date} को {time} बजे अपॉइंटमेंट कन्फर्म करें?",
+  "@confirmBookingMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "customer": {
+        "type": "String"
+      }
+    }
+  },
+  "bookingUpdated": "बुकिंग सफलतापूर्वक अपडेट हुई",
+  "bookingUpdateFailed": "बुकिंग अपडेट करने में विफल",
+  "markAttendanceFor": "उपस्थिति दर्ज करें — {date}",
+  "@markAttendanceFor": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "allCustomers": "सभ ग्राहक",
+  "@allCustomers": {},
+  "noCustomersYet": "एखन धरि कोनो ग्राहक नहि",
+  "@noCustomersYet": {},
+  "noCustomersYetSubtitle": "शुरू करबा लेल अपन पहिल ग्राहक जोड़ू",
+  "@noCustomersYetSubtitle": {},
+  "invalidPhone": "6–9 से शुरू होने वाला 10 अंकों का वैध मोबाइल नंबर दर्ज करें",
+  "@invalidPhone": {},
+  "accrueMonthSalary": "माह की तनख्वाह जोड़ें (₹{amount})",
+  "@accrueMonthSalary": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "accrueMonthSalaryTitle": "माह की तनख्वाह जोड़ें",
+  "@accrueMonthSalaryTitle": {},
+  "accrueMonthSalaryConfirm": "{name} के बकाया में इस महीने ₹{amount} जोड़ें?",
+  "@accrueMonthSalaryConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  }
+}
