@@ -16,6 +16,7 @@ import '../../../../shared/widgets/search_bar_pill.dart';
 import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../notifications/presentation/bloc/notification_state.dart';
 import '../../../search/presentation/screens/vendor_search_screen.dart';
+import '../../../memberships/presentation/widgets/membership_tier_badge.dart';
 
 class VendorDashboard extends StatelessWidget {
   const VendorDashboard({super.key});
@@ -436,7 +437,22 @@ class _CustomerTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(info.name, style: AppTypography.labelLarge),
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(info.name,
+                            style: AppTypography.labelLarge,
+                            overflow: TextOverflow.ellipsis),
+                      ),
+                      if (customer.tierName != null) ...[
+                        const SizedBox(width: 8),
+                        MembershipTierBadge(
+                          tierName: customer.tierName,
+                          tierLevel: customer.tierLevel,
+                        ),
+                      ],
+                    ],
+                  ),
                   if (info.mobile != null)
                     Text(info.mobile!, style: AppTypography.bodySmall),
                 ],

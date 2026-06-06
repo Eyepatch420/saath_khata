@@ -68,23 +68,34 @@ class CustomerLinkItem extends Equatable {
   final UserSummary customer;
   final String createdAt;
 
+  /// Membership tier this customer holds with the vendor, null if none.
+  final int? tierLevel; // 1 = lowest, 3 = highest
+  final String? tierName;
+
   const CustomerLinkItem({
     required this.linkId,
     required this.balance,
     required this.customer,
     required this.createdAt,
+    this.tierLevel,
+    this.tierName,
   });
 
-  factory CustomerLinkItem.fromJson(Map<String, dynamic> json) =>
-      CustomerLinkItem(
-        linkId: json['linkId'] as String,
-        balance: (json['balance'] as num? ?? 0).toDouble(),
-        customer: UserSummary.fromJson(json['customer'] as Map<String, dynamic>),
-        createdAt: json['createdAt'] as String,
-      );
+  factory CustomerLinkItem.fromJson(Map<String, dynamic> json) {
+    final tier = json['tier'] as Map<String, dynamic>?;
+    return CustomerLinkItem(
+      linkId: json['linkId'] as String,
+      balance: (json['balance'] as num? ?? 0).toDouble(),
+      customer: UserSummary.fromJson(json['customer'] as Map<String, dynamic>),
+      createdAt: json['createdAt'] as String,
+      tierLevel: (tier?['level'] as num?)?.toInt(),
+      tierName: tier?['name'] as String?,
+    );
+  }
 
   @override
-  List<Object?> get props => [linkId, balance, customer, createdAt];
+  List<Object?> get props =>
+      [linkId, balance, customer, createdAt, tierLevel, tierName];
 }
 
 /// Response from POST /api/v1/links/remind-all
