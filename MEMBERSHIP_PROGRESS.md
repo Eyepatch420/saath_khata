@@ -5,7 +5,7 @@ Plan: [MEMBERSHIP_PLAN.md](MEMBERSHIP_PLAN.md)
 Legend: ✅ done · 🚧 in progress · ⬜ todo
 
 ## Backend (`saath_khata_backend`)
-- ✅ Migration `20260017_create_memberships.ts` (tiers, `links.tier_id`, requests, partial-unique pending index)
+- ✅ Migration `20260019_create_memberships.ts` (tiers, `links.tier_id`, requests, partial-unique pending index)
 - ✅ `memberships` module: types
 - ✅ `memberships` module: validators
 - ✅ `memberships` module: repository (lazy default-tier seeding)

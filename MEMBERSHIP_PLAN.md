@@ -20,7 +20,7 @@ This keeps the model tiny and reuses the existing link/ledger/socket/notificatio
 
 ## Data model (backend, Postgres)
 
-Migration `20260017_create_memberships.ts`:
+Migration `20260019_create_memberships.ts`:
 
 1. **`membership_tiers`** — one set of 3 per vendor
    - `id` uuid pk
@@ -101,7 +101,7 @@ Flutter `ApiClient.extractData` (which casts to a Map) stays safe.
 ## Files touched
 
 **Backend** (`saath_khata_backend`)
-- `migrations/20260017_create_memberships.ts` (new)
+- `migrations/20260019_create_memberships.ts` (new)
 - `src/app/modules/memberships/{types,validators,repositories,services,controllers,routes}/*` (new)
 - `src/app/bootstrap/app.ts` (mount route)
 - `src/infrastructure/socket/ledger-socket.ts` (emit helper)
