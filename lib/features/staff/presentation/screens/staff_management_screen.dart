@@ -199,10 +199,26 @@ class _StaffContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     if (state.staffList.isEmpty) {
-      return EmptyStateWidget(
-        icon: Icons.people_outline_rounded,
-        title: l10n.noStaffAdded,
-        subtitle: l10n.noStaffAddedSubtitle,
+      // Refreshable empty state — pull down to re-check the server.
+      return RefreshIndicator(
+        color: AppColors.primary,
+        onRefresh: () async {
+          context.read<StaffBloc>().add(RefreshStaff());
+          await Future.delayed(const Duration(milliseconds: 500));
+        },
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: [
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.6,
+              child: EmptyStateWidget(
+                icon: Icons.people_outline_rounded,
+                title: l10n.noStaffAdded,
+                subtitle: l10n.noStaffAddedSubtitle,
+              ),
+            ),
+          ],
+        ),
       );
     }
 
@@ -210,13 +226,24 @@ class _StaffContent extends StatelessWidget {
       children: [
         _StaffSummaryBar(state: state),
         Expanded(
-          child: ListView.separated(
-            padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
-            itemCount: state.staffList.length,
-            separatorBuilder: (context, index) => const SizedBox(height: 12),
-            itemBuilder: (context, index) {
-              return _StaffCard(staff: state.staffList[index]);
+          child: RefreshIndicator(
+            color: AppColors.primary,
+            onRefresh: () async {
+              // RefreshStaff reloads silently (keeps the list visible). We don't
+              // await a specific state because StaffLoaded is Equatable and an
+              // identical refetch would be deduplicated, hanging firstWhere().
+              context.read<StaffBloc>().add(RefreshStaff());
+              await Future.delayed(const Duration(milliseconds: 500));
             },
+            child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
+              itemCount: state.staffList.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                return _StaffCard(staff: state.staffList[index]);
+              },
+            ),
           ),
         ),
       ],

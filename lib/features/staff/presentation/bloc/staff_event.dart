@@ -9,6 +9,10 @@ abstract class StaffEvent extends Equatable {
 
 class LoadStaff extends StaffEvent {}
 
+/// Silent reload for pull-to-refresh: refetches the list WITHOUT emitting
+/// StaffLoading, so the current list stays visible while the spinner animates.
+class RefreshStaff extends StaffEvent {}
+
 class AddStaff extends StaffEvent {
   final StaffModel staff;
   const AddStaff(this.staff);

@@ -12,6 +12,7 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
 
   StaffBloc(this._repository) : super(StaffInitial()) {
     on<LoadStaff>(_onLoad);
+    on<RefreshStaff>(_onRefresh);
     on<AddStaff>(_onAddStaff);
     on<MarkAttendance>(_onMarkAttendance);
     on<LoadAttendance>(_onLoadAttendance);
@@ -37,23 +38,32 @@ class StaffBloc extends Bloc<StaffEvent, StaffState> {
     }
   }
 
+  Future<void> _onRefresh(RefreshStaff event, Emitter<StaffState> emit) async {
+    AppLogger.i(_m, 'Refreshing staff list (silent)...');
+    try {
+      final staff = await _repository.getStaffList();
+      emit(StaffLoaded(
+        staffList: staff,
+        presentCount: staff.where((s) => s.presentToday).length,
+        totalUnpaidSalary: staff.fold(0, (sum, s) => sum + s.unpaidSalary),
+      ));
+    } catch (e) {
+      AppLogger.e(_m, 'Staff refresh failed', e);
+      // Keep the current state on failure — don't blank the list.
+    }
+  }
+
   Future<void> _onAddStaff(AddStaff event, Emitter<StaffState> emit) async {
     AppLogger.i(_m, 'Adding staff member: ${event.staff.name}');
-    final current = state;
     emit(StaffActionLoading());
     try {
       final newStaff = await _repository.addStaff(event.staff);
       AppLogger.i(_m, 'Staff added — id:${newStaff.id} name:${newStaff.name}');
-      if (current is StaffLoaded) {
-        final updated = [...current.staffList, newStaff];
-        emit(StaffLoaded(
-          staffList: updated,
-          presentCount: updated.where((s) => s.presentToday).length,
-          totalUnpaidSalary: updated.fold(0, (sum, s) => sum + s.unpaidSalary),
-        ));
-      } else {
-        add(LoadStaff());
-      }
+      // Refetch the full list from the server instead of an optimistic append.
+      // The optimistic emit was not reliably reflecting on screen (the new member
+      // only appeared after a tab switch, which forces a fresh load). A refetch
+      // guarantees the list — and the derived present/unpaid totals — are correct.
+      add(LoadStaff());
     } catch (e) {
       AppLogger.e(_m, 'Add staff failed', e);
       emit(const StaffError('Failed to add staff'));
