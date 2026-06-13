@@ -25,12 +25,16 @@ class VendorRepositoryImpl implements VendorRepository {
   }
 
   @override
-  Future<CustomerLinkItem> linkCustomer(String customerEmail) async {
+  Future<CustomerLinkItem> linkCustomer(String identifier) async {
     try {
-      final response = await _api.post(
-        ApiEndpoints.links,
-        data: {'customerEmail': customerEmail},
-      );
+      // Detect whether the vendor entered an email or a 10-digit phone number
+      // and send the matching field — the backend accepts either.
+      final trimmed = identifier.trim();
+      final isPhone = RegExp(r'^[6-9]\d{9}$').hasMatch(trimmed);
+      final body = isPhone
+          ? {'customerPhone': trimmed}
+          : {'customerEmail': trimmed};
+      final response = await _api.post(ApiEndpoints.links, data: body);
       final data = ApiClient.extractData(response);
       // Backend returns full LinkResponse; we reshape to CustomerLinkItem
       return CustomerLinkItem(

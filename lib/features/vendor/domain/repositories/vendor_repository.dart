@@ -3,7 +3,8 @@ import '../../../../shared/models/report_models.dart';
 
 abstract class VendorRepository {
   Future<List<CustomerLinkItem>> getLinkedCustomers();
-  Future<CustomerLinkItem> linkCustomer(String customerEmail);
+  /// Link a customer by their email OR 10-digit phone number.
+  Future<CustomerLinkItem> linkCustomer(String identifier);
   Future<void> deactivateLink(String linkId);
   Future<VendorSummaryReport> getVendorSummary();
   Future<RemindAllResult> remindAll();

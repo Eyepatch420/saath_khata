@@ -249,10 +249,11 @@ void showVendorAddCustomerSheet(BuildContext context) {
             const SizedBox(height: 20),
             TextField(
               controller: emailCtrl,
-              keyboardType: TextInputType.emailAddress,
+              keyboardType: TextInputType.text,
               decoration: const InputDecoration(
-                labelText: 'Customer Email',
-                prefixIcon: Icon(Icons.email_outlined),
+                labelText: 'Customer email or phone',
+                hintText: 'email address or 10-digit mobile',
+                prefixIcon: Icon(Icons.person_search_outlined),
               ),
             ),
             const SizedBox(height: 24),

@@ -60,6 +60,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   // Controllers
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _businessNameController = TextEditingController();
@@ -70,6 +71,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _businessNameController.dispose();
@@ -182,11 +184,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   void _handleSignup(BuildContext ctx) {
     final name = _nameController.text.trim();
     final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
     final password = _passwordController.text;
     final confirm = _confirmPasswordController.text;
 
-    if (name.isEmpty || email.isEmpty || password.isEmpty || confirm.isEmpty) {
+    if (name.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty || confirm.isEmpty) {
       AppToast.show(ctx, AppLocalizations.of(ctx)!.fillRequiredFields, type: ToastType.warning);
+      return;
+    }
+
+    // Mobile is required — it's a connection identifier (link by phone).
+    if (!RegExp(r'^[6-9]\d{9}$').hasMatch(phone)) {
+      AppToast.show(ctx, 'Enter a valid 10-digit mobile number', type: ToastType.error);
       return;
     }
 
@@ -206,6 +215,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             email: email,
             password: password,
             role: widget.role,
+            mobile: phone,
             upiId: _upiController.text.trim().isEmpty
                 ? null
                 : _upiController.text.trim(),
@@ -305,6 +315,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   prefixIcon: Icons.email_rounded,
                   keyboardType: TextInputType.emailAddress,
                   controller: _emailController,
+                ),
+                const SizedBox(height: 20),
+                CustomTextField(
+                  label: 'Mobile number',
+                  hintText: '10-digit mobile number',
+                  prefixIcon: Icons.phone_rounded,
+                  keyboardType: TextInputType.phone,
+                  controller: _phoneController,
                 ),
                 const SizedBox(height: 20),
                 CustomTextField(
