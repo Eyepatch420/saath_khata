@@ -74,6 +74,12 @@ class SettingsScreen extends StatelessWidget {
                 },
               ),
               _SettingsTile(
+                icon: Icons.workspace_premium_rounded,
+                title: 'Membership Tiers',
+                subtitle: 'Rename tiers and set member discounts',
+                onTap: () => context.push(AppRouter.membershipTiers),
+              ),
+              _SettingsTile(
                 icon: Icons.help_outline_rounded,
                 title: l10n.helpSupport,
                 subtitle: l10n.settingsFaqsContact,

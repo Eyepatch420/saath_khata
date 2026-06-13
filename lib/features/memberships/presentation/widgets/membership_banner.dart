@@ -230,6 +230,22 @@ class _CurrentTierRow extends StatelessWidget {
                   color: tier != null ? color : AppColors.textSecondary,
                 ),
               ),
+              if (tier != null && tier!.hasDiscount)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.local_offer_rounded,
+                          size: 12, color: AppColors.success),
+                      const SizedBox(width: 4),
+                      Text(
+                        tier!.discountLabel,
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.success),
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

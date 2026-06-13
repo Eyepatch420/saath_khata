@@ -3,12 +3,57 @@ import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../domain/models/membership_request.dart';
 import '../../domain/models/membership_status.dart';
+import '../../domain/models/membership_tier.dart';
 import '../../domain/repositories/membership_repository.dart';
 
 class MembershipRepositoryImpl implements MembershipRepository {
   final ApiClient _api;
 
   MembershipRepositoryImpl(this._api);
+
+  @override
+  Future<List<MembershipTier>> getTiers() async {
+    try {
+      final response = await _api.get(ApiEndpoints.membershipTiers);
+      final data = ApiClient.extractData(response);
+      final list = (data['tiers'] as List?) ?? [];
+      return list
+          .map((e) => MembershipTier.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<MembershipTier> updateTier(
+    String tierId, {
+    String? name,
+    DiscountType? discountType,
+    double? discountValue,
+    double? discountCap,
+    bool clearCap = false,
+  }) async {
+    try {
+      final body = <String, dynamic>{};
+      if (name != null) body['name'] = name;
+      if (discountType != null) body['discountType'] = discountType.toJson();
+      if (discountValue != null) body['discountValue'] = discountValue;
+      // clearCap sends explicit null; otherwise only send when a value is given.
+      if (clearCap) {
+        body['discountCap'] = null;
+      } else if (discountCap != null) {
+        body['discountCap'] = discountCap;
+      }
+      final response = await _api.patch(
+        ApiEndpoints.updateMembershipTier(tierId),
+        data: body,
+      );
+      return MembershipTier.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
 
   @override
   Future<MembershipStatus> getStatus(String linkId) async {

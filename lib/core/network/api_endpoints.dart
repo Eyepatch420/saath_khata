@@ -74,7 +74,9 @@ class ApiEndpoints {
 
   // Memberships
   static const String membershipTiers = '/memberships/tiers';
-  static String renameMembershipTier(String tierId) => '/memberships/tiers/$tierId';
+  static String updateMembershipTier(String tierId) => '/memberships/tiers/$tierId';
+  static String membershipDiscount(String linkId) =>
+      '/memberships/links/$linkId/discount';
   static String membershipStatus(String linkId) => '/memberships/links/$linkId';
   static String assignMembership(String linkId) => '/memberships/links/$linkId/assign';
   static String requestMembership(String linkId) => '/memberships/links/$linkId/request';
