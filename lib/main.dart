@@ -20,7 +20,7 @@ import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  GoogleFonts.config.allowRuntimeFetching = false;
+  GoogleFonts.config.allowRuntimeFetching = true;
   await dotenv.load(fileName: '.env');
 
   AppLogger.i('App', '═══════════════════════════════════════');
@@ -105,7 +105,7 @@ class _SaathKhataAppState extends State<SaathKhataApp>
       builder: (context, child) {
         final localeProvider = Provider.of<LocaleProvider>(context);
         return MaterialApp.router(
-          title: 'SaathKhata',
+          title: 'Saath Khata',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
           darkTheme: AppTheme.dark,

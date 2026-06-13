@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>SaathKhata needs your location to show your position on the map so you can pick your business address.</string>
+	<string>Saath Khata needs your location to show your position on the map so you can pick your business address.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>SaathKhata needs your location to show your position on the map so you can pick your business address.</string>
+	<string>Saath Khata needs your location to show your position on the map so you can pick your business address.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>saath_khata</string>
+	<string>Saath Khata</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -52,13 +52,13 @@
 		</dict>
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>SaathKhata needs access to your photo library to set your profile picture.</string>
+	<string>Saath Khata needs access to your photo library to set your profile picture.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>SaathKhata needs camera access to take your profile picture.</string>
+	<string>Saath Khata needs camera access to take your profile picture.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>SaathKhata needs microphone access to record voice ledger entries.</string>
+	<string>Saath Khata needs microphone access to record voice ledger entries.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>SaathKhata uses speech recognition to turn your spoken entries into ledger records.</string>
+	<string>Saath Khata uses speech recognition to turn your spoken entries into ledger records.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
