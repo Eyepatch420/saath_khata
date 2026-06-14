@@ -13,6 +13,8 @@ import '../../../../shared/widgets/error_state_widget.dart';
 import '../bloc/notification_bloc.dart';
 import '../bloc/notification_event.dart';
 import '../bloc/notification_state.dart';
+import '../../../vendor/presentation/bloc/vendor_bloc.dart';
+import '../../../vendor/presentation/bloc/vendor_event.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -162,8 +164,10 @@ class _NotificationCard extends StatelessWidget {
           context.push(AppRouter.linkRequestDetail, extra: requestId);
         }
       case NotificationType.linkRequestAccepted:
+        // Refresh vendor dashboard so the new linked vendor appears immediately.
+        getIt<VendorBloc>().add(LoadVendorDashboard());
+        break;
       case NotificationType.linkRequestDeclined:
-        // Customer taps → no specific deep-link yet, just mark read
         break;
       default:
         // Ledger/payment notifications — no deep-link for now

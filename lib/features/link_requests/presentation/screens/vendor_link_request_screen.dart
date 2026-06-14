@@ -4,6 +4,8 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../shared/widgets/app_toast.dart';
+import '../../../vendor/presentation/bloc/vendor_bloc.dart';
+import '../../../vendor/presentation/bloc/vendor_event.dart';
 import '../../domain/models/link_request_model.dart';
 import '../bloc/link_request_cubit.dart';
 import '../bloc/link_request_state.dart';
@@ -46,6 +48,8 @@ class _VendorLinkRequestView extends StatelessWidget {
                 : 'Request from $customerName declined.',
             type: accepted ? ToastType.success : ToastType.info,
           );
+          // Refresh vendor dashboard so the new customer/vendor appears immediately.
+          getIt<VendorBloc>().add(LoadVendorDashboard());
           Navigator.of(ctx).pop();
         } else if (state is LinkRequestError) {
           AppToast.show(ctx, state.message, type: ToastType.error);

@@ -17,6 +17,7 @@ import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../notifications/presentation/bloc/notification_state.dart';
 import '../../../search/presentation/screens/vendor_search_screen.dart';
 import '../../../memberships/presentation/widgets/membership_tier_badge.dart';
+import '../../../../shared/models/link_model.dart';
 
 class VendorDashboard extends StatelessWidget {
   const VendorDashboard({super.key});
@@ -202,6 +203,26 @@ class VendorDashboardView extends StatelessWidget {
                         return _CustomerTile(customer: customer);
                       },
                     ),
+                    if (state.myVendors.isNotEmpty) ...[
+                      const SizedBox(height: 32),
+                      Text('My Vendors', style: AppTypography.h3),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Shops you buy from',
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textSecondary),
+                      ),
+                      const SizedBox(height: 12),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: state.myVendors.length,
+                        separatorBuilder: (context, i) =>
+                            const SizedBox(height: 12),
+                        itemBuilder: (context, index) =>
+                            _VendorTile(item: state.myVendors[index]),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -465,6 +486,82 @@ class _CustomerTile extends StatelessWidget {
                 Text('₹${customer.balance.toStringAsFixed(0)}',
                     style: AppTypography.labelLarge
                         .copyWith(color: AppColors.error)),
+                const Icon(Icons.chevron_right_rounded,
+                    color: AppColors.textHint, size: 16),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Vendor Tile (shops where this vendor is the customer) ───────────────────
+
+class _VendorTile extends StatelessWidget {
+  final VendorLinkItem item;
+
+  const _VendorTile({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    final v = item.vendor;
+    final displayName =
+        (v.businessName != null && v.businessName!.isNotEmpty)
+            ? v.businessName!
+            : v.name;
+    final surface = Theme.of(context).colorScheme.surface;
+    return InkWell(
+      onTap: () => context.push(
+        AppRouter.sharedLedger,
+        extra: {
+          'linkId': item.linkId,
+          'name': displayName,
+          'isVendorView': false,
+        },
+      ),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: surface,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: AppColors.customerAccent.withValues(alpha: 0.15),
+              child: Text(
+                displayName[0],
+                style: const TextStyle(
+                    color: AppColors.customerAccent,
+                    fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(displayName,
+                      style: AppTypography.labelLarge,
+                      overflow: TextOverflow.ellipsis),
+                  if (v.businessCategory != null)
+                    Text(v.businessCategory!,
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textSecondary)),
+                ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  '₹${item.balance.toStringAsFixed(0)}',
+                  style: AppTypography.labelLarge
+                      .copyWith(color: AppColors.error),
+                ),
                 const Icon(Icons.chevron_right_rounded,
                     color: AppColors.textHint, size: 16),
               ],

@@ -11,6 +11,19 @@ class VendorRepositoryImpl implements VendorRepository {
   VendorRepositoryImpl(this._api);
 
   @override
+  Future<List<VendorLinkItem>> getLinkedVendors() async {
+    try {
+      final response = await _api.get(ApiEndpoints.myVendors);
+      final list = (response.data as Map<String, dynamic>)['data'] as List;
+      return list
+          .map((e) => VendorLinkItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<List<CustomerLinkItem>> getLinkedCustomers() async {
     try {
       final response = await _api.get(ApiEndpoints.myCustomers);

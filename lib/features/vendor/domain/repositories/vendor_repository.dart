@@ -3,6 +3,8 @@ import '../../../../shared/models/report_models.dart';
 
 abstract class VendorRepository {
   Future<List<CustomerLinkItem>> getLinkedCustomers();
+  /// Links where this vendor user is the customer (vendor-to-vendor connections).
+  Future<List<VendorLinkItem>> getLinkedVendors();
   /// Link a customer by their email OR 10-digit phone number.
   Future<CustomerLinkItem> linkCustomer(String identifier);
   Future<void> deactivateLink(String linkId);
