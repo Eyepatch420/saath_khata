@@ -103,7 +103,9 @@ class RevenueChartCard extends StatelessWidget {
               children: bars.map((bar) {
                 final fraction =
                     maxAmount > 0 ? (bar.amount / maxAmount) : 0.0;
-                final barH = (fraction * 80).clamp(3.0, 80.0);
+                final barH = bar.amount > 0
+                    ? (fraction * 80).clamp(4.0, 80.0)
+                    : 0.0;
                 return Tooltip(
                   message: '₹${bar.amount.toStringAsFixed(0)}',
                   child: Column(

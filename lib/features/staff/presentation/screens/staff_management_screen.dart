@@ -52,7 +52,7 @@ class _StaffView extends StatelessWidget {
       ),
       ),
       floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewPadding.bottom + 88),
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
         child: FloatingActionButton.extended(
           onPressed: () => _showAddStaffSheet(context),
           label: Text(l10n.addStaff),
@@ -237,7 +237,7 @@ class _StaffContent extends StatelessWidget {
             },
             child: ListView.separated(
               physics: const AlwaysScrollableScrollPhysics(),
-              padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).padding.bottom + 88),
               itemCount: state.staffList.length,
               separatorBuilder: (context, index) => const SizedBox(height: 12),
               itemBuilder: (context, index) {

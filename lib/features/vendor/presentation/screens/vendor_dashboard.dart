@@ -108,7 +108,7 @@ class VendorDashboardView extends StatelessWidget {
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: EdgeInsets.fromLTRB(
-                    20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
+                    20, 20, 20, MediaQuery.of(context).padding.bottom + 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

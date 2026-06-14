@@ -27,7 +27,7 @@ class MyKhatasScreen extends StatelessWidget {
                 return Center(child: Text(AppLocalizations.of(context)!.noVendorsFound));
               }
               return ListView.separated(
-                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 16),
                 itemCount: state.vendors.length,
                 separatorBuilder: (context, index) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {

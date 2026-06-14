@@ -227,7 +227,7 @@ class _UpiManagementScreenState extends State<UpiManagementScreen> {
                   20,
                   8,
                   20,
-                  MediaQuery.of(context).viewPadding.bottom + 20,
+                  MediaQuery.of(context).padding.bottom + 20,
                 ),
                 child: SizedBox(
                   width: double.infinity,

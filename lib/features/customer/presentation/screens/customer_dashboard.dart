@@ -84,7 +84,7 @@ class CustomerDashboardView extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is CustomerLoaded) {
             return SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewPadding.bottom + 96),
+              padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

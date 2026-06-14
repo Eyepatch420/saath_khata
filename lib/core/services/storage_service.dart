@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../features/auth/data/models/user_model.dart';
+import '../../features/auth/data/models/upi_id_model.dart';
 
 class StorageService {
   // Hive box for non-sensitive prefs (locale only)
@@ -25,6 +27,7 @@ class StorageService {
   static const String _vendorBusinessNameKey = 'vendor_business_name';
   static const String _vendorBusinessCategoryKey = 'vendor_business_category';
   static const String _vendorBusinessAddressKey = 'vendor_business_address';
+  static const String _vendorUpiIdsKey = 'vendor_upi_ids';
 
   late Box _box;
   final FlutterSecureStorage _secure = const FlutterSecureStorage(
@@ -78,6 +81,11 @@ class StorageService {
 
   /// Saves all profile fields from a [UserModel] into secure storage.
   Future<void> saveFullUser(UserModel user) async {
+    final upiIdsJson = jsonEncode(
+      (user.upiIds ?? [])
+          .map((u) => {'id': u.id, 'upiId': u.upiId, 'isPrimary': u.isPrimary})
+          .toList(),
+    );
     await Future.wait([
       _secure.write(key: _userIdKey, value: user.id),
       _secure.write(key: _userNameKey, value: user.name),
@@ -89,6 +97,7 @@ class StorageService {
       _secure.write(key: _vendorBusinessNameKey, value: user.businessName ?? ''),
       _secure.write(key: _vendorBusinessCategoryKey, value: user.businessCategory ?? ''),
       _secure.write(key: _vendorBusinessAddressKey, value: user.businessAddress ?? ''),
+      _secure.write(key: _vendorUpiIdsKey, value: upiIdsJson),
     ]);
   }
 
@@ -99,6 +108,19 @@ class StorageService {
     if (id == null || role == null) return null;
 
     String? nz(String? v) => (v == null || v.isEmpty) ? null : v;
+
+    List<UpiIdModel>? upiIds;
+    final upiIdsRaw = await _secure.read(key: _vendorUpiIdsKey);
+    if (upiIdsRaw != null && upiIdsRaw.isNotEmpty) {
+      try {
+        final decoded = jsonDecode(upiIdsRaw) as List<dynamic>;
+        upiIds = decoded
+            .map((e) => UpiIdModel.fromJson(e as Map<String, dynamic>))
+            .toList();
+      } catch (_) {
+        upiIds = null;
+      }
+    }
 
     return UserModel(
       id: id,
@@ -111,6 +133,7 @@ class StorageService {
       businessName: nz(await _secure.read(key: _vendorBusinessNameKey)),
       businessCategory: nz(await _secure.read(key: _vendorBusinessCategoryKey)),
       businessAddress: nz(await _secure.read(key: _vendorBusinessAddressKey)),
+      upiIds: upiIds,
     );
   }
 
@@ -134,6 +157,7 @@ class StorageService {
         _secure.delete(key: _vendorBusinessNameKey),
         _secure.delete(key: _vendorBusinessCategoryKey),
         _secure.delete(key: _vendorBusinessAddressKey),
+        _secure.delete(key: _vendorUpiIdsKey),
       ]);
 
   Future<void> clearAll() => Future.wait([clearTokens(), clearUser()]);

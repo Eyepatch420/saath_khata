@@ -87,7 +87,7 @@ class _BookingsContent extends StatelessWidget {
                   subtitle: l10n.noBookingsTodaySubtitle,
                 )
               : ListView.separated(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).padding.bottom + 16),
                   itemCount: state.bookings.length,
                   separatorBuilder: (context, index) => const SizedBox(height: 12),
                   itemBuilder: (context, index) =>

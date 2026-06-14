@@ -68,7 +68,7 @@ class _AllCustomersView extends StatelessWidget {
               onRefresh: () async =>
                   context.read<VendorBloc>().add(LoadVendorDashboard()),
               child: ListView.separated(
-                padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).viewPadding.bottom + 96),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).padding.bottom + 16),
                 itemCount: state.customers.length,
                 separatorBuilder: (_, i) => const SizedBox(height: 12),
                 itemBuilder: (context, index) {
