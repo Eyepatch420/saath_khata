@@ -96,8 +96,9 @@ class AuthRepositoryImpl implements AuthRepository {
     if (businessCategory != null) body['businessCategory'] = businessCategory;
     if (businessAddress != null) body['businessAddress'] = businessAddress;
     if (businessLatitude != null) body['businessLatitude'] = businessLatitude;
-    if (businessLongitude != null)
+    if (businessLongitude != null) {
       body['businessLongitude'] = businessLongitude;
+    }
     if (upiIds != null) {
       body['upiIds'] = upiIds.map((u) => u.toJson()).toList();
     }
