@@ -178,8 +178,15 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
     return Scaffold(
       body: NotificationListener<ScrollNotification>(
         onNotification: _onScroll,
-        child: CustomScrollView(
-          slivers: [
+        child: RefreshIndicator(
+          onRefresh: () async {
+            context.read<LedgerBloc>().add(RefreshLedger(widget.linkId));
+            await Future.delayed(const Duration(milliseconds: 500));
+          },
+          color: AppColors.primary,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            slivers: [
             // ── Collapsing title AppBar — floats at top, hides on scroll ──
             SliverAppBar(
               pinned: false,
@@ -239,16 +246,14 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
               delegate: _StickyFilterBarDelegate(),
             ),
 
-            // ── Entry list — fills remaining space ─────────────────────────
-            SliverFillRemaining(
-              hasScrollBody: true,
-              child: LedgerList(
-                linkId: widget.linkId,
-                customerName: widget.customerName,
-                currentUserId: currentUserId,
-              ),
+            // ── Entry list — slivers, share the parent's scroll ────────────
+            LedgerSliverList(
+              linkId: widget.linkId,
+              customerName: widget.customerName,
+              currentUserId: currentUserId,
             ),
           ],
+          ),
         ),
       ),
       floatingActionButton: FadeTransition(
