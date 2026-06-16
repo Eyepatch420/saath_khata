@@ -92,11 +92,12 @@ class _CustomerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final info = customer.customer;
+    final displayName = customer.displayName as String;
+    final subName = customer.subName as String?;
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
-        extra: {'linkId': customer.linkId, 'name': info.name, 'isVendorView': true},
+        extra: {'linkId': customer.linkId, 'name': displayName, 'isVendorView': true},
       ),
       borderRadius: BorderRadius.circular(16),
       child: Container(
@@ -110,7 +111,7 @@ class _CustomerTile extends StatelessWidget {
             CircleAvatar(
               backgroundColor: AppColors.primary.withValues(alpha: 0.15),
               child: Text(
-                info.name[0],
+                displayName[0].toUpperCase(),
                 style: const TextStyle(
                     color: AppColors.primary, fontWeight: FontWeight.bold),
               ),
@@ -123,7 +124,7 @@ class _CustomerTile extends StatelessWidget {
                   Row(
                     children: [
                       Flexible(
-                        child: Text(info.name,
+                        child: Text(displayName,
                             style: AppTypography.labelLarge,
                             overflow: TextOverflow.ellipsis),
                       ),
@@ -136,8 +137,11 @@ class _CustomerTile extends StatelessWidget {
                       ],
                     ],
                   ),
-                  if (info.mobile != null)
-                    Text(info.mobile!, style: AppTypography.bodySmall),
+                  if (subName != null)
+                    Text(subName,
+                        style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),

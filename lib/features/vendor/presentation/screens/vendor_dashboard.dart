@@ -243,7 +243,8 @@ class VendorDashboardView extends StatelessWidget {
 
 void showVendorAddCustomerSheet(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
-  final emailCtrl = TextEditingController();
+  final identifierCtrl = TextEditingController();
+  final nicknameCtrl = TextEditingController();
   final bloc = context.read<VendorBloc>();
   bool isLoading = false;
 
@@ -267,14 +268,30 @@ void showVendorAddCustomerSheet(BuildContext context) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.addNewCustomer, style: AppTypography.h3),
+            const SizedBox(height: 4),
+            Text(
+              'Find by phone number or email',
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+            ),
             const SizedBox(height: 20),
             TextField(
-              controller: emailCtrl,
+              controller: identifierCtrl,
               keyboardType: TextInputType.text,
+              autofocus: true,
               decoration: const InputDecoration(
-                labelText: 'Customer email or phone',
-                hintText: 'email address or 10-digit mobile',
+                labelText: 'Phone or email',
+                hintText: '10-digit mobile or email address',
                 prefixIcon: Icon(Icons.person_search_outlined),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: nicknameCtrl,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Nickname (optional)',
+                hintText: 'How you know this customer',
+                prefixIcon: Icon(Icons.label_outline_rounded),
               ),
             ),
             const SizedBox(height: 24),
@@ -284,11 +301,15 @@ void showVendorAddCustomerSheet(BuildContext context) {
                 onPressed: isLoading
                     ? null
                     : () async {
-                        final email = emailCtrl.text.trim();
-                        if (email.isEmpty) return;
+                        final identifier = identifierCtrl.text.trim();
+                        if (identifier.isEmpty) return;
+                        final nickname = nicknameCtrl.text.trim();
                         setSheetState(() => isLoading = true);
                         try {
-                          await getIt<VendorRepository>().linkCustomer(email);
+                          await getIt<VendorRepository>().linkCustomer(
+                            identifier,
+                            nickname: nickname.isEmpty ? null : nickname,
+                          );
                           if (context.mounted) {
                             Navigator.pop(ctx);
                             bloc.add(LoadVendorDashboard());
@@ -426,15 +447,16 @@ class _CustomerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final info = customer.customer;
+    final displayName = customer.displayName as String;
+    final subName = customer.subName as String?;
     final surface = Theme.of(context).colorScheme.surface;
     return InkWell(
       onTap: () => context.push(
         AppRouter.sharedLedger,
         extra: {
           'linkId': customer.linkId,
-          'name': info.name,
-          'isVendorView': true
+          'name': displayName,
+          'isVendorView': true,
         },
       ),
       borderRadius: BorderRadius.circular(16),
@@ -449,7 +471,7 @@ class _CustomerTile extends StatelessWidget {
             CircleAvatar(
               backgroundColor: AppColors.primary.withValues(alpha: 0.15),
               child: Text(
-                info.name[0],
+                displayName[0].toUpperCase(),
                 style: const TextStyle(
                     color: AppColors.primary, fontWeight: FontWeight.bold),
               ),
@@ -462,7 +484,7 @@ class _CustomerTile extends StatelessWidget {
                   Row(
                     children: [
                       Flexible(
-                        child: Text(info.name,
+                        child: Text(displayName,
                             style: AppTypography.labelLarge,
                             overflow: TextOverflow.ellipsis),
                       ),
@@ -475,8 +497,11 @@ class _CustomerTile extends StatelessWidget {
                       ],
                     ],
                   ),
-                  if (info.mobile != null)
-                    Text(info.mobile!, style: AppTypography.bodySmall),
+                  if (subName != null)
+                    Text(subName,
+                        style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis),
                 ],
               ),
             ),
@@ -506,11 +531,8 @@ class _VendorTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final v = item.vendor;
-    final displayName =
-        (v.businessName != null && v.businessName!.isNotEmpty)
-            ? v.businessName!
-            : v.name;
+    final displayName = item.displayName;
+    final subName = item.subName;
     final surface = Theme.of(context).colorScheme.surface;
     return InkWell(
       onTap: () => context.push(
@@ -533,7 +555,7 @@ class _VendorTile extends StatelessWidget {
             CircleAvatar(
               backgroundColor: AppColors.customerAccent.withValues(alpha: 0.15),
               child: Text(
-                displayName[0],
+                displayName[0].toUpperCase(),
                 style: const TextStyle(
                     color: AppColors.customerAccent,
                     fontWeight: FontWeight.bold),
@@ -547,8 +569,13 @@ class _VendorTile extends StatelessWidget {
                   Text(displayName,
                       style: AppTypography.labelLarge,
                       overflow: TextOverflow.ellipsis),
-                  if (v.businessCategory != null)
-                    Text(v.businessCategory!,
+                  if (subName != null)
+                    Text(subName,
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textSecondary),
+                        overflow: TextOverflow.ellipsis)
+                  else if (item.vendor.businessCategory != null)
+                    Text(item.vendor.businessCategory!,
                         style: AppTypography.bodySmall
                             .copyWith(color: AppColors.textSecondary)),
                 ],

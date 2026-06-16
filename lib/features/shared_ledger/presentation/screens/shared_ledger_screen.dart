@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
@@ -8,12 +9,15 @@ import '../../../../core/services/ledger_socket_service.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../../core/localization/locale_provider.dart';
+import '../../../customer/domain/repositories/customer_repository.dart';
 import '../../../memberships/domain/repositories/membership_repository.dart';
 import '../../../memberships/presentation/bloc/membership_cubit.dart';
 import '../../../memberships/presentation/widgets/membership_banner.dart';
+import '../../../vendor/domain/repositories/vendor_repository.dart';
 import '../../../voice_entry/presentation/widgets/voice_entry_sheet.dart';
 import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
@@ -109,6 +113,8 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
   }
 }
 
+// ─── Main View ────────────────────────────────────────────────────────────────
+
 class SharedLedgerView extends StatelessWidget {
   final String customerName;
   final String linkId;
@@ -129,52 +135,72 @@ class SharedLedgerView extends StatelessWidget {
         authState is AuthAuthenticated ? authState.user.id : '';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(customerName, style: AppTypography.h3),
-            Row(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          // ── Collapsing title AppBar — only visible at very top ───────────
+          SliverAppBar(
+            pinned: false,
+            floating: true,
+            snap: true,
+            forceElevated: innerBoxIsScrolled,
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  l10n.sharedLedger,
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.primary),
+                Text(customerName, style: AppTypography.h3),
+                Row(
+                  children: [
+                    Text(
+                      l10n.sharedLedger,
+                      style: AppTypography.bodySmall
+                          .copyWith(color: AppColors.primary),
+                    ),
+                    const SizedBox(width: 6),
+                    _LiveDot(socket: getIt<LedgerSocketService>()),
+                  ],
                 ),
-                const SizedBox(width: 6),
-                _LiveDot(socket: getIt<LedgerSocketService>()),
               ],
             ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => _showLedgerInfo(context, l10n),
-            icon: const Icon(Icons.info_outline_rounded),
+            actions: [
+              IconButton(
+                onPressed: () => _confirmDeleteLink(context, l10n),
+                icon: const Icon(Icons.link_off_rounded),
+                tooltip: 'Remove ledger',
+                color: AppColors.error,
+              ),
+              IconButton(
+                onPressed: () => _showLedgerInfo(context, l10n),
+                icon: const Icon(Icons.info_outline_rounded),
+              ),
+            ],
+          ),
+
+          // ── Balance + Membership — hides when scrolling down ─────────────
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                LedgerBalanceHeader(
+                  linkId: linkId,
+                  customerName: customerName,
+                  isVendorView: isVendorView,
+                ),
+                MembershipBanner(
+                  customerName: customerName,
+                  isVendorView: isVendorView,
+                ),
+              ],
+            ),
+          ),
+
+          // ── Tab/filter bar — always pinned, never hides ──────────────────
+          const SliverPersistentHeader(
+            pinned: true,
+            delegate: _StickyFilterBarDelegate(),
           ),
         ],
-      ),
-      body: SafeArea(
-        child: Column(
-          children: [
-            LedgerBalanceHeader(
-              linkId: linkId,
-              customerName: customerName,
-              isVendorView: isVendorView,
-            ),
-            MembershipBanner(
-              customerName: customerName,
-              isVendorView: isVendorView,
-            ),
-            const LedgerFilterBar(),
-            Expanded(
-              child: LedgerList(
-                linkId: linkId,
-                customerName: customerName,
-                currentUserId: currentUserId,
-              ),
-            ),
-          ],
+        body: LedgerList(
+          linkId: linkId,
+          customerName: customerName,
+          currentUserId: currentUserId,
         ),
       ),
       floatingActionButton: Builder(
@@ -196,6 +222,51 @@ class SharedLedgerView extends StatelessWidget {
         linkId: linkId,
         customerName: customerName,
         isVendorView: isVendorView,
+      ),
+    );
+  }
+
+  // ── Delete link ───────────────────────────────────────────────────────────
+
+  void _confirmDeleteLink(BuildContext context, AppLocalizations l10n) {
+    showDialog(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: const Text('Remove ledger?'),
+        content: Text(
+          isVendorView
+              ? 'This will deactivate your link with $customerName. Both parties will lose access to this shared ledger.'
+              : 'This will remove your connection with $customerName.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(dialogCtx).pop();
+              try {
+                if (isVendorView) {
+                  await getIt<VendorRepository>().deactivateLink(linkId);
+                } else {
+                  await getIt<CustomerRepository>().deactivateLink(linkId);
+                }
+                if (context.mounted) context.pop();
+              } catch (e) {
+                if (context.mounted) {
+                  AppToast.show(
+                    context,
+                    e.toString().replaceFirst('Exception: ', ''),
+                    type: ToastType.error,
+                  );
+                }
+              }
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Remove'),
+          ),
+        ],
       ),
     );
   }
@@ -241,11 +312,39 @@ class SharedLedgerView extends StatelessWidget {
   }
 }
 
-// ── Live connection indicator ─────────────────────────────────────────────────
+// ─── Sticky filter bar delegate ───────────────────────────────────────────────
 
-/// A small pulsing dot shown next to "Shared Ledger" in the AppBar.
-/// Green + pulsing = WebSocket connected (real-time updates active).
-/// Grey = disconnected (will reconnect automatically).
+class _StickyFilterBarDelegate extends SliverPersistentHeaderDelegate {
+  const _StickyFilterBarDelegate();
+
+  // Match the container height in LedgerFilterBar (padding 8 top + 8 bottom + chip height ~36)
+  static const double _height = 52.0;
+
+  @override
+  double get minExtent => _height;
+
+  @override
+  double get maxExtent => _height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Material(
+      elevation: overlapsContent ? 2 : 0,
+      color: Theme.of(context).colorScheme.surface,
+      child: const LedgerFilterBar(),
+    );
+  }
+
+  @override
+  bool shouldRebuild(_StickyFilterBarDelegate oldDelegate) => false;
+}
+
+// ─── Live connection indicator ────────────────────────────────────────────────
+
 class _LiveDot extends StatefulWidget {
   final LedgerSocketService socket;
   const _LiveDot({required this.socket});

@@ -5,9 +5,11 @@ abstract class VendorRepository {
   Future<List<CustomerLinkItem>> getLinkedCustomers();
   /// Links where this vendor user is the customer (vendor-to-vendor connections).
   Future<List<VendorLinkItem>> getLinkedVendors();
-  /// Link a customer by their email OR 10-digit phone number.
-  Future<CustomerLinkItem> linkCustomer(String identifier);
+  /// Link a customer by their email OR 10-digit phone number, with optional nickname.
+  Future<CustomerLinkItem> linkCustomer(String identifier, {String? nickname});
   Future<void> deactivateLink(String linkId);
+  /// Update the caller's nickname on a link. Pass null to clear.
+  Future<void> updateLinkNickname(String linkId, String? nickname);
   Future<VendorSummaryReport> getVendorSummary();
   Future<RemindAllResult> remindAll();
 

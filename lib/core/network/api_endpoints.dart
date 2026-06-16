@@ -26,6 +26,7 @@ class ApiEndpoints {
   static const String myVendors = '/links/vendors';
   static const String remindAll = '/links/remind-all';
   static String linkById(String id) => '/links/$id';
+  static String linkNickname(String id) => '/links/$id/nickname';
 
   // Ledger (nested under link)
   static String linkEntries(String linkId) => '/links/$linkId/entries';
