@@ -178,14 +178,13 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
     return Scaffold(
       body: NotificationListener<ScrollNotification>(
         onNotification: _onScroll,
-        child: NestedScrollView(
-          headerSliverBuilder: (context, innerBoxIsScrolled) => [
-            // ── Collapsing title AppBar — only visible at very top ─────────
+        child: CustomScrollView(
+          slivers: [
+            // ── Collapsing title AppBar — floats at top, hides on scroll ──
             SliverAppBar(
               pinned: false,
               floating: true,
               snap: true,
-              forceElevated: innerBoxIsScrolled,
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -217,7 +216,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
               ],
             ),
 
-            // ── Balance + Membership — hides when scrolling down ───────────
+            // ── Balance + Membership — scrolls away with content ───────────
             SliverToBoxAdapter(
               child: Column(
                 children: [
@@ -234,17 +233,22 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
               ),
             ),
 
-            // ── Tab/filter bar — always pinned, never hides ────────────────
+            // ── Filter bar — always pinned, never hides ────────────────────
             const SliverPersistentHeader(
               pinned: true,
               delegate: _StickyFilterBarDelegate(),
             ),
+
+            // ── Entry list — fills remaining space ─────────────────────────
+            SliverFillRemaining(
+              hasScrollBody: true,
+              child: LedgerList(
+                linkId: widget.linkId,
+                customerName: widget.customerName,
+                currentUserId: currentUserId,
+              ),
+            ),
           ],
-          body: LedgerList(
-            linkId: widget.linkId,
-            customerName: widget.customerName,
-            currentUserId: currentUserId,
-          ),
         ),
       ),
       floatingActionButton: FadeTransition(
