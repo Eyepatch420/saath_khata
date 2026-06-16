@@ -58,7 +58,10 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
     AppToast.show(context, 'OTP resent', type: ToastType.success);
   }
 
-  Widget _buildDigitBox(int index) {
+  Widget _buildDigitBox(BuildContext context, int index) {
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return KeyboardListener(
       focusNode: FocusNode(),
       onKeyEvent: (event) {
@@ -74,16 +77,19 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
         width: 52,
         height: 60,
         decoration: BoxDecoration(
-          color: AppColors.surface,
+          // Use theme surface so it works in both light and dark mode
+          color: cs.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.primary, width: 1.5),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          boxShadow: isDark
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.04),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: TextField(
           controller: _controllers[index],
@@ -91,7 +97,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
           textAlign: TextAlign.center,
           keyboardType: TextInputType.number,
           maxLength: 1,
-          style: AppTypography.h2,
+          style: AppTypography.h2.copyWith(color: cs.onSurface),
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: const InputDecoration(
             counterText: '',
@@ -111,6 +117,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
     final isVendor = widget.role == 'vendor';
     final roleColor = isVendor ? AppColors.primary : AppColors.customerAccent;
     final roleLabel = isVendor ? 'Vendor' : 'Customer';
+    final cs = Theme.of(context).colorScheme;
 
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -128,7 +135,6 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
       builder: (context, state) {
         final isLoading = state is AuthLoading;
         return Scaffold(
-          backgroundColor: AppColors.background,
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -136,10 +142,9 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  // Back button
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.arrow_back, size: 24),
+                    child: Icon(Icons.arrow_back, size: 24, color: cs.onSurface),
                   ),
                   const SizedBox(height: 28),
                   // Role badge
@@ -158,7 +163,8 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Enter OTP', style: AppTypography.h1),
+                  Text('Enter OTP',
+                      style: AppTypography.h1.copyWith(color: cs.onSurface)),
                   const SizedBox(height: 6),
                   RichText(
                     text: TextSpan(
@@ -180,7 +186,8 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                   // 6 large square OTP boxes
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(6, _buildDigitBox),
+                    children: List.generate(
+                        6, (i) => _buildDigitBox(context, i)),
                   ),
                   const SizedBox(height: 28),
                   PrimaryButton(

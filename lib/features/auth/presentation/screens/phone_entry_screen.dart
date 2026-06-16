@@ -43,6 +43,8 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
     final isVendor = widget.role == 'vendor';
     final roleColor = isVendor ? AppColors.primary : AppColors.customerAccent;
     final roleLabel = isVendor ? 'Vendor' : 'Customer';
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
@@ -58,7 +60,6 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
       builder: (context, state) {
         final isLoading = state is AuthLoading;
         return Scaffold(
-          backgroundColor: AppColors.background,
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -66,10 +67,9 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 16),
-                  // Back button
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: const Icon(Icons.arrow_back, size: 24),
+                    child: Icon(Icons.arrow_back, size: 24, color: cs.onSurface),
                   ),
                   const SizedBox(height: 28),
                   // Role badge
@@ -88,7 +88,8 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Log in', style: AppTypography.h1),
+                  Text('Log in',
+                      style: AppTypography.h1.copyWith(color: cs.onSurface)),
                   const SizedBox(height: 6),
                   Text(
                     'Enter your phone number to continue',
@@ -96,37 +97,35 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                         .copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 32),
-                  // Phone input — flag + +91 + number inline
+                  // Phone input field
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.surface,
+                      color: cs.surface,
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: AppColors.primary, width: 1.5),
                     ),
                     child: Row(
                       children: [
-                        const SizedBox(width: 16),
-                        const Icon(Icons.phone_outlined,
-                            size: 20, color: AppColors.textSecondary),
+                        const SizedBox(width: 14),
+                        Icon(Icons.phone_outlined,
+                            size: 20,
+                            color: isDark ? AppColors.textSecondary : AppColors.textSecondary),
                         const SizedBox(width: 10),
-                        Container(
-                          width: 1, height: 24,
-                          color: AppColors.divider,
-                        ),
+                        Container(width: 1, height: 24,
+                            color: isDark ? Colors.white24 : AppColors.divider),
                         const SizedBox(width: 10),
-                        // Indian flag + +91
                         const Text('🇮🇳', style: TextStyle(fontSize: 18)),
                         const SizedBox(width: 6),
                         Text(
                           '+91',
-                          style: AppTypography.bodyMedium
-                              .copyWith(fontWeight: FontWeight.w600),
+                          style: AppTypography.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: cs.onSurface,
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        Container(
-                          width: 1, height: 24,
-                          color: AppColors.divider,
-                        ),
+                        Container(width: 1, height: 24,
+                            color: isDark ? Colors.white24 : AppColors.divider),
                         const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
@@ -136,7 +135,8 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                               FilteringTextInputFormatter.digitsOnly,
                               LengthLimitingTextInputFormatter(10),
                             ],
-                            style: AppTypography.bodyMedium,
+                            style: AppTypography.bodyMedium
+                                .copyWith(color: cs.onSurface),
                             decoration: InputDecoration(
                               hintText: '98765 43210',
                               hintStyle: AppTypography.bodyMedium
@@ -144,8 +144,8 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 16),
+                              contentPadding:
+                                  const EdgeInsets.symmetric(vertical: 16),
                             ),
                           ),
                         ),
@@ -168,25 +168,21 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     ),
                   ),
                   const Spacer(),
-                  // Footer
                   Center(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: RichText(
-                        text: TextSpan(
-                          text: 'Having trouble? ',
-                          style: AppTypography.bodySmall
-                              .copyWith(color: AppColors.textSecondary),
-                          children: [
-                            TextSpan(
-                              text: 'Use email instead →',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
+                    child: RichText(
+                      text: TextSpan(
+                        text: 'Having trouble? ',
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textSecondary),
+                        children: [
+                          TextSpan(
+                            text: 'Use email instead →',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
