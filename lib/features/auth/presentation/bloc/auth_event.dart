@@ -12,42 +12,42 @@ class AuthCheckStatusRequested extends AuthEvent {
   const AuthCheckStatusRequested();
 }
 
-class AuthLoginRequested extends AuthEvent {
-  final String email;
-  final String password;
+// ─── OTP flow ─────────────────────────────────────────────────────────────────
 
-  /// The role the user selected on the role-selection screen ('vendor' or 'customer').
-  /// Sent directly to the backend — the server looks up the account that matches
-  /// (email, role) and returns a 401 if no such account exists.
-  final String role;
-
-  const AuthLoginRequested({
-    required this.email,
-    required this.password,
-    required this.role,
-  });
+class AuthOtpSendRequested extends AuthEvent {
+  final String phone;
+  const AuthOtpSendRequested({required this.phone});
 
   @override
-  List<Object?> get props => [email, password, role];
+  List<Object?> get props => [phone];
 }
 
+class AuthOtpVerifyRequested extends AuthEvent {
+  final String phone;
+  final String otp;
+  const AuthOtpVerifyRequested({required this.phone, required this.otp});
+
+  @override
+  List<Object?> get props => [phone, otp];
+}
+
+// ─── Signup (OTP-based — no password) ────────────────────────────────────────
+
 class AuthSignupRequested extends AuthEvent {
+  final String signupToken;
   final String name;
-  final String email;
-  final String password;
   final String role;
-  final String? mobile;
+  final String? email;
   final String? upiId;
   final String? businessName;
   final String? businessCategory;
   final String? businessAddress;
 
   const AuthSignupRequested({
+    required this.signupToken,
     required this.name,
-    required this.email,
-    required this.password,
     required this.role,
-    this.mobile,
+    this.email,
     this.upiId,
     this.businessName,
     this.businessCategory,
@@ -55,8 +55,10 @@ class AuthSignupRequested extends AuthEvent {
   });
 
   @override
-  List<Object?> get props => [name, email, role];
+  List<Object?> get props => [signupToken, name, role];
 }
+
+// ─── Other ────────────────────────────────────────────────────────────────────
 
 class AuthLogoutRequested extends AuthEvent {
   const AuthLogoutRequested();
@@ -84,8 +86,6 @@ class AuthProfileUpdateRequested extends AuthEvent {
       [name, mobile, upiId, businessName, businessCategory, businessAddress];
 }
 
-/// Lightweight event: used after a direct API call succeeds to sync
-/// the in-memory bloc state without re-triggering the full update flow.
 class AuthUserUpdated extends AuthEvent {
   final UserModel user;
   const AuthUserUpdated(this.user);

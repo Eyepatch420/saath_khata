@@ -1,9 +1,13 @@
 class ApiEndpoints {
   static const String baseUrl = 'http://45.195.159.30:3001/api/v1';
 
+  // Auth — OTP
+  static const String sendOtp = '/auth/otp/send';
+  static const String verifyOtp = '/auth/otp/verify';
+
   // Auth
   static const String signup = '/auth/signup';
-  static const String login = '/auth/login';
+  static const String login = '/auth/login'; // kept for legacy reference only
   static const String refresh = '/auth/refresh';
   static const String logout = '/auth/logout';
   static const String logoutAll = '/auth/logout-all';

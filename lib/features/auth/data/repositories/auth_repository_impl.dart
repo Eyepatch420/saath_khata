@@ -11,50 +11,56 @@ class AuthRepositoryImpl implements AuthRepository {
 
   AuthRepositoryImpl(this._api);
 
+  // ─── OTP ──────────────────────────────────────────────────────────────────
+
   @override
-  Future<AuthResponseModel> login({
-    required String email,
-    required String password,
-    required String role,
-  }) async {
+  Future<void> sendOtp({required String phone}) async {
     try {
-      final response = await _api.post(
-        ApiEndpoints.login,
-        data: {'email': email, 'password': password, 'role': role},
-      );
-      return AuthResponseModel.fromJson(ApiClient.extractData(response));
+      await _api.post(ApiEndpoints.sendOtp, data: {'phone': phone});
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
 
   @override
+  Future<OtpVerifyResponseModel> verifyOtp({
+    required String phone,
+    required String otp,
+  }) async {
+    try {
+      final response = await _api.post(
+        ApiEndpoints.verifyOtp,
+        data: {'phone': phone, 'otp': otp},
+      );
+      return OtpVerifyResponseModel.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  // ─── Signup ───────────────────────────────────────────────────────────────
+
+  @override
   Future<AuthResponseModel> signup({
+    required String signupToken,
     required String name,
-    required String email,
-    required String password,
     required String role,
-    String? mobile,
+    String? email,
     String? upiId,
     String? businessName,
     String? businessCategory,
     String? businessAddress,
   }) async {
     final body = <String, dynamic>{
+      'signupToken': signupToken,
       'name': name,
-      'email': email,
-      'password': password,
       'role': role,
     };
-    if (mobile != null && mobile.isNotEmpty) body['mobile'] = mobile;
+    if (email != null && email.isNotEmpty) body['email'] = email;
     if (upiId != null && upiId.isNotEmpty) body['upiId'] = upiId;
-    if (businessName != null && businessName.isNotEmpty) {
-      body['businessName'] = businessName;
-    }
+    if (businessName != null && businessName.isNotEmpty) body['businessName'] = businessName;
     if (businessCategory != null) body['businessCategory'] = businessCategory;
-    if (businessAddress != null && businessAddress.isNotEmpty) {
-      body['businessAddress'] = businessAddress;
-    }
+    if (businessAddress != null && businessAddress.isNotEmpty) body['businessAddress'] = businessAddress;
 
     try {
       final response = await _api.post(ApiEndpoints.signup, data: body);
@@ -64,13 +70,12 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  // ─── Session ──────────────────────────────────────────────────────────────
+
   @override
   Future<void> logout({required String refreshToken}) async {
     try {
-      await _api.post(
-        ApiEndpoints.logout,
-        data: {'refreshToken': refreshToken},
-      );
+      await _api.post(ApiEndpoints.logout, data: {'refreshToken': refreshToken});
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
@@ -96,12 +101,8 @@ class AuthRepositoryImpl implements AuthRepository {
     if (businessCategory != null) body['businessCategory'] = businessCategory;
     if (businessAddress != null) body['businessAddress'] = businessAddress;
     if (businessLatitude != null) body['businessLatitude'] = businessLatitude;
-    if (businessLongitude != null) {
-      body['businessLongitude'] = businessLongitude;
-    }
-    if (upiIds != null) {
-      body['upiIds'] = upiIds.map((u) => u.toJson()).toList();
-    }
+    if (businessLongitude != null) body['businessLongitude'] = businessLongitude;
+    if (upiIds != null) body['upiIds'] = upiIds.map((u) => u.toJson()).toList();
 
     try {
       final response = await _api.patch(ApiEndpoints.updateProfile, data: body);

@@ -1,0 +1,202 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_typography.dart';
+import '../../../../core/widgets/primary_button.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../shared/widgets/app_toast.dart';
+import '../bloc/auth_bloc.dart';
+import '../bloc/auth_event.dart';
+import '../bloc/auth_state.dart';
+
+class PhoneEntryScreen extends StatefulWidget {
+  final String role;
+  const PhoneEntryScreen({super.key, required this.role});
+
+  @override
+  State<PhoneEntryScreen> createState() => _PhoneEntryScreenState();
+}
+
+class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
+  final _phoneController = TextEditingController();
+
+  @override
+  void dispose() {
+    _phoneController.dispose();
+    super.dispose();
+  }
+
+  void _submit(BuildContext context) {
+    final phone = _phoneController.text.trim();
+    if (!RegExp(r'^[6-9]\d{9}$').hasMatch(phone)) {
+      AppToast.show(context, 'Enter a valid 10-digit Indian mobile number',
+          type: ToastType.warning);
+      return;
+    }
+    context.read<AuthBloc>().add(AuthOtpSendRequested(phone: phone));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isVendor = widget.role == 'vendor';
+    final roleColor = isVendor ? AppColors.primary : AppColors.customerAccent;
+    final roleLabel = isVendor ? 'Vendor' : 'Customer';
+
+    return BlocConsumer<AuthBloc, AuthState>(
+      listener: (context, state) {
+        if (state is AuthOtpSent) {
+          context.push(AppRouter.otpVerify, extra: {
+            'phone': state.phone,
+            'role': widget.role,
+          });
+        } else if (state is AuthError) {
+          AppToast.show(context, state.message, type: ToastType.error);
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is AuthLoading;
+        return Scaffold(
+          backgroundColor: AppColors.background,
+          body: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 16),
+                  // Back button
+                  GestureDetector(
+                    onTap: () => context.pop(),
+                    child: const Icon(Icons.arrow_back, size: 24),
+                  ),
+                  const SizedBox(height: 28),
+                  // Role badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: roleColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      roleLabel,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: roleColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('Log in', style: AppTypography.h1),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Enter your phone number to continue',
+                    style: AppTypography.bodyMedium
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 32),
+                  // Phone input — flag + +91 + number inline
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.primary, width: 1.5),
+                    ),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 16),
+                        const Icon(Icons.phone_outlined,
+                            size: 20, color: AppColors.textSecondary),
+                        const SizedBox(width: 10),
+                        Container(
+                          width: 1, height: 24,
+                          color: AppColors.divider,
+                        ),
+                        const SizedBox(width: 10),
+                        // Indian flag + +91
+                        const Text('🇮🇳', style: TextStyle(fontSize: 18)),
+                        const SizedBox(width: 6),
+                        Text(
+                          '+91',
+                          style: AppTypography.bodyMedium
+                              .copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 1, height: 24,
+                          color: AppColors.divider,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _phoneController,
+                            keyboardType: TextInputType.phone,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(10),
+                            ],
+                            style: AppTypography.bodyMedium,
+                            decoration: InputDecoration(
+                              hintText: '98765 43210',
+                              hintStyle: AppTypography.bodyMedium
+                                  .copyWith(color: AppColors.textHint),
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                  vertical: 16),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  PrimaryButton(
+                    label: 'Send OTP',
+                    isLoading: isLoading,
+                    onPressed: isLoading ? null : () => _submit(context),
+                  ),
+                  const SizedBox(height: 10),
+                  Center(
+                    child: Text(
+                      'OTP is for demo only · enter 123456 to continue',
+                      style: AppTypography.bodySmall
+                          .copyWith(color: AppColors.textHint),
+                    ),
+                  ),
+                  const Spacer(),
+                  // Footer
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: RichText(
+                        text: TextSpan(
+                          text: 'Having trouble? ',
+                          style: AppTypography.bodySmall
+                              .copyWith(color: AppColors.textSecondary),
+                          children: [
+                            TextSpan(
+                              text: 'Use email instead →',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

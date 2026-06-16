@@ -6,6 +6,8 @@ import '../../features/onboarding/presentation/screens/splash_screen.dart';
 import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/phone_entry_screen.dart';
+import '../../features/auth/presentation/screens/otp_verify_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../constants/app_colors.dart';
 import '../../features/vendor/presentation/bloc/vendor_bloc.dart';
@@ -63,6 +65,8 @@ class AppRouter {
   static const String languageSelection = '/language-selection';
   static const String onboarding = '/onboarding';
   static const String roleSelection = '/role-selection';
+  static const String phoneEntry = '/phone-entry';
+  static const String otpVerify = '/otp-verify';
   static const String login = '/login';
   static const String profileSetup = '/profile-setup';
   static const String vendorHome = '/vendor';
@@ -102,6 +106,8 @@ class AppRouter {
     languageSelection,
     onboarding,
     roleSelection,
+    phoneEntry,
+    otpVerify,
     login,
     profileSetup,
     locationPicker,
@@ -148,15 +154,29 @@ class AppRouter {
         builder: (context, state) => const RoleSelectionScreen(),
       ),
       GoRoute(
+        path: phoneEntry,
+        builder: (context, state) {
+          final role = state.extra as String? ?? 'vendor';
+          return PhoneEntryScreen(role: role);
+        },
+      ),
+      GoRoute(
+        path: otpVerify,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          return OtpVerifyScreen(
+            phone: extra['phone'] as String? ?? '',
+            role: extra['role'] as String? ?? 'vendor',
+          );
+        },
+      ),
+      GoRoute(
         path: login,
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: profileSetup,
-        builder: (context, state) {
-          final role = state.extra as String? ?? 'vendor';
-          return ProfileSetupScreen(role: role);
-        },
+        builder: (context, state) => const ProfileSetupScreen(),
       ),
       // Vendor Flow with ShellRoute
       ShellRoute(

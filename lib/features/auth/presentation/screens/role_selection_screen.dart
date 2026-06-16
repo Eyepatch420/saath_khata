@@ -20,16 +20,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
 
   bool get _canContinue => _vendorSelected || _customerSelected;
 
-  /// When both are selected, vendor is always the primary account.
-  /// The "primary role" determines which login flow the user enters and which
-  /// home screen they land on after authentication.
-  String get _primaryRole {
-    if (_vendorSelected) return 'vendor';
-    return 'customer';
-  }
-
   void _onContinue() {
-    context.push(AppRouter.login, extra: _primaryRole);
+    final role = _vendorSelected ? 'vendor' : 'customer';
+    context.push(AppRouter.phoneEntry, extra: role);
   }
 
   @override

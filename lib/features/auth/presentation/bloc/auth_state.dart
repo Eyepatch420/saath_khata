@@ -18,7 +18,6 @@ class AuthLoading extends AuthState {
 
 class AuthAuthenticated extends AuthState {
   final UserModel user;
-
   const AuthAuthenticated(this.user);
 
   @override
@@ -31,9 +30,27 @@ class AuthUnauthenticated extends AuthState {
 
 class AuthError extends AuthState {
   final String message;
-
   const AuthError(this.message);
 
   @override
   List<Object?> get props => [message];
+}
+
+// OTP send succeeded — navigate to OTP input screen
+class AuthOtpSent extends AuthState {
+  final String phone;
+  const AuthOtpSent({required this.phone});
+
+  @override
+  List<Object?> get props => [phone];
+}
+
+// OTP verified for a NEW user — navigate to ProfileSetupScreen with signupToken
+class AuthOtpVerifiedNewUser extends AuthState {
+  final String phone;
+  final String signupToken;
+  const AuthOtpVerifiedNewUser({required this.phone, required this.signupToken});
+
+  @override
+  List<Object?> get props => [phone, signupToken];
 }

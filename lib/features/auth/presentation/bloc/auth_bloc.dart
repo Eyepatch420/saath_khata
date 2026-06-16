@@ -24,7 +24,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         _storage = storage,
         super(const AuthInitial()) {
     on<AuthCheckStatusRequested>(_onCheckStatus);
-    on<AuthLoginRequested>(_onLogin);
+    on<AuthOtpSendRequested>(_onOtpSend);
+    on<AuthOtpVerifyRequested>(_onOtpVerify);
     on<AuthSignupRequested>(_onSignup);
     on<AuthLogoutRequested>(_onLogout);
     on<AuthProfileUpdateRequested>(_onUpdateProfile);
@@ -40,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final user = await _storage.getStoredUser();
       if (user != null) {
-        AppLogger.i(_m, 'Session restored — ${user.email} (${user.role})');
+        AppLogger.i(_m, 'Session restored — ${user.mobile} (${user.role})');
         final accessToken = await _storage.getAccessToken();
         if (accessToken != null) {
           if (kDebugMode) {
@@ -61,35 +62,57 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  Future<void> _onLogin(
-    AuthLoginRequested event,
+  Future<void> _onOtpSend(
+    AuthOtpSendRequested event,
     Emitter<AuthState> emit,
   ) async {
-    AppLogger.i(_m, 'Login attempt: ${event.email} as ${event.role}');
+    AppLogger.i(_m, 'OTP send: ${event.phone}');
     emit(const AuthLoading());
     try {
-      final result = await _authRepository.login(
-        email: event.email,
-        password: event.password,
-        role: event.role,
+      await _authRepository.sendOtp(phone: event.phone);
+      emit(AuthOtpSent(phone: event.phone));
+    } catch (e) {
+      AppLogger.e(_m, 'OTP send failed', e);
+      emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onOtpVerify(
+    AuthOtpVerifyRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    AppLogger.i(_m, 'OTP verify: ${event.phone}');
+    emit(const AuthLoading());
+    try {
+      final result = await _authRepository.verifyOtp(
+        phone: event.phone,
+        otp: event.otp,
       );
 
-      await _storage.saveTokens(
-        accessToken: result.tokens.accessToken,
-        refreshToken: result.tokens.refreshToken,
-        expiresIn: result.tokens.expiresIn,
-      );
-      await _storage.saveFullUser(result.user);
-      AppLogger.i(_m, 'Login success — ${result.user.email} (${result.user.role})');
-      if (kDebugMode) {
-        AppLogger.i(_m, '🔑 [DEBUG] Bearer token: ${result.tokens.accessToken}');
+      if (result.existingUser) {
+        await _storage.saveTokens(
+          accessToken: result.tokens!.accessToken,
+          refreshToken: result.tokens!.refreshToken,
+          expiresIn: result.tokens!.expiresIn,
+        );
+        await _storage.saveFullUser(result.user!);
+        AppLogger.i(_m, 'OTP login — ${result.user!.mobile} (${result.user!.role})');
+        if (kDebugMode) {
+          AppLogger.i(_m, '🔑 [DEBUG] Bearer token: ${result.tokens!.accessToken}');
+        }
+        getIt<LedgerSocketService>().connect(result.tokens!.accessToken);
+        await getIt<PushNotificationService>().initialize();
+        getIt<NotificationBloc>().add(LoadUnreadCount());
+        emit(AuthAuthenticated(result.user!));
+      } else {
+        AppLogger.i(_m, 'OTP verified — new user, go to signup');
+        emit(AuthOtpVerifiedNewUser(
+          phone: event.phone,
+          signupToken: result.signupToken!,
+        ));
       }
-      getIt<LedgerSocketService>().connect(result.tokens.accessToken);
-      await getIt<PushNotificationService>().initialize();
-      getIt<NotificationBloc>().add(LoadUnreadCount());
-      emit(AuthAuthenticated(result.user));
     } catch (e) {
-      AppLogger.e(_m, 'Login failed: ${event.email}', e);
+      AppLogger.e(_m, 'OTP verify failed', e);
       emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
@@ -98,15 +121,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignupRequested event,
     Emitter<AuthState> emit,
   ) async {
-    AppLogger.i(_m, 'Signup attempt: ${event.email} as ${event.role}');
+    AppLogger.i(_m, 'Signup attempt as ${event.role}');
     emit(const AuthLoading());
     try {
       final result = await _authRepository.signup(
+        signupToken: event.signupToken,
         name: event.name,
-        email: event.email,
-        password: event.password,
         role: event.role,
-        mobile: event.mobile,
+        email: event.email,
         upiId: event.upiId,
         businessName: event.businessName,
         businessCategory: event.businessCategory,
@@ -119,13 +141,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         expiresIn: result.tokens.expiresIn,
       );
       await _storage.saveFullUser(result.user);
-      AppLogger.i(_m, 'Signup success — ${result.user.email} id:${result.user.id}');
+      AppLogger.i(_m, 'Signup success — ${result.user.mobile} id:${result.user.id}');
       getIt<LedgerSocketService>().connect(result.tokens.accessToken);
       await getIt<PushNotificationService>().initialize();
       getIt<NotificationBloc>().add(LoadUnreadCount());
       emit(AuthAuthenticated(result.user));
     } catch (e) {
-      AppLogger.e(_m, 'Signup failed: ${event.email}', e);
+      AppLogger.e(_m, 'Signup failed', e);
       emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
@@ -142,7 +164,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         AppLogger.i(_m, 'Server session revoked');
       }
     } catch (e) {
-      AppLogger.w(_m, 'Server logout failed (continuing anyway)', );
+      AppLogger.w(_m, 'Server logout failed (continuing anyway)',);
     } finally {
       await _storage.clearAll();
       getIt<LedgerSocketService>().disconnect();

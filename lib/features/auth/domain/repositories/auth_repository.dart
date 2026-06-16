@@ -3,30 +3,32 @@ import '../../data/models/upi_id_model.dart';
 import '../../data/models/user_model.dart';
 
 abstract class AuthRepository {
-  Future<AuthResponseModel> login({
-    required String email,
-    required String password,
-    required String role,
+  // ─── OTP ──────────────────────────────────────────────────────────────────
+
+  Future<void> sendOtp({required String phone});
+
+  Future<OtpVerifyResponseModel> verifyOtp({
+    required String phone,
+    required String otp,
   });
 
+  // ─── Signup (OTP-based) ───────────────────────────────────────────────────
+
   Future<AuthResponseModel> signup({
+    required String signupToken,
     required String name,
-    required String email,
-    required String password,
     required String role,
-    String? mobile,
+    String? email,
     String? upiId,
     String? businessName,
     String? businessCategory,
     String? businessAddress,
   });
 
+  // ─── Session ──────────────────────────────────────────────────────────────
+
   Future<void> logout({required String refreshToken});
 
-  /// PATCH /auth/profile — updates editable fields, returns refreshed user.
-  ///
-  /// [upiId] is only used for customers (single UPI).
-  /// [upiIds] is only used for vendors — replaces the entire UPI ID list atomically.
   Future<UserModel> updateProfile({
     String? name,
     String? mobile,
