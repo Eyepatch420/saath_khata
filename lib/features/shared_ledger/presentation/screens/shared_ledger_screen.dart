@@ -176,85 +176,63 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
         authState is AuthAuthenticated ? authState.user.id : '';
 
     return Scaffold(
-      body: NotificationListener<ScrollNotification>(
-        onNotification: _onScroll,
-        child: RefreshIndicator(
-          onRefresh: () async {
-            context.read<LedgerBloc>().add(RefreshLedger(widget.linkId));
-            await Future.delayed(const Duration(milliseconds: 500));
-          },
-          color: AppColors.primary,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            slivers: [
-            // ── Collapsing title AppBar — floats at top, hides on scroll ──
-            SliverAppBar(
-              pinned: false,
-              floating: true,
-              snap: true,
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.customerName, style: AppTypography.h3),
-                  Row(
-                    children: [
-                      Text(
-                        l10n.sharedLedger,
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.primary),
-                      ),
-                      const SizedBox(width: 6),
-                      _LiveDot(socket: getIt<LedgerSocketService>()),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () => _confirmDeleteLink(context, l10n),
-                  icon: const Icon(Icons.link_off_rounded),
-                  tooltip: 'Remove ledger',
-                  color: AppColors.error,
+      appBar: AppBar(
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(widget.customerName, style: AppTypography.h3),
+            Row(
+              children: [
+                Text(
+                  l10n.sharedLedger,
+                  style: AppTypography.bodySmall
+                      .copyWith(color: AppColors.primary),
                 ),
-                IconButton(
-                  onPressed: () => _showLedgerInfo(context, l10n),
-                  icon: const Icon(Icons.info_outline_rounded),
-                ),
+                const SizedBox(width: 6),
+                _LiveDot(socket: getIt<LedgerSocketService>()),
               ],
             ),
-
-            // ── Balance + Membership — scrolls away with content ───────────
-            SliverToBoxAdapter(
-              child: Column(
-                children: [
-                  LedgerBalanceHeader(
-                    linkId: widget.linkId,
-                    customerName: widget.customerName,
-                    isVendorView: widget.isVendorView,
-                  ),
-                  MembershipBanner(
-                    customerName: widget.customerName,
-                    isVendorView: widget.isVendorView,
-                  ),
-                ],
+          ],
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => _confirmDeleteLink(context, l10n),
+            icon: const Icon(Icons.link_off_rounded),
+            tooltip: 'Remove ledger',
+            color: AppColors.error,
+          ),
+          IconButton(
+            onPressed: () => _showLedgerInfo(context, l10n),
+            icon: const Icon(Icons.info_outline_rounded),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Balance + membership header (fixed)
+          LedgerBalanceHeader(
+            linkId: widget.linkId,
+            customerName: widget.customerName,
+            isVendorView: widget.isVendorView,
+          ),
+          MembershipBanner(
+            customerName: widget.customerName,
+            isVendorView: widget.isVendorView,
+          ),
+          // Filter bar (fixed)
+          const LedgerFilterBar(),
+          // Scrollable entry list — drives the FAB hide/show animation
+          Expanded(
+            child: NotificationListener<ScrollNotification>(
+              onNotification: _onScroll,
+              child: LedgerList(
+                linkId: widget.linkId,
+                customerName: widget.customerName,
+                currentUserId: currentUserId,
               ),
             ),
-
-            // ── Filter bar — always pinned, never hides ────────────────────
-            const SliverPersistentHeader(
-              pinned: true,
-              delegate: _StickyFilterBarDelegate(),
-            ),
-
-            // ── Entry list — slivers, share the parent's scroll ────────────
-            LedgerSliverList(
-              linkId: widget.linkId,
-              customerName: widget.customerName,
-              currentUserId: currentUserId,
-            ),
-          ],
           ),
-        ),
+        ],
       ),
       floatingActionButton: FadeTransition(
         opacity: _fabAnim,
@@ -370,37 +348,6 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
       ),
     );
   }
-}
-
-// ─── Sticky filter bar delegate ───────────────────────────────────────────────
-
-class _StickyFilterBarDelegate extends SliverPersistentHeaderDelegate {
-  const _StickyFilterBarDelegate();
-
-  // Match the container height in LedgerFilterBar (padding 8 top + 8 bottom + chip height ~36)
-  static const double _height = 52.0;
-
-  @override
-  double get minExtent => _height;
-
-  @override
-  double get maxExtent => _height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Material(
-      elevation: overlapsContent ? 2 : 0,
-      color: Theme.of(context).colorScheme.surface,
-      child: const LedgerFilterBar(),
-    );
-  }
-
-  @override
-  bool shouldRebuild(_StickyFilterBarDelegate oldDelegate) => false;
 }
 
 // ─── Live connection indicator ────────────────────────────────────────────────
