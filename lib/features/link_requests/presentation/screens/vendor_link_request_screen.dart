@@ -50,7 +50,9 @@ class _VendorLinkRequestView extends StatelessWidget {
           );
           // Refresh vendor dashboard so the new customer/vendor appears immediately.
           getIt<VendorBloc>().add(LoadVendorDashboard());
-          Navigator.of(ctx).pop();
+          final nav = Navigator.of(ctx);
+          nav.pop();
+          if (nav.canPop()) nav.pop();
         } else if (state is LinkRequestError) {
           AppToast.show(ctx, state.message, type: ToastType.error);
         }

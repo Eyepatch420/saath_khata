@@ -1,8 +1,16 @@
 import '../models/link_request_model.dart';
 
 abstract class LinkRequestRepository {
+  /// Customer sends a request to a vendor (by vendorId UUID).
   Future<LinkRequestModel> sendRequest({
     required String vendorId,
+    String? message,
+  });
+
+  /// Vendor sends a request to a customer (by email or 10-digit phone).
+  Future<LinkRequestModel> vendorSendRequest({
+    required String customerIdentifier,
+    String? nickname,
     String? message,
   });
 
@@ -12,6 +20,7 @@ abstract class LinkRequestRepository {
 
   Future<LinkRequestModel> getRequestById(String requestId);
 
-  Future<List<LinkRequestModel>> getPendingRequests();   // vendor
-  Future<List<LinkRequestModel>> getSentRequests();      // customer
+  Future<List<LinkRequestModel>> getPendingRequests();          // vendor: customer-initiated pending
+  Future<List<LinkRequestModel>> getPendingForCustomer();       // customer: vendor-initiated pending
+  Future<List<LinkRequestModel>> getSentRequests();             // customer: requests they sent
 }

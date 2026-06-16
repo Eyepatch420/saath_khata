@@ -13,9 +13,10 @@ enum NotificationType {
   salaryPaid,
   reminderDue,
   monthlySummary,
-  linkRequestReceived,  // vendor: customer wants to connect
-  linkRequestAccepted,  // customer: vendor approved
-  linkRequestDeclined,  // customer: vendor declined
+  linkRequestReceived,        // vendor: customer wants to connect
+  vendorLinkRequestReceived,  // customer: vendor wants to add them
+  linkRequestAccepted,        // either: the other party approved
+  linkRequestDeclined,        // either: the other party declined
   membershipRequested,  // vendor: customer applied for a tier
   membershipChanged,    // customer: tier assigned / approved / elevated
   membershipRequestDeclined, // customer: tier request declined
@@ -33,6 +34,7 @@ NotificationType _notifTypeFromJson(String v) {
     'reminder_due': NotificationType.reminderDue,
     'monthly_summary': NotificationType.monthlySummary,
     'link_request_received': NotificationType.linkRequestReceived,
+    'vendor_link_request_received': NotificationType.vendorLinkRequestReceived,
     'link_request_accepted': NotificationType.linkRequestAccepted,
     'link_request_declined': NotificationType.linkRequestDeclined,
     'membership_requested': NotificationType.membershipRequested,

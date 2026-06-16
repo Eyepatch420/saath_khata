@@ -158,10 +158,16 @@ class _NotificationCard extends StatelessWidget {
     final data = notification.data;
     switch (notification.type) {
       case NotificationType.linkRequestReceived:
-        // Vendor taps → go to approval screen
+        // Vendor taps → go to vendor approval screen
         final requestId = data?['requestId'] as String?;
         if (requestId != null) {
           context.push(AppRouter.linkRequestDetail, extra: requestId);
+        }
+      case NotificationType.vendorLinkRequestReceived:
+        // Customer taps → go to customer approval screen
+        final requestId = data?['requestId'] as String?;
+        if (requestId != null) {
+          context.push(AppRouter.customerLinkRequestDetail, extra: requestId);
         }
       case NotificationType.linkRequestAccepted:
         // Refresh vendor dashboard so the new linked vendor appears immediately.
@@ -281,6 +287,8 @@ class _NotificationCard extends StatelessWidget {
         return Icons.bar_chart_rounded;
       case NotificationType.linkRequestReceived:
         return Icons.person_add_rounded;
+      case NotificationType.vendorLinkRequestReceived:
+        return Icons.storefront_rounded;
       case NotificationType.linkRequestAccepted:
         return Icons.handshake_rounded;
       case NotificationType.linkRequestDeclined:
@@ -316,6 +324,8 @@ class _NotificationCard extends StatelessWidget {
         return AppColors.secondary;
       case NotificationType.linkRequestReceived:
         return AppColors.primary;
+      case NotificationType.vendorLinkRequestReceived:
+        return AppColors.customerAccent;
       case NotificationType.linkRequestAccepted:
         return AppColors.success;
       case NotificationType.linkRequestDeclined:

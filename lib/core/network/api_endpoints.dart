@@ -69,9 +69,11 @@ class ApiEndpoints {
   // Device tokens (push notifications)
   static const String registerDevice = '/devices/token';
 
-  // Link Requests (customer-initiated connections)
+  // Link Requests
   static const String linkRequests = '/link-requests';
+  static const String vendorSendLinkRequest = '/link-requests/vendor-send';
   static const String pendingLinkRequests = '/link-requests/pending';
+  static const String pendingCustomerLinkRequests = '/link-requests/pending-customer';
   static const String sentLinkRequests = '/link-requests/sent';
   static String linkRequestById(String id) => '/link-requests/$id';
   static String acceptLinkRequest(String id) => '/link-requests/$id/accept';

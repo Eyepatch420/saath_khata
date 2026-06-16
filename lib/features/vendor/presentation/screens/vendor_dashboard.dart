@@ -6,7 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
-import '../../domain/repositories/vendor_repository.dart';
+import '../../../link_requests/domain/repositories/link_request_repository.dart';
 import '../bloc/vendor_bloc.dart';
 import '../bloc/vendor_event.dart';
 import '../bloc/vendor_state.dart';
@@ -245,7 +245,6 @@ void showVendorAddCustomerSheet(BuildContext context) {
   final l10n = AppLocalizations.of(context)!;
   final identifierCtrl = TextEditingController();
   final nicknameCtrl = TextEditingController();
-  final bloc = context.read<VendorBloc>();
   bool isLoading = false;
 
   showModalBottomSheet(
@@ -306,14 +305,17 @@ void showVendorAddCustomerSheet(BuildContext context) {
                         final nickname = nicknameCtrl.text.trim();
                         setSheetState(() => isLoading = true);
                         try {
-                          await getIt<VendorRepository>().linkCustomer(
-                            identifier,
+                          await getIt<LinkRequestRepository>().vendorSendRequest(
+                            customerIdentifier: identifier,
                             nickname: nickname.isEmpty ? null : nickname,
                           );
                           if (context.mounted) {
                             Navigator.pop(ctx);
-                            bloc.add(LoadVendorDashboard());
-                            AppToast.show(context, 'Customer added successfully', type: ToastType.success);
+                            AppToast.show(
+                              context,
+                              'Request sent! They will be notified to confirm.',
+                              type: ToastType.success,
+                            );
                           }
                         } catch (e) {
                           setSheetState(() => isLoading = false);

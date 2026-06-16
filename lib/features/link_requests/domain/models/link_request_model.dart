@@ -1,4 +1,5 @@
 enum LinkRequestStatus { pending, accepted, declined }
+enum LinkRequestInitiator { customer, vendor }
 
 LinkRequestStatus _statusFromJson(String s) {
   return switch (s) {
@@ -6,6 +7,10 @@ LinkRequestStatus _statusFromJson(String s) {
     'declined' => LinkRequestStatus.declined,
     _ => LinkRequestStatus.pending,
   };
+}
+
+LinkRequestInitiator _initiatorFromJson(String? s) {
+  return s == 'vendor' ? LinkRequestInitiator.vendor : LinkRequestInitiator.customer;
 }
 
 class LinkRequestUserBrief {
@@ -49,6 +54,7 @@ class LinkRequestUserBrief {
 class LinkRequestModel {
   final String id;
   final LinkRequestStatus status;
+  final LinkRequestInitiator initiatedBy;
   final String? message;
   final DateTime? respondedAt;
   final DateTime createdAt;
@@ -58,6 +64,7 @@ class LinkRequestModel {
   const LinkRequestModel({
     required this.id,
     required this.status,
+    this.initiatedBy = LinkRequestInitiator.customer,
     this.message,
     this.respondedAt,
     required this.createdAt,
@@ -69,6 +76,7 @@ class LinkRequestModel {
     return LinkRequestModel(
       id: json['id'] as String,
       status: _statusFromJson(json['status'] as String),
+      initiatedBy: _initiatorFromJson(json['initiatedBy'] as String?),
       message: json['message'] as String?,
       respondedAt: json['respondedAt'] != null
           ? DateTime.parse(json['respondedAt'] as String)
