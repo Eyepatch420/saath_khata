@@ -378,11 +378,46 @@ class VendorMainWrapper extends StatefulWidget {
   State<VendorMainWrapper> createState() => _VendorMainWrapperState();
 }
 
-class _VendorMainWrapperState extends State<VendorMainWrapper> {
+class _VendorMainWrapperState extends State<VendorMainWrapper>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _fabAnim;
+  late final Animation<double> _fabScale;
+  late final Animation<double> _fabOpacity;
+  bool _fabVisible = true;
+
   @override
   void initState() {
     super.initState();
     getIt<VendorBloc>().add(LoadVendorDashboard());
+    _fabAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: 1.0,
+    );
+    _fabScale = CurvedAnimation(parent: _fabAnim, curve: Curves.easeOut);
+    _fabOpacity = _fabAnim;
+  }
+
+  @override
+  void dispose() {
+    _fabAnim.dispose();
+    super.dispose();
+  }
+
+  bool _onScroll(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta > 0 && _fabVisible) {
+        // scrolling down — hide
+        _fabVisible = false;
+        _fabAnim.reverse();
+      } else if (delta < 0 && !_fabVisible) {
+        // scrolling up — show
+        _fabVisible = true;
+        _fabAnim.forward();
+      }
+    }
+    return false;
   }
 
   @override
@@ -391,9 +426,13 @@ class _VendorMainWrapperState extends State<VendorMainWrapper> {
       value: getIt<VendorBloc>(),
       child: Builder(builder: (ctx) {
         final location = GoRouterState.of(ctx).uri.path;
+        final isHome = location == AppRouter.vendorHome;
         return Scaffold(
           extendBody: true,
-          body: widget.child,
+          body: NotificationListener<ScrollNotification>(
+            onNotification: _onScroll,
+            child: widget.child,
+          ),
           bottomNavigationBar: AppBottomNavBar(
             currentIndex: _calculateSelectedIndex(ctx),
             onTap: (index) => _onTap(ctx, index),
@@ -405,14 +444,20 @@ class _VendorMainWrapperState extends State<VendorMainWrapper> {
               AppNavItem(riveIcon: AppRiveIcon.gear,  label: 'Settings'),
             ],
           ),
-          floatingActionButton: location == AppRouter.vendorHome
-              ? FloatingActionButton.extended(
-                  onPressed: () => showVendorAddCustomerSheet(ctx),
-                  backgroundColor: AppColors.primary,
-                  icon: const Icon(Icons.person_add_rounded, color: Colors.white),
-                  label: const Text(
-                    'ADD CUSTOMER',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          floatingActionButton: isHome
+              ? FadeTransition(
+                  opacity: _fabOpacity,
+                  child: ScaleTransition(
+                    scale: _fabScale,
+                    child: FloatingActionButton.extended(
+                      onPressed: () => showVendorAddCustomerSheet(ctx),
+                      backgroundColor: AppColors.primary,
+                      icon: const Icon(Icons.person_add_rounded, color: Colors.white),
+                      label: const Text(
+                        'ADD CUSTOMER',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 )
               : null,
