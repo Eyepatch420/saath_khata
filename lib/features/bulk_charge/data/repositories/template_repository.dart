@@ -10,10 +10,10 @@ class TemplateRepository {
   Future<List<ProductTemplate>> getTemplates() async {
     try {
       final response = await _api.get(ApiEndpoints.productTemplates);
-      final data = ApiClient.extractData(response);
-      final list = data as List;
+      final body = response.data as Map<String, dynamic>;
+      final list = body['data'] as List;
       return list
-          .map((e) => ProductTemplate.fromJson(e as Map<String, dynamic>))
+          .map((e) => ProductTemplate.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
