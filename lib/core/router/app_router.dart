@@ -15,6 +15,9 @@ import '../../features/vendor/presentation/bloc/vendor_event.dart';
 import '../../features/vendor/presentation/screens/vendor_dashboard.dart';
 import '../../features/customer/presentation/screens/customer_dashboard.dart';
 import '../../features/staff_portal/presentation/screens/staff_shell.dart';
+import '../../features/staff_portal/presentation/screens/staff_home_screen.dart';
+import '../../features/staff_portal/presentation/screens/staff_customers_screen.dart';
+import '../../features/staff_portal/presentation/screens/staff_pay_screen.dart';
 
 import '../../features/shared_ledger/presentation/screens/shared_ledger_screen.dart';
 
@@ -274,18 +277,15 @@ class AppRouter {
         routes: [
           GoRoute(
             path: staffHome,
-            builder: (context, state) => const StaffPlaceholderScreen(
-                title: 'Home', icon: Icons.home_rounded),
+            builder: (context, state) => const StaffHomeScreen(),
           ),
           GoRoute(
             path: staffCustomers,
-            builder: (context, state) => const StaffPlaceholderScreen(
-                title: 'Customers', icon: Icons.people_rounded),
+            builder: (context, state) => const StaffCustomersScreen(),
           ),
           GoRoute(
             path: staffPay,
-            builder: (context, state) => const StaffPlaceholderScreen(
-                title: 'My Pay', icon: Icons.account_balance_wallet_rounded),
+            builder: (context, state) => const StaffPayScreen(),
           ),
         ],
       ),

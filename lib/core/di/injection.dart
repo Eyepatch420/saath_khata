@@ -12,6 +12,7 @@ import '../../features/shared_ledger/domain/repositories/ledger_repository.dart'
 
 import '../../features/staff/data/repositories/staff_repository_impl.dart';
 import '../../features/staff/domain/repositories/staff_repository.dart';
+import '../../features/staff_portal/data/staff_portal_repository.dart';
 
 import '../../features/notifications/data/repositories/notification_repository_impl.dart';
 import '../../features/notifications/domain/repositories/notification_repository.dart';
@@ -80,6 +81,7 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<CustomerRepository>(() => CustomerRepositoryImpl(apiClient));
   getIt.registerLazySingleton<LedgerRepository>(() => LedgerRepositoryImpl(apiClient));
   getIt.registerLazySingleton<StaffRepository>(() => StaffRepositoryImpl(apiClient));
+  getIt.registerLazySingleton<StaffPortalRepository>(() => StaffPortalRepository(apiClient));
   getIt.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(apiClient));
   getIt.registerLazySingleton<BookingRepository>(() => BookingRepositoryImpl(apiClient));
   getIt.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl(apiClient));
