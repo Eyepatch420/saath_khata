@@ -16,9 +16,14 @@ class BulkChargeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) =>
-          BulkChargeCubit(getIt<TemplateRepository>())..loadTemplates(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) =>
+              BulkChargeCubit(getIt<TemplateRepository>())..loadTemplates(),
+        ),
+        BlocProvider.value(value: getIt<VendorBloc>()),
+      ],
       child: const _BulkChargeView(),
     );
   }
