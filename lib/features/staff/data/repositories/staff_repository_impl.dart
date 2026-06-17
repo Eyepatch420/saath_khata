@@ -173,4 +173,17 @@ class StaffRepositoryImpl implements StaffRepository {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
+
+  @override
+  Future<StaffModel> setAppAccess(String staffId, bool canLogin) async {
+    try {
+      final response = await _api.patch(
+        ApiEndpoints.staffAccess(staffId),
+        data: {'canLogin': canLogin},
+      );
+      return StaffModel.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
 }

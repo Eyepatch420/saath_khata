@@ -9,6 +9,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/staff_model.dart';
+import 'staff_detail_screen/widgets/app_access_card.dart';
 import '../bloc/staff_bloc.dart';
 import '../bloc/staff_event.dart';
 import '../bloc/staff_state.dart';
@@ -73,6 +74,8 @@ class _StaffDetailView extends StatelessWidget {
                       const SizedBox(height: 16),
                       _SalaryCard(
                           staff: staff, attendance: attendance, year: year, month: month),
+                      const SizedBox(height: 16),
+                      AppAccessCard(staff: staff),
                       const SizedBox(height: 16),
                       _AttendanceCalendar(
                         staffId: staff.id,

@@ -343,8 +343,8 @@ class _ProfileHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(user?.name ?? '...', style: AppTypography.h3),
-                    if (user?.email != null && user!.email.isNotEmpty)
-                      Text(user.email, style: AppTypography.bodySmall),
+                    if (user?.email != null && user!.email!.isNotEmpty)
+                      Text(user.email!, style: AppTypography.bodySmall),
                   ],
                 ),
               ),

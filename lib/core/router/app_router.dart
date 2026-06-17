@@ -14,6 +14,7 @@ import '../../features/vendor/presentation/bloc/vendor_bloc.dart';
 import '../../features/vendor/presentation/bloc/vendor_event.dart';
 import '../../features/vendor/presentation/screens/vendor_dashboard.dart';
 import '../../features/customer/presentation/screens/customer_dashboard.dart';
+import '../../features/staff_portal/presentation/screens/staff_shell.dart';
 
 import '../../features/shared_ledger/presentation/screens/shared_ledger_screen.dart';
 
@@ -72,6 +73,9 @@ class AppRouter {
   static const String profileSetup = '/profile-setup';
   static const String vendorHome = '/vendor';
   static const String customerHome = '/customer';
+  static const String staffHome = '/staff-home';
+  static const String staffCustomers = '/staff-home/customers';
+  static const String staffPay = '/staff-home/pay';
   static const String customerKhatas = '/customer/khatas';
   static const String customerPayments = '/customer/payments';
   static const String customerProfile = '/customer/profile';
@@ -127,7 +131,9 @@ class AppRouter {
       if (authState is AuthAuthenticated) {
         // Redirect authenticated users off any public/auth screen
         if (isPublic) {
-          return authState.user.isVendor ? vendorHome : customerHome;
+          final user = authState.user;
+          if (user.isStaff) return staffHome;
+          return user.isVendor ? vendorHome : customerHome;
         }
       }
 
@@ -259,6 +265,27 @@ class AppRouter {
           GoRoute(
             path: customerBookings,
             builder: (context, state) => const CustomerBookingsScreen(),
+          ),
+        ],
+      ),
+      // Staff (labour) Flow with ShellRoute
+      ShellRoute(
+        builder: (context, state, child) => StaffMainWrapper(child: child),
+        routes: [
+          GoRoute(
+            path: staffHome,
+            builder: (context, state) => const StaffPlaceholderScreen(
+                title: 'Home', icon: Icons.home_rounded),
+          ),
+          GoRoute(
+            path: staffCustomers,
+            builder: (context, state) => const StaffPlaceholderScreen(
+                title: 'Customers', icon: Icons.people_rounded),
+          ),
+          GoRoute(
+            path: staffPay,
+            builder: (context, state) => const StaffPlaceholderScreen(
+                title: 'My Pay', icon: Icons.account_balance_wallet_rounded),
           ),
         ],
       ),

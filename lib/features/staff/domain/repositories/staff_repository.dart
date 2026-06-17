@@ -9,4 +9,7 @@ abstract class StaffRepository {
   Future<void> paySalary(String staffId, double amount, String? upiTransactionId);
   Future<void> addAdvance(String staffId, double amount, String? note);
   Future<StaffModel> accrueSalary(String staffId);
+
+  /// Grant or revoke a staff member's app login. Returns the updated staff record.
+  Future<StaffModel> setAppAccess(String staffId, bool canLogin);
 }

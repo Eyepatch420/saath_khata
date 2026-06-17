@@ -56,6 +56,11 @@ class ApiEndpoints {
   static String staffAdvance(String id) => '/staff/$id/advance';
   static String staffAccrue(String id) => '/staff/$id/accrue';
   static String staffSalaryHistory(String id) => '/staff/$id/salary-history';
+  static String staffAccess(String id) => '/staff/$id/access';
+  // Staff self-service (logged-in staff member)
+  static const String staffMe = '/staff/me';
+  static const String staffMeSalaryHistory = '/staff/me/salary-history';
+  static const String staffMeQr = '/staff/me/qr';
 
   // Bookings
   static const String bookings = '/bookings';

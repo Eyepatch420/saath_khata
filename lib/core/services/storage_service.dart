@@ -28,6 +28,7 @@ class StorageService {
   static const String _vendorBusinessCategoryKey = 'vendor_business_category';
   static const String _vendorBusinessAddressKey = 'vendor_business_address';
   static const String _vendorUpiIdsKey = 'vendor_upi_ids';
+  static const String _staffProfileKey = 'staff_profile';
 
   late Box _box;
   final FlutterSecureStorage _secure = const FlutterSecureStorage(
@@ -89,7 +90,7 @@ class StorageService {
     await Future.wait([
       _secure.write(key: _userIdKey, value: user.id),
       _secure.write(key: _userNameKey, value: user.name),
-      _secure.write(key: _userEmailKey, value: user.email),
+      _secure.write(key: _userEmailKey, value: user.email ?? ''),
       _secure.write(key: _userRoleKey, value: user.role),
       _secure.write(key: _userMobileKey, value: user.mobile ?? ''),
       _secure.write(key: _userUpiIdKey, value: user.upiId ?? ''),
@@ -98,6 +99,18 @@ class StorageService {
       _secure.write(key: _vendorBusinessCategoryKey, value: user.businessCategory ?? ''),
       _secure.write(key: _vendorBusinessAddressKey, value: user.businessAddress ?? ''),
       _secure.write(key: _vendorUpiIdsKey, value: upiIdsJson),
+      _secure.write(
+        key: _staffProfileKey,
+        value: user.staffProfile == null
+            ? ''
+            : jsonEncode({
+                'staffId': user.staffProfile!.staffId,
+                'vendorId': user.staffProfile!.vendorId,
+                'businessName': user.staffProfile!.businessName,
+                'businessCategory': user.staffProfile!.businessCategory,
+                'qrCodeUrl': user.staffProfile!.qrCodeUrl,
+              }),
+      ),
     ]);
   }
 
@@ -122,10 +135,21 @@ class StorageService {
       }
     }
 
+    StaffProfile? staffProfile;
+    final staffRaw = await _secure.read(key: _staffProfileKey);
+    if (staffRaw != null && staffRaw.isNotEmpty) {
+      try {
+        staffProfile =
+            StaffProfile.fromJson(jsonDecode(staffRaw) as Map<String, dynamic>);
+      } catch (_) {
+        staffProfile = null;
+      }
+    }
+
     return UserModel(
       id: id,
       name: await _secure.read(key: _userNameKey) ?? '',
-      email: await _secure.read(key: _userEmailKey) ?? '',
+      email: nz(await _secure.read(key: _userEmailKey)),
       role: role,
       mobile: nz(await _secure.read(key: _userMobileKey)),
       upiId: nz(await _secure.read(key: _userUpiIdKey)),
@@ -134,6 +158,7 @@ class StorageService {
       businessCategory: nz(await _secure.read(key: _vendorBusinessCategoryKey)),
       businessAddress: nz(await _secure.read(key: _vendorBusinessAddressKey)),
       upiIds: upiIds,
+      staffProfile: staffProfile,
     );
   }
 
@@ -158,6 +183,7 @@ class StorageService {
         _secure.delete(key: _vendorBusinessCategoryKey),
         _secure.delete(key: _vendorBusinessAddressKey),
         _secure.delete(key: _vendorUpiIdsKey),
+        _secure.delete(key: _staffProfileKey),
       ]);
 
   Future<void> clearAll() => Future.wait([clearTokens(), clearUser()]);

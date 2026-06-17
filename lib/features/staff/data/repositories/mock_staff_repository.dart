@@ -140,4 +140,14 @@ class MockStaffRepository implements StaffRepository {
     _staff[index] = s.copyWith(unpaidSalary: s.unpaidSalary + s.salaryAmount);
     return _staff[index];
   }
+
+  @override
+  Future<StaffModel> setAppAccess(String staffId, bool canLogin) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _staff.indexWhere((s) => s.id == staffId);
+    if (index == -1) throw Exception('Staff not found');
+    _staff[index] = _staff[index]
+        .copyWith(canLogin: canLogin, hasAppAccount: canLogin);
+    return _staff[index];
+  }
 }
