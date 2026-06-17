@@ -14,12 +14,14 @@ class LedgerList extends StatefulWidget {
   final String linkId;
   final String customerName;
   final String currentUserId;
+  final bool isVendorView;
 
   const LedgerList({
     super.key,
     required this.linkId,
     required this.customerName,
     required this.currentUserId,
+    required this.isVendorView,
   });
 
   @override
@@ -115,6 +117,7 @@ class _LedgerListState extends State<LedgerList> {
           entry: entries[index],
           customerName: widget.customerName,
           currentUserId: widget.currentUserId,
+          isVendorView: widget.isVendorView,
         ),
       ),
     );

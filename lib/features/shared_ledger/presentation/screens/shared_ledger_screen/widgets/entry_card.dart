@@ -14,12 +14,14 @@ class LedgerEntryCard extends StatelessWidget {
   final LedgerEntry entry;
   final String customerName;
   final String currentUserId;
+  final bool isVendorView;
 
   const LedgerEntryCard({
     super.key,
     required this.entry,
     required this.customerName,
     required this.currentUserId,
+    required this.isVendorView,
   });
 
   @override
@@ -94,7 +96,9 @@ class LedgerEntryCard extends StatelessWidget {
             ),
             if (entry.status == EntryStatus.pending &&
                 !entry.isLocked &&
-                entry.createdBy != currentUserId) ...[
+                (isVendorView
+                    ? entry.type == EntryType.payment
+                    : entry.type == EntryType.credit)) ...[
               const Divider(height: 20),
               Row(
                 children: [

@@ -229,6 +229,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
                 linkId: widget.linkId,
                 customerName: widget.customerName,
                 currentUserId: currentUserId,
+                isVendorView: widget.isVendorView,
               ),
             ),
           ),
