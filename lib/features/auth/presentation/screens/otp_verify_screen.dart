@@ -73,11 +73,12 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
           _focusNodes[index - 1].requestFocus();
         }
       },
-      child: Container(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14),
+        child: Container(
         width: 52,
         height: 60,
         decoration: BoxDecoration(
-          // Use theme surface so it works in both light and dark mode
           color: cs.surface,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: AppColors.primary, width: 1.5),
@@ -108,6 +109,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
           ),
           onChanged: (v) => _onDigitChanged(index, v),
         ),
+      ),
       ),
     );
   }

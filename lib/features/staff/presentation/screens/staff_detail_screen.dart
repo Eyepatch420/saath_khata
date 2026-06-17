@@ -10,6 +10,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/staff_model.dart';
 import 'staff_detail_screen/widgets/app_access_card.dart';
+import 'staff_detail_screen/widgets/salary_history_section.dart';
 import '../bloc/staff_bloc.dart';
 import '../bloc/staff_event.dart';
 import '../bloc/staff_state.dart';
@@ -89,6 +90,12 @@ class _StaffDetailView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       _ActionButtons(staff: staff),
+                      const SizedBox(height: 24),
+                      SalaryHistorySection(
+                        staffId: staff.id,
+                        // Re-fetch whenever a payment/advance changes the balances.
+                        refreshKey: '${staff.unpaidSalary}_${staff.advanceTaken}',
+                      ),
                       const SizedBox(height: 24),
                     ],
                   ),

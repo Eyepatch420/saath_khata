@@ -1,5 +1,6 @@
 import '../../domain/repositories/staff_repository.dart';
 import '../../../../shared/models/staff_model.dart';
+import '../../../staff_portal/domain/models/staff_self.dart';
 
 class MockStaffRepository implements StaffRepository {
   final List<StaffModel> _staff = [
@@ -149,5 +150,11 @@ class MockStaffRepository implements StaffRepository {
     _staff[index] = _staff[index]
         .copyWith(canLogin: canLogin, hasAppAccount: canLogin);
     return _staff[index];
+  }
+
+  @override
+  Future<List<StaffPayTransaction>> getSalaryHistory(String staffId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return const [];
   }
 }
