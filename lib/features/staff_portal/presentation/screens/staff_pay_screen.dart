@@ -8,6 +8,8 @@ import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../data/staff_portal_repository.dart';
 import '../../domain/models/staff_self.dart';
 import '../cubit/staff_portal_cubit.dart';
@@ -18,7 +20,16 @@ class StaffPayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('My Pay')),
+      appBar: AppBar(
+        title: const Text('My Pay'),
+        actions: [
+          IconButton(
+            onPressed: () => _confirmLogout(context),
+            icon: const Icon(Icons.logout_rounded),
+            tooltip: 'Log out',
+          ),
+        ],
+      ),
       body: SafeArea(
         child: BlocBuilder<StaffPortalCubit, StaffPortalState>(
           builder: (context, state) {
@@ -51,6 +62,31 @@ class StaffPayScreen extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  void _confirmLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      useRootNavigator: true,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Log out'),
+        content: const Text('Are you sure you want to log out?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx, rootNavigator: true).pop();
+              context.read<AuthBloc>().add(const AuthLogoutRequested());
+            },
+            child: const Text('Log out',
+                style: TextStyle(color: AppColors.error)),
+          ),
+        ],
       ),
     );
   }
@@ -154,7 +190,8 @@ class _QrCardState extends State<_QrCard> {
   void _showQr(String url) {
     showDialog(
       context: context,
-      builder: (_) => Dialog(
+      useRootNavigator: true,
+      builder: (dialogCtx) => Dialog(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -173,7 +210,8 @@ class _QrCardState extends State<_QrCard> {
               ),
               const SizedBox(height: 12),
               TextButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () =>
+                    Navigator.of(dialogCtx, rootNavigator: true).pop(),
                 child: const Text('Close'),
               ),
             ],
