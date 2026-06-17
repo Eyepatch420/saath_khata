@@ -62,6 +62,7 @@ import '../../features/search/domain/models/vendor_search_result.dart';
 import '../../features/link_requests/presentation/screens/vendor_link_request_screen.dart';
 import '../../features/link_requests/presentation/screens/customer_link_request_screen.dart';
 import '../../features/memberships/presentation/screens/membership_tiers_screen.dart';
+import '../../features/bulk_charge/presentation/screens/bulk_charge_screen.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
 
@@ -108,6 +109,7 @@ class AppRouter {
   static const String linkRequestDetail = '/link-request';
   static const String customerLinkRequestDetail = '/customer-link-request';
   static const String membershipTiers = '/membership-tiers';
+  static const String bulkCharge = '/bulk-charge';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -240,6 +242,10 @@ class AppRouter {
           GoRoute(
             path: settings,
             builder: (context, state) => const SettingsScreen(),
+          ),
+          GoRoute(
+            path: bulkCharge,
+            builder: (context, state) => const BulkChargeScreen(),
           ),
         ],
       ),
@@ -505,6 +511,7 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
     if (location == AppRouter.vendorHome) return 0;
+    if (location == AppRouter.bulkCharge) return 0;
     if (location == AppRouter.staffManagement) return 1;
     if (location == AppRouter.vendorBookings) return 2;
     if (location.startsWith(AppRouter.reports)) return 3;

@@ -345,6 +345,25 @@ class _ProfileHeader extends StatelessWidget {
                     Text(user?.name ?? '...', style: AppTypography.h3),
                     if (user?.email != null && user!.email!.isNotEmpty)
                       Text(user.email!, style: AppTypography.bodySmall),
+                    if (user?.businessCategory != null &&
+                        user!.businessCategory!.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          user.businessCategory!,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

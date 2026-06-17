@@ -98,6 +98,11 @@ class ApiEndpoints {
   static String declineMembershipRequest(String id) =>
       '/memberships/requests/$id/decline';
 
+  // Product Templates (vendor + staff)
+  static const String productTemplates = '/templates';
+  static String productTemplateById(String id) => '/templates/$id';
+  static const String bulkCharge = '/templates/bulk-charge';
+
   // Search (authenticated — both roles)
   static const String searchVendors = '/search/vendors';
   static String vendorPublicProfile(String vendorId) => '/search/vendors/$vendorId';
