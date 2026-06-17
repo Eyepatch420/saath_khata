@@ -21,6 +21,7 @@ abstract class LinkRequestRepository {
   Future<LinkRequestModel> getRequestById(String requestId);
 
   Future<List<LinkRequestModel>> getPendingRequests();          // vendor: customer-initiated pending
+  Future<List<LinkRequestModel>> getVendorSentRequests();       // vendor: vendor-initiated pending (awaiting customer)
   Future<List<LinkRequestModel>> getPendingForCustomer();       // customer: vendor-initiated pending
   Future<List<LinkRequestModel>> getSentRequests();             // customer: requests they sent
 }

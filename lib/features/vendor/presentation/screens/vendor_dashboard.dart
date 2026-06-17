@@ -6,6 +6,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../link_requests/domain/models/link_request_model.dart';
 import '../../../link_requests/domain/repositories/link_request_repository.dart';
 import '../bloc/vendor_bloc.dart';
 import '../bloc/vendor_event.dart';
@@ -180,6 +181,8 @@ class VendorDashboardView extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 24),
+                    _PendingRequestsSection(),
                     const SizedBox(height: 32),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -597,6 +600,137 @@ class _VendorTile extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+// ─── Pending Requests Section (vendor-sent, awaiting customer accept) ────────
+
+class _PendingRequestsSection extends StatefulWidget {
+  const _PendingRequestsSection();
+
+  @override
+  State<_PendingRequestsSection> createState() => _PendingRequestsSectionState();
+}
+
+class _PendingRequestsSectionState extends State<_PendingRequestsSection> {
+  late Future<List<LinkRequestModel>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = getIt<LinkRequestRepository>().getVendorSentRequests();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<LinkRequestModel>>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        final pending = snapshot.data!
+            .where((r) => r.status == LinkRequestStatus.pending)
+            .toList();
+        if (pending.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.hourglass_top_rounded,
+                    size: 16, color: AppColors.textSecondary),
+                const SizedBox(width: 6),
+                Text('Awaiting Acceptance',
+                    style: AppTypography.h3),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'These customers haven\'t confirmed yet',
+              style: AppTypography.bodySmall
+                  .copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 12),
+            ...pending.map((req) => _PendingRequestTile(request: req)),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PendingRequestTile extends StatelessWidget {
+  final LinkRequestModel request;
+  const _PendingRequestTile({required this.request});
+
+  @override
+  Widget build(BuildContext context) {
+    final name = request.customer.name;
+    final contact = request.customer.mobile ?? request.customer.email;
+    final surface = Theme.of(context).colorScheme.surface;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      decoration: BoxDecoration(
+        color: surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppColors.primary.withValues(alpha: 0.18),
+        ),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(9),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.person_outline_rounded,
+                color: AppColors.primary, size: 20),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: AppTypography.labelLarge),
+                Text(
+                  contact,
+                  style: AppTypography.bodySmall
+                      .copyWith(color: AppColors.textSecondary),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFFF3CD),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.schedule_rounded,
+                    size: 12, color: Color(0xFF856404)),
+                SizedBox(width: 4),
+                Text(
+                  'Pending',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: Color(0xFF856404),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

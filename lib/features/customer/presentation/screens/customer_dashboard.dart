@@ -20,6 +20,8 @@ import '../widgets/vendor_tile.dart';
 import '../../../../shared/widgets/search_bar_pill.dart';
 import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../notifications/presentation/bloc/notification_state.dart';
+import '../../../link_requests/domain/models/link_request_model.dart';
+import '../../../link_requests/domain/repositories/link_request_repository.dart';
 import '../../../search/presentation/screens/vendor_search_screen.dart';
 
 class CustomerDashboard extends StatelessWidget {
@@ -90,6 +92,7 @@ class CustomerDashboardView extends StatelessWidget {
                 children: [
                   const SearchBarPill(viewAs: SearchViewAs.customer),
                   const SizedBox(height: 16),
+                  const _PendingVendorRequestsBanner(),
                   TotalDueCard(
                     amount: state.totalDue,
                     onPayAllDues: state.totalDue > 0
@@ -442,6 +445,121 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
   }
 
   void _skip() => setState(() => _currentIndex++);
+}
+
+// ─── Pending Vendor Requests Banner ──────────────────────────────────────────
+
+class _PendingVendorRequestsBanner extends StatefulWidget {
+  const _PendingVendorRequestsBanner();
+
+  @override
+  State<_PendingVendorRequestsBanner> createState() =>
+      _PendingVendorRequestsBannerState();
+}
+
+class _PendingVendorRequestsBannerState
+    extends State<_PendingVendorRequestsBanner> {
+  late Future<List<LinkRequestModel>> _future;
+
+  @override
+  void initState() {
+    super.initState();
+    _future = getIt<LinkRequestRepository>().getPendingForCustomer();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<LinkRequestModel>>(
+      future: _future,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return const SizedBox.shrink();
+        final pending = snapshot.data!
+            .where((r) => r.status == LinkRequestStatus.pending)
+            .toList();
+        if (pending.isEmpty) return const SizedBox.shrink();
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...pending.map((req) => _VendorRequestBannerTile(request: req,
+                onResponded: () => setState(() {
+                      _future = getIt<LinkRequestRepository>()
+                          .getPendingForCustomer();
+                    }))),
+            const SizedBox(height: 16),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _VendorRequestBannerTile extends StatelessWidget {
+  final LinkRequestModel request;
+  final VoidCallback onResponded;
+
+  const _VendorRequestBannerTile({
+    required this.request,
+    required this.onResponded,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final vendorName = request.vendor.displayName;
+    return GestureDetector(
+      onTap: () async {
+        await context.push(
+          AppRouter.customerLinkRequestDetail,
+          extra: request.id,
+        );
+        onResponded();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.customerAccent.withValues(alpha: 0.07),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+              color: AppColors.customerAccent.withValues(alpha: 0.25)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(9),
+              decoration: BoxDecoration(
+                color: AppColors.customerAccent.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.storefront_rounded,
+                  color: AppColors.customerAccent, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '$vendorName wants to connect',
+                    style: AppTypography.labelLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Tap to accept or decline',
+                    style: AppTypography.bodySmall
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded,
+                color: AppColors.textHint, size: 20),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 // ─── Notification Badge ───────────────────────────────────────────────────────

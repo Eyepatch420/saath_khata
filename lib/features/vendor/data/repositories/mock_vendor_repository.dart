@@ -46,27 +46,6 @@ class MockVendorRepository implements VendorRepository {
   }
 
   @override
-  Future<CustomerLinkItem> linkCustomer(String identifier, {String? nickname}) async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    final name = identifier.contains('@')
-        ? identifier.split('@').first
-        : 'Customer $identifier';
-    final newLink = CustomerLinkItem(
-      linkId: 'link${_links.length + 1}',
-      balance: 0.0,
-      nickname: nickname,
-      customer: UserSummary(
-        id: 'c${_links.length + 1}',
-        name: name,
-        mobile: null,
-      ),
-      createdAt: DateTime.now().toIso8601String(),
-    );
-    _links.add(newLink);
-    return newLink;
-  }
-
-  @override
   Future<void> updateLinkNickname(String linkId, String? nickname) async {
     await Future.delayed(const Duration(milliseconds: 200));
   }

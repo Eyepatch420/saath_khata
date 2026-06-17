@@ -38,34 +38,6 @@ class VendorRepositoryImpl implements VendorRepository {
   }
 
   @override
-  Future<CustomerLinkItem> linkCustomer(String identifier, {String? nickname}) async {
-    try {
-      final trimmed = identifier.trim();
-      final isPhone = RegExp(r'^[6-9]\d{9}$').hasMatch(trimmed);
-      final body = <String, dynamic>{};
-      if (isPhone) {
-        body['customerPhone'] = trimmed;
-      } else {
-        body['customerEmail'] = trimmed;
-      }
-      if (nickname != null && nickname.isNotEmpty) {
-        body['nickname'] = nickname;
-      }
-      final response = await _api.post(ApiEndpoints.links, data: body);
-      final data = ApiClient.extractData(response);
-      return CustomerLinkItem(
-        linkId: data['id'] as String,
-        balance: (data['balance'] as num).toDouble(),
-        nickname: data['vendorNickname'] as String?,
-        customer: UserSummary.fromJson(data['customer'] as Map<String, dynamic>),
-        createdAt: data['createdAt'] as String,
-      );
-    } on DioException catch (e) {
-      throw Exception(ApiClient.extractErrorMessage(e));
-    }
-  }
-
-  @override
   Future<void> updateLinkNickname(String linkId, String? nickname) async {
     try {
       await _api.patch(

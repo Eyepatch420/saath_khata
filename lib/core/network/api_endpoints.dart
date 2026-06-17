@@ -21,7 +21,6 @@ class ApiEndpoints {
   static const String privacyPolicy = '/content/privacy';
 
   // Links
-  static const String links = '/links';
   static const String myCustomers = '/links/customers';
   static const String myVendors = '/links/vendors';
   static const String remindAll = '/links/remind-all';
@@ -75,6 +74,7 @@ class ApiEndpoints {
   static const String pendingLinkRequests = '/link-requests/pending';
   static const String pendingCustomerLinkRequests = '/link-requests/pending-customer';
   static const String sentLinkRequests = '/link-requests/sent';
+  static const String vendorSentLinkRequests = '/link-requests/vendor-sent';
   static String linkRequestById(String id) => '/link-requests/$id';
   static String acceptLinkRequest(String id) => '/link-requests/$id/accept';
   static String declineLinkRequest(String id) => '/link-requests/$id/decline';

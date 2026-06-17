@@ -97,6 +97,18 @@ class LinkRequestRepositoryImpl implements LinkRequestRepository {
   }
 
   @override
+  Future<List<LinkRequestModel>> getVendorSentRequests() async {
+    try {
+      final response = await _api.get(ApiEndpoints.vendorSentLinkRequests);
+      return (ApiClient.extractData(response) as List<dynamic>)
+          .map((e) => LinkRequestModel.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<List<LinkRequestModel>> getPendingForCustomer() async {
     try {
       final response = await _api.get(ApiEndpoints.pendingCustomerLinkRequests);
