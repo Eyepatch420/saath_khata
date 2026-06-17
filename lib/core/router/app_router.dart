@@ -206,32 +206,6 @@ class AppRouter {
             builder: (context, state) => const ReportsScreen(),
           ),
           GoRoute(
-            path: allCustomers,
-            builder: (context, state) => const AllCustomersScreen(),
-          ),
-          GoRoute(
-            path: outstandingList,
-            builder: (context, state) => const OutstandingListScreen(),
-          ),
-          GoRoute(
-            path: collectedToday,
-            builder: (context, state) => const CollectedTodayScreen(),
-          ),
-          GoRoute(
-            path: allCustomersReport,
-            builder: (context, state) => const AllCustomersReportScreen(),
-          ),
-          GoRoute(
-            path: customerDetailReport,
-            builder: (context, state) {
-              final extras = state.extra as Map<String, dynamic>;
-              return CustomerDetailReportScreen(
-                linkId: extras['linkId'] as String,
-                customerName: extras['name'] as String,
-              );
-            },
-          ),
-          GoRoute(
             path: staffManagement,
             builder: (context, state) => const StaffManagementScreen(),
           ),
@@ -242,10 +216,6 @@ class AppRouter {
           GoRoute(
             path: settings,
             builder: (context, state) => const SettingsScreen(),
-          ),
-          GoRoute(
-            path: bulkCharge,
-            builder: (context, state) => const BulkChargeScreen(),
           ),
         ],
       ),
@@ -296,6 +266,26 @@ class AppRouter {
         ],
       ),
       GoRoute(
+        path: outstandingList,
+        builder: (context, state) => const OutstandingListScreen(),
+      ),
+      GoRoute(
+        path: collectedToday,
+        builder: (context, state) => const CollectedTodayScreen(),
+      ),
+      GoRoute(
+        path: allCustomers,
+        builder: (context, state) => const AllCustomersScreen(),
+      ),
+      GoRoute(
+        path: allCustomersReport,
+        builder: (context, state) => const AllCustomersReportScreen(),
+      ),
+      GoRoute(
+        path: bulkCharge,
+        builder: (context, state) => const BulkChargeScreen(),
+      ),
+      GoRoute(
         path: sharedLedger,
         builder: (context, state) {
           final extras = state.extra as Map<String, dynamic>;
@@ -303,6 +293,16 @@ class AppRouter {
             linkId: extras['linkId'] as String,
             customerName: extras['name'] as String,
             isVendorView: extras['isVendorView'] as bool? ?? true,
+          );
+        },
+      ),
+      GoRoute(
+        path: customerDetailReport,
+        builder: (context, state) {
+          final extras = state.extra as Map<String, dynamic>;
+          return CustomerDetailReportScreen(
+            linkId: extras['linkId'] as String,
+            customerName: extras['name'] as String,
           );
         },
       ),
@@ -511,7 +511,6 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
     if (location == AppRouter.vendorHome) return 0;
-    if (location == AppRouter.bulkCharge) return 0;
     if (location == AppRouter.staffManagement) return 1;
     if (location == AppRouter.vendorBookings) return 2;
     if (location.startsWith(AppRouter.reports)) return 3;

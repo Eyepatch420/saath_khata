@@ -25,10 +25,15 @@ class AuthOtpSendRequested extends AuthEvent {
 class AuthOtpVerifyRequested extends AuthEvent {
   final String phone;
   final String otp;
-  const AuthOtpVerifyRequested({required this.phone, required this.otp});
+  final String role;
+  const AuthOtpVerifyRequested({
+    required this.phone,
+    required this.otp,
+    required this.role,
+  });
 
   @override
-  List<Object?> get props => [phone, otp];
+  List<Object?> get props => [phone, otp, role];
 }
 
 // ─── Signup (OTP-based — no password) ────────────────────────────────────────

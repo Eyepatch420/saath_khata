@@ -47,7 +47,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
       return;
     }
     context.read<AuthBloc>().add(
-          AuthOtpVerifyRequested(phone: widget.phone, otp: otp),
+          AuthOtpVerifyRequested(phone: widget.phone, otp: otp, role: widget.role),
         );
   }
 

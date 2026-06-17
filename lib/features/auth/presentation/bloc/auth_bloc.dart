@@ -91,20 +91,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (result.existingUser) {
+        final user = result.user!;
+        if (user.role != event.role) {
+          AppLogger.w(_m, 'Role mismatch: expected ${event.role}, got ${user.role}');
+          emit(AuthError(
+            'This number is registered as a ${user.role}. '
+            'Please go back and select the correct role.',
+          ));
+          return;
+        }
         await _storage.saveTokens(
           accessToken: result.tokens!.accessToken,
           refreshToken: result.tokens!.refreshToken,
           expiresIn: result.tokens!.expiresIn,
         );
-        await _storage.saveFullUser(result.user!);
-        AppLogger.i(_m, 'OTP login — ${result.user!.mobile} (${result.user!.role})');
+        await _storage.saveFullUser(user);
+        AppLogger.i(_m, 'OTP login — ${user.mobile} (${user.role})');
         if (kDebugMode) {
           AppLogger.i(_m, '🔑 [DEBUG] Bearer token: ${result.tokens!.accessToken}');
         }
         getIt<LedgerSocketService>().connect(result.tokens!.accessToken);
         await getIt<PushNotificationService>().initialize();
         getIt<NotificationBloc>().add(LoadUnreadCount());
-        emit(AuthAuthenticated(result.user!));
+        emit(AuthAuthenticated(user));
       } else {
         AppLogger.i(_m, 'OTP verified — new user, go to signup');
         emit(AuthOtpVerifiedNewUser(
