@@ -30,6 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogoutRequested>(_onLogout);
     on<AuthProfileUpdateRequested>(_onUpdateProfile);
     on<AuthUserUpdated>(_onUserUpdated);
+    on<AuthDeleteAccountRequested>(_onDeleteAccount);
   }
 
   Future<void> _onCheckStatus(
@@ -179,6 +180,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     await _storage.saveFullUser(event.user);
     emit(AuthAuthenticated(event.user));
+  }
+
+  Future<void> _onDeleteAccount(
+    AuthDeleteAccountRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    AppLogger.i(_m, 'Delete account requested');
+    emit(const AuthLoading());
+    try {
+      await _authRepository.deleteAccount();
+      AppLogger.i(_m, 'Account deleted on server');
+    } catch (e) {
+      AppLogger.w(_m, 'Server delete failed (clearing locally anyway)');
+    } finally {
+      await _storage.clearAll();
+      getIt<LedgerSocketService>().disconnect();
+      AppLogger.i(_m, 'Local session cleared after account deletion');
+      emit(const AuthUnauthenticated());
+    }
   }
 
   Future<void> _onUpdateProfile(

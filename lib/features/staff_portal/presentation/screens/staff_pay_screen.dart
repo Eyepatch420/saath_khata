@@ -23,10 +23,31 @@ class StaffPayScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('My Pay'),
         actions: [
-          IconButton(
-            onPressed: () => _confirmLogout(context),
-            icon: const Icon(Icons.logout_rounded),
-            tooltip: 'Log out',
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'logout') _confirmLogout(context);
+              if (value == 'delete') _confirmDeleteAccount(context);
+            },
+            itemBuilder: (_) => [
+              const PopupMenuItem(
+                value: 'logout',
+                child: ListTile(
+                  leading: Icon(Icons.logout_rounded),
+                  title: Text('Log out'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'delete',
+                child: ListTile(
+                  leading: Icon(Icons.delete_forever_rounded,
+                      color: AppColors.error),
+                  title: Text('Delete Account',
+                      style: TextStyle(color: AppColors.error)),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -62,6 +83,36 @@ class StaffPayScreen extends StatelessWidget {
             );
           },
         ),
+      ),
+    );
+  }
+
+  void _confirmDeleteAccount(BuildContext context) {
+    showDialog(
+      context: context,
+      useRootNavigator: true,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Account?'),
+        content: const Text(
+          'This will permanently delete your account and all your data. '
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx, rootNavigator: true).pop();
+              context
+                  .read<AuthBloc>()
+                  .add(const AuthDeleteAccountRequested());
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Delete Forever'),
+          ),
+        ],
       ),
     );
   }

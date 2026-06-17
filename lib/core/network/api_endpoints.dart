@@ -15,6 +15,7 @@ class ApiEndpoints {
   static const String updateProfile = '/auth/profile';
   static const String uploadPhoto = '/auth/profile/photo';
   static const String changePassword = '/auth/change-password';
+  static const String deleteAccount = '/auth/account';
 
   // Content (public)
   static const String termsAndConditions = '/content/terms';

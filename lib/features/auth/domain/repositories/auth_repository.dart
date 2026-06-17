@@ -29,6 +29,8 @@ abstract class AuthRepository {
 
   Future<void> logout({required String refreshToken});
 
+  Future<void> deleteAccount();
+
   Future<UserModel> updateProfile({
     String? name,
     String? mobile,

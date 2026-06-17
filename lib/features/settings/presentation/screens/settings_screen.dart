@@ -115,25 +115,42 @@ class SettingsScreen extends StatelessWidget {
               const SizedBox(height: 32),
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
-                  final isLoggingOut = state is AuthLoading;
-                  return TextButton(
-                    onPressed: isLoggingOut
-                        ? null
-                        : () => _confirmLogout(context, l10n),
-                    child: isLoggingOut
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child:
-                                CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : Text(
-                            l10n.logout,
-                            style: const TextStyle(
-                              color: AppColors.error,
-                              fontWeight: FontWeight.bold,
-                            ),
+                  final isLoading = state is AuthLoading;
+                  return Column(
+                    children: [
+                      TextButton(
+                        onPressed: isLoading
+                            ? null
+                            : () => _confirmLogout(context, l10n),
+                        child: isLoading
+                            ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2),
+                              )
+                            : Text(
+                                l10n.logout,
+                                style: const TextStyle(
+                                  color: AppColors.error,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                      const SizedBox(height: 4),
+                      TextButton(
+                        onPressed: isLoading
+                            ? null
+                            : () => _confirmDeleteAccount(context),
+                        child: const Text(
+                          'Delete Account',
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontSize: 13,
                           ),
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),
@@ -168,6 +185,35 @@ class SettingsScreen extends StatelessWidget {
               l10n.logout,
               style: const TextStyle(color: AppColors.error),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteAccount(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Account?'),
+        content: const Text(
+          'This will permanently delete your account and all your data. '
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context
+                  .read<AuthBloc>()
+                  .add(const AuthDeleteAccountRequested());
+            },
+            style: TextButton.styleFrom(foregroundColor: AppColors.error),
+            child: const Text('Delete Forever'),
           ),
         ],
       ),

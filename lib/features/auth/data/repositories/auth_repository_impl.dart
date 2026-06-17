@@ -82,6 +82,15 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<void> deleteAccount() async {
+    try {
+      await _api.delete(ApiEndpoints.deleteAccount);
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<UserModel> updateProfile({
     String? name,
     String? mobile,
