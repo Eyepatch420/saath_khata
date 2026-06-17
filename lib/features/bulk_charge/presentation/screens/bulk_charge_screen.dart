@@ -77,6 +77,7 @@ class _BulkChargeView extends StatelessWidget {
                 selected: state.selectedTemplate,
                 onSelect: (t) =>
                     context.read<BulkChargeCubit>().selectTemplate(t),
+                onEdit: (t) => _showTemplateSheet(context, existing: t),
                 onDelete: (t) =>
                     context.read<BulkChargeCubit>().deleteTemplate(t.id),
               ),
@@ -104,11 +105,21 @@ class _BulkChargeView extends StatelessWidget {
     );
   }
 
-  void _showCreateTemplateSheet(BuildContext context) {
+  void _showCreateTemplateSheet(BuildContext context) =>
+      _showTemplateSheet(context, existing: null);
+
+  void _showTemplateSheet(BuildContext context,
+      {required ProductTemplate? existing}) {
     final cubit = context.read<BulkChargeCubit>();
-    final nameCtrl = TextEditingController();
-    final unitCtrl = TextEditingController();
-    final priceCtrl = TextEditingController();
+    final nameCtrl =
+        TextEditingController(text: existing?.name ?? '');
+    final unitCtrl =
+        TextEditingController(text: existing?.unit ?? '');
+    final priceCtrl = TextEditingController(
+        text: existing != null
+            ? existing.pricePerUnit.toStringAsFixed(2)
+            : '');
+    final isEdit = existing != null;
 
     showModalBottomSheet(
       context: context,
@@ -128,10 +139,13 @@ class _BulkChargeView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('New Product / Service', style: AppTypography.h3),
+            Text(isEdit ? 'Edit Product' : 'New Product / Service',
+                style: AppTypography.h3),
             const SizedBox(height: 4),
             Text(
-              'Define what you sell and its base price',
+              isEdit
+                  ? 'Update name, unit or price'
+                  : 'Define what you sell and its base price',
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textSecondary),
             ),
@@ -139,7 +153,7 @@ class _BulkChargeView extends StatelessWidget {
             TextField(
               controller: nameCtrl,
               textCapitalization: TextCapitalization.words,
-              autofocus: true,
+              autofocus: !isEdit,
               decoration: const InputDecoration(
                 labelText: 'Product name',
                 hintText: 'e.g. Daily Morning Milk',
@@ -163,8 +177,8 @@ class _BulkChargeView extends StatelessWidget {
                 Expanded(
                   child: TextField(
                     controller: priceCtrl,
-                    keyboardType:
-                        const TextInputType.numberWithOptions(decimal: true),
+                    keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true),
                     decoration: const InputDecoration(
                       labelText: 'Price / unit (₹)',
                       prefixIcon: Icon(Icons.currency_rupee_rounded),
@@ -181,22 +195,37 @@ class _BulkChargeView extends StatelessWidget {
                   final name = nameCtrl.text.trim();
                   final unit = unitCtrl.text.trim();
                   final price = double.tryParse(priceCtrl.text);
-                  if (name.isEmpty || unit.isEmpty || price == null || price <= 0) {
+                  if (name.isEmpty ||
+                      unit.isEmpty ||
+                      price == null ||
+                      price <= 0) {
                     return;
                   }
                   Navigator.pop(ctx);
-                  cubit.createTemplate(
-                    name: name,
-                    unit: unit,
-                    pricePerUnit: price,
-                  );
+                  if (isEdit) {
+                    cubit.updateTemplate(
+                      id: existing.id,
+                      name: name,
+                      unit: unit,
+                      pricePerUnit: price,
+                    );
+                  } else {
+                    cubit.createTemplate(
+                      name: name,
+                      unit: unit,
+                      pricePerUnit: price,
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                child: const Text('Save Product',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                child: Text(
+                  isEdit ? 'Save Changes' : 'Save Product',
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold),
+                ),
               ),
             ),
           ],
@@ -212,12 +241,14 @@ class _TemplatePicker extends StatelessWidget {
   final List<ProductTemplate> templates;
   final ProductTemplate? selected;
   final ValueChanged<ProductTemplate> onSelect;
+  final ValueChanged<ProductTemplate> onEdit;
   final ValueChanged<ProductTemplate> onDelete;
 
   const _TemplatePicker({
     required this.templates,
     required this.selected,
     required this.onSelect,
+    required this.onEdit,
     required this.onDelete,
   });
 
@@ -234,7 +265,7 @@ class _TemplatePicker extends StatelessWidget {
           final t = templates[i];
           final isSelected = t.id == selected?.id;
           return GestureDetector(
-            onLongPress: () => _confirmDelete(context, t),
+            onLongPress: () => _showActions(context, t),
             child: ChoiceChip(
               label: Text(t.name),
               selected: isSelected,
@@ -247,6 +278,75 @@ class _TemplatePicker extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showActions(BuildContext context, ProductTemplate t) {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 8),
+            Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.textHint.withValues(alpha: 0.4),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  const Icon(Icons.inventory_2_outlined,
+                      size: 16, color: AppColors.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      t.name,
+                      style: AppTypography.labelLarge,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Text(
+                    '₹${t.pricePerUnit.toStringAsFixed(2)} / ${t.unit}',
+                    style: AppTypography.bodySmall
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 20),
+            ListTile(
+              leading: const Icon(Icons.edit_rounded, color: AppColors.primary),
+              title: const Text('Edit product'),
+              onTap: () {
+                Navigator.pop(ctx);
+                onEdit(t);
+              },
+            ),
+            ListTile(
+              leading:
+                  const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+              title: const Text('Delete product',
+                  style: TextStyle(color: AppColors.error)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _confirmDelete(context, t);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }

@@ -31,8 +31,28 @@ class TemplateRepository {
         'unit': unit,
         'pricePerUnit': pricePerUnit,
       });
+      return ProductTemplate.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  Future<ProductTemplate> updateTemplate({
+    required String id,
+    String? name,
+    String? unit,
+    double? pricePerUnit,
+  }) async {
+    try {
+      final body = <String, dynamic>{};
+      if (name != null) body['name'] = name;
+      if (unit != null) body['unit'] = unit;
+      if (pricePerUnit != null) body['pricePerUnit'] = pricePerUnit;
+      final response =
+          await _api.patch(ApiEndpoints.productTemplateById(id), data: body);
+      final raw = response.data as Map<String, dynamic>;
       return ProductTemplate.fromJson(
-          ApiClient.extractData(response) as Map<String, dynamic>);
+          Map<String, dynamic>.from(raw['data'] as Map));
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }

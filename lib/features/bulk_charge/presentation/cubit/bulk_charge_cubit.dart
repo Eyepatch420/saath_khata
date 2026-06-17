@@ -58,6 +58,31 @@ class BulkChargeCubit extends Cubit<BulkChargeState> {
     }
   }
 
+  Future<void> updateTemplate({
+    required String id,
+    required String name,
+    required String unit,
+    required double pricePerUnit,
+  }) async {
+    try {
+      final updated = await _repo.updateTemplate(
+        id: id,
+        name: name,
+        unit: unit,
+        pricePerUnit: pricePerUnit,
+      );
+      final templates = state.templates
+          .map((t) => t.id == id ? updated : t)
+          .toList();
+      final sel = state.selectedTemplate?.id == id ? updated : state.selectedTemplate;
+      emit(state.copyWith(templates: templates, selectedTemplate: sel));
+    } catch (e) {
+      emit(state.copyWith(
+        templateError: e.toString().replaceFirst('Exception: ', ''),
+      ));
+    }
+  }
+
   Future<void> deleteTemplate(String id) async {
     try {
       await _repo.deleteTemplate(id);
