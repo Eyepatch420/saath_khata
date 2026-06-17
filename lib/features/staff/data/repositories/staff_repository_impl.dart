@@ -179,7 +179,9 @@ class StaffRepositoryImpl implements StaffRepository {
   Future<List<StaffPayTransaction>> getSalaryHistory(String staffId) async {
     try {
       final response = await _api.get(ApiEndpoints.staffSalaryHistory(staffId));
-      return (ApiClient.extractData(response) as List<dynamic>)
+      // `data` is a JSON array, so we can't use extractData (which casts to Map).
+      final list = (response.data as Map<String, dynamic>)['data'] as List;
+      return list
           .map((e) => StaffPayTransaction.fromJson(e as Map<String, dynamic>))
           .toList();
     } on DioException catch (e) {
