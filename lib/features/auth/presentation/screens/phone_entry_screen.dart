@@ -7,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -47,6 +48,7 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
     final cs = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthOtpSent) {
@@ -73,7 +75,6 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     child: Icon(Icons.arrow_back, size: 24, color: cs.onSurface),
                   ),
                   const SizedBox(height: 28),
-                  // Role badge
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                     decoration: BoxDecoration(
@@ -89,16 +90,15 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Log in',
+                  Text(l10n.logIn,
                       style: AppTypography.h1.copyWith(color: cs.onSurface)),
                   const SizedBox(height: 6),
                   Text(
-                    'Enter your phone number to continue',
+                    l10n.enterPhoneNumberToContinue,
                     style: AppTypography.bodyMedium
                         .copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 32),
-                  // Phone input field
                   Container(
                     decoration: BoxDecoration(
                       color: cs.surface,
@@ -156,14 +156,14 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                   ),
                   const SizedBox(height: 16),
                   PrimaryButton(
-                    label: 'Send OTP',
+                    label: l10n.sendOtp,
                     isLoading: isLoading,
                     onPressed: isLoading ? null : () => _submit(context),
                   ),
                   const SizedBox(height: 10),
                   Center(
                     child: Text(
-                      'OTP is for demo only · enter 123456 to continue',
+                      l10n.otpDemoHint,
                       style: AppTypography.bodySmall
                           .copyWith(color: AppColors.textHint),
                     ),
@@ -172,12 +172,12 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                   Center(
                     child: RichText(
                       text: TextSpan(
-                        text: 'Having trouble? ',
+                        text: '${l10n.havingTrouble} ',
                         style: AppTypography.bodySmall
                             .copyWith(color: AppColors.textSecondary),
                         children: [
                           TextSpan(
-                            text: 'Use email instead →',
+                            text: l10n.useEmailInstead,
                             style: AppTypography.bodySmall.copyWith(
                               color: AppColors.primary,
                               fontWeight: FontWeight.w600,

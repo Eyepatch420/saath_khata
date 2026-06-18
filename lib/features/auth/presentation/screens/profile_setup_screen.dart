@@ -111,18 +111,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
             const SizedBox(height: 16),
             ListTile(
               leading: const Icon(Icons.camera_alt_rounded, color: AppColors.primary),
-              title: const Text('Take a photo'),
+              title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => _pickImage(ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
-              title: const Text('Choose from gallery'),
+              title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => _pickImage(ImageSource.gallery),
             ),
             if (_pickedImage != null)
               ListTile(
                 leading: const Icon(Icons.delete_rounded, color: AppColors.error),
-                title: const Text('Remove photo', style: TextStyle(color: AppColors.error)),
+                title: Text(AppLocalizations.of(context)!.removePhoto, style: const TextStyle(color: AppColors.error)),
                 onTap: () {
                   setState(() => _pickedImage = null);
                   Navigator.pop(context);
@@ -249,9 +249,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Center(
-                    child: Text('Tap to add profile photo',
-                        style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                  Center(
+                    child: Text(l10n.tapToAddProfilePhoto,
+                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
                   ),
                   const SizedBox(height: 24),
 

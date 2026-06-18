@@ -916,4 +916,401 @@ class AppLocalizationsMl extends AppLocalizations {
   String accrueMonthSalaryConfirm(String name, String amount) {
     return '$name ന്റെ കുടിശ്ശികയിൽ ഈ മാസം ₹$amount ചേർക്കണോ?';
   }
+
+  @override
+  String get accountInformation => 'Account Information';
+
+  @override
+  String get updateProfileDetails => 'Update your name, photo and details';
+
+  @override
+  String get updateAccountPassword => 'Update your account password';
+
+  @override
+  String get deleteAccount => 'Delete Account';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'Permanently delete your account and all data';
+
+  @override
+  String get deleteAccountConfirmation => 'Delete Account?';
+
+  @override
+  String get deleteAccountConfirmationMessage =>
+      'This will permanently delete your account and all your data. This action cannot be undone.';
+
+  @override
+  String get deleteAccountStaffWarning =>
+      'This will permanently delete your account. This cannot be undone.';
+
+  @override
+  String get deleteForever => 'Delete Forever';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get readTermsOfService => 'Read our terms of service';
+
+  @override
+  String get privacyPolicyDescription => 'How we handle your data';
+
+  @override
+  String get confirmLogout => 'Are you sure you want to log out?';
+
+  @override
+  String get membershipTiers => 'Membership Tiers';
+
+  @override
+  String get membershipTiersDescription =>
+      'Rename tiers and set member discounts';
+
+  @override
+  String get logIn => 'Log in';
+
+  @override
+  String get enterPhoneNumberToContinue =>
+      'Enter your phone number to continue';
+
+  @override
+  String get otpDemoHint => 'OTP is for demo only · enter 123456 to continue';
+
+  @override
+  String get havingTrouble => 'Having trouble?';
+
+  @override
+  String get useEmailInstead => 'Use email instead →';
+
+  @override
+  String get logInWithEmail => 'Log in with email';
+
+  @override
+  String get emailPlaceholder => 'you@example.com';
+
+  @override
+  String get enterYourPassword => 'Enter your password';
+
+  @override
+  String get takePhoto => 'Take a photo';
+
+  @override
+  String get chooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get removePhoto => 'Remove photo';
+
+  @override
+  String get tapToAddProfilePhoto => 'Tap to add profile photo';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get addUpiId => 'Add UPI ID';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get approve => 'Approve';
+
+  @override
+  String get decline => 'Decline';
+
+  @override
+  String get none => 'None';
+
+  @override
+  String get percent => 'Percent';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get paymentVerification => 'Payment Verification';
+
+  @override
+  String get verifyingPayment => 'Verifying Payment';
+
+  @override
+  String get paymentConfirmedExclamation => 'Payment Confirmed!';
+
+  @override
+  String get verificationTimedOut => 'Verification Timed Out';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String get payDues => 'Pay Dues';
+
+  @override
+  String get skipForNow => 'Skip for now';
+
+  @override
+  String get allDone => 'All Done!';
+
+  @override
+  String get noUpcomingAppointments => 'No upcoming appointments';
+
+  @override
+  String get myPay => 'My Pay';
+
+  @override
+  String get myPaymentQr => 'My Payment QR';
+
+  @override
+  String get showMyQr => 'Show my QR';
+
+  @override
+  String get noPaymentsYet => 'No payments yet';
+
+  @override
+  String get paymentHistory => 'Payment History';
+
+  @override
+  String get paymentHistory6Months => 'Payment History (6 months)';
+
+  @override
+  String get connectionRequest => 'Connection Request';
+
+  @override
+  String get vendorWantsToConnect => 'A vendor wants to connect';
+
+  @override
+  String get acceptRequest => 'Accept';
+
+  @override
+  String get declineRequest => 'Decline';
+
+  @override
+  String get messageLabel => 'Message';
+
+  @override
+  String get sendRequest => 'Send Request';
+
+  @override
+  String get requestSentNotification =>
+      'Request sent! They will be notified to confirm.';
+
+  @override
+  String get awaitingAcceptance => 'Awaiting Acceptance';
+
+  @override
+  String get addAVendor => 'Add a Vendor';
+
+  @override
+  String get findByPhoneOrEmail => 'Find by phone number or email';
+
+  @override
+  String get phoneOrEmail => 'Phone or email';
+
+  @override
+  String get phoneOrEmailHint => '10-digit mobile or email address';
+
+  @override
+  String get nicknameOptional => 'Nickname (optional)';
+
+  @override
+  String get howYouKnowVendor => 'How you know this vendor';
+
+  @override
+  String get bookingNoteExample => 'E.g. Need extra milk today';
+
+  @override
+  String get confirmLocation => 'Confirm Location';
+
+  @override
+  String get moveMapToSelectLocation => 'Move the map to select a location';
+
+  @override
+  String get searchPlaceHint => 'Search for a place…';
+
+  @override
+  String get mapAttribution => '© OpenStreetMap contributors';
+
+  @override
+  String get searchVendorsHint => 'Search vendors…';
+
+  @override
+  String get somethingWentWrong => 'Something went wrong';
+
+  @override
+  String get payViaUpi => 'Pay via UPI';
+
+  @override
+  String get connectWithVendor => 'Connect';
+
+  @override
+  String get requestConnection => 'Request Connection';
+
+  @override
+  String get addVendor => 'Add Vendor';
+
+  @override
+  String get noOutstandingBalances => 'No outstanding balances';
+
+  @override
+  String get allCustomersSettledUp => 'All customers are settled up.';
+
+  @override
+  String get nothingCollectedToday => 'Nothing collected today';
+
+  @override
+  String get paymentsWillAppearHere =>
+      'Payments received today will appear here.';
+
+  @override
+  String get customerReport => 'Customer Report';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get tapToStop => 'Tap to stop';
+
+  @override
+  String get itemName => 'Item name';
+
+  @override
+  String get itemNameExample => 'e.g. Milk';
+
+  @override
+  String get unitPrice => 'Unit Price ₹';
+
+  @override
+  String get deliverTo => 'Deliver to';
+
+  @override
+  String get bulkCharge => 'Bulk Charge';
+
+  @override
+  String get newProduct => 'New product';
+
+  @override
+  String get editProduct => 'Edit Product';
+
+  @override
+  String get newProductService => 'New Product / Service';
+
+  @override
+  String get updateProductDetails => 'Update name, unit or price';
+
+  @override
+  String get defineProduct => 'Define what you sell and its base price';
+
+  @override
+  String get productName => 'Product name';
+
+  @override
+  String get productNameExample => 'e.g. Daily Morning Milk';
+
+  @override
+  String get unit => 'Unit';
+
+  @override
+  String get unitExample => 'litre / kg / piece';
+
+  @override
+  String get pricePerUnit => 'Price / unit (₹)';
+
+  @override
+  String get deleteProduct => 'Delete product';
+
+  @override
+  String get deleteProductConfirmation => 'Delete product?';
+
+  @override
+  String removeProductConfirmation(String name) {
+    return 'Remove \"$name\" from your product list?';
+  }
+
+  @override
+  String get noProductsYet => 'No products yet';
+
+  @override
+  String get addFirstProduct => 'Add First Product';
+
+  @override
+  String get renameTier => 'Rename tier';
+
+  @override
+  String get tierName => 'Tier name';
+
+  @override
+  String tierLevel(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get memberDiscount => 'Member discount';
+
+  @override
+  String discountFor(String tier) {
+    return 'Discount for $tier';
+  }
+
+  @override
+  String get flatAmount => 'Flat ₹';
+
+  @override
+  String get discountPercent => 'Discount %';
+
+  @override
+  String get discountAmount => 'Discount amount (₹)';
+
+  @override
+  String get percentExample => 'e.g. 5';
+
+  @override
+  String get amountExample => 'e.g. 50';
+
+  @override
+  String get maxDiscountPerDue => 'Max discount per due (₹) — optional';
+
+  @override
+  String get maxDiscountExample => 'e.g. 100 (leave blank for no cap)';
+
+  @override
+  String get saveDiscount => 'Save discount';
+
+  @override
+  String get membership => 'Membership';
+
+  @override
+  String get setTier => 'Set';
+
+  @override
+  String get changeTier => 'Change';
+
+  @override
+  String get applyMembership => 'Apply';
+
+  @override
+  String get removeMembership => 'Remove membership';
+
+  @override
+  String get removeLedgerConfirmation => 'Remove ledger?';
+
+  @override
+  String get exportStatement => 'Export Statement';
+
+  @override
+  String get appAccess => 'App access';
 }

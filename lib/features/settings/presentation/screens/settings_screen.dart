@@ -35,12 +35,12 @@ class SettingsScreen extends StatelessWidget {
             children: [
               const _ProfileHeader(),
               const SizedBox(height: 24),
-              _SectionLabel(label: 'Account Information'),
+              _SectionLabel(label: l10n.accountInformation),
               const SizedBox(height: 8),
               _SettingsTile(
                 icon: Icons.person_outline_rounded,
                 title: l10n.editProfile,
-                subtitle: 'Update your name, photo and details',
+                subtitle: l10n.updateProfileDetails,
                 onTap: () {
                   final authState = context.read<AuthBloc>().state;
                   if (authState is AuthAuthenticated) {
@@ -52,13 +52,13 @@ class SettingsScreen extends StatelessWidget {
               _SettingsTile(
                 icon: Icons.lock_outline_rounded,
                 title: l10n.changePassword,
-                subtitle: 'Update your account password',
+                subtitle: l10n.updateAccountPassword,
                 onTap: () => context.push(AppRouter.changePassword),
               ),
               _SettingsTile(
                 icon: Icons.delete_outline_rounded,
-                title: 'Delete Account',
-                subtitle: 'Permanently delete your account and all data',
+                title: l10n.deleteAccount,
+                subtitle: l10n.deleteAccountSubtitle,
                 onTap: () => _confirmDeleteAccount(context),
                 isDanger: true,
               ),
@@ -85,8 +85,8 @@ class SettingsScreen extends StatelessWidget {
               ),
               _SettingsTile(
                 icon: Icons.workspace_premium_rounded,
-                title: 'Membership Tiers',
-                subtitle: 'Rename tiers and set member discounts',
+                title: l10n.membershipTiers,
+                subtitle: l10n.membershipTiersDescription,
                 onTap: () => context.push(AppRouter.membershipTiers),
               ),
               _SettingsTile(
@@ -101,7 +101,7 @@ class SettingsScreen extends StatelessWidget {
               _SettingsTile(
                 icon: Icons.description_outlined,
                 title: l10n.termsAndConditions,
-                subtitle: 'Read our terms of service',
+                subtitle: l10n.readTermsOfService,
                 onTap: () => context.push(
                   AppRouter.policy,
                   extra: {
@@ -113,7 +113,7 @@ class SettingsScreen extends StatelessWidget {
               _SettingsTile(
                 icon: Icons.privacy_tip_outlined,
                 title: l10n.privacyPolicy,
-                subtitle: 'How we handle your data',
+                subtitle: l10n.privacyPolicyDescription,
                 onTap: () => context.push(
                   AppRouter.policy,
                   extra: {
@@ -162,7 +162,7 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.logout),
-        content: const Text('Are you sure you want to log out?'),
+        content: Text(l10n.confirmLogout),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -184,18 +184,16 @@ class SettingsScreen extends StatelessWidget {
   }
 
   void _confirmDeleteAccount(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Account?'),
-        content: const Text(
-          'This will permanently delete your account and all your data. '
-          'This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteAccountConfirmation),
+        content: Text(l10n.deleteAccountConfirmationMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -205,7 +203,7 @@ class SettingsScreen extends StatelessWidget {
                   .add(const AuthDeleteAccountRequested());
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete Forever'),
+            child: Text(l10n.deleteForever),
           ),
         ],
       ),
@@ -322,8 +320,8 @@ class SettingsScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Done',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(l10n.done,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],

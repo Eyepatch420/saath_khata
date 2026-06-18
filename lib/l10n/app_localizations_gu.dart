@@ -910,4 +910,399 @@ class AppLocalizationsGu extends AppLocalizations {
   String accrueMonthSalaryConfirm(String name, String amount) {
     return '$name ની બાકીમાં આ મહિને ₹$amount ઉમેરવું?';
   }
+
+  @override
+  String get accountInformation => 'ખાતા માહિતી';
+
+  @override
+  String get updateProfileDetails => 'તમારું નામ, ફોટો અને વિગત અપડેટ કરો';
+
+  @override
+  String get updateAccountPassword => 'તમારો ખાતા પાસવર્ડ અપડેટ કરો';
+
+  @override
+  String get deleteAccount => 'ખાતું ભૂંસો';
+
+  @override
+  String get deleteAccountSubtitle => 'ખાતું અને બધો ડેટા કાયમ માટે ભૂંસો';
+
+  @override
+  String get deleteAccountConfirmation => 'ખાતું ભૂંસવું?';
+
+  @override
+  String get deleteAccountConfirmationMessage =>
+      'આ તમારું ખાતું અને બધો ડેટા કાયમ માટે ભૂંસી નાખશે. આ ક્રિયા ઉલટાવી શકાશે નહીં.';
+
+  @override
+  String get deleteAccountStaffWarning =>
+      'આ તમારું ખાતું કાયમ માટે ભૂંસી નાખશે. આ ઉલટાવી શકાશે નહીં.';
+
+  @override
+  String get deleteForever => 'કાયમ માટે ભૂંસો';
+
+  @override
+  String get delete => 'ભૂંસો';
+
+  @override
+  String get readTermsOfService => 'અમારી સેવા શરતો વાંચો';
+
+  @override
+  String get privacyPolicyDescription => 'અમે તમારો ડેટા કેવી રીતે સંભાળીએ છીએ';
+
+  @override
+  String get confirmLogout => 'શું તમે ખરેખર લૉગ આઉટ કરવા માંગો છો?';
+
+  @override
+  String get membershipTiers => 'સભ્યપદ સ્તર';
+
+  @override
+  String get membershipTiersDescription =>
+      'સ્તરોનું નામ બદલો અને સભ્ય ડિસ્કાઉન્ટ સેટ કરો';
+
+  @override
+  String get logIn => 'લૉગ ઇન';
+
+  @override
+  String get enterPhoneNumberToContinue => 'ચાલુ રાખવા ફોન નંબર દાખલ કરો';
+
+  @override
+  String get otpDemoHint =>
+      'OTP ફક્ત ડેમો માટે છે · ચાલુ રાખવા 123456 દાખલ કરો';
+
+  @override
+  String get havingTrouble => 'મુશ્કેલી છે?';
+
+  @override
+  String get useEmailInstead => 'ઈ-મેઇલ દ્વારા લૉગ ઇન →';
+
+  @override
+  String get logInWithEmail => 'ઈ-મેઇલ દ્વારા લૉગ ઇન';
+
+  @override
+  String get emailPlaceholder => 'you@example.com';
+
+  @override
+  String get enterYourPassword => 'પાસવર્ડ દાખલ કરો';
+
+  @override
+  String get takePhoto => 'ફોટો લો';
+
+  @override
+  String get chooseFromGallery => 'ગેલેરીમાંથી પસંદ કરો';
+
+  @override
+  String get removePhoto => 'ફોટો દૂર કરો';
+
+  @override
+  String get tapToAddProfilePhoto => 'પ્રોફાઇલ ફોટો ઉમેરવા ટૅપ કરો';
+
+  @override
+  String get camera => 'કૅમેરા';
+
+  @override
+  String get gallery => 'ગેલેરી';
+
+  @override
+  String get add => 'ઉમેરો';
+
+  @override
+  String get addUpiId => 'UPI ID ઉમેરો';
+
+  @override
+  String get save => 'સૅવ કરો';
+
+  @override
+  String get close => 'બંધ કરો';
+
+  @override
+  String get ok => 'ઠીક છે';
+
+  @override
+  String get remove => 'દૂર કરો';
+
+  @override
+  String get approve => 'મંજૂર કરો';
+
+  @override
+  String get decline => 'નકારો';
+
+  @override
+  String get none => 'કોઈ નહીં';
+
+  @override
+  String get percent => 'ટકા';
+
+  @override
+  String get profile => 'પ્રોફાઇલ';
+
+  @override
+  String get paymentVerification => 'ચુકવણી ચકાસણી';
+
+  @override
+  String get verifyingPayment => 'ચુકવણી ચકાસાઈ રહી છે';
+
+  @override
+  String get paymentConfirmedExclamation => 'ચુકવણી પુષ્ટિ!';
+
+  @override
+  String get verificationTimedOut => 'ચકાસણીનો સમય સમાપ્ત';
+
+  @override
+  String get goBack => 'પાછળ જાઓ';
+
+  @override
+  String get payDues => 'બાકી ચૂકવો';
+
+  @override
+  String get skipForNow => 'હમણા છોડો';
+
+  @override
+  String get allDone => 'બધું થઈ ગયું!';
+
+  @override
+  String get noUpcomingAppointments => 'કોઈ આગામી મુલાકાત નથી';
+
+  @override
+  String get myPay => 'મારો પગાર';
+
+  @override
+  String get myPaymentQr => 'મારો ચુકવણી QR';
+
+  @override
+  String get showMyQr => 'મારો QR બતાવો';
+
+  @override
+  String get noPaymentsYet => 'હજુ કોઈ ચુકવણી નથી';
+
+  @override
+  String get paymentHistory => 'ચુકવણી ઇતિહાસ';
+
+  @override
+  String get paymentHistory6Months => 'ચુકવણી ઇતિહાસ (6 મહિના)';
+
+  @override
+  String get connectionRequest => 'કનેક્શન વિનંતી';
+
+  @override
+  String get vendorWantsToConnect => 'એક વિક્રેતા જોડવા ઇચ્છે છે';
+
+  @override
+  String get acceptRequest => 'સ્વીકારો';
+
+  @override
+  String get declineRequest => 'નકારો';
+
+  @override
+  String get messageLabel => 'સંદેશ';
+
+  @override
+  String get sendRequest => 'વિનંતી મોકલો';
+
+  @override
+  String get requestSentNotification =>
+      'વિનંતી મોકલી! તેમને પુષ્ટિ માટે જાણ કરાશે.';
+
+  @override
+  String get awaitingAcceptance => 'સ્વીકૃતિ રાહ';
+
+  @override
+  String get addAVendor => 'વિક્રેતા ઉમેરો';
+
+  @override
+  String get findByPhoneOrEmail => 'ફોન નંબર અથવા ઈ-મેઇલ દ્વારા શોધો';
+
+  @override
+  String get phoneOrEmail => 'ફોન અથવા ઈ-મેઇલ';
+
+  @override
+  String get phoneOrEmailHint => '10 અંક મોબાઇલ અથવા ઈ-મેઇલ સરનામું';
+
+  @override
+  String get nicknameOptional => 'ઉપનામ (વૈકલ્પિક)';
+
+  @override
+  String get howYouKnowVendor => 'તમે આ વિક્રેતાને કેવી રીતે ઓળખો છો';
+
+  @override
+  String get bookingNoteExample => 'દા.ત. આજે વધારાનું દૂધ જોઈએ';
+
+  @override
+  String get confirmLocation => 'સ્થાન પુષ્ટિ કરો';
+
+  @override
+  String get moveMapToSelectLocation => 'સ્થાન પસંદ કરવા નકશો ખસેડો';
+
+  @override
+  String get searchPlaceHint => 'કોઈ સ્થળ શોધો…';
+
+  @override
+  String get mapAttribution => '© OpenStreetMap contributors';
+
+  @override
+  String get searchVendorsHint => 'વિક્રેતા શોધો…';
+
+  @override
+  String get somethingWentWrong => 'કંઈક ખોટું ગયું';
+
+  @override
+  String get payViaUpi => 'UPI થી ચૂકવો';
+
+  @override
+  String get connectWithVendor => 'જોડો';
+
+  @override
+  String get requestConnection => 'કનેક્શન વિનંતી';
+
+  @override
+  String get addVendor => 'વિક્રેતા ઉમેરો';
+
+  @override
+  String get noOutstandingBalances => 'કોઈ બાકી રકમ નથી';
+
+  @override
+  String get allCustomersSettledUp => 'બધા ગ્રાહકોનો હિસાબ ચૂકતો છે.';
+
+  @override
+  String get nothingCollectedToday => 'આજે કંઈ ઉઘરાયું નથી';
+
+  @override
+  String get paymentsWillAppearHere => 'આજે મળેલ ચુકવણી અહીં દેખાશે.';
+
+  @override
+  String get customerReport => 'ગ્રાહક અહેવાલ';
+
+  @override
+  String get overview => 'ઝલક';
+
+  @override
+  String get tapToStop => 'થોભવા ટૅપ કરો';
+
+  @override
+  String get itemName => 'વસ્તુનું નામ';
+
+  @override
+  String get itemNameExample => 'દા.ત. દૂધ';
+
+  @override
+  String get unitPrice => 'પ્રતિ એકમ ભાવ ₹';
+
+  @override
+  String get deliverTo => 'ડિલિવરી કરો';
+
+  @override
+  String get bulkCharge => 'બલ્ક ચાર્જ';
+
+  @override
+  String get newProduct => 'નવી વસ્તુ';
+
+  @override
+  String get editProduct => 'વસ્તુ સંપાદિત કરો';
+
+  @override
+  String get newProductService => 'નવી વસ્તુ / સેવા';
+
+  @override
+  String get updateProductDetails => 'નામ, એકમ અથવા ભાવ અપડેટ કરો';
+
+  @override
+  String get defineProduct => 'તમે શું વેચો છો અને તેનો ભાવ નક્કી કરો';
+
+  @override
+  String get productName => 'વસ્તુનું નામ';
+
+  @override
+  String get productNameExample => 'દા.ત. સવારનું દૂધ';
+
+  @override
+  String get unit => 'એકમ';
+
+  @override
+  String get unitExample => 'લીટર / કિલો / ટુકડો';
+
+  @override
+  String get pricePerUnit => 'પ્રતિ એકમ ભાવ (₹)';
+
+  @override
+  String get deleteProduct => 'વસ્તુ ભૂંસો';
+
+  @override
+  String get deleteProductConfirmation => 'વસ્તુ ભૂંસવી?';
+
+  @override
+  String removeProductConfirmation(String name) {
+    return 'Remove \"$name\" from your product list?';
+  }
+
+  @override
+  String get noProductsYet => 'હજુ કોઈ વસ્તુ નથી';
+
+  @override
+  String get addFirstProduct => 'પ્રથમ વસ્તુ ઉમેરો';
+
+  @override
+  String get renameTier => 'સ્તરનું નામ બદલો';
+
+  @override
+  String get tierName => 'સ્તરનું નામ';
+
+  @override
+  String tierLevel(int level) {
+    return 'Level $level';
+  }
+
+  @override
+  String get memberDiscount => 'સભ્ય ડિસ્કાઉન્ટ';
+
+  @override
+  String discountFor(String tier) {
+    return 'Discount for $tier';
+  }
+
+  @override
+  String get flatAmount => 'ફ્લૅટ ₹';
+
+  @override
+  String get discountPercent => 'ડિસ્કાઉન્ટ %';
+
+  @override
+  String get discountAmount => 'ડિસ્કાઉન્ટ રકમ (₹)';
+
+  @override
+  String get percentExample => 'દા.ત. 5';
+
+  @override
+  String get amountExample => 'દા.ત. 50';
+
+  @override
+  String get maxDiscountPerDue => 'પ્રતિ બાકી મહત્તમ ડિસ્કાઉન્ટ (₹) — વૈકલ્પિક';
+
+  @override
+  String get maxDiscountExample => 'દા.ત. 100 (મર્યાદા ન હોય તો ખાલી છોડો)';
+
+  @override
+  String get saveDiscount => 'ડિસ્કાઉન્ટ સૅવ કરો';
+
+  @override
+  String get membership => 'સભ્યપદ';
+
+  @override
+  String get setTier => 'સેટ કરો';
+
+  @override
+  String get changeTier => 'બદલો';
+
+  @override
+  String get applyMembership => 'લાગુ કરો';
+
+  @override
+  String get removeMembership => 'સભ્યપદ દૂર કરો';
+
+  @override
+  String get removeLedgerConfirmation => 'ખાતું દૂર કરવું?';
+
+  @override
+  String get exportStatement => 'સ્ટેટમેન્ટ નિકાસ કરો';
+
+  @override
+  String get appAccess => 'ઍપ ઍક્સેસ';
 }

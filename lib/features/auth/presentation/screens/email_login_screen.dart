@@ -5,6 +5,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../core/widgets/primary_button.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -35,23 +36,34 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
     final password = _passwordController.text;
 
     if (!RegExp(r'^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
-      AppToast.show(context, 'Enter a valid email address', type: ToastType.warning);
+      AppToast.show(
+        context,
+        'Enter a valid email address',
+        type: ToastType.warning,
+      );
       return;
     }
     if (password.isEmpty) {
-      AppToast.show(context, 'Please enter your password', type: ToastType.warning);
+      AppToast.show(
+        context,
+        'Please enter your password',
+        type: ToastType.warning,
+      );
       return;
     }
 
-    context.read<AuthBloc>().add(AuthEmailLoginRequested(
-      email: email,
-      password: password,
-      role: widget.role,
-    ));
+    context.read<AuthBloc>().add(
+      AuthEmailLoginRequested(
+        email: email,
+        password: password,
+        role: widget.role,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isVendor = widget.role == 'vendor';
     final roleColor = isVendor ? AppColors.primary : AppColors.customerAccent;
     final roleLabel = isVendor ? 'Vendor' : 'Customer';
@@ -76,11 +88,18 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   const SizedBox(height: 16),
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: Icon(Icons.arrow_back, size: 24, color: cs.onSurface),
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 24,
+                      color: cs.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 28),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: roleColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
@@ -94,28 +113,29 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text('Log in with email',
-                      style: AppTypography.h1.copyWith(color: cs.onSurface)),
+                  Text(
+                    l10n.logInWithEmail,
+                    style: AppTypography.h1.copyWith(color: cs.onSurface),
+                  ),
                   const SizedBox(height: 6),
                   Text(
-                    'Enter your email and password to continue',
-                    style: AppTypography.bodyMedium
-                        .copyWith(color: AppColors.textSecondary),
+                    l10n.enterMobile,
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 32),
-                  // Email field
                   _InputField(
                     controller: _emailController,
-                    hintText: 'you@example.com',
+                    hintText: l10n.emailPlaceholder,
                     prefixIcon: Icons.email_outlined,
                     keyboardType: TextInputType.emailAddress,
                     enabled: !isLoading,
                   ),
                   const SizedBox(height: 12),
-                  // Password field
                   _InputField(
                     controller: _passwordController,
-                    hintText: 'Password',
+                    hintText: l10n.password,
                     prefixIcon: Icons.lock_outline_rounded,
                     obscureText: _obscurePassword,
                     enabled: !isLoading,
@@ -133,7 +153,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   ),
                   const SizedBox(height: 24),
                   PrimaryButton(
-                    label: 'Log in',
+                    label: l10n.logIn,
                     isLoading: isLoading,
                     onPressed: isLoading ? null : () => _submit(context),
                   ),
@@ -143,9 +163,9 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       onTap: isLoading
                           ? null
                           : () => context.pushReplacement(
-                                AppRouter.phoneEntry,
-                                extra: widget.role,
-                              ),
+                              AppRouter.phoneEntry,
+                              extra: widget.role,
+                            ),
                       child: RichText(
                         text: TextSpan(
                           text: 'Use phone number instead → ',
@@ -163,8 +183,9 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       'You need a password set on your account to use this.\n'
                       'Set one from Settings → Change Password.',
                       textAlign: TextAlign.center,
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textHint),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textHint,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -213,9 +234,10 @@ class _InputField extends StatelessWidget {
           Icon(prefixIcon, size: 20, color: AppColors.textSecondary),
           const SizedBox(width: 10),
           Container(
-              width: 1,
-              height: 24,
-              color: isDark ? Colors.white24 : AppColors.divider),
+            width: 1,
+            height: 24,
+            color: isDark ? Colors.white24 : AppColors.divider,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
@@ -226,17 +248,17 @@ class _InputField extends StatelessWidget {
               style: AppTypography.bodyMedium.copyWith(color: cs.onSurface),
               decoration: InputDecoration(
                 hintText: hintText,
-                hintStyle: AppTypography.bodyMedium
-                    .copyWith(color: AppColors.textHint),
+                hintStyle: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textHint,
+                ),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(vertical: 16),
               ),
             ),
           ),
-          if (suffixIcon != null) suffixIcon!,
+          ?suffixIcon,
           const SizedBox(width: 4),
         ],
       ),

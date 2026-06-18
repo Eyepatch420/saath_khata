@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../shared/models/ledger_entry.dart';
@@ -188,10 +189,10 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
               TextField(
                 controller: _itemCtrl,
                 textCapitalization: TextCapitalization.words,
-                decoration: const InputDecoration(
-                  labelText: 'Item name',
-                  hintText: 'e.g. Milk',
-                  prefixIcon: Icon(Icons.inventory_2_outlined),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.itemName,
+                  hintText: AppLocalizations.of(context)!.itemNameExample,
+                  prefixIcon: const Icon(Icons.inventory_2_outlined),
                 ),
               ),
               const SizedBox(height: 14),
@@ -214,9 +215,9 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                       controller: _priceCtrl,
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Unit Price ₹',
-                        prefixIcon: Icon(Icons.currency_rupee_rounded),
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(context)!.unitPrice,
+                        prefixIcon: const Icon(Icons.currency_rupee_rounded),
                       ),
                     ),
                   ),
@@ -301,9 +302,9 @@ class _CustomerDropdown extends StatelessWidget {
     return DropdownButtonFormField<CustomerLinkItem>(
       initialValue: selected,
       isExpanded: true,
-      decoration: const InputDecoration(
-        labelText: 'Deliver to',
-        prefixIcon: Icon(Icons.person_search_rounded),
+      decoration: InputDecoration(
+        labelText: AppLocalizations.of(context)!.deliverTo,
+        prefixIcon: const Icon(Icons.person_search_rounded),
       ),
       items: customers
           .map((c) => DropdownMenuItem(

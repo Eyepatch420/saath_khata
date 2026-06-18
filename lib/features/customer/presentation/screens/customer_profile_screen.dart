@@ -26,7 +26,7 @@ class CustomerProfileScreen extends StatelessWidget {
       builder: (context, state) {
         final user = state is AuthAuthenticated ? state.user : null;
         return Scaffold(
-          appBar: AppBar(title: const Text('Profile')),
+          appBar: AppBar(title: Text(l10n.profile)),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(
@@ -36,7 +36,7 @@ class CustomerProfileScreen extends StatelessWidget {
                 children: [
                   _buildAvatarSection(context, user),
                   const SizedBox(height: 32),
-                  _SectionHeader(label: 'Account Information'),
+                  _SectionHeader(label: l10n.accountInformation),
                   const SizedBox(height: 8),
                   _ProfileItem(
                     icon: Icons.person_outline_rounded,
@@ -52,7 +52,7 @@ class CustomerProfileScreen extends StatelessWidget {
                   ),
                   _ProfileItem(
                     icon: Icons.delete_outline_rounded,
-                    title: 'Delete Account',
+                    title: l10n.deleteAccount,
                     onTap: () => _confirmDeleteAccount(context),
                     isDanger: true,
                   ),
@@ -258,8 +258,8 @@ class CustomerProfileScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: const Text('Done',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: Text(l10n.done,
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -299,7 +299,7 @@ class CustomerProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
@@ -307,18 +307,16 @@ class CustomerProfileScreen extends StatelessWidget {
   }
 
   void _confirmDeleteAccount(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Account?'),
-        content: const Text(
-          'This will permanently delete your account and all your data. '
-          'This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteAccountConfirmation),
+        content: Text(l10n.deleteAccountConfirmationMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -328,7 +326,7 @@ class CustomerProfileScreen extends StatelessWidget {
                   .add(const AuthDeleteAccountRequested());
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete Forever'),
+            child: Text(l10n.deleteForever),
           ),
         ],
       ),
@@ -340,7 +338,7 @@ class CustomerProfileScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.logout),
-        content: const Text('Are you sure you want to log out?'),
+        content: Text(l10n.confirmLogout),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),

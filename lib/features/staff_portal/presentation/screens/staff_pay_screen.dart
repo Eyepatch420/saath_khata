@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
@@ -21,7 +22,7 @@ class StaffPayScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Pay'),
+        title: Text(AppLocalizations.of(context)!.myPay),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -37,13 +38,13 @@ class StaffPayScreen extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'delete',
                 child: ListTile(
-                  leading: Icon(Icons.delete_forever_rounded,
+                  leading: const Icon(Icons.delete_forever_rounded,
                       color: AppColors.error),
-                  title: Text('Delete Account',
-                      style: TextStyle(color: AppColors.error)),
+                  title: Text(AppLocalizations.of(context)!.deleteAccount,
+                      style: const TextStyle(color: AppColors.error)),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -75,7 +76,7 @@ class StaffPayScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _QrCard(me: me),
                   const SizedBox(height: 24),
-                  Text('Payment History', style: AppTypography.h3),
+                  Text(AppLocalizations.of(context)!.paymentHistory, style: AppTypography.h3),
                   const SizedBox(height: 8),
                   const _SalaryHistory(),
                 ],
@@ -88,19 +89,17 @@ class StaffPayScreen extends StatelessWidget {
   }
 
   void _confirmDeleteAccount(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       useRootNavigator: true,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Account?'),
-        content: const Text(
-          'This will permanently delete your account and all your data. '
-          'This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteAccountConfirmation),
+        content: Text(l10n.deleteAccountStaffWarning),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -110,7 +109,7 @@ class StaffPayScreen extends StatelessWidget {
                   .add(const AuthDeleteAccountRequested());
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete Forever'),
+            child: Text(l10n.deleteForever),
           ),
         ],
       ),
@@ -263,7 +262,7 @@ class _QrCardState extends State<_QrCard> {
               TextButton(
                 onPressed: () =>
                     Navigator.of(dialogCtx, rootNavigator: true).pop(),
-                child: const Text('Close'),
+                child: Text(AppLocalizations.of(context)!.close),
               ),
             ],
           ),
@@ -289,7 +288,7 @@ class _QrCardState extends State<_QrCard> {
             children: [
               const Icon(Icons.qr_code_2_rounded, color: AppColors.primary),
               const SizedBox(width: 10),
-              Text('My Payment QR', style: AppTypography.labelLarge),
+              Text(AppLocalizations.of(context)!.myPaymentQr, style: AppTypography.labelLarge),
             ],
           ),
           const SizedBox(height: 4),
@@ -305,7 +304,7 @@ class _QrCardState extends State<_QrCard> {
                 child: OutlinedButton.icon(
                   onPressed: qr == null ? null : () => _showQr(qr),
                   icon: const Icon(Icons.visibility_rounded, size: 18),
-                  label: const Text('Show my QR'),
+                  label: Text(AppLocalizations.of(context)!.showMyQr),
                 ),
               ),
               const SizedBox(width: 12),
@@ -367,7 +366,7 @@ class _SalaryHistoryState extends State<_SalaryHistory> {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 24),
             child: Center(
-              child: Text('No payments yet',
+              child: Text(AppLocalizations.of(context)!.noPaymentsYet,
                   style: AppTypography.bodyMedium
                       .copyWith(color: AppColors.textHint)),
             ),

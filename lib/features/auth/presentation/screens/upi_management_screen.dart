@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../data/models/upi_id_model.dart';
@@ -98,8 +99,8 @@ class _UpiManagementScreenState extends State<UpiManagementScreen> {
                 ));
               });
             },
-            child: const Text('Add',
-                style: TextStyle(color: AppColors.primary)),
+            child: Text(AppLocalizations.of(context)!.add,
+                style: const TextStyle(color: AppColors.primary)),
           ),
         ],
       ),
@@ -234,7 +235,7 @@ class _UpiManagementScreenState extends State<UpiManagementScreen> {
                   child: OutlinedButton.icon(
                     onPressed: _showAddDialog,
                     icon: const Icon(Icons.add_rounded),
-                    label: const Text('Add UPI ID'),
+                    label: Text(AppLocalizations.of(context)!.addUpiId),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),

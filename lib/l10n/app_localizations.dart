@@ -1815,6 +1815,774 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add ₹{amount} to {name}\'s unpaid balance for this month?'**
   String accrueMonthSalaryConfirm(String name, String amount);
+
+  /// No description provided for @accountInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Information'**
+  String get accountInformation;
+
+  /// No description provided for @updateProfileDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your name, photo and details'**
+  String get updateProfileDetails;
+
+  /// No description provided for @updateAccountPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Update your account password'**
+  String get updateAccountPassword;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete your account and all data'**
+  String get deleteAccountSubtitle;
+
+  /// No description provided for @deleteAccountConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account?'**
+  String get deleteAccountConfirmation;
+
+  /// No description provided for @deleteAccountConfirmationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete your account and all your data. This action cannot be undone.'**
+  String get deleteAccountConfirmationMessage;
+
+  /// No description provided for @deleteAccountStaffWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This will permanently delete your account. This cannot be undone.'**
+  String get deleteAccountStaffWarning;
+
+  /// No description provided for @deleteForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Forever'**
+  String get deleteForever;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @readTermsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Read our terms of service'**
+  String get readTermsOfService;
+
+  /// No description provided for @privacyPolicyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'How we handle your data'**
+  String get privacyPolicyDescription;
+
+  /// No description provided for @confirmLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get confirmLogout;
+
+  /// No description provided for @membershipTiers.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership Tiers'**
+  String get membershipTiers;
+
+  /// No description provided for @membershipTiersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename tiers and set member discounts'**
+  String get membershipTiersDescription;
+
+  /// No description provided for @logIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in'**
+  String get logIn;
+
+  /// No description provided for @enterPhoneNumberToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your phone number to continue'**
+  String get enterPhoneNumberToContinue;
+
+  /// No description provided for @otpDemoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP is for demo only · enter 123456 to continue'**
+  String get otpDemoHint;
+
+  /// No description provided for @havingTrouble.
+  ///
+  /// In en, this message translates to:
+  /// **'Having trouble?'**
+  String get havingTrouble;
+
+  /// No description provided for @useEmailInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Use email instead →'**
+  String get useEmailInstead;
+
+  /// No description provided for @logInWithEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in with email'**
+  String get logInWithEmail;
+
+  /// No description provided for @emailPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'you@example.com'**
+  String get emailPlaceholder;
+
+  /// No description provided for @enterYourPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get enterYourPassword;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @removePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get removePhoto;
+
+  /// No description provided for @tapToAddProfilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add profile photo'**
+  String get tapToAddProfilePhoto;
+
+  /// No description provided for @camera.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get camera;
+
+  /// No description provided for @gallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get gallery;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @addUpiId.
+  ///
+  /// In en, this message translates to:
+  /// **'Add UPI ID'**
+  String get addUpiId;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @approve.
+  ///
+  /// In en, this message translates to:
+  /// **'Approve'**
+  String get approve;
+
+  /// No description provided for @decline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get decline;
+
+  /// No description provided for @none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get none;
+
+  /// No description provided for @percent.
+  ///
+  /// In en, this message translates to:
+  /// **'Percent'**
+  String get percent;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @paymentVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Verification'**
+  String get paymentVerification;
+
+  /// No description provided for @verifyingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying Payment'**
+  String get verifyingPayment;
+
+  /// No description provided for @paymentConfirmedExclamation.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Confirmed!'**
+  String get paymentConfirmedExclamation;
+
+  /// No description provided for @verificationTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification Timed Out'**
+  String get verificationTimedOut;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @payDues.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Dues'**
+  String get payDues;
+
+  /// No description provided for @skipForNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get skipForNow;
+
+  /// No description provided for @allDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All Done!'**
+  String get allDone;
+
+  /// No description provided for @noUpcomingAppointments.
+  ///
+  /// In en, this message translates to:
+  /// **'No upcoming appointments'**
+  String get noUpcomingAppointments;
+
+  /// No description provided for @myPay.
+  ///
+  /// In en, this message translates to:
+  /// **'My Pay'**
+  String get myPay;
+
+  /// No description provided for @myPaymentQr.
+  ///
+  /// In en, this message translates to:
+  /// **'My Payment QR'**
+  String get myPaymentQr;
+
+  /// No description provided for @showMyQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Show my QR'**
+  String get showMyQr;
+
+  /// No description provided for @noPaymentsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet'**
+  String get noPaymentsYet;
+
+  /// No description provided for @paymentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment History'**
+  String get paymentHistory;
+
+  /// No description provided for @paymentHistory6Months.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment History (6 months)'**
+  String get paymentHistory6Months;
+
+  /// No description provided for @connectionRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection Request'**
+  String get connectionRequest;
+
+  /// No description provided for @vendorWantsToConnect.
+  ///
+  /// In en, this message translates to:
+  /// **'A vendor wants to connect'**
+  String get vendorWantsToConnect;
+
+  /// No description provided for @acceptRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptRequest;
+
+  /// No description provided for @declineRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get declineRequest;
+
+  /// No description provided for @messageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get messageLabel;
+
+  /// No description provided for @sendRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get sendRequest;
+
+  /// No description provided for @requestSentNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent! They will be notified to confirm.'**
+  String get requestSentNotification;
+
+  /// No description provided for @awaitingAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting Acceptance'**
+  String get awaitingAcceptance;
+
+  /// No description provided for @addAVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a Vendor'**
+  String get addAVendor;
+
+  /// No description provided for @findByPhoneOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Find by phone number or email'**
+  String get findByPhoneOrEmail;
+
+  /// No description provided for @phoneOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone or email'**
+  String get phoneOrEmail;
+
+  /// No description provided for @phoneOrEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'10-digit mobile or email address'**
+  String get phoneOrEmailHint;
+
+  /// No description provided for @nicknameOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname (optional)'**
+  String get nicknameOptional;
+
+  /// No description provided for @howYouKnowVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'How you know this vendor'**
+  String get howYouKnowVendor;
+
+  /// No description provided for @bookingNoteExample.
+  ///
+  /// In en, this message translates to:
+  /// **'E.g. Need extra milk today'**
+  String get bookingNoteExample;
+
+  /// No description provided for @confirmLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get confirmLocation;
+
+  /// No description provided for @moveMapToSelectLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Move the map to select a location'**
+  String get moveMapToSelectLocation;
+
+  /// No description provided for @searchPlaceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for a place…'**
+  String get searchPlaceHint;
+
+  /// No description provided for @mapAttribution.
+  ///
+  /// In en, this message translates to:
+  /// **'© OpenStreetMap contributors'**
+  String get mapAttribution;
+
+  /// No description provided for @searchVendorsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search vendors…'**
+  String get searchVendorsHint;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get somethingWentWrong;
+
+  /// No description provided for @payViaUpi.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay via UPI'**
+  String get payViaUpi;
+
+  /// No description provided for @connectWithVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect'**
+  String get connectWithVendor;
+
+  /// No description provided for @requestConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Connection'**
+  String get requestConnection;
+
+  /// No description provided for @addVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vendor'**
+  String get addVendor;
+
+  /// No description provided for @noOutstandingBalances.
+  ///
+  /// In en, this message translates to:
+  /// **'No outstanding balances'**
+  String get noOutstandingBalances;
+
+  /// No description provided for @allCustomersSettledUp.
+  ///
+  /// In en, this message translates to:
+  /// **'All customers are settled up.'**
+  String get allCustomersSettledUp;
+
+  /// No description provided for @nothingCollectedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing collected today'**
+  String get nothingCollectedToday;
+
+  /// No description provided for @paymentsWillAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments received today will appear here.'**
+  String get paymentsWillAppearHere;
+
+  /// No description provided for @customerReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer Report'**
+  String get customerReport;
+
+  /// No description provided for @overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overview;
+
+  /// No description provided for @tapToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to stop'**
+  String get tapToStop;
+
+  /// No description provided for @itemName.
+  ///
+  /// In en, this message translates to:
+  /// **'Item name'**
+  String get itemName;
+
+  /// No description provided for @itemNameExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Milk'**
+  String get itemNameExample;
+
+  /// No description provided for @unitPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit Price ₹'**
+  String get unitPrice;
+
+  /// No description provided for @deliverTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver to'**
+  String get deliverTo;
+
+  /// No description provided for @bulkCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk Charge'**
+  String get bulkCharge;
+
+  /// No description provided for @newProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'New product'**
+  String get newProduct;
+
+  /// No description provided for @editProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Product'**
+  String get editProduct;
+
+  /// No description provided for @newProductService.
+  ///
+  /// In en, this message translates to:
+  /// **'New Product / Service'**
+  String get newProductService;
+
+  /// No description provided for @updateProductDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Update name, unit or price'**
+  String get updateProductDetails;
+
+  /// No description provided for @defineProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Define what you sell and its base price'**
+  String get defineProduct;
+
+  /// No description provided for @productName.
+  ///
+  /// In en, this message translates to:
+  /// **'Product name'**
+  String get productName;
+
+  /// No description provided for @productNameExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Daily Morning Milk'**
+  String get productNameExample;
+
+  /// No description provided for @unit.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unit;
+
+  /// No description provided for @unitExample.
+  ///
+  /// In en, this message translates to:
+  /// **'litre / kg / piece'**
+  String get unitExample;
+
+  /// No description provided for @pricePerUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Price / unit (₹)'**
+  String get pricePerUnit;
+
+  /// No description provided for @deleteProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete product'**
+  String get deleteProduct;
+
+  /// No description provided for @deleteProductConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete product?'**
+  String get deleteProductConfirmation;
+
+  /// No description provided for @removeProductConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove \"{name}\" from your product list?'**
+  String removeProductConfirmation(String name);
+
+  /// No description provided for @noProductsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No products yet'**
+  String get noProductsYet;
+
+  /// No description provided for @addFirstProduct.
+  ///
+  /// In en, this message translates to:
+  /// **'Add First Product'**
+  String get addFirstProduct;
+
+  /// No description provided for @renameTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Rename tier'**
+  String get renameTier;
+
+  /// No description provided for @tierName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tier name'**
+  String get tierName;
+
+  /// No description provided for @tierLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level {level}'**
+  String tierLevel(int level);
+
+  /// No description provided for @memberDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Member discount'**
+  String get memberDiscount;
+
+  /// No description provided for @discountFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount for {tier}'**
+  String discountFor(String tier);
+
+  /// No description provided for @flatAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Flat ₹'**
+  String get flatAmount;
+
+  /// No description provided for @discountPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount %'**
+  String get discountPercent;
+
+  /// No description provided for @discountAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount amount (₹)'**
+  String get discountAmount;
+
+  /// No description provided for @percentExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 5'**
+  String get percentExample;
+
+  /// No description provided for @amountExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 50'**
+  String get amountExample;
+
+  /// No description provided for @maxDiscountPerDue.
+  ///
+  /// In en, this message translates to:
+  /// **'Max discount per due (₹) — optional'**
+  String get maxDiscountPerDue;
+
+  /// No description provided for @maxDiscountExample.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 100 (leave blank for no cap)'**
+  String get maxDiscountExample;
+
+  /// No description provided for @saveDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Save discount'**
+  String get saveDiscount;
+
+  /// No description provided for @membership.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership'**
+  String get membership;
+
+  /// No description provided for @setTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Set'**
+  String get setTier;
+
+  /// No description provided for @changeTier.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeTier;
+
+  /// No description provided for @applyMembership.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyMembership;
+
+  /// No description provided for @removeMembership.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove membership'**
+  String get removeMembership;
+
+  /// No description provided for @removeLedgerConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove ledger?'**
+  String get removeLedgerConfirmation;
+
+  /// No description provided for @exportStatement.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Statement'**
+  String get exportStatement;
+
+  /// No description provided for @appAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'App access'**
+  String get appAccess;
 }
 
 class _AppLocalizationsDelegate

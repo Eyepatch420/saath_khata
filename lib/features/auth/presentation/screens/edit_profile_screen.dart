@@ -13,6 +13,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../shared/models/location_model.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/location_picker_tile.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/models/user_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
@@ -91,20 +92,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_rounded),
-              title: const Text('Camera'),
+              title: Text(AppLocalizations.of(context)!.camera),
               onTap: () => _pickImage(ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_rounded),
-              title: const Text('Gallery'),
+              title: Text(AppLocalizations.of(context)!.gallery),
               onTap: () => _pickImage(ImageSource.gallery),
             ),
             if (_pickedImage != null || widget.user.profilePhotoUrl != null)
               ListTile(
                 leading: const Icon(Icons.delete_outline_rounded,
                     color: AppColors.error),
-                title: const Text('Remove photo',
-                    style: TextStyle(color: AppColors.error)),
+                title: Text(AppLocalizations.of(context)!.removePhoto,
+                    style: const TextStyle(color: AppColors.error)),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() => _pickedImage = null);

@@ -1,9 +1,7 @@
 {
   "@@locale": "pa",
-
   "appTitle": "ਸਾਥਖਾਤਾ",
   "tagline": "ਇੱਕ ਖਾਤਾ, ਦੋਵਾਂ ਦਾ",
-
   "onboarding1Title": "ਦੋ-ਪੱਖੀ ਸਾਂਝਾ ਖਾਤਾ",
   "onboarding1Subtitle": "ਵਿਕ੍ਰੇਤਾ ਅਤੇ ਗਾਹਕ ਦੋਵਾਂ ਲਈ ਇੱਕੋ ਖਾਤਾ। ਦੋਵੇਂ ਇੱਕੋ ਸੱਚ ਦੇਖਦੇ ਹਨ।",
   "onboarding2Title": "ਆਵਾਜ਼ ਅਤੇ ਬਿੱਲ OCR",
@@ -13,7 +11,6 @@
   "getStarted": "ਸ਼ੁਰੂ ਕਰੋ",
   "next": "ਅਗਲਾ",
   "skip": "ਛੱਡੋ",
-
   "chooseLanguage": "ਆਪਣੀ ਭਾਸ਼ਾ ਚੁਣੋ",
   "continueButton": "ਜਾਰੀ ਰੱਖੋ",
   "chooseRole": "ਆਪਣੀ ਭੂਮਿਕਾ ਚੁਣੋ",
@@ -25,7 +22,6 @@
   "vendorRoleSubtitle": "ਕਾਰੋਬਾਰ ਦਾ ਖਾਤਾ, ਕਰਮਚਾਰੀ ਪ੍ਰਬੰਧਿਤ ਕਰੋ ਅਤੇ ਭੁਗਤਾਨ ਲਓ।",
   "customerRoleTitle": "ਮੈਂ ਗਾਹਕ ਹਾਂ",
   "customerRoleSubtitle": "ਵਿਕ੍ਰੇਤਾਵਾਂ ਨਾਲ ਖਾਤਾ ਟ੍ਰੈਕ ਕਰੋ ਅਤੇ UPI ਨਾਲ ਭੁਗਤਾਨ ਕਰੋ।",
-
   "loginTitle": "ਸਾਥਖਾਤਾ ਵਿੱਚ ਲੌਗਇਨ ਕਰੋ",
   "enterMobile": "ਜਾਰੀ ਰੱਖਣ ਲਈ ਆਪਣੀ ਜਾਣਕਾਰੀ ਦਰਜ ਕਰੋ",
   "mobileNumber": "ਮੋਬਾਈਲ ਨੰਬਰ",
@@ -34,7 +30,13 @@
   "verifyAndContinue": "ਤਸਦੀਕ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ",
   "changePhoneNumber": "ਫ਼ੋਨ ਨੰਬਰ ਬਦਲੋ",
   "otpSentTo": "+91 {phoneNumber} 'ਤੇ ਭੇਜਿਆ 6 ਅੰਕਾਂ ਦਾ ਕੋਡ ਦਰਜ ਕਰੋ",
-  "@otpSentTo": { "placeholders": { "phoneNumber": { "type": "String" } } },
+  "@otpSentTo": {
+    "placeholders": {
+      "phoneNumber": {
+        "type": "String"
+      }
+    }
+  },
   "email": "ਈਮੇਲ",
   "password": "ਪਾਸਵਰਡ",
   "passwordHint": "ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ",
@@ -44,7 +46,6 @@
   "pleaseEnterCredentials": "ਈਮੇਲ ਅਤੇ ਪਾਸਵਰਡ ਦਰਜ ਕਰੋ",
   "fillRequiredFields": "ਨਾਮ, ਈਮੇਲ ਅਤੇ ਪਾਸਵਰਡ ਭਰੋ",
   "passwordMinChars": "ਘੱਟੋ-ਘੱਟ 8 ਅੱਖਰ",
-
   "completeProfile": "ਪ੍ਰੋਫਾਈਲ ਪੂਰਾ ਕਰੋ",
   "enterYourName": "ਆਪਣਾ ਨਾਮ ਦਰਜ ਕਰੋ",
   "egBusinessName": "ਜਿਵੇਂ: ਕ੍ਰਿਸ਼ਨਾ ਡੇਅਰੀ",
@@ -56,7 +57,6 @@
   "businessCategory": "ਕਾਰੋਬਾਰ ਸ਼੍ਰੇਣੀ",
   "businessAddress": "ਕਾਰੋਬਾਰ ਦਾ ਪਤਾ (ਵਿਕਲਪਿਕ)",
   "upiId": "UPI ID (ਭੁਗਤਾਨ ਲਈ)",
-
   "vendorDashboard": "ਵਿਕ੍ਰੇਤਾ ਡੈਸ਼ਬੋਰਡ",
   "customerDashboard": "ਗਾਹਕ ਡੈਸ਼ਬੋਰਡ",
   "customerMode": "ਗਾਹਕ ਮੋਡ",
@@ -70,8 +70,13 @@
   "recentCustomers": "ਹਾਲੀਆ ਗਾਹਕ",
   "viewAll": "ਸਭ ਦੇਖੋ",
   "customerAddedSnackbar": "{name} ਜੋੜਿਆ ਗਿਆ",
-  "@customerAddedSnackbar": { "placeholders": { "name": { "type": "String" } } },
-
+  "@customerAddedSnackbar": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "sharedLedger": "ਸਾਂਝਾ ਖਾਤਾ",
   "totalBalance": "ਕੁੱਲ ਬੈਲੇਂਸ",
   "statement": "ਬਿਆਨ",
@@ -106,7 +111,13 @@
   "entryConfirmedAt": "ਪੁਸ਼ਟੀ ਤਾਰੀਖ਼",
   "entryDisputeReason": "ਵਿਵਾਦ ਦਾ ਕਾਰਨ",
   "entryFor": "{name} ਲਈ",
-  "@entryFor": { "placeholders": { "name": { "type": "String" } } },
+  "@entryFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "descriptionOptional": "ਵੇਰਵਾ (ਵਿਕਲਪਿਕ)",
   "quantityOptional": "ਮਾਤਰਾ (ਵਿਕਲਪਿਕ)",
   "descriptionHint": "ਜਿਵੇਂ: 2L ਦੁੱਧ, ਮਹੀਨੇ ਦਾ ਕਿਰਾਨਾ",
@@ -116,13 +127,18 @@
   "noLedgerTransactionsSubtitle": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਉਧਾਰ ਜਾਂ ਭੁਗਤਾਨ ਐਂਟਰੀ ਜੋੜੋ।",
   "confirmEntryTitle": "ਐਂਟਰੀ ਪੁਸ਼ਟੀ ਕਰੋ",
   "confirmEntryMessage": "ਕੀ ਤੁਸੀਂ ₹{amount} ਦੀ ਐਂਟਰੀ ਪੁਸ਼ਟੀ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਇਹ ਵਾਪਸ ਨਹੀਂ ਹੋ ਸਕਦੀ।",
-  "@confirmEntryMessage": { "placeholders": { "amount": { "type": "String" } } },
+  "@confirmEntryMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "dispute": "ਵਿਵਾਦ",
   "raiseDisputeTitle": "ਵਿਵਾਦ ਉਠਾਓ",
   "raiseDisputeSubtitle": "ਦੱਸੋ ਇਸ ਐਂਟਰੀ ਵਿੱਚ ਕੀ ਗਲਤ ਹੈ।",
   "raiseDisputeHint": "ਜਿਵੇਂ: ਰਕਮ ₹50 ਹੋਣੀ ਚਾਹੀਦੀ, ₹60 ਨਹੀਂ",
   "submitDispute": "ਵਿਵਾਦ ਦਰਜ ਕਰੋ",
-
   "staffAndLabour": "ਕਰਮਚਾਰੀ ਅਤੇ ਮਜ਼ਦੂਰ",
   "addStaff": "ਕਰਮਚਾਰੀ ਜੋੜੋ",
   "presentToday": "ਅੱਜ ਹਾਜ਼ਰ",
@@ -135,19 +151,48 @@
   "halfDay": "ਅੱਧਾ ਦਿਨ",
   "paySalaryTitle": "ਤਨਖਾਹ ਦਿਓ",
   "unpaidLabel": "ਅਦਾਇਗੀ ਬਾਕੀ: ₹{amount}",
-  "@unpaidLabel": { "placeholders": { "amount": { "type": "String" } } },
+  "@unpaidLabel": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "upiTransactionIdOptional": "UPI ਲੈਣ-ਦੇਣ ID (ਵਿਕਲਪਿਕ)",
   "noDues": "ਕੋਈ ਬਕਾਇਆ ਨਹੀਂ",
   "staffPayAmount": "₹{amount} ਦਿਓ",
-  "@staffPayAmount": { "placeholders": { "amount": { "type": "String" } } },
+  "@staffPayAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "staffJoined": "{date} ਨੂੰ ਜੁੜੇ",
-  "@staffJoined": { "placeholders": { "date": { "type": "String" } } },
+  "@staffJoined": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "staffSalaryPerDay": "₹{amount}/ਦਿਨ",
-  "@staffSalaryPerDay": { "placeholders": { "amount": { "type": "String" } } },
+  "@staffSalaryPerDay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "staffSalaryPerMonth": "₹{amount}/ਮਹੀਨਾ",
-  "@staffSalaryPerMonth": { "placeholders": { "amount": { "type": "String" } } },
+  "@staffSalaryPerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "staffPayButton": "ਭੁਗਤਾਨ",
-
   "businessReports": "ਕਾਰੋਬਾਰ ਰਿਪੋਰਟਾਂ",
   "revenueTrend": "ਆਮਦਨ ਰੁਝਾਨ",
   "collectionSummary": "ਵਸੂਲੀ ਸਾਰ",
@@ -155,7 +200,6 @@
   "totalCollected": "ਕੁੱਲ ਵਸੂਲੀ",
   "topCustomers": "ਚੋਟੀ ਦੇ ਗਾਹਕ",
   "seeAll": "ਸਭ ਦੇਖੋ",
-
   "settings": "ਸੈਟਿੰਗਾਂ",
   "appLanguage": "ਐਪ ਭਾਸ਼ਾ",
   "selectLanguage": "ਭਾਸ਼ਾ ਚੁਣੋ",
@@ -164,23 +208,39 @@
   "settingsAppPinFingerprint": "ਐਪ ਪਿੰਨ ਅਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ",
   "settingsFaqsContact": "ਸਹਾਇਤਾ ਅਤੇ ਸੰਪਰਕ",
   "settingsVersion": "ਵਰਜ਼ਨ {version}",
-  "@settingsVersion": { "placeholders": { "version": { "type": "String" } } },
+  "@settingsVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "myUpiIds": "ਮੇਰੇ UPI ID",
   "notifications": "ਸੂਚਨਾਵਾਂ",
   "security": "ਸੁਰੱਖਿਆ",
   "helpSupport": "ਸਹਾਇਤਾ",
   "logout": "ਲੌਗਆਉਟ",
-
   "markAllRead": "ਸਭ ਪੜ੍ਹਿਆ ਮਾਰਕ ਕਰੋ",
   "noNotificationsTitle": "ਅਜੇ ਕੋਈ ਸੂਚਨਾ ਨਹੀਂ",
   "noNotificationsSubtitle": "ਇੱਥੇ ਖਾਤਾ ਅਪਡੇਟ, ਭੁਗਤਾਨ ਚੇਤਾਵਨੀਆਂ ਅਤੇ ਯਾਦ-ਦਿਹਾਨੀਆਂ ਦਿਖਾਈ ਦੇਣਗੀਆਂ।",
   "today": "ਅੱਜ",
   "yesterday": "ਕੱਲ੍ਹ",
   "minutesAgo": "{count} ਮਿੰਟ ਪਹਿਲਾਂ",
-  "@minutesAgo": { "placeholders": { "count": { "type": "int" } } },
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "hoursAgo": "{count} ਘੰਟੇ ਪਹਿਲਾਂ",
-  "@hoursAgo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "payments": "ਭੁਗਤਾਨ",
   "transactionHistory": "ਲੈਣ-ਦੇਣ ਇਤਿਹਾਸ",
   "totalPaid": "ਕੁੱਲ ਭੁਗਤਾਨ",
@@ -193,7 +253,6 @@
   "paymentStatusPaid": "ਭੁਗਤਾਨ ਹੋਇਆ",
   "paymentStatusFailed": "ਅਸਫ਼ਲ",
   "paymentStatusRefunded": "ਵਾਪਸ",
-
   "appointments": "ਅਪੌਇੰਟਮੈਂਟ",
   "myAppointments": "ਮੇਰੀਆਂ ਅਪੌਇੰਟਮੈਂਟਾਂ",
   "upcoming": "ਆਉਣ ਵਾਲੀਆਂ",
@@ -207,14 +266,20 @@
   "cancelAppointmentTitle": "ਅਪੌਇੰਟਮੈਂਟ ਰੱਦ ਕਰਨੀ ਹੈ?",
   "cancelAppointmentMessage": "{date} ਨੂੰ {time} ਦੀ ਅਪੌਇੰਟਮੈਂਟ ਰੱਦ ਕਰਨੀ ਹੈ?",
   "@cancelAppointmentMessage": {
-    "placeholders": { "date": { "type": "String" }, "time": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
   },
   "bookingStatusConfirmed": "ਪੁਸ਼ਟੀ ਹੋਈ",
   "bookingStatusPending": "ਲੰਬਿਤ",
   "bookingStatusCancelled": "ਰੱਦ",
   "bookingStatusCompleted": "ਪੂਰੀ",
   "bookingStatusDone": "ਪੂਰੀ",
-
   "upiPayment": "UPI ਭੁਗਤਾਨ",
   "amountToPay": "ਭੁਗਤਾਨ ਕਰਨ ਦੀ ਰਕਮ",
   "securedByUpi": "UPI ਦੁਆਰਾ ਸੁਰੱਖਿਅਤ",
@@ -224,23 +289,40 @@
   "enterUpiId": "UPI ID ਦਰਜ ਕਰੋ",
   "addNoteOptional": "ਨੋਟ ਜੋੜੋ (ਵਿਕਲਪਿਕ)",
   "payAmountButton": "₹{amount} ਭੁਗਤਾਨ ਕਰੋ",
-  "@payAmountButton": { "placeholders": { "amount": { "type": "String" } } },
+  "@payAmountButton": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "done": "ਹੋ ਗਿਆ",
   "paymentSomethingWentWrong": "ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
   "upiAppComingSoon": "{app} ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ",
-  "@upiAppComingSoon": { "placeholders": { "app": { "type": "String" } } },
+  "@upiAppComingSoon": {
+    "placeholders": {
+      "app": {
+        "type": "String"
+      }
+    }
+  },
   "pleaseEnterUpiId": "UPI ID ਦਰਜ ਕਰੋ",
   "paidToRecipient": "₹{amount} {name} ਨੂੰ ਭੁਗਤਾਨ ਹੋਇਆ",
   "@paidToRecipient": {
-    "placeholders": { "amount": { "type": "String" }, "name": { "type": "String" } }
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "orDivider": "ਜਾਂ",
-
   "addNewCustomer": "ਨਵਾਂ ਗਾਹਕ ਜੋੜੋ",
   "customerName": "ਗਾਹਕ ਦਾ ਨਾਮ",
   "mobileNo": "ਮੋਬਾਈਲ ਨੰਬਰ",
   "addCustomer": "ਗਾਹਕ ਜੋੜੋ",
-
   "paymentConfirmed": "ਭੁਗਤਾਨ ਪੁਸ਼ਟੀ ਕਰੋ",
   "addAdvance": "ਅਗਾਊਂ ਜੋੜੋ",
   "addAdvanceTitle": "ਅਗਾਊਂ ਜੋੜੋ",
@@ -267,35 +349,35 @@
   "addStaffButton": "ਕਰਮਚਾਰੀ ਜੋੜੋ",
   "noteOptional": "ਨੋਟ (ਵਿਕਲਪਿਕ)",
   "amountRupees": "ਰਕਮ (₹)",
-
   "cancel": "ਰੱਦ",
   "confirm": "ਪੁਸ਼ਟੀ",
   "tryAgain": "ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
   "alignBillInFrame": "ਬਿੱਲ ਫ਼੍ਰੇਮ ਵਿੱਚ ਰੱਖੋ",
   "verifyAndLogin": "ਤਸਦੀਕ ਕਰੋ ਅਤੇ ਲੌਗਇਨ ਕਰੋ",
-
   "voiceListening": "ਸੁਣ ਰਿਹਾ ਹਾਂ...",
   "voiceThinking": "ਸੋਚ ਰਿਹਾ ਹਾਂ...",
   "voiceDetectedEntry": "ਮਿਲੀ ਐਂਟਰੀ",
   "voiceConfirmEntry": "ਐਂਟਰੀ ਪੁਸ਼ਟੀ ਕਰੋ",
   "item": "ਵਸਤੂ",
-
   "totalOutstandingBalance": "ਕੁੱਲ ਬਕਾਇਆ ਰਕਮ",
   "payAllDues": "ਸਭ ਬਕਾਇਆ ਚੁਕਾਓ",
   "myKhatas": "ਮੇਰੇ ਖਾਤੇ",
   "noVendorsFound": "ਕੋਈ ਵਿਕ੍ਰੇਤਾ ਨਹੀਂ ਮਿਲਿਆ",
-
   "verifyBillDetails": "ਬਿੱਲ ਵੇਰਵਾ ਤਸਦੀਕ ਕਰੋ",
   "scannedBillPreview": "ਸਕੈਨ ਕੀਤਾ ਬਿੱਲ",
   "descriptionItemDetails": "ਵੇਰਵਾ / ਵਸਤੂ ਜਾਣਕਾਰੀ",
   "selectCustomer": "ਗਾਹਕ ਚੁਣੋ",
   "searchCustomerHint": "ਗਾਹਕ ਲੱਭੋ ਜਾਂ ਚੁਣੋ",
   "saveToKhata": "ਖਾਤੇ ਵਿੱਚ ਸੇਵ ਕਰੋ",
-
   "allCustomersReport": "ਸਭ ਗਾਹਕਾਂ ਦੀ ਰਿਪੋਰਟ",
   "collectedInMonth": "{month} ਵਿੱਚ ਵਸੂਲੀ",
-  "@collectedInMonth": { "placeholders": { "month": { "type": "String" } } },
-
+  "@collectedInMonth": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "notificationSettings": "ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ",
   "securityPin": "ਸੁਰੱਖਿਆ ਅਤੇ ਪਿੰਨ",
   "editProfile": "ਪ੍ਰੋਫਾਈਲ ਸੰਪਾਦਿਤ ਕਰੋ",
@@ -312,28 +394,204 @@
   "passwordChangedSuccess": "ਪਾਸਵਰਡ ਸਫ਼ਲਤਾਪੂਰਵਕ ਬਦਲਿਆ ਗਿਆ",
   "loadingContent": "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
   "failedToLoad": "ਸਮੱਗਰੀ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਫ਼ਲ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
-
   "bookingActions": "ਬੁਕਿੰਗ ਕਿਰਿਆਵਾਂ",
   "confirmBooking": "ਬੁਕਿੰਗ ਪੁਸ਼ਟੀ ਕਰੋ",
   "markComplete": "ਪੂਰਾ ਮਾਰਕ ਕਰੋ",
   "confirmBookingMessage": "{customer} ਦੀ {date} ਨੂੰ {time} ਦੀ ਅਪੌਇੰਟਮੈਂਟ ਪੁਸ਼ਟੀ ਕਰਨੀ ਹੈ?",
   "@confirmBookingMessage": {
-    "placeholders": { "date": { "type": "String" }, "time": { "type": "String" }, "customer": { "type": "String" } }
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      },
+      "customer": {
+        "type": "String"
+      }
+    }
   },
   "bookingUpdated": "ਬੁਕਿੰਗ ਸਫ਼ਲਤਾਪੂਰਵਕ ਅਪਡੇਟ ਹੋਈ",
   "bookingUpdateFailed": "ਬੁਕਿੰਗ ਅਪਡੇਟ ਕਰਨ ਵਿੱਚ ਅਸਫ਼ਲ",
-
   "markAttendanceFor": "ਹਾਜ਼ਰੀ ਦਰਜ ਕਰੋ — {date}",
-  "@markAttendanceFor": { "placeholders": { "date": { "type": "String" } } },
+  "@markAttendanceFor": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "allCustomers": "ਸਭ ਗਾਹਕ",
   "noCustomersYet": "ਅਜੇ ਕੋਈ ਗਾਹਕ ਨਹੀਂ",
   "noCustomersYetSubtitle": "ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਪਹਿਲਾ ਗਾਹਕ ਜੋੜੋ",
   "invalidPhone": "6–9 ਨਾਲ ਸ਼ੁਰੂ ਹੋਣ ਵਾਲਾ 10 ਅੰਕਾਂ ਦਾ ਮਾਨਕ ਮੋਬਾਈਲ ਨੰਬਰ ਦਰਜ ਕਰੋ",
   "accrueMonthSalary": "ਮਹੀਨੇ ਦੀ ਤਨਖਾਹ ਜੋੜੋ (₹{amount})",
-  "@accrueMonthSalary": { "placeholders": { "amount": { "type": "String" } } },
+  "@accrueMonthSalary": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "accrueMonthSalaryTitle": "ਮਹੀਨੇ ਦੀ ਤਨਖਾਹ ਜੋੜੋ",
   "accrueMonthSalaryConfirm": "{name} ਦੇ ਬਕਾਏ ਵਿੱਚ ਇਸ ਮਹੀਨੇ ₹{amount} ਜੋੜਨੇ ਹਨ?",
   "@accrueMonthSalaryConfirm": {
-    "placeholders": { "name": { "type": "String" }, "amount": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "accountInformation": "Account Information",
+  "updateProfileDetails": "Update your name, photo and details",
+  "updateAccountPassword": "Update your account password",
+  "deleteAccount": "Delete Account",
+  "deleteAccountSubtitle": "Permanently delete your account and all data",
+  "deleteAccountConfirmation": "Delete Account?",
+  "deleteAccountConfirmationMessage": "This will permanently delete your account and all your data. This action cannot be undone.",
+  "deleteAccountStaffWarning": "This will permanently delete your account. This cannot be undone.",
+  "deleteForever": "Delete Forever",
+  "delete": "Delete",
+  "readTermsOfService": "Read our terms of service",
+  "privacyPolicyDescription": "How we handle your data",
+  "confirmLogout": "Are you sure you want to log out?",
+  "membershipTiers": "Membership Tiers",
+  "membershipTiersDescription": "Rename tiers and set member discounts",
+  "logIn": "Log in",
+  "enterPhoneNumberToContinue": "Enter your phone number to continue",
+  "otpDemoHint": "OTP is for demo only · enter 123456 to continue",
+  "havingTrouble": "Having trouble?",
+  "useEmailInstead": "Use email instead →",
+  "logInWithEmail": "Log in with email",
+  "emailPlaceholder": "you@example.com",
+  "enterYourPassword": "Enter your password",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose from gallery",
+  "removePhoto": "Remove photo",
+  "tapToAddProfilePhoto": "Tap to add profile photo",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "add": "Add",
+  "addUpiId": "Add UPI ID",
+  "save": "Save",
+  "close": "Close",
+  "ok": "OK",
+  "remove": "Remove",
+  "approve": "Approve",
+  "decline": "Decline",
+  "none": "None",
+  "percent": "Percent",
+  "profile": "Profile",
+  "paymentVerification": "Payment Verification",
+  "verifyingPayment": "Verifying Payment",
+  "paymentConfirmedExclamation": "Payment Confirmed!",
+  "verificationTimedOut": "Verification Timed Out",
+  "goBack": "Go Back",
+  "payDues": "Pay Dues",
+  "skipForNow": "Skip for now",
+  "allDone": "All Done!",
+  "noUpcomingAppointments": "No upcoming appointments",
+  "myPay": "My Pay",
+  "myPaymentQr": "My Payment QR",
+  "showMyQr": "Show my QR",
+  "noPaymentsYet": "No payments yet",
+  "paymentHistory": "Payment History",
+  "paymentHistory6Months": "Payment History (6 months)",
+  "connectionRequest": "Connection Request",
+  "vendorWantsToConnect": "A vendor wants to connect",
+  "acceptRequest": "Accept",
+  "declineRequest": "Decline",
+  "messageLabel": "Message",
+  "sendRequest": "Send Request",
+  "requestSentNotification": "Request sent! They will be notified to confirm.",
+  "awaitingAcceptance": "Awaiting Acceptance",
+  "addAVendor": "Add a Vendor",
+  "findByPhoneOrEmail": "Find by phone number or email",
+  "phoneOrEmail": "Phone or email",
+  "phoneOrEmailHint": "10-digit mobile or email address",
+  "nicknameOptional": "Nickname (optional)",
+  "howYouKnowVendor": "How you know this vendor",
+  "bookingNoteExample": "E.g. Need extra milk today",
+  "confirmLocation": "Confirm Location",
+  "moveMapToSelectLocation": "Move the map to select a location",
+  "searchPlaceHint": "Search for a place…",
+  "mapAttribution": "© OpenStreetMap contributors",
+  "searchVendorsHint": "Search vendors…",
+  "somethingWentWrong": "Something went wrong",
+  "payViaUpi": "Pay via UPI",
+  "connectWithVendor": "Connect",
+  "requestConnection": "Request Connection",
+  "addVendor": "Add Vendor",
+  "noOutstandingBalances": "No outstanding balances",
+  "allCustomersSettledUp": "All customers are settled up.",
+  "nothingCollectedToday": "Nothing collected today",
+  "paymentsWillAppearHere": "Payments received today will appear here.",
+  "customerReport": "Customer Report",
+  "overview": "Overview",
+  "tapToStop": "Tap to stop",
+  "itemName": "Item name",
+  "itemNameExample": "e.g. Milk",
+  "unitPrice": "Unit Price ₹",
+  "deliverTo": "Deliver to",
+  "bulkCharge": "Bulk Charge",
+  "newProduct": "New product",
+  "editProduct": "Edit Product",
+  "newProductService": "New Product / Service",
+  "updateProductDetails": "Update name, unit or price",
+  "defineProduct": "Define what you sell and its base price",
+  "productName": "Product name",
+  "productNameExample": "e.g. Daily Morning Milk",
+  "unit": "Unit",
+  "unitExample": "litre / kg / piece",
+  "pricePerUnit": "Price / unit (₹)",
+  "deleteProduct": "Delete product",
+  "deleteProductConfirmation": "Delete product?",
+  "noProductsYet": "No products yet",
+  "addFirstProduct": "Add First Product",
+  "renameTier": "Rename tier",
+  "tierName": "Tier name",
+  "memberDiscount": "Member discount",
+  "flatAmount": "Flat ₹",
+  "discountPercent": "Discount %",
+  "discountAmount": "Discount amount (₹)",
+  "percentExample": "e.g. 5",
+  "amountExample": "e.g. 50",
+  "maxDiscountPerDue": "Max discount per due (₹) — optional",
+  "maxDiscountExample": "e.g. 100 (leave blank for no cap)",
+  "saveDiscount": "Save discount",
+  "membership": "Membership",
+  "setTier": "Set",
+  "changeTier": "Change",
+  "applyMembership": "Apply",
+  "removeMembership": "Remove membership",
+  "removeLedgerConfirmation": "Remove ledger?",
+  "exportStatement": "Export Statement",
+  "appAccess": "App access",
+  "removeProductConfirmation": "Remove \"{name}\" from your product list?",
+  "@removeProductConfirmation": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "tierLevel": "Level {level}",
+  "@tierLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "discountFor": "Discount for {tier}",
+  "@discountFor": {
+    "placeholders": {
+      "tier": {
+        "type": "String"
+      }
+    }
   }
 }
