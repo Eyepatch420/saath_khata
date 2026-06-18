@@ -549,15 +549,63 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
   }
 }
 
-class CustomerMainWrapper extends StatelessWidget {
+class CustomerMainWrapper extends StatefulWidget {
   final Widget child;
   const CustomerMainWrapper({super.key, required this.child});
 
   @override
+  State<CustomerMainWrapper> createState() => _CustomerMainWrapperState();
+}
+
+class _CustomerMainWrapperState extends State<CustomerMainWrapper>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _fabAnim;
+  late final Animation<double> _fabScale;
+  late final Animation<double> _fabOpacity;
+  bool _fabVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: 1.0,
+    );
+    _fabScale = CurvedAnimation(parent: _fabAnim, curve: Curves.easeOut);
+    _fabOpacity = _fabAnim;
+  }
+
+  @override
+  void dispose() {
+    _fabAnim.dispose();
+    super.dispose();
+  }
+
+  bool _onScroll(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta > 0 && _fabVisible) {
+        _fabVisible = false;
+        _fabAnim.reverse();
+      } else if (delta < 0 && !_fabVisible) {
+        _fabVisible = true;
+        _fabAnim.forward();
+      }
+    }
+    return false;
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final location = GoRouterState.of(context).uri.path;
+    final isHome = location == AppRouter.customerHome;
     return Scaffold(
       extendBody: true,
-      body: child,
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: widget.child,
+      ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: _calculateSelectedIndex(context),
         onTap: (index) => _onTap(context, index),
@@ -569,6 +617,23 @@ class CustomerMainWrapper extends StatelessWidget {
           AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
         ],
       ),
+      floatingActionButton: isHome
+          ? FadeTransition(
+              opacity: _fabOpacity,
+              child: ScaleTransition(
+                scale: _fabScale,
+                child: FloatingActionButton.extended(
+                  onPressed: () => showCustomerAddVendorSheet(context),
+                  backgroundColor: AppColors.customerAccent,
+                  icon: const Icon(Icons.storefront_rounded, color: Colors.white),
+                  label: const Text(
+                    'ADD VENDOR',
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 
@@ -601,4 +666,8 @@ class CustomerMainWrapper extends StatelessWidget {
         break;
     }
   }
+}
+
+void showCustomerAddVendorSheet(BuildContext context) {
+  context.push(AppRouter.vendorSearch);
 }
