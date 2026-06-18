@@ -52,6 +52,13 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
         getIt<SearchRepository>().getVendorProfile(widget.preview.userId);
   }
 
+  void _retry() {
+    setState(() {
+      _profileFuture =
+          getIt<SearchRepository>().getVendorProfile(widget.preview.userId);
+    });
+  }
+
   @override
   void dispose() {
     _sendCubit.close();
@@ -67,6 +74,7 @@ class _VendorProfileScreenState extends State<VendorProfileScreen> {
         viewAs: widget.viewAs,
         profileFuture: _profileFuture,
         accent: _accent,
+        onRetry: _retry,
       ),
     );
   }
@@ -77,12 +85,14 @@ class _ProfileScaffold extends StatelessWidget {
   final SearchViewAs viewAs;
   final Future<VendorPublicProfile> profileFuture;
   final Color accent;
+  final VoidCallback onRetry;
 
   const _ProfileScaffold({
     required this.preview,
     required this.viewAs,
     required this.profileFuture,
     required this.accent,
+    required this.onRetry,
   });
 
   @override
@@ -148,6 +158,7 @@ class _ProfileScaffold extends StatelessWidget {
                   address: address,
                   email: email,
                   upiId: upiId,
+                  onRetry: onRetry,
                 ),
               ),
             ],
@@ -273,6 +284,7 @@ class _ProfileScaffold extends StatelessWidget {
     required String? address,
     required String? email,
     required String? upiId,
+    required VoidCallback onRetry,
   }) {
     return Padding(
       padding: EdgeInsets.fromLTRB(
@@ -309,6 +321,8 @@ class _ProfileScaffold extends StatelessWidget {
             email: email,
             upiId: upiId,
             isLoadingExtra: snap.connectionState == ConnectionState.waiting,
+            hasError: snap.hasError,
+            onRetry: onRetry,
           ),
 
           const SizedBox(height: 28),
@@ -366,6 +380,8 @@ class _InfoSection extends StatelessWidget {
   final String? email;
   final String? upiId;
   final bool isLoadingExtra;
+  final bool hasError;
+  final VoidCallback onRetry;
 
   const _InfoSection({
     required this.accent,
@@ -373,6 +389,8 @@ class _InfoSection extends StatelessWidget {
     required this.email,
     required this.upiId,
     required this.isLoadingExtra,
+    required this.hasError,
+    required this.onRetry,
   });
 
   @override
@@ -405,6 +423,14 @@ class _InfoSection extends StatelessWidget {
         label: 'UPI',
         value: '…',
         accent: accent,
+      ));
+    } else if (hasError) {
+      items.add(_InfoItem(
+        icon: Icons.warning_amber_rounded,
+        label: 'UPI / Email',
+        value: 'Could not load — tap to retry',
+        accent: AppColors.error,
+        onTap: onRetry,
       ));
     } else if (upiId != null && upiId!.isNotEmpty) {
       items.add(_InfoItem(
@@ -444,6 +470,7 @@ class _InfoItem extends StatelessWidget {
   final String value;
   final Color accent;
   final bool isCopyable;
+  final VoidCallback? onTap;
 
   const _InfoItem({
     required this.icon,
@@ -451,21 +478,20 @@ class _InfoItem extends StatelessWidget {
     required this.value,
     required this.accent,
     this.isCopyable = false,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: isCopyable
-          ? () {
-              Clipboard.setData(ClipboardData(text: value));
-              AppToast.show(
-                context,
-                'UPI ID copied!',
-                type: ToastType.success,
-              );
-            }
-          : null,
+      onTap: onTap ??
+          (isCopyable
+              ? () {
+                  Clipboard.setData(ClipboardData(text: value));
+                  AppToast.show(context, '$label copied!',
+                      type: ToastType.success);
+                }
+              : null),
       borderRadius: BorderRadius.circular(16),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
