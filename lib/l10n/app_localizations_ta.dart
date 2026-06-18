@@ -243,6 +243,12 @@ class AppLocalizationsTa extends AppLocalizations {
   String get balanceSettled => 'தீர்க்கப்பட்டது';
 
   @override
+  String get balanceYouOweVendor => 'நீங்கள் வணிகருக்கு கடன்பட்டிருக்கிறீர்கள்';
+
+  @override
+  String get balanceVendorOwesYou => 'வணிகர் உங்களுக்கு கடன்பட்டிருக்கிறார்';
+
+  @override
   String get ledgerInfoTitle => 'இந்த கணக்கு எவ்வாறு செயல்படுகிறது';
 
   @override

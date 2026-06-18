@@ -239,6 +239,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get balanceSettled => 'चुकता';
 
   @override
+  String get balanceYouOweVendor => 'आप पर दुकानदार का बकाया है';
+
+  @override
+  String get balanceVendorOwesYou => 'दुकानदार पर आपका बकाया है';
+
+  @override
   String get ledgerInfoTitle => 'यह खाता कैसे काम करता है';
 
   @override

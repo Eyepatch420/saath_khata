@@ -240,6 +240,12 @@ class AppLocalizationsKn extends AppLocalizations {
   String get balanceSettled => 'ತೀರಿಸಲಾಗಿದೆ';
 
   @override
+  String get balanceYouOweVendor => 'ವ್ಯಾಪಾರಿಗೆ ನಿಮ್ಮ ಬಾಕಿ';
+
+  @override
+  String get balanceVendorOwesYou => 'ವ್ಯಾಪಾರಿಯ ಬಾಕಿ ನಿಮಗೆ';
+
+  @override
   String get ledgerInfoTitle => 'ಈ ಖಾತೆ ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ';
 
   @override

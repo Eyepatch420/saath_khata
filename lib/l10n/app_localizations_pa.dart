@@ -240,6 +240,12 @@ class AppLocalizationsPa extends AppLocalizations {
   String get balanceSettled => 'ਚੁਕਤਾ';
 
   @override
+  String get balanceYouOweVendor => 'ਤੁਸੀਂ ਦੁਕਾਨਦਾਰ ਦੇ ਦੇਣਦਾਰ ਹੋ';
+
+  @override
+  String get balanceVendorOwesYou => 'ਦੁਕਾਨਦਾਰ ਤੁਹਾਡਾ ਦੇਣਦਾਰ ਹੈ';
+
+  @override
   String get ledgerInfoTitle => 'ਇਹ ਖਾਤਾ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ';
 
   @override

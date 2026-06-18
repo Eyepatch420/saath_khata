@@ -240,6 +240,12 @@ class AppLocalizationsTe extends AppLocalizations {
   String get balanceSettled => 'తీర్చబడింది';
 
   @override
+  String get balanceYouOweVendor => 'మీరు వ్యాపారికి చెల్లించాలి';
+
+  @override
+  String get balanceVendorOwesYou => 'వ్యాపారి మీకు చెల్లించాలి';
+
+  @override
   String get ledgerInfoTitle => 'ఈ ఖాతా ఎలా పనిచేస్తుంది';
 
   @override

@@ -84,6 +84,8 @@
   "balanceCustomerOwes": "ग्राहक पर बकाया है",
   "balanceYouOwe": "आप पर बकाया है",
   "balanceSettled": "चुकता",
+  "balanceYouOweVendor": "आप पर दुकानदार का बकाया है",
+  "balanceVendorOwesYou": "दुकानदार पर आपका बकाया है",
   "ledgerInfoTitle": "यह खाता कैसे काम करता है",
   "statusConfirmed": "पुष्टि हुई",
   "statusConfirmedDesc": "दोनों पक्षों की सहमति। एंट्री लॉक है और बदली नहीं जा सकती।",

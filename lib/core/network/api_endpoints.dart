@@ -8,6 +8,7 @@ class ApiEndpoints {
   // Auth
   static const String signup = '/auth/signup';
   static const String login = '/auth/login'; // kept for legacy reference only
+  static const String emailLogin = '/auth/email-login';
   static const String refresh = '/auth/refresh';
   static const String logout = '/auth/logout';
   static const String logoutAll = '/auth/logout-all';

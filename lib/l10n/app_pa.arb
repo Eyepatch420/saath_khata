@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "ਗਾਹਕ ਦਾ ਬਕਾਇਆ",
   "balanceYouOwe": "ਤੁਹਾਡਾ ਬਕਾਇਆ",
   "balanceSettled": "ਚੁਕਤਾ",
+  "balanceYouOweVendor": "ਤੁਸੀਂ ਦੁਕਾਨਦਾਰ ਦੇ ਦੇਣਦਾਰ ਹੋ",
+  "balanceVendorOwesYou": "ਦੁਕਾਨਦਾਰ ਤੁਹਾਡਾ ਦੇਣਦਾਰ ਹੈ",
   "ledgerInfoTitle": "ਇਹ ਖਾਤਾ ਕਿਵੇਂ ਕੰਮ ਕਰਦਾ ਹੈ",
   "statusConfirmed": "ਪੁਸ਼ਟੀ ਹੋਈ",
   "statusConfirmedDesc": "ਦੋਵੇਂ ਧਿਰਾਂ ਸਹਿਮਤ। ਐਂਟਰੀ ਲੌਕ ਹੈ ਅਤੇ ਬਦਲੀ ਨਹੀਂ ਜਾ ਸਕਦੀ।",

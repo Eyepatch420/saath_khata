@@ -240,6 +240,12 @@ class AppLocalizationsMr extends AppLocalizations {
   String get balanceSettled => 'निकाल झाला';
 
   @override
+  String get balanceYouOweVendor => 'तुम्ही दुकानदाराला द्यायचे आहे';
+
+  @override
+  String get balanceVendorOwesYou => 'दुकानदार तुम्हाला देणे आहे';
+
+  @override
   String get ledgerInfoTitle => 'हे खाते कसे काम करते';
 
   @override

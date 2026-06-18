@@ -239,6 +239,12 @@ class AppLocalizationsGu extends AppLocalizations {
   String get balanceSettled => 'ચૂકતે';
 
   @override
+  String get balanceYouOweVendor => 'તમારે વ્યાપારીને ચૂકવવાનું છે';
+
+  @override
+  String get balanceVendorOwesYou => 'વ્યાપારી તમને ચૂકવશે';
+
+  @override
   String get ledgerInfoTitle => 'આ ખાતું કેવી રીતે કામ કરે છે';
 
   @override

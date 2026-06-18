@@ -562,6 +562,18 @@ abstract class AppLocalizations {
   /// **'Settled'**
   String get balanceSettled;
 
+  /// No description provided for @balanceYouOweVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'You owe vendor'**
+  String get balanceYouOweVendor;
+
+  /// No description provided for @balanceVendorOwesYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Vendor owes you'**
+  String get balanceVendorOwesYou;
+
   /// No description provided for @ledgerInfoTitle.
   ///
   /// In en, this message translates to:

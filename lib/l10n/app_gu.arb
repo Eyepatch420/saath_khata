@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "ગ્રાહકની બાકી",
   "balanceYouOwe": "તમારી બાકી",
   "balanceSettled": "ચૂકતે",
+  "balanceYouOweVendor": "તમારે વ્યાપારીને ચૂકવવાનું છે",
+  "balanceVendorOwesYou": "વ્યાપારી તમને ચૂકવશે",
   "ledgerInfoTitle": "આ ખાતું કેવી રીતે કામ કરે છે",
   "statusConfirmed": "પુષ્ટિ થઈ",
   "statusConfirmedDesc": "બંને પક્ષ સહમત. એન્ટ્રી લૉક છે અને બદલી શકાય નહીં.",

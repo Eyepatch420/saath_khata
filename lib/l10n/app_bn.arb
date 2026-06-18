@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "ক্রেতার বকেয়া",
   "balanceYouOwe": "আপনার বকেয়া",
   "balanceSettled": "নিষ্পত্তি হয়েছে",
+  "balanceYouOweVendor": "বিক্রেতার বকেয়া আপনার",
+  "balanceVendorOwesYou": "বিক্রেতার কাছে আপনার পাওনা",
   "ledgerInfoTitle": "এই খাতা কীভাবে কাজ করে",
   "statusConfirmed": "নিশ্চিত",
   "statusConfirmedDesc": "উভয় পক্ষ সম্মত। এন্ট্রি লক এবং পরিবর্তন করা যাবে না।",

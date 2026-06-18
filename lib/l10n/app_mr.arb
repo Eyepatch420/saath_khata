@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "ग्राहकाची थकबाकी",
   "balanceYouOwe": "तुमची थकबाकी",
   "balanceSettled": "निकाल झाला",
+  "balanceYouOweVendor": "तुम्ही दुकानदाराला द्यायचे आहे",
+  "balanceVendorOwesYou": "दुकानदार तुम्हाला देणे आहे",
   "ledgerInfoTitle": "हे खाते कसे काम करते",
   "statusConfirmed": "पुष्टी झाली",
   "statusConfirmedDesc": "दोन्ही बाजू सहमत. नोंद लॉक आहे आणि बदलता येणार नाही.",

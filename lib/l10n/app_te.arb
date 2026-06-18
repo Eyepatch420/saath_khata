@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "కస్టమర్ బాకీ",
   "balanceYouOwe": "మీ బాకీ",
   "balanceSettled": "తీర్చబడింది",
+  "balanceYouOweVendor": "మీరు వ్యాపారికి చెల్లించాలి",
+  "balanceVendorOwesYou": "వ్యాపారి మీకు చెల్లించాలి",
   "ledgerInfoTitle": "ఈ ఖాతా ఎలా పనిచేస్తుంది",
   "statusConfirmed": "నిర్ధారించబడింది",
   "statusConfirmedDesc": "ఇరు పక్షాలూ అంగీకరించారు. ఎంట్రీ లాక్ చేయబడింది మరియు మార్చలేరు.",

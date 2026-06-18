@@ -38,6 +38,24 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  // ─── Email + password login ───────────────────────────────────────────────
+
+  @override
+  Future<AuthResponseModel> emailLogin({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final response = await _api.post(
+        ApiEndpoints.emailLogin,
+        data: {'email': email, 'password': password},
+      );
+      return AuthResponseModel.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
   // ─── Signup ───────────────────────────────────────────────────────────────
 
   @override

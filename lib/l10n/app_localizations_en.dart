@@ -240,6 +240,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get balanceSettled => 'Settled';
 
   @override
+  String get balanceYouOweVendor => 'You owe vendor';
+
+  @override
+  String get balanceVendorOwesYou => 'Vendor owes you';
+
+  @override
   String get ledgerInfoTitle => 'How this ledger works';
 
   @override

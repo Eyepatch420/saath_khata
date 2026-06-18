@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -181,6 +182,11 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                               color: AppColors.primary,
                               fontWeight: FontWeight.w600,
                             ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () => context.push(
+                                    AppRouter.emailLogin,
+                                    extra: widget.role,
+                                  ),
                           ),
                         ],
                       ),

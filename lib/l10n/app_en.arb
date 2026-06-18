@@ -88,6 +88,8 @@
   "balanceCustomerOwes": "Customer owes you",
   "balanceYouOwe": "You owe customer",
   "balanceSettled": "Settled",
+  "balanceYouOweVendor": "You owe vendor",
+  "balanceVendorOwesYou": "Vendor owes you",
   "ledgerInfoTitle": "How this ledger works",
   "statusConfirmed": "Confirmed",
   "statusConfirmedDesc": "Both parties agreed. Entry is locked and cannot be changed.",

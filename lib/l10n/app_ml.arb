@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "ഉപഭോക്താവിന്റെ കുടിശ്ശിക",
   "balanceYouOwe": "നിങ്ങളുടെ കുടിശ്ശിക",
   "balanceSettled": "തീർപ്പാക്കി",
+  "balanceYouOweVendor": "നിങ്ങൾ വ്യാപാരിക്ക് കൊടുക്കാനുണ്ട്",
+  "balanceVendorOwesYou": "വ്യാപാരി നിങ്ങൾക്ക് കൊടുക്കാനുണ്ട്",
   "ledgerInfoTitle": "ഈ ഖാതാ എങ്ങനെ പ്രവർത്തിക്കുന്നു",
   "statusConfirmed": "സ്ഥിരീകരിച്ചു",
   "statusConfirmedDesc": "ഇരുകക്ഷിയും സമ്മതിച്ചു. എൻട്രി ലോക്ക് ചെയ്തു, മാറ്റാനാകില്ല.",

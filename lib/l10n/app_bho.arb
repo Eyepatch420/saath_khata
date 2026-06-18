@@ -84,6 +84,8 @@
   "balanceCustomerOwes": "ग्राहक पर बाकी बा",
   "balanceYouOwe": "रउआ पर बाकी बा",
   "balanceSettled": "चुकता",
+  "balanceYouOweVendor": "रउआ व्यापारी के देवे के बा",
+  "balanceVendorOwesYou": "व्यापारी रउआ के देवे के बा",
   "ledgerInfoTitle": "यह खाता कैसे काम करता है",
   "statusConfirmed": "पुष्टि हुई",
   "statusConfirmedDesc": "दोनों पक्षों की सहमति। एंट्री लॉक है और बदली नहीं जा सकती।",

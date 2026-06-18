@@ -239,6 +239,12 @@ class AppLocalizationsMai extends AppLocalizations {
   String get balanceSettled => 'चुकता';
 
   @override
+  String get balanceYouOweVendor => 'अहाँ व्यापारी केँ दैबाक अछि';
+
+  @override
+  String get balanceVendorOwesYou => 'व्यापारी अहाँकेँ दैबाक अछि';
+
+  @override
   String get ledgerInfoTitle => 'यह खाता कैसे काम करता है';
 
   @override

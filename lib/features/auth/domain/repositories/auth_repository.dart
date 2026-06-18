@@ -12,6 +12,13 @@ abstract class AuthRepository {
     required String otp,
   });
 
+  // ─── Email + password login ───────────────────────────────────────────────
+
+  Future<AuthResponseModel> emailLogin({
+    required String email,
+    required String password,
+  });
+
   // ─── Signup (OTP-based) ───────────────────────────────────────────────────
 
   Future<AuthResponseModel> signup({

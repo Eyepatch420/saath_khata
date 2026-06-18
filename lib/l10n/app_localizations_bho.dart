@@ -239,6 +239,12 @@ class AppLocalizationsBho extends AppLocalizations {
   String get balanceSettled => 'चुकता';
 
   @override
+  String get balanceYouOweVendor => 'रउआ व्यापारी के देवे के बा';
+
+  @override
+  String get balanceVendorOwesYou => 'व्यापारी रउआ के देवे के बा';
+
+  @override
   String get ledgerInfoTitle => 'यह खाता कैसे काम करता है';
 
   @override

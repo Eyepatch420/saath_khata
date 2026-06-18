@@ -240,6 +240,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get balanceSettled => 'নিষ্পত্তি হয়েছে';
 
   @override
+  String get balanceYouOweVendor => 'বিক্রেতার বকেয়া আপনার';
+
+  @override
+  String get balanceVendorOwesYou => 'বিক্রেতার কাছে আপনার পাওনা';
+
+  @override
   String get ledgerInfoTitle => 'এই খাতা কীভাবে কাজ করে';
 
   @override

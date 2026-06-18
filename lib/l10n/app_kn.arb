@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "ಗ್ರಾಹಕರ ಬಾಕಿ",
   "balanceYouOwe": "ನಿಮ್ಮ ಬಾಕಿ",
   "balanceSettled": "ತೀರಿಸಲಾಗಿದೆ",
+  "balanceYouOweVendor": "ವ್ಯಾಪಾರಿಗೆ ನಿಮ್ಮ ಬಾಕಿ",
+  "balanceVendorOwesYou": "ವ್ಯಾಪಾರಿಯ ಬಾಕಿ ನಿಮಗೆ",
   "ledgerInfoTitle": "ಈ ಖಾತೆ ಹೇಗೆ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ",
   "statusConfirmed": "ದೃಢೀಕರಿಸಲಾಗಿದೆ",
   "statusConfirmedDesc": "ಎರಡೂ ಕಡೆ ಒಪ್ಪಿಗೆ ಇದೆ. ನಮೂದು ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಬದಲಿಸಲಾಗುವುದಿಲ್ಲ.",

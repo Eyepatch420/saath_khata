@@ -65,7 +65,7 @@ class LedgerEntry extends Equatable {
         customerId: json['customerId'] as String?,
         amount: (json['amount'] as num).toDouble(),
         type: _entryTypeFromJson(json['type'] as String),
-        date: DateTime.parse(json['date'] as String),
+        date: DateTime.parse(json['date'] as String).toLocal(),
         description: json['description'] as String?,
         quantity: json['quantity'] != null
             ? (json['quantity'] as num).toDouble()
@@ -73,7 +73,7 @@ class LedgerEntry extends Equatable {
         unit: json['unit'] as String?,
         status: _entryStatusFromJson(json['status'] as String),
         confirmedAt: json['confirmedAt'] != null
-            ? DateTime.parse(json['confirmedAt'] as String)
+            ? DateTime.parse(json['confirmedAt'] as String).toLocal()
             : null,
         isLocked: json['isLocked'] as bool? ?? false,
         disputeReason: json['disputeReason'] as String?,

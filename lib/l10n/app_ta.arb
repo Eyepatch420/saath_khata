@@ -83,6 +83,8 @@
   "balanceCustomerOwes": "வாடிக்கையாளரின் நிலுவை",
   "balanceYouOwe": "உங்கள் நிலுவை",
   "balanceSettled": "தீர்க்கப்பட்டது",
+  "balanceYouOweVendor": "நீங்கள் வணிகருக்கு கடன்பட்டிருக்கிறீர்கள்",
+  "balanceVendorOwesYou": "வணிகர் உங்களுக்கு கடன்பட்டிருக்கிறார்",
   "ledgerInfoTitle": "இந்த கணக்கு எவ்வாறு செயல்படுகிறது",
   "statusConfirmed": "உறுதிப்படுத்தப்பட்டது",
   "statusConfirmedDesc": "இரு தரப்பும் ஒப்புக்கொண்டனர். உள்ளீடு பூட்டப்பட்டது மற்றும் மாற்ற முடியாது.",

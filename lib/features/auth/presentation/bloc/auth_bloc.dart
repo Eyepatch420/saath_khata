@@ -26,6 +26,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheckStatusRequested>(_onCheckStatus);
     on<AuthOtpSendRequested>(_onOtpSend);
     on<AuthOtpVerifyRequested>(_onOtpVerify);
+    on<AuthEmailLoginRequested>(_onEmailLogin);
     on<AuthSignupRequested>(_onSignup);
     on<AuthLogoutRequested>(_onLogout);
     on<AuthProfileUpdateRequested>(_onUpdateProfile);
@@ -60,6 +61,43 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       AppLogger.e(_m, 'Session check failed', e);
       emit(const AuthUnauthenticated());
+    }
+  }
+
+  Future<void> _onEmailLogin(
+    AuthEmailLoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    AppLogger.i(_m, 'Email login: ${event.email}');
+    emit(const AuthLoading());
+    try {
+      final result = await _authRepository.emailLogin(
+        email: event.email,
+        password: event.password,
+      );
+      final user = result.user;
+      if (user.role != event.role) {
+        AppLogger.w(_m, 'Role mismatch: expected ${event.role}, got ${user.role}');
+        emit(AuthError(
+          'This email is registered as a ${user.role}. '
+          'Please go back and select the correct role.',
+        ));
+        return;
+      }
+      await _storage.saveTokens(
+        accessToken: result.tokens.accessToken,
+        refreshToken: result.tokens.refreshToken,
+        expiresIn: result.tokens.expiresIn,
+      );
+      await _storage.saveFullUser(user);
+      AppLogger.i(_m, 'Email login — ${user.mobile} (${user.role})');
+      getIt<LedgerSocketService>().connect(result.tokens.accessToken);
+      await getIt<PushNotificationService>().initialize();
+      getIt<NotificationBloc>().add(LoadUnreadCount());
+      emit(AuthAuthenticated(user));
+    } catch (e) {
+      AppLogger.e(_m, 'Email login failed', e);
+      emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 

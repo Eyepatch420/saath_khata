@@ -7,6 +7,7 @@ import '../../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/phone_entry_screen.dart';
+import '../../features/auth/presentation/screens/email_login_screen.dart';
 import '../../features/auth/presentation/screens/otp_verify_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../constants/app_colors.dart';
@@ -110,6 +111,7 @@ class AppRouter {
   static const String customerLinkRequestDetail = '/customer-link-request';
   static const String membershipTiers = '/membership-tiers';
   static const String bulkCharge = '/bulk-charge';
+  static const String emailLogin = '/email-login';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -120,6 +122,7 @@ class AppRouter {
     phoneEntry,
     otpVerify,
     login,
+    emailLogin,
     profileSetup,
     locationPicker,
   };
@@ -186,6 +189,13 @@ class AppRouter {
       GoRoute(
         path: login,
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: emailLogin,
+        builder: (context, state) {
+          final role = state.extra as String? ?? 'vendor';
+          return EmailLoginScreen(role: role);
+        },
       ),
       GoRoute(
         path: profileSetup,
