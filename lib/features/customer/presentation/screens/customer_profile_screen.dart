@@ -36,7 +36,7 @@ class CustomerProfileScreen extends StatelessWidget {
                 children: [
                   _buildAvatarSection(context, user),
                   const SizedBox(height: 32),
-                  _SectionHeader(label: l10n.accountSettings),
+                  _SectionHeader(label: 'Account Information'),
                   const SizedBox(height: 8),
                   _ProfileItem(
                     icon: Icons.person_outline_rounded,
@@ -50,6 +50,15 @@ class CustomerProfileScreen extends StatelessWidget {
                     title: l10n.changePassword,
                     onTap: () => context.push(AppRouter.changePassword),
                   ),
+                  _ProfileItem(
+                    icon: Icons.delete_outline_rounded,
+                    title: 'Delete Account',
+                    onTap: () => _confirmDeleteAccount(context),
+                    isDanger: true,
+                  ),
+                  const SizedBox(height: 20),
+                  _SectionHeader(label: l10n.accountSettings),
+                  const SizedBox(height: 8),
                   _ProfileItem(
                     icon: Icons.language_rounded,
                     title: l10n.appLanguage,
@@ -93,16 +102,6 @@ class CustomerProfileScreen extends StatelessWidget {
                       style: const TextStyle(
                         color: AppColors.error,
                         fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => _confirmDeleteAccount(context),
-                    child: const Text(
-                      'Delete Account',
-                      style: TextStyle(
-                        color: AppColors.error,
-                        fontSize: 13,
                       ),
                     ),
                   ),
@@ -387,20 +386,25 @@ class _ProfileItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback? onTap;
+  final bool isDanger;
 
   const _ProfileItem({
     required this.icon,
     required this.title,
     this.onTap,
+    this.isDanger = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = isDanger ? AppColors.error : AppColors.primary;
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: ListTile(
-        leading: Icon(icon, color: AppColors.primary),
-        title: Text(title, style: AppTypography.bodyLarge),
+        leading: Icon(icon, color: color),
+        title: Text(title,
+            style: AppTypography.bodyLarge.copyWith(
+                color: isDanger ? AppColors.error : null)),
         trailing: const Icon(Icons.chevron_right_rounded),
         onTap: onTap,
         tileColor: Theme.of(context).colorScheme.surface,

@@ -35,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
             children: [
               const _ProfileHeader(),
               const SizedBox(height: 24),
-              _SectionLabel(label: l10n.accountSettings),
+              _SectionLabel(label: 'Account Information'),
               const SizedBox(height: 8),
               _SettingsTile(
                 icon: Icons.person_outline_rounded,
@@ -55,6 +55,16 @@ class SettingsScreen extends StatelessWidget {
                 subtitle: 'Update your account password',
                 onTap: () => context.push(AppRouter.changePassword),
               ),
+              _SettingsTile(
+                icon: Icons.delete_outline_rounded,
+                title: 'Delete Account',
+                subtitle: 'Permanently delete your account and all data',
+                onTap: () => _confirmDeleteAccount(context),
+                isDanger: true,
+              ),
+              const SizedBox(height: 12),
+              _SectionLabel(label: l10n.accountSettings),
+              const SizedBox(height: 8),
               _SettingsTile(
                 icon: Icons.language_rounded,
                 title: l10n.appLanguage,
@@ -116,41 +126,23 @@ class SettingsScreen extends StatelessWidget {
               BlocBuilder<AuthBloc, AuthState>(
                 builder: (context, state) {
                   final isLoading = state is AuthLoading;
-                  return Column(
-                    children: [
-                      TextButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => _confirmLogout(context, l10n),
-                        child: isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2),
-                              )
-                            : Text(
-                                l10n.logout,
-                                style: const TextStyle(
-                                  color: AppColors.error,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
-                      const SizedBox(height: 4),
-                      TextButton(
-                        onPressed: isLoading
-                            ? null
-                            : () => _confirmDeleteAccount(context),
-                        child: const Text(
-                          'Delete Account',
-                          style: TextStyle(
-                            color: AppColors.error,
-                            fontSize: 13,
+                  return TextButton(
+                    onPressed: isLoading
+                        ? null
+                        : () => _confirmLogout(context, l10n),
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(
+                            l10n.logout,
+                            style: const TextStyle(
+                              color: AppColors.error,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ),
-                    ],
                   );
                 },
               ),
@@ -442,16 +434,19 @@ class _SettingsTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final VoidCallback onTap;
+  final bool isDanger;
 
   const _SettingsTile({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.isDanger = false,
   });
 
   @override
   Widget build(BuildContext context) {
+    final color = isDanger ? AppColors.error : AppColors.primary;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: ListTile(
@@ -459,8 +454,10 @@ class _SettingsTile extends StatelessWidget {
         tileColor: Theme.of(context).colorScheme.surface,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        leading: Icon(icon, color: AppColors.primary),
-        title: Text(title, style: AppTypography.labelLarge),
+        leading: Icon(icon, color: color),
+        title: Text(title,
+            style: AppTypography.labelLarge.copyWith(
+                color: isDanger ? AppColors.error : null)),
         subtitle: Text(subtitle, style: AppTypography.bodySmall),
         trailing:
             const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
