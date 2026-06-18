@@ -119,6 +119,7 @@ class _ProfileScaffold extends StatelessWidget {
           final photoUrl =
               snap.data?.profilePhotoUrl ?? preview.profilePhotoUrl;
           final upiId = snap.data?.upiId;
+          final email = snap.data?.email;
           final displayName =
               businessName?.isNotEmpty == true ? businessName! : name;
           final initial = displayName.isNotEmpty
@@ -145,6 +146,7 @@ class _ProfileScaffold extends StatelessWidget {
                   name: name,
                   category: category,
                   address: address,
+                  email: email,
                   upiId: upiId,
                 ),
               ),
@@ -269,6 +271,7 @@ class _ProfileScaffold extends StatelessWidget {
     required String name,
     required String? category,
     required String? address,
+    required String? email,
     required String? upiId,
   }) {
     return Padding(
@@ -303,6 +306,7 @@ class _ProfileScaffold extends StatelessWidget {
           _InfoSection(
             accent: accent,
             address: address,
+            email: email,
             upiId: upiId,
             isLoadingExtra: snap.connectionState == ConnectionState.waiting,
           ),
@@ -359,12 +363,14 @@ class _ProfileScaffold extends StatelessWidget {
 class _InfoSection extends StatelessWidget {
   final Color accent;
   final String? address;
+  final String? email;
   final String? upiId;
   final bool isLoadingExtra;
 
   const _InfoSection({
     required this.accent,
     required this.address,
+    required this.email,
     required this.upiId,
     required this.isLoadingExtra,
   });
@@ -380,6 +386,16 @@ class _InfoSection extends StatelessWidget {
         label: 'Address',
         value: address!,
         accent: accent,
+      ));
+    }
+
+    if (email != null && email!.isNotEmpty) {
+      items.add(_InfoItem(
+        icon: Icons.email_outlined,
+        label: 'Email',
+        value: email!,
+        accent: accent,
+        isCopyable: true,
       ));
     }
 
