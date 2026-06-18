@@ -78,6 +78,7 @@ class ApiEndpoints {
   // Link Requests
   static const String linkRequests = '/link-requests';
   static const String vendorSendLinkRequest = '/link-requests/vendor-send';
+  static const String customerSendLinkRequest = '/link-requests/customer-send';
   static const String pendingLinkRequests = '/link-requests/pending';
   static const String pendingCustomerLinkRequests = '/link-requests/pending-customer';
   static const String sentLinkRequests = '/link-requests/sent';

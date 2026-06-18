@@ -137,12 +137,16 @@ class VendorLinkItem extends Equatable {
   final VendorSummary vendor;
   final String createdAt;
 
+  /// True when the customer has sent a request that the vendor hasn't accepted yet.
+  final bool isPending;
+
   const VendorLinkItem({
     required this.linkId,
     required this.balance,
     this.nickname,
     required this.vendor,
     required this.createdAt,
+    this.isPending = false,
   });
 
   /// The display name: nickname if set, otherwise the business/login name.
@@ -159,8 +163,9 @@ class VendorLinkItem extends Equatable {
         nickname: json['nickname'] as String?,
         vendor: VendorSummary.fromJson(json['vendor'] as Map<String, dynamic>),
         createdAt: json['createdAt'] as String,
+        isPending: json['isPending'] as bool? ?? false,
       );
 
   @override
-  List<Object?> get props => [linkId, balance, nickname, vendor, createdAt];
+  List<Object?> get props => [linkId, balance, nickname, vendor, createdAt, isPending];
 }

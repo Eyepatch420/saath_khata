@@ -27,6 +27,25 @@ class LinkRequestRepositoryImpl implements LinkRequestRepository {
   }
 
   @override
+  Future<LinkRequestModel> customerSendByIdentifier({
+    required String vendorIdentifier,
+    String? nickname,
+    String? message,
+  }) async {
+    try {
+      final body = <String, dynamic>{'vendorIdentifier': vendorIdentifier};
+      if (nickname != null && nickname.isNotEmpty) body['nickname'] = nickname;
+      if (message != null && message.isNotEmpty) body['message'] = message;
+      final response = await _api.post(ApiEndpoints.customerSendLinkRequest, data: body);
+      return LinkRequestModel.fromJson(
+        Map<String, dynamic>.from(ApiClient.extractData(response) as Map),
+      );
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<LinkRequestModel> acceptRequest(String requestId) async {
     try {
       final response =

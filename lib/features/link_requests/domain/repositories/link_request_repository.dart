@@ -7,6 +7,13 @@ abstract class LinkRequestRepository {
     String? message,
   });
 
+  /// Customer sends a request to a vendor by phone number or email.
+  Future<LinkRequestModel> customerSendByIdentifier({
+    required String vendorIdentifier,
+    String? nickname,
+    String? message,
+  });
+
   /// Vendor sends a request to a customer (by email or 10-digit phone).
   Future<LinkRequestModel> vendorSendRequest({
     required String customerIdentifier,

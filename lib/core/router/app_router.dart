@@ -62,6 +62,9 @@ import '../../features/search/presentation/screens/vendor_profile_screen.dart';
 import '../../features/search/domain/models/vendor_search_result.dart';
 import '../../features/link_requests/presentation/screens/vendor_link_request_screen.dart';
 import '../../features/link_requests/presentation/screens/customer_link_request_screen.dart';
+import '../../features/link_requests/domain/repositories/link_request_repository.dart';
+import '../../shared/widgets/app_toast.dart';
+import '../../core/constants/app_typography.dart';
 import '../../features/memberships/presentation/screens/membership_tiers_screen.dart';
 import '../../features/bulk_charge/presentation/screens/bulk_charge_screen.dart';
 import '../di/injection.dart';
@@ -669,5 +672,114 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
 }
 
 void showCustomerAddVendorSheet(BuildContext context) {
-  context.push(AppRouter.vendorSearch);
+  final identifierCtrl = TextEditingController();
+  final nicknameCtrl = TextEditingController();
+  bool isLoading = false;
+
+  showModalBottomSheet(
+    context: context,
+    useRootNavigator: true,
+    isScrollControlled: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+    ),
+    builder: (ctx) => StatefulBuilder(
+      builder: (ctx, setSheetState) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Add a Vendor', style: AppTypography.h3),
+            const SizedBox(height: 4),
+            Text(
+              'Find by phone number or email',
+              style: AppTypography.bodySmall
+                  .copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: identifierCtrl,
+              keyboardType: TextInputType.text,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Phone or email',
+                hintText: '10-digit mobile or email address',
+                prefixIcon: Icon(Icons.storefront_outlined),
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextField(
+              controller: nicknameCtrl,
+              textCapitalization: TextCapitalization.words,
+              decoration: const InputDecoration(
+                labelText: 'Nickname (optional)',
+                hintText: 'How you know this vendor',
+                prefixIcon: Icon(Icons.label_outline_rounded),
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        final identifier = identifierCtrl.text.trim();
+                        if (identifier.isEmpty) return;
+                        final nickname = nicknameCtrl.text.trim();
+                        setSheetState(() => isLoading = true);
+                        try {
+                          await getIt<LinkRequestRepository>()
+                              .customerSendByIdentifier(
+                            vendorIdentifier: identifier,
+                            nickname: nickname.isEmpty ? null : nickname,
+                          );
+                          if (context.mounted) {
+                            Navigator.pop(ctx);
+                            AppToast.show(
+                              context,
+                              'Request sent! They will be notified to confirm.',
+                              type: ToastType.success,
+                            );
+                          }
+                        } catch (e) {
+                          setSheetState(() => isLoading = false);
+                          if (context.mounted) {
+                            AppToast.show(
+                              context,
+                              e.toString().replaceFirst('Exception: ', ''),
+                              type: ToastType.error,
+                            );
+                          }
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.customerAccent,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
+                      )
+                    : const Text(
+                        'Send Request',
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }
