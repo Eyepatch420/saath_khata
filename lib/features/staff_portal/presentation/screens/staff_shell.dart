@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/animations/rive/app_rive_icon.dart';
 import '../../../../shared/widgets/app_bottom_nav_bar.dart';
 import '../../../../core/router/app_router.dart';
@@ -22,14 +23,19 @@ class StaffMainWrapper extends StatelessWidget {
       child: Scaffold(
         extendBody: true,
         body: child,
-        bottomNavigationBar: AppBottomNavBar(
-          currentIndex: _selectedIndex(context),
-          onTap: (i) => _onTap(context, i),
-          items: const [
-            AppNavItem(riveIcon: AppRiveIcon.home, label: 'Home'),
-            AppNavItem(riveIcon: AppRiveIcon.message, label: 'Customers'),
-            AppNavItem(riveIcon: AppRiveIcon.zap, label: 'My Pay'),
-          ],
+        bottomNavigationBar: Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx)!;
+            return AppBottomNavBar(
+              currentIndex: _selectedIndex(ctx),
+              onTap: (i) => _onTap(ctx, i),
+              items: [
+                AppNavItem(riveIcon: AppRiveIcon.home, label: l10n.navHome),
+                AppNavItem(riveIcon: AppRiveIcon.message, label: l10n.customersTitle),
+                AppNavItem(riveIcon: AppRiveIcon.zap, label: l10n.myPay),
+              ],
+            );
+          },
         ),
       ),
     );

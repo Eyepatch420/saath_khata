@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
 import '../../../../../../core/di/injection.dart';
+import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../shared/models/staff_model.dart';
 import '../../../../../../shared/widgets/app_toast.dart';
 import '../../../../domain/repositories/staff_repository.dart';
@@ -31,11 +32,12 @@ class _AppAccessCardState extends State<AppAccessCard> {
         _canLogin = updated.canLogin;
         _loading = false;
       });
+      final l10n = AppLocalizations.of(context)!;
       AppToast.show(
         context,
         value
-            ? '${widget.staff.name} can now log in with ${widget.staff.phone}'
-            : 'App access revoked for ${widget.staff.name}',
+            ? l10n.appAccessGranted(widget.staff.name, widget.staff.phone)
+            : l10n.appAccessRevoked(widget.staff.name),
         type: value ? ToastType.success : ToastType.info,
       );
     } catch (e) {
@@ -48,6 +50,7 @@ class _AppAccessCardState extends State<AppAccessCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final surface = Theme.of(context).colorScheme.surface;
     return Container(
       padding: const EdgeInsets.all(16),
@@ -74,9 +77,9 @@ class _AppAccessCardState extends State<AppAccessCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('App access', style: AppTypography.labelLarge),
+                    Text(l10n.appAccess, style: AppTypography.labelLarge),
                     Text(
-                      _canLogin ? 'Active · ${widget.staff.phone}' : 'Disabled',
+                      _canLogin ? l10n.appAccessActive(widget.staff.phone) : l10n.appAccessDisabled,
                       style: AppTypography.bodySmall
                           .copyWith(color: AppColors.textSecondary),
                     ),
@@ -99,10 +102,7 @@ class _AppAccessCardState extends State<AppAccessCard> {
           ),
           const SizedBox(height: 8),
           Text(
-            'When on, ${widget.staff.name} logs in with their own number '
-            '(${widget.staff.phone}) and can record deliveries & payments and '
-            'show their own QR — but cannot change attendance, add customers, '
-            'or see other staff.',
+            l10n.appAccessDescription(widget.staff.name, widget.staff.phone),
             style: AppTypography.bodySmall
                 .copyWith(color: AppColors.textHint, height: 1.4),
           ),

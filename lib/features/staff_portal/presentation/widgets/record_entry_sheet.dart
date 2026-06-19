@@ -89,12 +89,13 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
       _isDelivery ? _deliveryTotal : (double.tryParse(_amountCtrl.text) ?? 0);
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_customer == null) {
-      AppToast.show(context, 'Select a customer first', type: ToastType.error);
+      AppToast.show(context, l10n.selectCustomerFirst, type: ToastType.error);
       return;
     }
     if (_amount <= 0) {
-      AppToast.show(context, 'Enter a valid amount', type: ToastType.error);
+      AppToast.show(context, l10n.enterValidAmount, type: ToastType.error);
       return;
     }
     setState(() => _submitting = true);
@@ -117,11 +118,12 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
       );
       if (!mounted) return;
       Navigator.pop(context, true);
+      final l10n = AppLocalizations.of(context)!;
       AppToast.show(
         context,
         _isDelivery
-            ? 'Delivery recorded for ${_customer!.displayName}'
-            : 'Payment collected from ${_customer!.displayName}',
+            ? l10n.deliveryRecordedFor(_customer!.displayName)
+            : l10n.paymentCollectedFrom(_customer!.displayName),
         type: ToastType.success,
       );
     } catch (e) {
@@ -134,6 +136,7 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final accent = _isDelivery ? AppColors.error : AppColors.success;
     return Padding(
       padding: EdgeInsets.only(
@@ -163,15 +166,13 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(_isDelivery ? 'Record Delivery' : 'Collect Payment',
+                Text(_isDelivery ? l10n.recordDelivery : l10n.collectPayment,
                     style: AppTypography.h3),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              _isDelivery
-                  ? 'Adds a credit to the customer’s ledger'
-                  : 'Records cash collected from the customer',
+              _isDelivery ? l10n.addsCredit : l10n.recordsCash,
               style:
                   AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
             ),
@@ -203,9 +204,9 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                       controller: _qtyCtrl,
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        labelText: 'Qty',
-                        prefixIcon: Icon(Icons.numbers_rounded),
+                      decoration: InputDecoration(
+                        labelText: l10n.qty,
+                        prefixIcon: const Icon(Icons.numbers_rounded),
                       ),
                     ),
                   ),
@@ -227,7 +228,7 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
               Align(
                 alignment: Alignment.centerRight,
                 child: Text(
-                  'Total: ₹${_deliveryTotal.toStringAsFixed(0)}',
+                  l10n.totalRupees(_deliveryTotal.toStringAsFixed(0)),
                   style: AppTypography.h3.copyWith(color: accent),
                 ),
               ),
@@ -236,17 +237,17 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                 controller: _amountCtrl,
                 keyboardType:
                     const TextInputType.numberWithOptions(decimal: true),
-                decoration: const InputDecoration(
-                  labelText: 'Amount ₹',
-                  prefixIcon: Icon(Icons.currency_rupee_rounded),
+                decoration: InputDecoration(
+                  labelText: l10n.amountRupees,
+                  prefixIcon: const Icon(Icons.currency_rupee_rounded),
                 ),
               ),
               const SizedBox(height: 14),
               TextField(
                 controller: _noteCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Note (optional)',
-                  prefixIcon: Icon(Icons.note_outlined),
+                decoration: InputDecoration(
+                  labelText: l10n.noteOptional,
+                  prefixIcon: const Icon(Icons.note_outlined),
                 ),
               ),
             ],

@@ -198,7 +198,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           IconButton(
             onPressed: () => _confirmDeleteLink(context, l10n),
             icon: const Icon(Icons.link_off_rounded),
-            tooltip: 'Remove ledger',
+            tooltip: l10n.removeLedgerConfirmation,
             color: AppColors.error,
           ),
           IconButton(
@@ -271,16 +271,16 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
-        title: const Text('Remove ledger?'),
+        title: Text(l10n.removeLedgerConfirmation),
         content: Text(
           widget.isVendorView
-              ? 'This will deactivate your link with ${widget.customerName}. Both parties will lose access to this shared ledger.'
-              : 'This will remove your connection with ${widget.customerName}.',
+              ? l10n.removeLedgerVendorContent(widget.customerName)
+              : l10n.removeLedgerCustomerContent(widget.customerName),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -303,7 +303,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
               }
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Remove'),
+            child: Text(l10n.removeButtonLabel),
           ),
         ],
       ),

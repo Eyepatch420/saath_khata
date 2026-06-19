@@ -540,7 +540,7 @@ class _ReviewCardState extends State<_ReviewCard> {
                       color: AppColors.warning.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text('Please check',
+                    child: Text(l10n.voicePleaseCheck,
                         style: AppTypography.bodySmall
                             .copyWith(color: AppColors.warning)),
                   ),

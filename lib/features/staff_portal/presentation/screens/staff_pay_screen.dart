@@ -30,11 +30,11 @@ class StaffPayScreen extends StatelessWidget {
               if (value == 'delete') _confirmDeleteAccount(context);
             },
             itemBuilder: (_) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: 'logout',
                 child: ListTile(
-                  leading: Icon(Icons.logout_rounded),
-                  title: Text('Log out'),
+                  leading: const Icon(Icons.logout_rounded),
+                  title: Text(AppLocalizations.of(context)!.logOut),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -120,24 +120,27 @@ class StaffPayScreen extends StatelessWidget {
     showDialog(
       context: context,
       useRootNavigator: true,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Log out'),
-        content: const Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx, rootNavigator: true).pop();
-              context.read<AuthBloc>().add(const AuthLogoutRequested());
-            },
-            child: const Text('Log out',
-                style: TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return AlertDialog(
+          title: Text(l10n.logOut),
+          content: Text(l10n.areYouSureLogout),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx, rootNavigator: true).pop();
+                context.read<AuthBloc>().add(const AuthLogoutRequested());
+              },
+              child: Text(l10n.logOut,
+                  style: const TextStyle(color: AppColors.error)),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -148,6 +151,7 @@ class _PaySummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final surface = Theme.of(context).colorScheme.surface;
     return Container(
       padding: const EdgeInsets.all(20),
@@ -166,14 +170,14 @@ class _PaySummary extends StatelessWidget {
             children: [
               Expanded(
                 child: _Stat(
-                  label: 'Unpaid salary',
+                  label: l10n.unpaidSalary,
                   value: '₹${me.unpaidSalary.toStringAsFixed(0)}',
                   color: AppColors.success,
                 ),
               ),
               Expanded(
                 child: _Stat(
-                  label: 'Advance taken',
+                  label: l10n.advanceTaken,
                   value: '₹${me.advanceTaken.toStringAsFixed(0)}',
                   color: AppColors.error,
                 ),
@@ -232,7 +236,7 @@ class _QrCardState extends State<_QrCard> {
     setState(() => _uploading = false);
     AppToast.show(
       context,
-      err ?? 'QR uploaded',
+      err ?? AppLocalizations.of(context)!.qrUploaded,
       type: err == null ? ToastType.success : ToastType.error,
     );
   }
@@ -247,7 +251,7 @@ class _QrCardState extends State<_QrCard> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Scan to pay ${widget.me.name}',
+              Text(AppLocalizations.of(context)!.scanToPayName(widget.me.name),
                   style: AppTypography.labelLarge),
               const SizedBox(height: 16),
               ClipRRect(
@@ -293,7 +297,7 @@ class _QrCardState extends State<_QrCard> {
           ),
           const SizedBox(height: 4),
           Text(
-            'Show this QR to a customer to collect payment directly to you.',
+            AppLocalizations.of(context)!.showQrToCollect,
             style:
                 AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
           ),
@@ -323,7 +327,7 @@ class _QrCardState extends State<_QrCard> {
                               strokeWidth: 2, color: Colors.white),
                         )
                       : const Icon(Icons.upload_rounded, size: 18),
-                  label: Text(qr == null ? 'Upload QR' : 'Replace'),
+                  label: Text(qr == null ? AppLocalizations.of(context)!.uploadQr : AppLocalizations.of(context)!.replaceQr),
                 ),
               ),
             ],
@@ -396,7 +400,7 @@ class _SalaryHistoryState extends State<_SalaryHistory> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(isSalary ? 'Salary' : 'Advance',
+                        Text(isSalary ? AppLocalizations.of(context)!.salarySingle : AppLocalizations.of(context)!.advanceSingle,
                             style: AppTypography.labelLarge),
                         Text(
                           DateFormat('d MMM yyyy').format(t.createdAt),

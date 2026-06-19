@@ -51,7 +51,7 @@ class _SalaryHistorySectionState extends State<SalaryHistorySection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Payment History', style: AppTypography.labelLarge),
+        Text(l10n.paymentHistoryTitle, style: AppTypography.labelLarge),
         const SizedBox(height: 12),
         FutureBuilder<List<StaffPayTransaction>>(
           future: _future,

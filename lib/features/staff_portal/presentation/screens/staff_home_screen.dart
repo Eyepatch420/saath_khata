@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -16,6 +17,7 @@ class StaffHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final authState = context.read<AuthBloc>().state;
     final user = authState is AuthAuthenticated ? authState.user : null;
     final business = user?.effectiveBusinessName ?? 'SaathKhata';
@@ -26,7 +28,7 @@ class StaffHomeScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(business, style: AppTypography.h3),
-            Text('Staff · ${user?.name ?? ''}',
+            Text(l10n.staffRoleSubtitle(user?.name ?? ''),
                 style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
           ],
         ),
@@ -51,16 +53,16 @@ class StaffHomeScreen extends StatelessWidget {
                 children: [
                   _ActionButton(
                     icon: Icons.local_shipping_rounded,
-                    label: 'Record Delivery',
-                    subtitle: 'Add a delivery to a customer’s ledger',
+                    label: l10n.recordDelivery,
+                    subtitle: l10n.recordDeliverySubtitle,
                     color: AppColors.error,
                     onTap: () => _record(context, EntryType.credit),
                   ),
                   const SizedBox(height: 14),
                   _ActionButton(
                     icon: Icons.payments_rounded,
-                    label: 'Collect Payment',
-                    subtitle: 'Record cash collected from a customer',
+                    label: l10n.collectPayment,
+                    subtitle: l10n.collectPaymentSubtitle,
                     color: AppColors.success,
                     onTap: () => _record(context, EntryType.payment),
                   ),
@@ -68,10 +70,10 @@ class StaffHomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Customers', style: AppTypography.h3),
+                      Text(l10n.customersTitle, style: AppTypography.h3),
                       TextButton(
                         onPressed: () => context.go(AppRouter.staffCustomers),
-                        child: const Text('View all'),
+                        child: Text(l10n.viewAll2),
                       ),
                     ],
                   ),
@@ -80,7 +82,7 @@ class StaffHomeScreen extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 24),
                       child: Center(
-                        child: Text('No customers yet',
+                        child: Text(l10n.noCustomersStaff,
                             style: AppTypography.bodyMedium
                                 .copyWith(color: AppColors.textHint)),
                       ),

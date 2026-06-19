@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/router/app_router.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../cubit/staff_portal_cubit.dart';
@@ -14,8 +15,9 @@ class StaffCustomersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Customers')),
+      appBar: AppBar(title: Text(l10n.customersTitle)),
       body: SafeArea(
         child: BlocBuilder<StaffPortalCubit, StaffPortalState>(
           builder: (context, state) {
@@ -30,7 +32,7 @@ class StaffCustomersScreen extends StatelessWidget {
             }
             if (state.customers.isEmpty) {
               return Center(
-                child: Text('No customers yet',
+                child: Text(l10n.noCustomersStaff,
                     style: AppTypography.bodyMedium
                         .copyWith(color: AppColors.textHint)),
               );
@@ -68,14 +70,14 @@ class StaffCustomersScreen extends StatelessWidget {
                               Text(c.displayName,
                                   style: AppTypography.labelLarge,
                                   overflow: TextOverflow.ellipsis),
-                              Text('₹${c.balance.toStringAsFixed(0)} due',
+                              Text(l10n.balanceDue(c.balance.toStringAsFixed(0)),
                                   style: AppTypography.bodySmall
                                       .copyWith(color: AppColors.error)),
                             ],
                           ),
                         ),
                         IconButton(
-                          tooltip: 'Record delivery',
+                          tooltip: l10n.recordDeliveryTooltip,
                           icon: const Icon(Icons.local_shipping_rounded,
                               color: AppColors.error),
                           onPressed: () {
@@ -91,7 +93,7 @@ class StaffCustomersScreen extends StatelessWidget {
                           },
                         ),
                         IconButton(
-                          tooltip: 'View ledger',
+                          tooltip: l10n.viewLedgerTooltip,
                           icon: const Icon(Icons.chevron_right_rounded,
                               color: AppColors.textHint),
                           onPressed: () => context.push(

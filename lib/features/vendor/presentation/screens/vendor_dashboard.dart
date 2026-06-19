@@ -151,7 +151,7 @@ class VendorDashboardView extends StatelessWidget {
                           child: _ActionCard(
                             icon: Icons.notifications_active_rounded,
                             label: l10n.remindAll,
-                            subtitle: 'Notify customers with dues',
+                            subtitle: l10n.notifyCustomersWithDues,
                             gradient: const LinearGradient(
                               colors: [Color(0xFF00C896), Color(0xFF00A878)],
                               begin: Alignment.topLeft,
@@ -169,7 +169,7 @@ class VendorDashboardView extends StatelessWidget {
                           child: _ActionCard(
                             icon: Icons.person_add_rounded,
                             label: l10n.addNew,
-                            subtitle: 'Link a new customer',
+                            subtitle: l10n.linkANewCustomer,
                             gradient: const LinearGradient(
                               colors: [Color(0xFF1A3A4A), Color(0xFF0F2027)],
                               begin: Alignment.topLeft,
@@ -184,8 +184,8 @@ class VendorDashboardView extends StatelessWidget {
                     const SizedBox(height: 12),
                     _ActionCard(
                       icon: Icons.bolt_rounded,
-                      label: 'Daily Charge',
-                      subtitle: 'Set quantities & charge all at once',
+                      label: l10n.dailyCharge,
+                      subtitle: l10n.dailyChargeSubtitle,
                       gradient: const LinearGradient(
                         colors: [Color(0xFF7B2FF7), Color(0xFF4A00E0)],
                         begin: Alignment.topLeft,
@@ -221,10 +221,10 @@ class VendorDashboardView extends StatelessWidget {
                     ),
                     if (state.myVendors.isNotEmpty) ...[
                       const SizedBox(height: 32),
-                      Text('My Vendors', style: AppTypography.h3),
+                      Text(l10n.myVendorsSection, style: AppTypography.h3),
                       const SizedBox(height: 4),
                       Text(
-                        'Shops you buy from',
+                        l10n.shopsYouBuyFrom,
                         style: AppTypography.bodySmall
                             .copyWith(color: AppColors.textSecondary),
                       ),
@@ -285,7 +285,7 @@ void showVendorAddCustomerSheet(BuildContext context) {
             Text(l10n.addNewCustomer, style: AppTypography.h3),
             const SizedBox(height: 4),
             Text(
-              'Find by phone number or email',
+              l10n.findByPhoneOrEmailHint,
               style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
@@ -293,20 +293,20 @@ void showVendorAddCustomerSheet(BuildContext context) {
               controller: identifierCtrl,
               keyboardType: TextInputType.text,
               autofocus: true,
-              decoration: const InputDecoration(
-                labelText: 'Phone or email',
-                hintText: '10-digit mobile or email address',
-                prefixIcon: Icon(Icons.person_search_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.phoneOrEmailLabel,
+                hintText: l10n.phoneMobileOrEmail,
+                prefixIcon: const Icon(Icons.person_search_outlined),
               ),
             ),
             const SizedBox(height: 14),
             TextField(
               controller: nicknameCtrl,
               textCapitalization: TextCapitalization.words,
-              decoration: const InputDecoration(
-                labelText: 'Nickname (optional)',
-                hintText: 'How you know this customer',
-                prefixIcon: Icon(Icons.label_outline_rounded),
+              decoration: InputDecoration(
+                labelText: l10n.nicknameOptionalLabel,
+                hintText: l10n.howYouKnowCustomer,
+                prefixIcon: const Icon(Icons.label_outline_rounded),
               ),
             ),
             const SizedBox(height: 24),
@@ -329,7 +329,7 @@ void showVendorAddCustomerSheet(BuildContext context) {
                             Navigator.pop(ctx);
                             AppToast.show(
                               context,
-                              'Request sent! They will be notified to confirm.',
+                              l10n.requestSentWillBeNotified,
                               type: ToastType.success,
                             );
                           }
@@ -647,6 +647,7 @@ class _PendingRequestsSectionState extends State<_PendingRequestsSection> {
             .toList();
         if (pending.isEmpty) return const SizedBox.shrink();
 
+        final l10n = AppLocalizations.of(context)!;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -655,13 +656,13 @@ class _PendingRequestsSectionState extends State<_PendingRequestsSection> {
                 const Icon(Icons.hourglass_top_rounded,
                     size: 16, color: AppColors.textSecondary),
                 const SizedBox(width: 6),
-                Text('Awaiting Acceptance',
+                Text(l10n.awaitingAcceptanceTitle,
                     style: AppTypography.h3),
               ],
             ),
             const SizedBox(height: 4),
             Text(
-              'These customers haven\'t confirmed yet',
+              l10n.customersHaventConfirmed,
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textSecondary),
             ),
@@ -728,13 +729,13 @@ class _PendingRequestTile extends StatelessWidget {
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.schedule_rounded,
+              children: [
+                const Icon(Icons.schedule_rounded,
                     size: 12, color: Color(0xFF856404)),
-                SizedBox(width: 4),
+                const SizedBox(width: 4),
                 Text(
-                  'Pending',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.pendingBadge,
+                  style: const TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF856404),

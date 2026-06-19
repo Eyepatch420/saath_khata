@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/services/statement_pdf_service.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Shows a bottom sheet for picking a statement date range.
 /// Returns the selected [StatementDateRange] or null if dismissed.
@@ -40,10 +41,10 @@ class _DateRangeSheet extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            Text('Export Statement', style: AppTypography.h3),
+            Text(AppLocalizations.of(context)!.exportStatementTitle, style: AppTypography.h3),
             const SizedBox(height: 4),
             Text(
-              'Choose the date range to include in the PDF.',
+              AppLocalizations.of(context)!.chooseExportDateRange,
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textSecondary),
             ),
@@ -64,22 +65,23 @@ class _RangeOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final (icon, subtitle) = switch (range) {
       StatementDateRange.last7Days => (
           Icons.calendar_view_week_rounded,
-          'Entries from the past 7 days'
+          l10n.last7DaysRange,
         ),
       StatementDateRange.last30Days => (
           Icons.calendar_month_rounded,
-          'Entries from the past 30 days'
+          l10n.last30DaysRange,
         ),
       StatementDateRange.last3Months => (
           Icons.date_range_rounded,
-          'Entries from the past 3 months'
+          l10n.last3MonthsRange,
         ),
       StatementDateRange.allTime => (
           Icons.all_inclusive_rounded,
-          'Complete ledger history'
+          l10n.completeLedgerHistory,
         ),
     };
 

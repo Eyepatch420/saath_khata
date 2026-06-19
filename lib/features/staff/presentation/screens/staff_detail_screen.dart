@@ -431,6 +431,7 @@ class _AttendanceCalendarState extends State<_AttendanceCalendar> {
         months.indexWhere((d) => d.year == widget.year && d.month == widget.month);
     if (selectedIndex < 0) selectedIndex = months.length - 1;
 
+    final l10n = AppLocalizations.of(context)!;
     final locale = Localizations.localeOf(context).toString();
 
     showModalBottomSheet(
@@ -454,7 +455,7 @@ class _AttendanceCalendarState extends State<_AttendanceCalendar> {
                     children: [
                       TextButton(
                         onPressed: () => Navigator.pop(ctx),
-                        child: const Text('Cancel'),
+                        child: Text(l10n.cancel),
                       ),
                       Container(
                         width: 40,
