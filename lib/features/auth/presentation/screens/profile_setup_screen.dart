@@ -32,10 +32,18 @@ class ProfileSetupScreen extends StatefulWidget {
 }
 
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
-  static const List<String> _vendorCategories = [
-    'Milk / Dairy', 'Press / Dhobi', 'Maid / Cook', 'Newspaper', 'Water Can',
-    'Tiffin / Food', 'Kirana / Grocery', 'Salon / Parlour',
-    'Construction Labour', 'Transport / Auto', 'Other',
+  List<String> _vendorCategories(AppLocalizations l10n) => [
+    l10n.businessCategoryMilkDairy,
+    l10n.businessCategoryPressDhobi,
+    l10n.businessCategoryMaidCook,
+    l10n.businessCategoryNewspaper,
+    l10n.businessCategoryWaterCan,
+    l10n.businessCategoryTiffinFood,
+    l10n.businessCategoryKiranaGrocery,
+    l10n.businessCategorySalonParlour,
+    l10n.businessCategoryConstructionLabour,
+    l10n.businessCategoryTransportAuto,
+    l10n.businessCategoryOther,
   ];
 
   final _picker = ImagePicker();
@@ -63,7 +71,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final extra = GoRouterState.of(context).extra as Map<String, dynamic>? ?? {};
+    final extra =
+        GoRouterState.of(context).extra as Map<String, dynamic>? ?? {};
     _signupToken = extra['signupToken'] as String? ?? '';
     _phone = extra['phone'] as String? ?? '';
   }
@@ -84,7 +93,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     Navigator.pop(context);
     try {
       final xFile = await _picker.pickImage(
-        source: source, imageQuality: 80, maxWidth: 800,
+        source: source,
+        imageQuality: 80,
+        maxWidth: 800,
       );
       if (xFile != null) setState(() => _pickedImage = xFile);
     } catch (_) {}
@@ -103,26 +114,40 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           children: [
             const SizedBox(height: 8),
             Container(
-              width: 40, height: 4,
+              width: 40,
+              height: 4,
               decoration: BoxDecoration(
-                color: AppColors.divider, borderRadius: BorderRadius.circular(2),
+                color: AppColors.divider,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
             const SizedBox(height: 16),
             ListTile(
-              leading: const Icon(Icons.camera_alt_rounded, color: AppColors.primary),
+              leading: const Icon(
+                Icons.camera_alt_rounded,
+                color: AppColors.primary,
+              ),
               title: Text(AppLocalizations.of(context)!.takePhoto),
               onTap: () => _pickImage(ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_rounded, color: AppColors.primary),
+              leading: const Icon(
+                Icons.photo_library_rounded,
+                color: AppColors.primary,
+              ),
               title: Text(AppLocalizations.of(context)!.chooseFromGallery),
               onTap: () => _pickImage(ImageSource.gallery),
             ),
             if (_pickedImage != null)
               ListTile(
-                leading: const Icon(Icons.delete_rounded, color: AppColors.error),
-                title: Text(AppLocalizations.of(context)!.removePhoto, style: const TextStyle(color: AppColors.error)),
+                leading: const Icon(
+                  Icons.delete_rounded,
+                  color: AppColors.error,
+                ),
+                title: Text(
+                  AppLocalizations.of(context)!.removePhoto,
+                  style: const TextStyle(color: AppColors.error),
+                ),
                 onTap: () {
                   setState(() => _pickedImage = null);
                   Navigator.pop(context);
@@ -138,7 +163,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   // ─── Photo upload (after signup) ──────────────────────────────────────────
 
   Future<void> _uploadPhotoThenNavigate(AuthAuthenticated state) async {
-    final destination = state.user.isVendor ? AppRouter.vendorHome : AppRouter.customerHome;
+    final destination = state.user.isVendor
+        ? AppRouter.vendorHome
+        : AppRouter.customerHome;
     if (_pickedImage == null) {
       if (mounted) context.go(destination);
       return;
@@ -152,7 +179,10 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           contentType: DioMediaType('image', 'jpeg'),
         ),
       });
-      await getIt<ApiClient>().postFormData(ApiEndpoints.uploadPhoto, formData: formData);
+      await getIt<ApiClient>().postFormData(
+        ApiEndpoints.uploadPhoto,
+        formData: formData,
+      );
     } catch (_) {
       // Non-critical — user can set photo from profile later
     } finally {
@@ -166,14 +196,18 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   // ─── Submit ────────────────────────────────────────────────────────────────
 
   void _handleSignup(BuildContext ctx) {
+    final l10n = AppLocalizations.of(ctx)!;
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      AppToast.show(ctx, 'Please enter your name', type: ToastType.warning);
+      AppToast.show(ctx, l10n.nameRequired, type: ToastType.warning);
       return;
     }
     if (_signupToken.isEmpty) {
-      AppToast.show(ctx, 'Session expired. Please verify your phone again.',
-          type: ToastType.error);
+      AppToast.show(
+        ctx,
+        l10n.sessionExpiredVerifyPhoneAgain,
+        type: ToastType.error,
+      );
       context.go(AppRouter.phoneEntry);
       return;
     }
@@ -183,13 +217,19 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         signupToken: _signupToken,
         name: name,
         role: _role,
-        email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-        upiId: _upiController.text.trim().isEmpty ? null : _upiController.text.trim(),
+        email: _emailController.text.trim().isEmpty
+            ? null
+            : _emailController.text.trim(),
+        upiId: _upiController.text.trim().isEmpty
+            ? null
+            : _upiController.text.trim(),
         businessName: _businessNameController.text.trim().isEmpty
-            ? null : _businessNameController.text.trim(),
+            ? null
+            : _businessNameController.text.trim(),
         businessCategory: _selectedCategory,
         businessAddress: _businessAddressController.text.trim().isEmpty
-            ? null : _businessAddressController.text.trim(),
+            ? null
+            : _businessAddressController.text.trim(),
       ),
     );
   }
@@ -208,8 +248,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         }
       },
       builder: (ctx, state) {
+        final l10n = AppLocalizations.of(ctx)!;
         final isLoading = state is AuthLoading || _isUploadingPhoto;
-        final loadingLabel = _isUploadingPhoto ? 'Uploading photo...' : 'Create Account';
+        final loadingLabel = _isUploadingPhoto
+            ? l10n.uploadingPhotoLabel
+            : l10n.createAccountButton;
 
         return Scaffold(
           appBar: AppBar(title: Text(l10n.completeProfile)),
@@ -227,21 +270,34 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         children: [
                           CircleAvatar(
                             radius: 50,
-                            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+                            backgroundColor: AppColors.primary.withValues(
+                              alpha: 0.1,
+                            ),
                             backgroundImage: _pickedImage != null
-                                ? FileImage(File(_pickedImage!.path)) : null,
+                                ? FileImage(File(_pickedImage!.path))
+                                : null,
                             child: _pickedImage == null
-                                ? const Icon(Icons.person_outline, size: 50, color: AppColors.primary)
+                                ? const Icon(
+                                    Icons.person_outline,
+                                    size: 50,
+                                    color: AppColors.primary,
+                                  )
                                 : null,
                           ),
                           Positioned(
-                            bottom: 0, right: 0,
+                            bottom: 0,
+                            right: 0,
                             child: Container(
                               padding: const EdgeInsets.all(6),
                               decoration: const BoxDecoration(
-                                color: AppColors.primary, shape: BoxShape.circle,
+                                color: AppColors.primary,
+                                shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.camera_alt, size: 18, color: Colors.white),
+                              child: const Icon(
+                                Icons.camera_alt,
+                                size: 18,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ],
@@ -250,17 +306,28 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   ),
                   const SizedBox(height: 8),
                   Center(
-                    child: Text(l10n.tapToAddProfilePhoto,
-                        style: const TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                    child: Text(
+                      l10n.tapToAddProfilePhoto,
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 24),
 
                   // ─── Phone (pre-filled, locked) ────────────────────────
                   if (_phone.isNotEmpty) ...[
-                    Text('Phone Number', style: AppTypography.labelLarge),
+                    Text(
+                      l10n.phoneNumberLabel,
+                      style: AppTypography.labelLarge,
+                    ),
                     const SizedBox(height: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.surface,
                         borderRadius: BorderRadius.circular(12),
@@ -268,11 +335,19 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.phone_android_rounded, color: AppColors.textSecondary, size: 20),
+                          const Icon(
+                            Icons.phone_android_rounded,
+                            color: AppColors.textSecondary,
+                            size: 20,
+                          ),
                           const SizedBox(width: 12),
                           Text('+91 $_phone', style: AppTypography.bodyMedium),
                           const Spacer(),
-                          const Icon(Icons.lock_outline_rounded, color: AppColors.textHint, size: 16),
+                          const Icon(
+                            Icons.lock_outline_rounded,
+                            color: AppColors.textHint,
+                            size: 16,
+                          ),
                         ],
                       ),
                     ),
@@ -280,7 +355,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   ],
 
                   // ─── Role toggle ───────────────────────────────────────
-                  Text('I am a', style: AppTypography.labelLarge),
+                  Text(l10n.iAmA, style: AppTypography.labelLarge),
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -291,25 +366,38 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: _role == 'vendor'
-                                  ? AppColors.primary.withValues(alpha: 0.12) : Colors.transparent,
+                                  ? AppColors.primary.withValues(alpha: 0.12)
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: _role == 'vendor' ? AppColors.primary : AppColors.divider,
+                                color: _role == 'vendor'
+                                    ? AppColors.primary
+                                    : AppColors.divider,
                                 width: _role == 'vendor' ? 1.5 : 1,
                               ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.storefront_rounded,
-                                    color: _role == 'vendor' ? AppColors.primary : AppColors.textSecondary,
-                                    size: 18),
+                                Icon(
+                                  Icons.storefront_rounded,
+                                  color: _role == 'vendor'
+                                      ? AppColors.primary
+                                      : AppColors.textSecondary,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 6),
-                                Text('Vendor',
-                                    style: AppTypography.bodyMedium.copyWith(
-                                      color: _role == 'vendor' ? AppColors.primary : AppColors.textSecondary,
-                                      fontWeight: _role == 'vendor' ? FontWeight.w600 : FontWeight.normal,
-                                    )),
+                                Text(
+                                  l10n.vendor,
+                                  style: AppTypography.bodyMedium.copyWith(
+                                    color: _role == 'vendor'
+                                        ? AppColors.primary
+                                        : AppColors.textSecondary,
+                                    fontWeight: _role == 'vendor'
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -323,25 +411,40 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
                               color: _role == 'customer'
-                                  ? AppColors.customerAccent.withValues(alpha: 0.12) : Colors.transparent,
+                                  ? AppColors.customerAccent.withValues(
+                                      alpha: 0.12,
+                                    )
+                                  : Colors.transparent,
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: _role == 'customer' ? AppColors.customerAccent : AppColors.divider,
+                                color: _role == 'customer'
+                                    ? AppColors.customerAccent
+                                    : AppColors.divider,
                                 width: _role == 'customer' ? 1.5 : 1,
                               ),
                             ),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.person_search_rounded,
-                                    color: _role == 'customer' ? AppColors.customerAccent : AppColors.textSecondary,
-                                    size: 18),
+                                Icon(
+                                  Icons.person_search_rounded,
+                                  color: _role == 'customer'
+                                      ? AppColors.customerAccent
+                                      : AppColors.textSecondary,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 6),
-                                Text('Customer',
-                                    style: AppTypography.bodyMedium.copyWith(
-                                      color: _role == 'customer' ? AppColors.customerAccent : AppColors.textSecondary,
-                                      fontWeight: _role == 'customer' ? FontWeight.w600 : FontWeight.normal,
-                                    )),
+                                Text(
+                                  l10n.customer,
+                                  style: AppTypography.bodyMedium.copyWith(
+                                    color: _role == 'customer'
+                                        ? AppColors.customerAccent
+                                        : AppColors.textSecondary,
+                                    fontWeight: _role == 'customer'
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -363,7 +466,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                   // ─── Email (optional) ──────────────────────────────────
                   CustomTextField(
                     label: '${l10n.email} (optional)',
-                    hintText: 'you@example.com',
+                    hintText: l10n.emailPlaceholder,
                     prefixIcon: Icons.email_rounded,
                     keyboardType: TextInputType.emailAddress,
                     controller: _emailController,
@@ -379,19 +482,33 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       controller: _businessNameController,
                     ),
                     const SizedBox(height: 20),
-                    Text(l10n.businessCategory, style: AppTypography.labelLarge),
+                    Text(
+                      l10n.businessCategory,
+                      style: AppTypography.labelLarge,
+                    ),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<String>(
                       decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.category_rounded, color: AppColors.textSecondary),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        prefixIcon: Icon(
+                          Icons.category_rounded,
+                          color: AppColors.textSecondary,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
                       ),
                       hint: Text(l10n.selectCategory),
                       initialValue: _selectedCategory,
-                      items: _vendorCategories
-                          .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
+                      items: _vendorCategories(l10n)
+                          .map(
+                            (cat) =>
+                                DropdownMenuItem(value: cat, child: Text(cat)),
+                          )
                           .toList(),
-                      onChanged: isLoading ? null : (val) => setState(() => _selectedCategory = val),
+                      onChanged: isLoading
+                          ? null
+                          : (val) => setState(() => _selectedCategory = val),
                     ),
                     const SizedBox(height: 20),
                     LocationPickerTile(
@@ -399,12 +516,14 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       enabled: !isLoading,
                       onTap: () async {
                         final result = await context.push<LocationData>(
-                          AppRouter.locationPicker, extra: _pickedLocation,
+                          AppRouter.locationPicker,
+                          extra: _pickedLocation,
                         );
                         if (result != null) {
                           setState(() {
                             _pickedLocation = result;
-                            _businessAddressController.text = result.displayName;
+                            _businessAddressController.text =
+                                result.displayName;
                           });
                         }
                       },
@@ -432,12 +551,13 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       onPressed: isLoading ? null : () => ctx.pop(),
                       child: RichText(
                         text: TextSpan(
-                          text: 'Already have an account? ',
-                          style: AppTypography.bodyMedium
-                              .copyWith(color: AppColors.textSecondary),
+                          text: '${l10n.alreadyHaveAccount} ',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
                           children: [
                             TextSpan(
-                              text: 'Go back',
+                              text: l10n.goBackButton,
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.bold,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
+import '../../../../../../l10n/app_localizations.dart';
 import '../../../../domain/models/membership_tier.dart';
 
 /// Result returned by the discount editor sheet.
@@ -75,12 +76,13 @@ class _DiscountEditorSheetState extends State<DiscountEditorSheet> {
       return;
     }
     final value = double.tryParse(_valueCtrl.text.trim());
+    final l10n = AppLocalizations.of(context)!;
     if (value == null || value <= 0) {
-      setState(() => _error = 'Enter a valid amount greater than 0');
+      setState(() => _error = l10n.discountValueInvalid);
       return;
     }
     if (_type == DiscountType.percentage && value > 100) {
-      setState(() => _error = 'Percentage cannot exceed 100');
+      setState(() => _error = l10n.percentageExceedsMax);
       return;
     }
     final cap = _type == DiscountType.percentage
@@ -108,10 +110,10 @@ class _DiscountEditorSheetState extends State<DiscountEditorSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Discount for ${widget.tier.name}', style: AppTypography.h3),
+          Text(AppLocalizations.of(context)!.discountFor(widget.tier.name), style: AppTypography.h3),
           const SizedBox(height: 4),
           Text(
-            'Members on this tier get this discount on their dues.',
+            AppLocalizations.of(context)!.memberDiscountDescription,
             style: AppTypography.bodySmall
                 .copyWith(color: AppColors.textSecondary),
           ),
@@ -119,11 +121,10 @@ class _DiscountEditorSheetState extends State<DiscountEditorSheet> {
 
           // Type selector
           SegmentedButton<DiscountType>(
-            segments: const [
-              ButtonSegment(value: DiscountType.none, label: Text('None')),
-              ButtonSegment(
-                  value: DiscountType.percentage, label: Text('Percent')),
-              ButtonSegment(value: DiscountType.flat, label: Text('Flat ₹')),
+            segments: [
+              ButtonSegment(value: DiscountType.none, label: Text(AppLocalizations.of(context)!.none)),
+              ButtonSegment(value: DiscountType.percentage, label: Text(AppLocalizations.of(context)!.percent)),
+              ButtonSegment(value: DiscountType.flat, label: Text(AppLocalizations.of(context)!.flatAmount)),
             ],
             selected: {_type},
             onSelectionChanged: (s) => setState(() {
@@ -139,10 +140,10 @@ class _DiscountEditorSheetState extends State<DiscountEditorSheet> {
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
-                labelText: isPercentage ? 'Discount %' : 'Discount amount (₹)',
+                labelText: isPercentage ? AppLocalizations.of(context)!.discountPercent : AppLocalizations.of(context)!.discountAmount,
                 prefixIcon: Icon(
                     isPercentage ? Icons.percent_rounded : Icons.currency_rupee_rounded),
-                hintText: isPercentage ? 'e.g. 5' : 'e.g. 50',
+                hintText: isPercentage ? AppLocalizations.of(context)!.percentExample : AppLocalizations.of(context)!.amountExample,
               ),
               onChanged: (_) => setState(() => _error = null),
             ),
@@ -151,10 +152,10 @@ class _DiscountEditorSheetState extends State<DiscountEditorSheet> {
               TextField(
                 controller: _capCtrl,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  labelText: 'Max discount per due (₹) — optional',
-                  prefixIcon: Icon(Icons.vertical_align_top_rounded),
-                  hintText: 'e.g. 100 (leave blank for no cap)',
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.maxDiscountPerDue,
+                  prefixIcon: const Icon(Icons.vertical_align_top_rounded),
+                  hintText: AppLocalizations.of(context)!.maxDiscountExample,
                 ),
               ),
             ],
@@ -175,8 +176,8 @@ class _DiscountEditorSheetState extends State<DiscountEditorSheet> {
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: const Text('Save discount',
-                  style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.saveDiscount,
+                  style: const TextStyle(color: Colors.white)),
             ),
           ),
         ],

@@ -282,14 +282,14 @@ class CustomerProfileScreen extends StatelessWidget {
           children: [
             const Icon(Icons.mail_outline_rounded, size: 48, color: AppColors.primary),
             const SizedBox(height: 12),
-            const Text(
-              'For any assistance, reach out to us at:',
+            Text(
+              l10n.helpSupportContactPrefix,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const Text(
-              'igurus@info.in',
-              style: TextStyle(
+            Text(
+              l10n.supportEmail,
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
@@ -342,7 +342,7 @@ class CustomerProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {

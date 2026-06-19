@@ -42,8 +42,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
               const SizedBox(height: 8),
               Text(
                 l10n.tellUsHowYouUse,
-                style: AppTypography.bodyLarge
-                    .copyWith(color: AppColors.textSecondary),
+                style: AppTypography.bodyLarge.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 40),
 
@@ -86,11 +87,11 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'You\'ll primarily use the Vendor experience. '
-                                'Your Customer account can be accessed separately.',
+                                l10n.dualRoleExplanation,
                                 style: AppTypography.bodySmall.copyWith(
-                                  color:
-                                      AppColors.primary.withValues(alpha: 0.8),
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.8,
+                                  ),
                                   height: 1.4,
                                 ),
                               ),
@@ -105,7 +106,7 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
 
               // ── Continue button ────────────────────────────────────────────
               PrimaryButton(
-                label: 'Continue',
+                label: l10n.continueButton,
                 onPressed: _canContinue ? _onContinue : null,
               ),
 
@@ -113,8 +114,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
               Center(
                 child: Text(
                   l10n.tagline,
-                  style: AppTypography.bodySmall
-                      .copyWith(fontStyle: FontStyle.italic),
+                  style: AppTypography.bodySmall.copyWith(
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),

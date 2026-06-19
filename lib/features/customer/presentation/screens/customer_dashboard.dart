@@ -196,19 +196,19 @@ class _UpcomingAppointmentsCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('My Appointments', style: AppTypography.labelLarge),
+                        Text(AppLocalizations.of(context)!.myAppointments, style: AppTypography.labelLarge),
                         const SizedBox(height: 2),
                         if (state is BookingLoading)
-                          Text('Loading...', style: AppTypography.bodySmall.copyWith(color: AppColors.textHint))
+                          Text(AppLocalizations.of(context)!.loadingContent, style: AppTypography.bodySmall.copyWith(color: AppColors.textHint))
                         else if (next != null)
                           Text(
-                            'Next: ${next.vendorName} · ${_fmtDate(next.date)} at ${next.startTime}',
+                            AppLocalizations.of(context)!.appointmentNext(next.vendorName, _fmtDate(next.date), next.startTime),
                             style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           )
                         else
-                          Text('No upcoming appointments',
+                          Text(AppLocalizations.of(context)!.noUpcomingAppointments,
                               style: AppTypography.bodySmall.copyWith(color: AppColors.textHint)),
                       ],
                     ),
@@ -281,7 +281,7 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Pay Dues', style: AppTypography.h3),
+              Text(AppLocalizations.of(context)!.payDues, style: AppTypography.h3),
               Text(
                 '${_currentIndex + 1} of ${widget.vendors.length}',
                 style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
@@ -342,7 +342,7 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
                       style: AppTypography.h3.copyWith(color: AppColors.error),
                     ),
                     Text(
-                      'outstanding',
+                      AppLocalizations.of(context)!.outstandingShortLabel,
                       style: AppTypography.bodySmall
                           .copyWith(color: AppColors.textHint, fontSize: 10),
                     ),
@@ -362,7 +362,7 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
               ),
               icon: const Icon(Icons.payment_rounded, color: Colors.white, size: 20),
               label: Text(
-                'Pay ₹${vendor.balance.toStringAsFixed(0)} via UPI',
+                AppLocalizations.of(context)!.payViaUpiAmount(vendor.balance.toStringAsFixed(0)),
                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
@@ -377,7 +377,7 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
                 side: BorderSide(color: AppColors.textHint.withValues(alpha: 0.4)),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: const Text('Skip for now'),
+              child: Text(AppLocalizations.of(context)!.skipForNow),
             ),
           ),
           const SizedBox(height: 8),
@@ -403,14 +403,23 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
             child: const Icon(Icons.check_rounded, color: Colors.white, size: 40),
           ),
           const SizedBox(height: 16),
-          Text('All Done!', style: AppTypography.h3),
+          Text(AppLocalizations.of(context)!.allDone, style: AppTypography.h3),
           const SizedBox(height: 8),
-          Text(
-            skipped > 0
-                ? 'Paid $_paidCount vendor${_paidCount != 1 ? 's' : ''}, skipped $skipped.'
-                : 'Paid all $_paidCount vendor${_paidCount != 1 ? 's' : ''}.',
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
-          ),
+          Builder(builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            final String summary;
+            if (skipped > 0) {
+              summary = _paidCount == 1
+                  ? l10n.paymentSummarySkippedSingular(_paidCount, skipped)
+                  : l10n.paymentSummarySkipped(_paidCount, skipped);
+            } else {
+              summary = _paidCount == 1
+                  ? l10n.paymentSummaryCompleteSingular(_paidCount)
+                  : l10n.paymentSummaryComplete(_paidCount);
+            }
+            return Text(summary,
+                style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary));
+          }),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -420,7 +429,7 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: const Text('Done', style: TextStyle(color: Colors.white)),
+              child: Text(AppLocalizations.of(context)!.done, style: const TextStyle(color: Colors.white)),
             ),
           ),
           const SizedBox(height: 8),
@@ -505,7 +514,6 @@ class _VendorRequestBannerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final vendorName = request.vendor.displayName;
     return GestureDetector(
       onTap: () async {
         await context.push(
@@ -540,13 +548,13 @@ class _VendorRequestBannerTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '$vendorName wants to connect',
+                    AppLocalizations.of(context)!.vendorWantsToConnect,
                     style: AppTypography.labelLarge,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Tap to accept or decline',
+                    AppLocalizations.of(context)!.tapToAcceptOrDecline,
                     style: AppTypography.bodySmall
                         .copyWith(color: AppColors.textSecondary),
                   ),

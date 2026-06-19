@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../domain/models/membership_tier.dart';
@@ -30,7 +31,7 @@ class _MembershipTiersView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Membership Tiers')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.membershipTiers)),
       body: SafeArea(
         child: BlocConsumer<MembershipTiersCubit, MembershipTiersState>(
           listenWhen: (prev, curr) => curr is MembershipTiersError,
@@ -87,8 +88,7 @@ class _TierList extends StatelessWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Rename your tiers and set the discount each member gets '
-                      'on their dues. Assign tiers to customers from their ledger.',
+                      AppLocalizations.of(context)!.membershipTiersDescription,
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.4,
@@ -126,24 +126,25 @@ class _TierList extends StatelessWidget {
     MembershipTier tier,
   ) async {
     final ctrl = TextEditingController(text: tier.name);
+    final l10n = AppLocalizations.of(context)!;
     final newName = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Rename tier'),
+        title: Text(l10n.renameTier),
         content: TextField(
           controller: ctrl,
           autofocus: true,
           maxLength: 50,
-          decoration: const InputDecoration(labelText: 'Tier name'),
+          decoration: InputDecoration(labelText: l10n.tierName),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),

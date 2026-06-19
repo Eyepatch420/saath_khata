@@ -32,9 +32,9 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
 
   void _submit(BuildContext context) {
     final phone = _phoneController.text.trim();
+    final l10n = AppLocalizations.of(context)!;
     if (!RegExp(r'^[6-9]\d{9}$').hasMatch(phone)) {
-      AppToast.show(context, 'Enter a valid 10-digit Indian mobile number',
-          type: ToastType.warning);
+      AppToast.show(context, l10n.invalidPhoneNumber, type: ToastType.warning);
       return;
     }
     context.read<AuthBloc>().add(AuthOtpSendRequested(phone: phone));
@@ -42,20 +42,20 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isVendor = widget.role == 'vendor';
     final roleColor = isVendor ? AppColors.primary : AppColors.customerAccent;
-    final roleLabel = isVendor ? 'Vendor' : 'Customer';
+    final roleLabel = isVendor ? l10n.vendor : l10n.customer;
     final cs = Theme.of(context).colorScheme;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final l10n = AppLocalizations.of(context)!;
     return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is AuthOtpSent) {
-          context.push(AppRouter.otpVerify, extra: {
-            'phone': state.phone,
-            'role': widget.role,
-          });
+          context.push(
+            AppRouter.otpVerify,
+            extra: {'phone': state.phone, 'role': widget.role},
+          );
         } else if (state is AuthError) {
           AppToast.show(context, state.message, type: ToastType.error);
         }
@@ -72,11 +72,18 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                   const SizedBox(height: 16),
                   GestureDetector(
                     onTap: () => context.pop(),
-                    child: Icon(Icons.arrow_back, size: 24, color: cs.onSurface),
+                    child: Icon(
+                      Icons.arrow_back,
+                      size: 24,
+                      color: cs.onSurface,
+                    ),
                   ),
                   const SizedBox(height: 28),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
                       color: roleColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
@@ -90,13 +97,16 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(l10n.logIn,
-                      style: AppTypography.h1.copyWith(color: cs.onSurface)),
+                  Text(
+                    l10n.logIn,
+                    style: AppTypography.h1.copyWith(color: cs.onSurface),
+                  ),
                   const SizedBox(height: 6),
                   Text(
                     l10n.enterPhoneNumberToContinue,
-                    style: AppTypography.bodyMedium
-                        .copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   const SizedBox(height: 32),
                   Container(
@@ -108,12 +118,19 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     child: Row(
                       children: [
                         const SizedBox(width: 14),
-                        Icon(Icons.phone_outlined,
-                            size: 20,
-                            color: isDark ? AppColors.textSecondary : AppColors.textSecondary),
+                        Icon(
+                          Icons.phone_outlined,
+                          size: 20,
+                          color: isDark
+                              ? AppColors.textSecondary
+                              : AppColors.textSecondary,
+                        ),
                         const SizedBox(width: 10),
-                        Container(width: 1, height: 24,
-                            color: isDark ? Colors.white24 : AppColors.divider),
+                        Container(
+                          width: 1,
+                          height: 24,
+                          color: isDark ? Colors.white24 : AppColors.divider,
+                        ),
                         const SizedBox(width: 10),
                         const Text('🇮🇳', style: TextStyle(fontSize: 18)),
                         const SizedBox(width: 6),
@@ -125,8 +142,11 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Container(width: 1, height: 24,
-                            color: isDark ? Colors.white24 : AppColors.divider),
+                        Container(
+                          width: 1,
+                          height: 24,
+                          color: isDark ? Colors.white24 : AppColors.divider,
+                        ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: TextField(
@@ -136,17 +156,20 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                               FilteringTextInputFormatter.digitsOnly,
                               LengthLimitingTextInputFormatter(10),
                             ],
-                            style: AppTypography.bodyMedium
-                                .copyWith(color: cs.onSurface),
+                            style: AppTypography.bodyMedium.copyWith(
+                              color: cs.onSurface,
+                            ),
                             decoration: InputDecoration(
-                              hintText: '98765 43210',
-                              hintStyle: AppTypography.bodyMedium
-                                  .copyWith(color: AppColors.textHint),
+                              hintText: l10n.phonePlaceholder,
+                              hintStyle: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textHint,
+                              ),
                               border: InputBorder.none,
                               enabledBorder: InputBorder.none,
                               focusedBorder: InputBorder.none,
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 16),
+                              contentPadding: const EdgeInsets.symmetric(
+                                vertical: 16,
+                              ),
                             ),
                           ),
                         ),
@@ -164,8 +187,9 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                   Center(
                     child: Text(
                       l10n.otpDemoHint,
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textHint),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textHint,
+                      ),
                     ),
                   ),
                   const Spacer(),
@@ -173,8 +197,9 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     child: RichText(
                       text: TextSpan(
                         text: '${l10n.havingTrouble} ',
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textSecondary),
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                         children: [
                           TextSpan(
                             text: l10n.useEmailInstead,
@@ -184,9 +209,9 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                             ),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () => context.push(
-                                    AppRouter.emailLogin,
-                                    extra: widget.role,
-                                  ),
+                                AppRouter.emailLogin,
+                                extra: widget.role,
+                              ),
                           ),
                         ],
                       ),

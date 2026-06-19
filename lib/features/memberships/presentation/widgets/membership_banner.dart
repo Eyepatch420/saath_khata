@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/models/membership_tier.dart';
 import '../bloc/membership_cubit.dart';
 import '../bloc/membership_state.dart';
@@ -49,6 +50,7 @@ class MembershipBanner extends StatelessWidget {
         final status = state.status;
         final busy = state.actionInProgress;
         final cubit = context.read<MembershipCubit>();
+        final l10n = AppLocalizations.of(context)!;
 
         return Container(
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
@@ -90,7 +92,7 @@ class MembershipBanner extends StatelessWidget {
               if (!isVendorView && status.pendingRequest != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Requested ${status.pendingRequest!.requestedTier.name} — awaiting approval',
+                  l10n.requestedTierAwaiting(status.pendingRequest!.requestedTier.name),
                   style: AppTypography.bodySmall
                       .copyWith(color: AppColors.warning, fontWeight: FontWeight.w600),
                 ),
@@ -110,6 +112,7 @@ class MembershipBanner extends StatelessWidget {
     MembershipTier? current, {
     required bool isVendorRequest, // true = customer applying, false = vendor assigning
   }) {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
@@ -123,14 +126,14 @@ class MembershipBanner extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isVendorRequest ? 'Apply for membership' : 'Set membership tier',
+              isVendorRequest ? l10n.applyForMembership : l10n.setMembershipTier,
               style: AppTypography.h3,
             ),
             const SizedBox(height: 4),
             Text(
               isVendorRequest
-                  ? 'Choose a tier to request from this vendor'
-                  : 'Choose a tier for $customerName',
+                  ? l10n.chooseTierToRequestFromVendor
+                  : l10n.chooseTierFor(customerName),
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textSecondary),
             ),
@@ -145,7 +148,7 @@ class MembershipBanner extends StatelessWidget {
                       color: tierColor(t.level)),
                 ),
                 title: Text(t.name, style: AppTypography.bodyLarge),
-                subtitle: Text('Level ${t.level}',
+                subtitle: Text(l10n.levelLabel(t.level),
                     style: AppTypography.bodySmall
                         .copyWith(color: AppColors.textSecondary)),
                 trailing: isCurrent
@@ -174,7 +177,7 @@ class MembershipBanner extends StatelessWidget {
                   child: Icon(Icons.do_not_disturb_on_rounded,
                       color: AppColors.error),
                 ),
-                title: Text('Remove membership',
+                title: Text(l10n.removeMembership,
                     style: AppTypography.bodyLarge
                         .copyWith(color: AppColors.error)),
                 onTap: () {
@@ -211,6 +214,7 @@ class _CurrentTierRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final color =
         tier != null ? MembershipBanner.tierColor(tier!.level) : AppColors.textHint;
+    final l10n = AppLocalizations.of(context)!;
 
     return Row(
       children: [
@@ -220,11 +224,11 @@ class _CurrentTierRow extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Membership',
+              Text(l10n.membershipLabel,
                   style: AppTypography.bodySmall
                       .copyWith(color: AppColors.textSecondary)),
               Text(
-                tier?.name ?? 'No membership',
+                tier?.name ?? l10n.noMembership,
                 style: AppTypography.bodyLarge.copyWith(
                   fontWeight: FontWeight.bold,
                   color: tier != null ? color : AppColors.textSecondary,
@@ -249,12 +253,12 @@ class _CurrentTierRow extends StatelessWidget {
             ],
           ),
         ),
-        _trailingAction(),
+        _trailingAction(context, l10n),
       ],
     );
   }
 
-  Widget _trailingAction() {
+  Widget _trailingAction(BuildContext context, AppLocalizations l10n) {
     if (busy) {
       return const SizedBox(
         width: 18,
@@ -266,7 +270,7 @@ class _CurrentTierRow extends StatelessWidget {
       return TextButton.icon(
         onPressed: onChange,
         icon: const Icon(Icons.edit_rounded, size: 16),
-        label: Text(tier == null ? 'Set' : 'Change'),
+        label: Text(tier == null ? l10n.setButton : l10n.changeButton),
       );
     }
     // Customer: only offer Apply when there's no pending request.
@@ -274,7 +278,7 @@ class _CurrentTierRow extends StatelessWidget {
     return TextButton.icon(
       onPressed: onApply,
       icon: const Icon(Icons.add_rounded, size: 16),
-      label: const Text('Apply'),
+      label: Text(l10n.applyButton),
     );
   }
 }
@@ -301,6 +305,7 @@ class _PendingRequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = MembershipBanner.tierColor(tierLevel);
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -317,7 +322,7 @@ class _PendingRequestCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  '$customerName requested $tierName',
+                  l10n.customerRequestedTier(customerName, tierName),
                   style: AppTypography.bodyMedium
                       .copyWith(fontWeight: FontWeight.w600),
                 ),
@@ -326,7 +331,7 @@ class _PendingRequestCard extends StatelessWidget {
           ),
           if (message != null && message!.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text('“$message”',
+            Text('"$message"',
                 style: AppTypography.bodySmall
                     .copyWith(color: AppColors.textSecondary)),
           ],
@@ -340,7 +345,7 @@ class _PendingRequestCard extends StatelessWidget {
                     foregroundColor: AppColors.error,
                     side: const BorderSide(color: AppColors.error),
                   ),
-                  child: const Text('Decline'),
+                  child: Text(l10n.declineRequest),
                 ),
               ),
               const SizedBox(width: 10),
@@ -351,7 +356,7 @@ class _PendingRequestCard extends StatelessWidget {
                     backgroundColor: AppColors.success,
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Approve'),
+                  child: Text(l10n.approveButton),
                 ),
               ),
             ],

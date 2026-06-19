@@ -32,23 +32,16 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
   }
 
   void _submit(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
     if (!RegExp(r'^[\w.+-]+@[\w-]+\.[a-zA-Z]{2,}$').hasMatch(email)) {
-      AppToast.show(
-        context,
-        'Enter a valid email address',
-        type: ToastType.warning,
-      );
+      AppToast.show(context, l10n.invalidEmailAddress, type: ToastType.warning);
       return;
     }
     if (password.isEmpty) {
-      AppToast.show(
-        context,
-        'Please enter your password',
-        type: ToastType.warning,
-      );
+      AppToast.show(context, l10n.passwordRequired, type: ToastType.warning);
       return;
     }
 
@@ -66,7 +59,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
     final l10n = AppLocalizations.of(context)!;
     final isVendor = widget.role == 'vendor';
     final roleColor = isVendor ? AppColors.primary : AppColors.customerAccent;
-    final roleLabel = isVendor ? 'Vendor' : 'Customer';
+    final roleLabel = isVendor ? l10n.vendor : l10n.customer;
     final cs = Theme.of(context).colorScheme;
 
     return BlocConsumer<AuthBloc, AuthState>(
@@ -168,7 +161,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                             ),
                       child: RichText(
                         text: TextSpan(
-                          text: 'Use phone number instead → ',
+                          text: '${l10n.usePhoneInstead} ',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
@@ -180,8 +173,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                   const Spacer(),
                   Center(
                     child: Text(
-                      'You need a password set on your account to use this.\n'
-                      'Set one from Settings → Change Password.',
+                      l10n.needPasswordForEmail,
                       textAlign: TextAlign.center,
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textHint,

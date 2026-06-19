@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/booking_model.dart';
 import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
@@ -99,28 +100,28 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
               ),
             ),
             const SizedBox(height: 20),
-            Text('Confirm Booking', style: AppTypography.h3),
+            Text(AppLocalizations.of(context)!.confirmBooking, style: AppTypography.h3),
             const SizedBox(height: 20),
             _InfoRow(
               icon: Icons.storefront_rounded,
-              label: 'Vendor',
+              label: AppLocalizations.of(context)!.vendor,
               value: widget.vendorName,
             ),
             const SizedBox(height: 12),
             _InfoRow(
               icon: Icons.calendar_today_rounded,
-              label: 'Date',
+              label: AppLocalizations.of(context)!.date,
               value: DateFormat('EEEE, d MMMM yyyy').format(widget.date),
             ),
             const SizedBox(height: 12),
             _InfoRow(
               icon: Icons.access_time_rounded,
-              label: 'Time',
+              label: AppLocalizations.of(context)!.time,
               value: '${widget.slot.startTime} – ${widget.slot.endTime}',
             ),
             const SizedBox(height: 24),
             Text(
-              'Notes (optional)',
+              AppLocalizations.of(context)!.notesOptional,
               style: AppTypography.labelLarge
                   .copyWith(color: AppColors.textSecondary),
             ),
@@ -130,7 +131,7 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
               maxLines: 3,
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
-                hintText: 'E.g. Need extra milk today',
+                hintText: AppLocalizations.of(context)!.bookingNoteExample,
                 hintStyle: AppTypography.bodyMedium
                     .copyWith(color: AppColors.textHint),
                 border: OutlineInputBorder(
@@ -172,7 +173,7 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
                           strokeWidth: 2.5,
                         ),
                       )
-                    : Text('Confirm Booking', style: AppTypography.button),
+                    : Text(AppLocalizations.of(context)!.confirmBooking, style: AppTypography.button),
               ),
             ),
           ],

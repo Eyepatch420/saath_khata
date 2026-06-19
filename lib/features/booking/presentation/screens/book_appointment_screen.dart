@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
@@ -107,7 +108,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
       listenWhen: (_, c) => c is BookingCreated || c is BookingError,
       listener: (context, state) {
         if (state is BookingCreated) {
-          AppToast.show(context, 'Booking confirmed!', type: ToastType.success);
+          AppToast.show(context, AppLocalizations.of(context)!.bookingConfirmedToast, type: ToastType.success);
           context.go(AppRouter.customerBookings);
         } else if (state is BookingError) {
           AppToast.show(context, state.message, type: ToastType.error);
@@ -120,7 +121,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
             children: [
               Text(widget.vendorName, style: AppTypography.h3),
               Text(
-                'Book an Appointment',
+                AppLocalizations.of(context)!.bookAnAppointment,
                 style: AppTypography.bodySmall
                     .copyWith(color: AppColors.textSecondary),
               ),
@@ -158,10 +159,11 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                     final available =
                         state.slots.where((s) => s.isAvailable).toList();
                     if (available.isEmpty) {
-                      return const EmptyStateWidget(
+                      final l10n = AppLocalizations.of(context)!;
+                    return EmptyStateWidget(
                         icon: Icons.event_busy_rounded,
-                        title: 'No slots available',
-                        subtitle: 'Try selecting a different date',
+                        title: l10n.noSlotsAvailable,
+                        subtitle: l10n.trySelectingDifferentDate,
                       );
                     }
                     return _SlotGrid(
@@ -269,7 +271,7 @@ class _SlotGrid extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Available Slots',
+            AppLocalizations.of(context)!.availableSlots,
             style: AppTypography.labelLarge
                 .copyWith(color: AppColors.textSecondary),
           ),
@@ -325,7 +327,7 @@ class _SlotChip extends StatelessWidget {
             if (slot.durationMinutes > 0) ...[
               const SizedBox(height: 2),
               Text(
-                '${slot.durationMinutes} min',
+                AppLocalizations.of(context)!.durationMinutes(slot.durationMinutes),
                 style:
                     AppTypography.bodySmall.copyWith(color: AppColors.textHint),
               ),

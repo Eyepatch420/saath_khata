@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
+import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../shared/models/report_models.dart';
 import '../../../bloc/reports_dashboard_cubit.dart';
 
@@ -51,7 +52,7 @@ class RevenueChartCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Revenue Trend',
+                AppLocalizations.of(context)!.revenueTrend,
                 style:
                     AppTypography.bodySmall.copyWith(color: Colors.white70),
               ),

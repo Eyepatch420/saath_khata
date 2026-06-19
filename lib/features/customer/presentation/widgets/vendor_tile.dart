@@ -99,7 +99,7 @@ class _ActiveVendorTile extends StatelessWidget {
                             size: 11, color: AppColors.primary),
                         const SizedBox(width: 4),
                         Text(
-                          'Book',
+                          AppLocalizations.of(context)!.bookButton,
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
@@ -136,7 +136,7 @@ class _PendingVendorTile extends StatelessWidget {
     return InkWell(
       onTap: () => AppToast.show(
         context,
-        'Waiting for $displayName to accept your request.',
+        AppLocalizations.of(context)!.waitingForVendorAcceptance(displayName),
         type: ToastType.info,
       ),
       borderRadius: BorderRadius.circular(16),
@@ -194,7 +194,7 @@ class _PendingVendorTile extends StatelessWidget {
                       size: 11, color: AppColors.customerAccent),
                   const SizedBox(width: 4),
                   Text(
-                    'Pending',
+                    AppLocalizations.of(context)!.statusPending,
                     style: AppTypography.bodySmall.copyWith(
                       color: AppColors.customerAccent,
                       fontWeight: FontWeight.w600,

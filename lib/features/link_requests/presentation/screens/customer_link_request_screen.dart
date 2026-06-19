@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../domain/models/link_request_model.dart';
 import '../bloc/link_request_cubit.dart';
@@ -37,11 +38,12 @@ class _CustomerLinkRequestView extends StatelessWidget {
         if (state is LinkRequestResponded) {
           final accepted = state.request.status == LinkRequestStatus.accepted;
           final vendorName = state.request.vendor.displayName;
+          final l10n = AppLocalizations.of(ctx)!;
           AppToast.show(
             ctx,
             accepted
-                ? 'Connected! $vendorName is now linked to your account.'
-                : 'Request from $vendorName declined.',
+                ? l10n.connectedVendorLinked(vendorName)
+                : l10n.requestDeclinedFrom(vendorName),
             type: accepted ? ToastType.success : ToastType.info,
           );
           // Pop twice: once to close this screen, once more to land on dashboard.
@@ -55,7 +57,7 @@ class _CustomerLinkRequestView extends StatelessWidget {
       builder: (ctx, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Connection Request'),
+            title: Text(AppLocalizations.of(ctx)!.connectionRequest),
             elevation: 0,
             backgroundColor: Colors.transparent,
           ),
@@ -126,10 +128,10 @@ class _RequestBody extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('A vendor wants to connect', style: AppTypography.labelLarge),
+                      Text(AppLocalizations.of(context)!.vendorWantsToConnectAsCustomer, style: AppTypography.labelLarge),
                       const SizedBox(height: 2),
                       Text(
-                        'They want to add you as a customer and track your account.',
+                        AppLocalizations.of(context)!.vendorWantsToConnectDesc,
                         style: AppTypography.bodySmall.copyWith(
                           color: AppColors.textSecondary,
                           height: 1.4,
@@ -150,7 +152,7 @@ class _RequestBody extends StatelessWidget {
           // Timestamp
           Center(
             child: Text(
-              'Requested ${_timeAgo(request.createdAt)}',
+              AppLocalizations.of(context)!.requestedTimeAgo(_timeAgo(request.createdAt)),
               style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
             ),
           ),
@@ -182,8 +184,8 @@ class _RequestBody extends StatelessWidget {
                             )
                           : const Icon(Icons.check_rounded,
                               color: Colors.white, size: 20),
-                      label: const Text('Accept',
-                          style: TextStyle(
+                      label: Text(AppLocalizations.of(context)!.acceptRequest,
+                          style: const TextStyle(
                               color: Colors.white, fontWeight: FontWeight.w600)),
                     ),
                   ),
@@ -201,8 +203,8 @@ class _RequestBody extends StatelessWidget {
                             borderRadius: BorderRadius.circular(14)),
                       ),
                       icon: const Icon(Icons.close_rounded, size: 20),
-                      label: const Text('Decline',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      label: Text(AppLocalizations.of(context)!.declineRequest,
+                          style: const TextStyle(fontWeight: FontWeight.w600)),
                     ),
                   ),
                 ],
@@ -297,7 +299,7 @@ class _VendorInfoCard extends StatelessWidget {
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 12),
-            Text('Message', style: AppTypography.bodySmall.copyWith(color: AppColors.textHint)),
+            Text(AppLocalizations.of(context)!.messageLabel, style: AppTypography.bodySmall.copyWith(color: AppColors.textHint)),
             const SizedBox(height: 4),
             Text(message!, style: AppTypography.bodyMedium),
           ],
@@ -334,7 +336,7 @@ class _ErrorView extends StatelessWidget {
             OutlinedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry'),
+              label: Text(AppLocalizations.of(context)!.retryButton),
             ),
           ],
         ),

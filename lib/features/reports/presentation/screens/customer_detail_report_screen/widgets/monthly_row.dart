@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
+import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../shared/models/report_models.dart';
 
 class MonthlyRow extends StatelessWidget {
@@ -51,7 +52,9 @@ class MonthlyRow extends StatelessWidget {
                   Text(_formatMonth(data.month),
                       style: AppTypography.labelLarge),
                   Text(
-                    '${data.transactionCount} payment${data.transactionCount == 1 ? '' : 's'}',
+                    data.transactionCount == 1
+                        ? AppLocalizations.of(context)!.paymentCount(data.transactionCount)
+                        : AppLocalizations.of(context)!.paymentCountPlural(data.transactionCount),
                     style: AppTypography.bodySmall
                         .copyWith(color: AppColors.textHint),
                   ),

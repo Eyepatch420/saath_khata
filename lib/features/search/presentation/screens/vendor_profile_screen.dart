@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
@@ -102,7 +103,7 @@ class _ProfileScaffold extends StatelessWidget {
         if (state is SendRequestSuccess) {
           AppToast.show(
             ctx,
-            'Request sent! ${preview.displayName} will be notified.',
+            AppLocalizations.of(ctx)!.requestSentToVendor(preview.displayName),
             type: ToastType.success,
           );
         } else if (state is SendRequestError) {
@@ -258,7 +259,7 @@ class _ProfileScaffold extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
-                      'by $name',
+                      AppLocalizations.of(context)!.byOwnerName(name),
                       style: AppTypography.bodySmall.copyWith(
                         color: Colors.white.withValues(alpha: 0.75),
                       ),
@@ -398,10 +399,12 @@ class _InfoSection extends StatelessWidget {
     final surface = Theme.of(context).colorScheme.surface;
     final items = <_InfoItem>[];
 
+    final l10n = AppLocalizations.of(context)!;
+
     if (address != null && address!.isNotEmpty) {
       items.add(_InfoItem(
         icon: Icons.location_on_rounded,
-        label: 'Address',
+        label: l10n.addressLabel,
         value: address!,
         accent: accent,
       ));
@@ -410,7 +413,7 @@ class _InfoSection extends StatelessWidget {
     if (email != null && email!.isNotEmpty) {
       items.add(_InfoItem(
         icon: Icons.email_outlined,
-        label: 'Email',
+        label: l10n.emailLabel,
         value: email!,
         accent: accent,
         isCopyable: true,
@@ -420,22 +423,22 @@ class _InfoSection extends StatelessWidget {
     if (isLoadingExtra) {
       items.add(_InfoItem(
         icon: Icons.account_balance_wallet_outlined,
-        label: 'UPI',
+        label: l10n.upiLabel,
         value: '…',
         accent: accent,
       ));
     } else if (hasError) {
       items.add(_InfoItem(
         icon: Icons.warning_amber_rounded,
-        label: 'UPI / Email',
-        value: 'Could not load — tap to retry',
+        label: l10n.upiEmailLabel,
+        value: l10n.couldNotLoadRetry,
         accent: AppColors.error,
         onTap: onRetry,
       ));
     } else if (upiId != null && upiId!.isNotEmpty) {
       items.add(_InfoItem(
         icon: Icons.account_balance_wallet_rounded,
-        label: 'UPI ID',
+        label: l10n.upiIdLabel,
         value: upiId!,
         accent: accent,
         isCopyable: true,
@@ -488,7 +491,7 @@ class _InfoItem extends StatelessWidget {
           (isCopyable
               ? () {
                   Clipboard.setData(ClipboardData(text: value));
-                  AppToast.show(context, '$label copied!',
+                  AppToast.show(context, AppLocalizations.of(context)!.labelCopied(label),
                       type: ToastType.success);
                 }
               : null),
@@ -563,25 +566,26 @@ class _CustomerCta extends StatelessWidget {
         final IconData btnIcon;
         final bool disabled;
 
+        final l10n = AppLocalizations.of(ctx)!;
         if (sent) {
           btnColor = AppColors.success;
-          btnLabel = 'Request Sent';
+          btnLabel = l10n.requestSentButton;
           btnIcon = Icons.check_circle_rounded;
           disabled = true;
         } else if (alreadyDone) {
           // already linked → show as connected
           btnColor = AppColors.success;
-          btnLabel = 'Already Connected';
+          btnLabel = l10n.alreadyConnected;
           btnIcon = Icons.link_rounded;
           disabled = true;
         } else if (sending) {
           btnColor = accent;
-          btnLabel = 'Sending…';
+          btnLabel = l10n.sendingEllipsis;
           btnIcon = Icons.hourglass_top_rounded;
           disabled = true;
         } else {
           btnColor = accent;
-          btnLabel = 'Send Connection Request';
+          btnLabel = l10n.sendConnectionRequest;
           btnIcon = Icons.handshake_rounded;
           disabled = false;
         }
@@ -621,7 +625,7 @@ class _CustomerCta extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: upiId!));
-                  AppToast.show(ctx, 'UPI ID copied!',
+                  AppToast.show(ctx, l10n.upiIdCopied,
                       type: ToastType.success);
                 },
                 style: OutlinedButton.styleFrom(
@@ -631,7 +635,7 @@ class _CustomerCta extends StatelessWidget {
                       borderRadius: BorderRadius.circular(14)),
                 ),
                 icon: Icon(Icons.payment_rounded, color: accent, size: 20),
-                label: Text('Pay via UPI',
+                label: Text(l10n.payViaUpi,
                     style: TextStyle(
                         color: accent, fontWeight: FontWeight.w600)),
               ),
@@ -679,24 +683,25 @@ class _VendorCta extends StatelessWidget {
         final IconData btnIcon;
         final bool disabled;
 
+        final l10n = AppLocalizations.of(ctx)!;
         if (sent) {
           btnColor = AppColors.success;
-          btnLabel = 'Request Sent';
+          btnLabel = l10n.requestSentButton;
           btnIcon = Icons.check_circle_rounded;
           disabled = true;
         } else if (alreadyDone) {
           btnColor = AppColors.success;
-          btnLabel = 'Already Connected';
+          btnLabel = l10n.alreadyConnected;
           btnIcon = Icons.link_rounded;
           disabled = true;
         } else if (sending) {
           btnColor = accent;
-          btnLabel = 'Sending…';
+          btnLabel = l10n.sendingEllipsis;
           btnIcon = Icons.hourglass_top_rounded;
           disabled = true;
         } else {
           btnColor = accent;
-          btnLabel = 'Send Connection Request';
+          btnLabel = l10n.sendConnectionRequest;
           btnIcon = Icons.handshake_rounded;
           disabled = false;
         }
@@ -736,7 +741,7 @@ class _VendorCta extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: () {
                   Clipboard.setData(ClipboardData(text: upiId!));
-                  AppToast.show(ctx, 'UPI ID copied!',
+                  AppToast.show(ctx, l10n.upiIdCopied,
                       type: ToastType.success);
                 },
                 style: OutlinedButton.styleFrom(
@@ -747,7 +752,7 @@ class _VendorCta extends StatelessWidget {
                 ),
                 icon: Icon(Icons.payment_rounded, color: accent, size: 20),
                 label: Text(
-                  'Copy UPI ID to Pay',
+                  l10n.copyUpiIdToPay,
                   style: TextStyle(
                       color: accent, fontWeight: FontWeight.w600),
                 ),

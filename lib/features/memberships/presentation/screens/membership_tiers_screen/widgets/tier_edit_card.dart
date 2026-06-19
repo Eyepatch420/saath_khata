@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
+import '../../../../../../l10n/app_localizations.dart';
 import '../../../../domain/models/membership_tier.dart';
 
 /// One membership tier shown on the management screen: its name, level badge,
@@ -56,14 +57,14 @@ class TierEditCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(tier.name, style: AppTypography.labelLarge),
-                    Text('Level ${tier.level}',
+                    Text(AppLocalizations.of(context)!.levelLabel(tier.level),
                         style: AppTypography.bodySmall
                             .copyWith(color: AppColors.textHint)),
                   ],
                 ),
               ),
               IconButton(
-                tooltip: 'Rename',
+                tooltip: AppLocalizations.of(context)!.rename,
                 icon: const Icon(Icons.edit_rounded, size: 18),
                 color: AppColors.textSecondary,
                 onPressed: onRename,
@@ -105,7 +106,7 @@ class TierEditCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Member discount',
+                        Text(AppLocalizations.of(context)!.memberDiscount,
                             style: AppTypography.bodySmall
                                 .copyWith(color: AppColors.textHint)),
                         const SizedBox(height: 2),

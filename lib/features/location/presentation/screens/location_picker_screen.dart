@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../features/location/data/services/location_iq_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/location_model.dart';
 
 class LocationPickerScreen extends StatefulWidget {
@@ -180,7 +181,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 maxZoom: 19,
               ),
               SimpleAttributionWidget(
-                source: const Text('© OpenStreetMap contributors'),
+                source: Text(AppLocalizations.of(context)!.mapAttribution),
               ),
             ],
           ),
@@ -272,7 +273,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                           style: AppTypography.bodyMedium
                               .copyWith(color: Colors.black87),
                           decoration: InputDecoration(
-                            hintText: 'Search for a place…',
+                            hintText: AppLocalizations.of(context)!.searchPlaceHint,
                             hintStyle: AppTypography.bodySmall
                                 .copyWith(color: Colors.black38),
                             prefixIcon: const Icon(Icons.search_rounded,
@@ -496,7 +497,7 @@ class _LocationCard extends StatelessWidget {
               ),
             ],
           ] else ...[
-            Text('Move the map to select a location',
+            Text(AppLocalizations.of(context)!.moveMapToSelectLocation,
                 style: AppTypography.bodySmall
                     .copyWith(color: AppColors.textSecondary)),
           ],
@@ -508,8 +509,8 @@ class _LocationCard extends StatelessWidget {
               onPressed: onConfirm,
               icon: const Icon(Icons.check_circle_outline_rounded,
                   color: Colors.white, size: 20),
-              label: const Text('Confirm Location',
-                  style: TextStyle(
+              label: Text(AppLocalizations.of(context)!.confirmLocation,
+                  style: const TextStyle(
                       color: Colors.white, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,

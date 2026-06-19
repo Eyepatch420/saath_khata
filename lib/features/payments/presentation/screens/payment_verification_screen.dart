@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../bloc/payment_verification_bloc.dart';
 import '../bloc/payment_verification_event.dart';
 import '../bloc/payment_verification_state.dart';
@@ -61,7 +62,7 @@ class _VerificationView extends StatelessWidget {
       // No back button while verifying — prevent accidental exit
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Payment Verification'),
+        title: Text(AppLocalizations.of(context)!.paymentVerification),
         centerTitle: true,
       ),
       body: BlocConsumer<PaymentVerificationBloc, PaymentVerificationState>(
@@ -147,11 +148,12 @@ class _InProgressBodyState extends State<_InProgressBody>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final messages = [
-      'Connecting to your bank…',
-      'Verifying transaction…',
-      'Waiting for confirmation…',
-      'Almost there…',
+      l10n.verificationConnecting,
+      l10n.verificationVerifying,
+      l10n.verificationWaiting,
+      l10n.verificationAlmostThere,
     ];
     final msg = messages[(_elapsed ~/ 4).clamp(0, messages.length - 1)];
 
@@ -189,7 +191,7 @@ class _InProgressBodyState extends State<_InProgressBody>
               },
             ),
             const SizedBox(height: 32),
-            Text('Verifying Payment',
+            Text(l10n.verifyingPayment,
                 style: AppTypography.h2, textAlign: TextAlign.center),
             const SizedBox(height: 8),
             Text(msg,
@@ -218,7 +220,7 @@ class _InProgressBodyState extends State<_InProgressBody>
             ),
             const SizedBox(height: 12),
             Text(
-              '${_elapsed}s  •  Do not close this screen',
+              l10n.verificationElapsed(_elapsed),
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textHint),
             ),
@@ -281,11 +283,12 @@ class _SuccessBodyState extends State<_SuccessBody>
               ),
             ),
             const SizedBox(height: 24),
-            Text('Payment Confirmed!',
+            Text(AppLocalizations.of(context)!.paymentConfirmedExclamation,
                 style: AppTypography.h2, textAlign: TextAlign.center),
             const SizedBox(height: 8),
             Text(
-              '₹${widget.state.amount.toStringAsFixed(0)} paid to ${widget.state.recipientName}',
+              AppLocalizations.of(context)!.paidToRecipient(
+                  widget.state.amount.toStringAsFixed(0), widget.state.recipientName),
               style: AppTypography.bodyMedium
                   .copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
@@ -298,7 +301,7 @@ class _SuccessBodyState extends State<_SuccessBody>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                'Txn: ${widget.state.transactionId}',
+                AppLocalizations.of(context)!.txnLabel(widget.state.transactionId),
                 style: AppTypography.bodySmall.copyWith(
                     color: AppColors.success, fontWeight: FontWeight.w600),
               ),
@@ -314,8 +317,8 @@ class _SuccessBodyState extends State<_SuccessBody>
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(14)),
                 ),
-                child: const Text('Done',
-                    style: TextStyle(
+                child: Text(AppLocalizations.of(context)!.done,
+                    style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,
                         fontSize: 16)),
@@ -363,7 +366,7 @@ class _FailedBody extends StatelessWidget {
                   color: AppColors.error, size: 52),
             ),
             const SizedBox(height: 24),
-            Text('Payment Failed',
+            Text(AppLocalizations.of(context)!.paymentFailed,
                 style: AppTypography.h2.copyWith(color: AppColors.error),
                 textAlign: TextAlign.center),
             const SizedBox(height: 12),
@@ -385,7 +388,7 @@ class _FailedBody extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text(AppLocalizations.of(context)!.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -400,8 +403,8 @@ class _FailedBody extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Retry',
-                        style: TextStyle(color: Colors.white)),
+                    child: Text(AppLocalizations.of(context)!.retryPayment,
+                        style: const TextStyle(color: Colors.white)),
                   ),
                 ),
               ],
@@ -446,13 +449,11 @@ class _TimeoutBody extends StatelessWidget {
                   color: AppColors.warning, size: 52),
             ),
             const SizedBox(height: 24),
-            Text('Verification Timed Out',
+            Text(AppLocalizations.of(context)!.verificationTimedOut,
                 style: AppTypography.h2, textAlign: TextAlign.center),
             const SizedBox(height: 12),
             Text(
-              'We could not confirm your payment within 30 seconds. '
-              'Your money may NOT have been debited — please check your bank '
-              'statement before retrying.',
+              AppLocalizations.of(context)!.verificationTimeoutBody,
               style: AppTypography.bodyMedium
                   .copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
@@ -475,7 +476,7 @@ class _TimeoutBody extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'If debited, contact support with Txn ID.',
+                      AppLocalizations.of(context)!.ifDebitedContactSupport,
                       style: AppTypography.bodySmall
                           .copyWith(color: AppColors.warning),
                     ),
@@ -495,7 +496,7 @@ class _TimeoutBody extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Go Back'),
+                    child: Text(AppLocalizations.of(context)!.goBack),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -510,8 +511,8 @@ class _TimeoutBody extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12)),
                     ),
-                    child: const Text('Try Again',
-                        style: TextStyle(color: Colors.white)),
+                    child: Text(AppLocalizations.of(context)!.tryAgain,
+                        style: const TextStyle(color: Colors.white)),
                   ),
                 ),
               ],

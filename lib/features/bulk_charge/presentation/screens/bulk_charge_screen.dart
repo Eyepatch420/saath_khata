@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/link_model.dart';
 import '../../../../shared/models/product_template.dart';
 import '../../../../shared/widgets/app_toast.dart';
@@ -40,12 +41,12 @@ class _BulkChargeView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bulk Charge'),
+        title: Text(AppLocalizations.of(context)!.bulkCharge),
         actions: [
           IconButton(
             onPressed: () => _showCreateTemplateSheet(context),
             icon: const Icon(Icons.add_rounded),
-            tooltip: 'New product',
+            tooltip: AppLocalizations.of(context)!.newProduct,
           ),
         ],
       ),
@@ -128,109 +129,110 @@ class _BulkChargeView extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(isEdit ? 'Edit Product' : 'New Product / Service',
-                style: AppTypography.h3),
-            const SizedBox(height: 4),
-            Text(
-              isEdit
-                  ? 'Update name, unit or price'
-                  : 'Define what you sell and its base price',
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: nameCtrl,
-              textCapitalization: TextCapitalization.words,
-              autofocus: !isEdit,
-              decoration: const InputDecoration(
-                labelText: 'Product name',
-                hintText: 'e.g. Daily Morning Milk',
-                prefixIcon: Icon(Icons.inventory_2_outlined),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(isEdit ? l10n.editProduct : l10n.newProductService,
+                  style: AppTypography.h3),
+              const SizedBox(height: 4),
+              Text(
+                isEdit ? l10n.updateProductDetails : l10n.defineProduct,
+                style: AppTypography.bodySmall
+                    .copyWith(color: AppColors.textSecondary),
               ),
-            ),
-            const SizedBox(height: 14),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: unitCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Unit',
-                      hintText: 'litre / kg / piece',
-                      prefixIcon: Icon(Icons.straighten_rounded),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: priceCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true),
-                    decoration: const InputDecoration(
-                      labelText: 'Price / unit (₹)',
-                      prefixIcon: Icon(Icons.currency_rupee_rounded),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  final name = nameCtrl.text.trim();
-                  final unit = unitCtrl.text.trim();
-                  final price = double.tryParse(priceCtrl.text);
-                  if (name.isEmpty ||
-                      unit.isEmpty ||
-                      price == null ||
-                      price <= 0) {
-                    return;
-                  }
-                  Navigator.pop(ctx);
-                  if (isEdit) {
-                    cubit.updateTemplate(
-                      id: existing.id,
-                      name: name,
-                      unit: unit,
-                      pricePerUnit: price,
-                    );
-                  } else {
-                    cubit.createTemplate(
-                      name: name,
-                      unit: unit,
-                      pricePerUnit: price,
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                ),
-                child: Text(
-                  isEdit ? 'Save Changes' : 'Save Product',
-                  style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+              const SizedBox(height: 20),
+              TextField(
+                controller: nameCtrl,
+                textCapitalization: TextCapitalization.words,
+                autofocus: !isEdit,
+                decoration: InputDecoration(
+                  labelText: l10n.productName,
+                  hintText: l10n.productNameExample,
+                  prefixIcon: const Icon(Icons.inventory_2_outlined),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: unitCtrl,
+                      decoration: InputDecoration(
+                        labelText: l10n.unit,
+                        hintText: l10n.unitExample,
+                        prefixIcon: const Icon(Icons.straighten_rounded),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: priceCtrl,
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true),
+                      decoration: InputDecoration(
+                        labelText: l10n.pricePerUnit,
+                        prefixIcon: const Icon(Icons.currency_rupee_rounded),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final name = nameCtrl.text.trim();
+                    final unit = unitCtrl.text.trim();
+                    final price = double.tryParse(priceCtrl.text);
+                    if (name.isEmpty ||
+                        unit.isEmpty ||
+                        price == null ||
+                        price <= 0) {
+                      return;
+                    }
+                    Navigator.pop(ctx);
+                    if (isEdit) {
+                      cubit.updateTemplate(
+                        id: existing.id,
+                        name: name,
+                        unit: unit,
+                        pricePerUnit: price,
+                      );
+                    } else {
+                      cubit.createTemplate(
+                        name: name,
+                        unit: unit,
+                        pricePerUnit: price,
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text(
+                    isEdit ? l10n.saveChanges : l10n.saveProduct,
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -328,7 +330,7 @@ class _TemplatePicker extends StatelessWidget {
             const Divider(height: 20),
             ListTile(
               leading: const Icon(Icons.edit_rounded, color: AppColors.primary),
-              title: const Text('Edit product'),
+              title: Text(AppLocalizations.of(context)!.editProductMenuItem),
               onTap: () {
                 Navigator.pop(ctx);
                 onEdit(t);
@@ -337,8 +339,8 @@ class _TemplatePicker extends StatelessWidget {
             ListTile(
               leading:
                   const Icon(Icons.delete_outline_rounded, color: AppColors.error),
-              title: const Text('Delete product',
-                  style: TextStyle(color: AppColors.error)),
+              title: Text(AppLocalizations.of(context)!.deleteProductMenuItem,
+                  style: const TextStyle(color: AppColors.error)),
               onTap: () {
                 Navigator.pop(ctx);
                 _confirmDelete(context, t);
@@ -354,24 +356,27 @@ class _TemplatePicker extends StatelessWidget {
   void _confirmDelete(BuildContext context, ProductTemplate t) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete product?'),
-        content: Text('Remove "${t.name}" from your product list?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              onDelete(t);
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return AlertDialog(
+          title: Text(l10n.deleteProductConfirmation),
+          content: Text(l10n.removeProductConfirmation(t.name)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l10n.cancel),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(ctx);
+                onDelete(t);
+              },
+              style: TextButton.styleFrom(foregroundColor: AppColors.error),
+              child: Text(l10n.delete),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -647,14 +652,19 @@ class _BottomBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Builder(builder: (context) {
+                      final l10n = AppLocalizations.of(context)!;
+                      final qty = state.quantities.values.fold(0.0, (s, q) => s + q).toStringAsFixed(1);
+                      return Text(
+                        count == 1
+                            ? l10n.bulkSummaryLine(count, qty, template.unit)
+                            : l10n.bulkSummaryLinePlural(count, qty, template.unit),
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textSecondary),
+                      );
+                    }),
                     Text(
-                      '$count customer${count == 1 ? '' : 's'}  •  '
-                      '${state.quantities.values.fold(0.0, (s, q) => s + q).toStringAsFixed(1)} ${template.unit}',
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textSecondary),
-                    ),
-                    Text(
-                      '₹${total.toStringAsFixed(0)} total',
+                      AppLocalizations.of(context)!.totalAmount(total.toStringAsFixed(0)),
                       style: AppTypography.labelLarge,
                     ),
                   ],
@@ -680,7 +690,7 @@ class _BottomBar extends StatelessWidget {
                     : const Icon(Icons.bolt_rounded,
                         color: Colors.white, size: 20),
                 label: Text(
-                  'Charge All',
+                  AppLocalizations.of(context)!.chargeAll,
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -704,16 +714,17 @@ class _BottomBar extends StatelessWidget {
     final ok = result.succeeded.length;
     final fail = result.failed.length;
 
+    final l10n = AppLocalizations.of(context)!;
     if (fail == 0) {
       AppToast.show(
         context,
-        'Charged $ok customer${ok == 1 ? '' : 's'} successfully',
+        ok == 1 ? l10n.chargedSuccessfully(ok) : l10n.chargedSuccessfullyPlural(ok),
         type: ToastType.success,
       );
     } else {
       AppToast.show(
         context,
-        '$ok charged, $fail failed',
+        l10n.chargedPartial(ok, fail),
         type: fail == ok + fail ? ToastType.error : ToastType.success,
       );
     }
@@ -737,10 +748,10 @@ class _EmptyTemplates extends StatelessWidget {
             const Icon(Icons.inventory_2_outlined,
                 size: 56, color: AppColors.textHint),
             const SizedBox(height: 16),
-            Text('No products yet', style: AppTypography.h3),
+            Text(AppLocalizations.of(context)!.noProductsYet, style: AppTypography.h3),
             const SizedBox(height: 8),
             Text(
-              'Define the items you sell — milk, paneer, etc. — once, then use them every day.',
+              AppLocalizations.of(context)!.noProductsYetDescription,
               textAlign: TextAlign.center,
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textSecondary),
@@ -754,8 +765,8 @@ class _EmptyTemplates extends StatelessWidget {
                     horizontal: 24, vertical: 12),
               ),
               icon: const Icon(Icons.add_rounded, color: Colors.white),
-              label: const Text('Add First Product',
-                  style: TextStyle(color: Colors.white)),
+              label: Text(AppLocalizations.of(context)!.addFirstProduct,
+                  style: const TextStyle(color: Colors.white)),
             ),
           ],
         ),
@@ -769,10 +780,10 @@ class _SelectTemplateHint extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Text(
-        'Select a product above to assign quantities',
-        style: TextStyle(color: AppColors.textHint),
+        AppLocalizations.of(context)!.selectProductToAssignQty,
+        style: const TextStyle(color: AppColors.textHint),
       ),
     );
   }
@@ -783,10 +794,10 @@ class _NoCustomers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Text(
-        'No customers linked yet',
-        style: TextStyle(color: AppColors.textHint),
+        AppLocalizations.of(context)!.noCustomersLinked,
+        style: const TextStyle(color: AppColors.textHint),
       ),
     );
   }
