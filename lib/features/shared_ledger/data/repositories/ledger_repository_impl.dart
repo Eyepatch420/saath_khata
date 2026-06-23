@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:dio/dio.dart';
+import '../../../../core/di/injection.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/services/ledger_attachment_service.dart';
 import '../../domain/repositories/ledger_repository.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/models/ledger_balance.dart';
@@ -49,6 +52,7 @@ class LedgerRepositoryImpl implements LedgerRepository {
       if (entry.description != null) body['description'] = entry.description;
       if (entry.quantity != null) body['quantity'] = entry.quantity;
       if (entry.unit != null) body['unit'] = entry.unit;
+      if (entry.attachmentUrl != null) body['attachmentUrl'] = entry.attachmentUrl;
 
       final response = await _api.post(
         ApiEndpoints.linkEntries(entry.linkId),
@@ -84,6 +88,26 @@ class LedgerRepositoryImpl implements LedgerRepository {
         data: {'reason': reason},
       );
       return LedgerEntry.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<LedgerEntry> attachToEntry(String entryId, String linkId, File imageFile) async {
+    try {
+      await getIt<LedgerAttachmentService>().uploadAttachment(
+        imageFile: imageFile,
+        linkId: linkId,
+        entryId: entryId,
+      );
+      // The socket broadcasts ledger:entry_updated after the backend writes.
+      // Return the current cached entry — the bloc replaces it on socket arrival.
+      final entries = await getEntries(linkId);
+      return entries.firstWhere(
+        (e) => e.id == entryId,
+        orElse: () => throw Exception('Entry not found after attachment upload'),
+      );
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }

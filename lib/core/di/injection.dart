@@ -41,6 +41,7 @@ import '../../features/bulk_charge/data/repositories/template_repository.dart';
 
 // Auth + network
 import '../services/storage_service.dart';
+import '../services/ledger_attachment_service.dart';
 import '../services/ledger_socket_service.dart';
 import '../network/api_client.dart';
 import '../network/api_endpoints.dart';
@@ -49,6 +50,7 @@ import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/vendor/presentation/bloc/vendor_bloc.dart';
+import '../../features/customer/presentation/bloc/customer_bloc.dart';
 import '../../features/notifications/presentation/bloc/notification_bloc.dart';
 import '../services/push_notification_service.dart';
 
@@ -81,6 +83,7 @@ Future<void> configureDependencies() async {
   getIt.registerLazySingleton<VendorRepository>(() => VendorRepositoryImpl(apiClient));
   getIt.registerLazySingleton<CustomerRepository>(() => CustomerRepositoryImpl(apiClient));
   getIt.registerLazySingleton<LedgerRepository>(() => LedgerRepositoryImpl(apiClient));
+  getIt.registerLazySingleton<LedgerAttachmentService>(() => LedgerAttachmentService(apiClient));
   getIt.registerLazySingleton<StaffRepository>(() => StaffRepositoryImpl(apiClient));
   getIt.registerLazySingleton<StaffPortalRepository>(() => StaffPortalRepository(apiClient));
   getIt.registerLazySingleton<NotificationRepository>(() => NotificationRepositoryImpl(apiClient));
@@ -109,6 +112,7 @@ Future<void> configureDependencies() async {
       () => LinkRequestCubit(getIt<LinkRequestRepository>()));
 
   getIt.registerLazySingleton<VendorBloc>(() => VendorBloc(getIt<VendorRepository>()));
+  getIt.registerLazySingleton<CustomerBloc>(() => CustomerBloc(getIt<CustomerRepository>()));
 
   // PushNotificationService depends on LedgerSocketService for the WebSocket notification stream.
   getIt.registerLazySingleton<PushNotificationService>(

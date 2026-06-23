@@ -1,11 +1,17 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
+import '../../../../../../core/di/injection.dart';
+import '../../../../../../core/services/ledger_attachment_service.dart';
 import '../../../../../../l10n/app_localizations.dart';
 import '../../../../../../shared/models/ledger_entry.dart';
+import '../../../../../../shared/widgets/app_toast.dart';
 import '../../../bloc/ledger_bloc.dart';
 import '../../../bloc/ledger_event.dart';
+import 'attachment_section.dart';
 
 class LedgerActions extends StatelessWidget {
   final String linkId;
@@ -74,10 +80,6 @@ class LedgerActions extends StatelessWidget {
   void _showAddEntrySheet(
       BuildContext context, AppLocalizations l10n, EntryType type) {
     final bloc = context.read<LedgerBloc>();
-    final amountCtrl = TextEditingController();
-    final descCtrl = TextEditingController();
-    final qtyCtrl = TextEditingController();
-
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
@@ -85,13 +87,90 @@ class LedgerActions extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
+      builder: (ctx) => _AddEntrySheet(
+        bloc: bloc,
+        type: type,
+        linkId: linkId,
+        customerName: customerName,
+        l10n: l10n,
+      ),
+    );
+  }
+}
+
+class _AddEntrySheet extends StatefulWidget {
+  final LedgerBloc bloc;
+  final EntryType type;
+  final String linkId;
+  final String customerName;
+  final AppLocalizations l10n;
+
+  const _AddEntrySheet({
+    required this.bloc,
+    required this.type,
+    required this.linkId,
+    required this.customerName,
+    required this.l10n,
+  });
+
+  @override
+  State<_AddEntrySheet> createState() => _AddEntrySheetState();
+}
+
+class _AddEntrySheetState extends State<_AddEntrySheet> {
+  final _amountCtrl = TextEditingController();
+  final _descCtrl = TextEditingController();
+  final _qtyCtrl = TextEditingController();
+
+  String? _pendingUrl;
+  bool _uploading = false;
+
+  @override
+  void dispose() {
+    _amountCtrl.dispose();
+    _descCtrl.dispose();
+    _qtyCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickAndUpload(ImageSource source) async {
+    final picked =
+        await ImagePicker().pickImage(source: source, imageQuality: 85);
+    if (picked == null || !mounted) return;
+
+    setState(() => _uploading = true);
+    try {
+      final url = await getIt<LedgerAttachmentService>().uploadAttachment(
+        imageFile: File(picked.path),
+        linkId: widget.linkId,
+        entryId: null,
+      );
+      if (mounted) setState(() { _pendingUrl = url; _uploading = false; });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _uploading = false);
+        AppToast.show(
+          context,
+          e.toString().replaceFirst('Exception: ', ''),
+          type: ToastType.error,
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+    final type = widget.type;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 24,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,13 +205,13 @@ class LedgerActions extends StatelessWidget {
               ],
             ),
             Text(
-              l10n.entryFor(customerName),
+              l10n.entryFor(widget.customerName),
               style: AppTypography.bodySmall
                   .copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 20),
             TextField(
-              controller: amountCtrl,
+              controller: _amountCtrl,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
@@ -142,7 +221,7 @@ class LedgerActions extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: descCtrl,
+              controller: _descCtrl,
               decoration: InputDecoration(
                 labelText: l10n.descriptionOptional,
                 prefixIcon: const Icon(Icons.description_rounded),
@@ -151,7 +230,7 @@ class LedgerActions extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TextField(
-              controller: qtyCtrl,
+              controller: _qtyCtrl,
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               decoration: InputDecoration(
@@ -160,27 +239,70 @@ class LedgerActions extends StatelessWidget {
                 hintText: l10n.quantityHint,
               ),
             ),
+            const SizedBox(height: 16),
+            // Photo proof buttons
+            Row(
+              children: [
+                OutlinedButton.icon(
+                  onPressed: _uploading
+                      ? null
+                      : () => _pickAndUpload(ImageSource.camera),
+                  icon: const Icon(Icons.camera_alt_rounded, size: 16),
+                  label: const Text('Camera'),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 36)),
+                ),
+                const SizedBox(width: 10),
+                OutlinedButton.icon(
+                  onPressed: _uploading
+                      ? null
+                      : () => _pickAndUpload(ImageSource.gallery),
+                  icon: const Icon(Icons.photo_library_rounded, size: 16),
+                  label: const Text('Gallery'),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 36)),
+                ),
+                if (_uploading) ...[
+                  const SizedBox(width: 10),
+                  const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                ],
+              ],
+            ),
+            if (_pendingUrl != null) ...[
+              const SizedBox(height: 12),
+              LedgerAttachmentSection(
+                attachmentUrl: _pendingUrl,
+                isLocked: false,
+                heroTag: 'new_entry_attachment_${widget.linkId}',
+              ),
+            ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () {
-                  final amount = double.tryParse(amountCtrl.text);
+                  final amount = double.tryParse(_amountCtrl.text);
                   if (amount == null || amount <= 0) return;
-                  Navigator.pop(ctx);
-                  bloc.add(AddLedgerEntry(
+                  Navigator.pop(context);
+                  widget.bloc.add(AddLedgerEntry(
                     amount: amount,
                     type: type,
-                    linkId: linkId,
-                    description: descCtrl.text.trim().isEmpty
+                    linkId: widget.linkId,
+                    description: _descCtrl.text.trim().isEmpty
                         ? null
-                        : descCtrl.text.trim(),
-                    quantity: double.tryParse(qtyCtrl.text),
+                        : _descCtrl.text.trim(),
+                    quantity: double.tryParse(_qtyCtrl.text),
+                    attachmentUrl: _pendingUrl,
                   ));
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      type == EntryType.credit ? AppColors.error : AppColors.success,
+                  backgroundColor: type == EntryType.credit
+                      ? AppColors.error
+                      : AppColors.success,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: Text(

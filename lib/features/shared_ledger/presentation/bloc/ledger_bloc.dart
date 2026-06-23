@@ -85,6 +85,7 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
         unit: event.unit,
         status: EntryStatus.pending,
         createdBy: '',
+        attachmentUrl: event.attachmentUrl,
       );
       final created = await _repository.addEntry(newEntry);
       AppLogger.i(_m, 'Entry added — id:${created.id} amount:${created.amount}');

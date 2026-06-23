@@ -1,12 +1,16 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/services/ledger_attachment_service.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/models/link_model.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../shared_ledger/domain/repositories/ledger_repository.dart';
+import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/attachment_section.dart';
 
 /// Bottom sheet used by staff to record a delivery (credit) or collect a
 /// payment. For deliveries it captures item / qty / unit-price and computes the
@@ -57,6 +61,10 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
   final _noteCtrl = TextEditingController();
   bool _submitting = false;
 
+  // Local upload state — NOT via LedgerBloc; this sheet calls the repo directly
+  String? _pendingAttachmentUrl;
+  bool _uploadingPhoto = false;
+
   bool get _isDelivery => widget.type == EntryType.credit;
 
   @override
@@ -78,6 +86,26 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
   }
 
   void _recompute() => setState(() {});
+
+  Future<void> _pickAndUpload(ImageSource source) async {
+    final picked =
+        await ImagePicker().pickImage(source: source, imageQuality: 85);
+    if (picked == null || !mounted) return;
+    setState(() => _uploadingPhoto = true);
+    try {
+      final url = await getIt<LedgerAttachmentService>().uploadAttachment(
+        imageFile: File(picked.path),
+        linkId: _customer!.linkId,
+        entryId: null,
+      );
+      if (mounted) setState(() { _pendingAttachmentUrl = url; _uploadingPhoto = false; });
+    } catch (e) {
+      if (mounted) {
+        setState(() => _uploadingPhoto = false);
+        AppToast.show(context, 'Photo upload failed', type: ToastType.error);
+      }
+    }
+  }
 
   double get _deliveryTotal {
     final qty = double.tryParse(_qtyCtrl.text) ?? 0;
@@ -114,6 +142,7 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
           quantity: _isDelivery ? double.tryParse(_qtyCtrl.text) : null,
           status: EntryStatus.pending,
           createdBy: '',
+          attachmentUrl: _pendingAttachmentUrl,
         ),
       );
       if (!mounted) return;
@@ -249,6 +278,48 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                   labelText: l10n.noteOptional,
                   prefixIcon: const Icon(Icons.note_outlined),
                 ),
+              ),
+            ],
+            const SizedBox(height: 16),
+            // Photo proof — local state only, NOT via LedgerBloc
+            Row(
+              children: [
+                OutlinedButton.icon(
+                  onPressed: (_uploadingPhoto || _customer == null)
+                      ? null
+                      : () => _pickAndUpload(ImageSource.camera),
+                  icon: const Icon(Icons.camera_alt_rounded, size: 16),
+                  label: const Text('Camera'),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 36)),
+                ),
+                const SizedBox(width: 8),
+                OutlinedButton.icon(
+                  onPressed: (_uploadingPhoto || _customer == null)
+                      ? null
+                      : () => _pickAndUpload(ImageSource.gallery),
+                  icon: const Icon(Icons.photo_library_rounded, size: 16),
+                  label: const Text('Gallery'),
+                  style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(0, 36)),
+                ),
+                if (_uploadingPhoto)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 10),
+                    child: SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
+              ],
+            ),
+            if (_pendingAttachmentUrl != null) ...[
+              const SizedBox(height: 10),
+              LedgerAttachmentSection(
+                attachmentUrl: _pendingAttachmentUrl,
+                isLocked: false,
+                heroTag: 'staff_new_entry_attachment',
               ),
             ],
             const SizedBox(height: 24),

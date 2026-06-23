@@ -616,7 +616,6 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
           AppNavItem(riveIcon: AppRiveIcon.home,     label: 'Home'),
           AppNavItem(riveIcon: AppRiveIcon.message,  label: 'My Khatas'),
           AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Bookings'),
-          AppNavItem(riveIcon: AppRiveIcon.zap,      label: 'Payments'),
           AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
         ],
       ),
@@ -645,8 +644,7 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
     if (location == AppRouter.customerHome) return 0;
     if (location == AppRouter.customerKhatas) return 1;
     if (location == AppRouter.customerBookings) return 2;
-    if (location == AppRouter.customerPayments) return 3;
-    if (location == AppRouter.customerProfile) return 4;
+    if (location == AppRouter.customerProfile) return 3;
     return 0;
   }
 
@@ -662,9 +660,6 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
         context.go(AppRouter.customerBookings);
         break;
       case 3:
-        context.go(AppRouter.customerPayments);
-        break;
-      case 4:
         context.go(AppRouter.customerProfile);
         break;
     }

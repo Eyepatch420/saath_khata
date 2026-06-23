@@ -23,6 +23,7 @@ class AddLedgerEntry extends LedgerEvent {
   final double? quantity;
   final String? unit;
   final String linkId;
+  final String? attachmentUrl;
 
   const AddLedgerEntry({
     required this.amount,
@@ -31,10 +32,11 @@ class AddLedgerEntry extends LedgerEvent {
     this.description,
     this.quantity,
     this.unit,
+    this.attachmentUrl,
   });
 
   @override
-  List<Object?> get props => [amount, type, description, quantity, unit, linkId];
+  List<Object?> get props => [amount, type, description, quantity, unit, linkId, attachmentUrl];
 }
 
 class ConfirmLedgerEntry extends LedgerEvent {

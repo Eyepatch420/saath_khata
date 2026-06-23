@@ -1,3 +1,4 @@
+import 'dart:io';
 import '../../domain/repositories/ledger_repository.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/models/ledger_balance.dart';
@@ -151,6 +152,33 @@ class MockLedgerRepository implements LedgerRepository {
       totalCreditAmount: credit,
       totalPaymentAmount: paid,
     );
+  }
+
+  @override
+  Future<LedgerEntry> attachToEntry(String entryId, String linkId, File imageFile) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    final index = _entries.indexWhere((e) => e.id == entryId);
+    if (index == -1) throw Exception('Entry not found');
+    final updated = LedgerEntry(
+      id: _entries[index].id,
+      linkId: _entries[index].linkId,
+      vendorId: _entries[index].vendorId,
+      customerId: _entries[index].customerId,
+      amount: _entries[index].amount,
+      type: _entries[index].type,
+      date: _entries[index].date,
+      description: _entries[index].description,
+      quantity: _entries[index].quantity,
+      unit: _entries[index].unit,
+      status: _entries[index].status,
+      isLocked: _entries[index].isLocked,
+      confirmedAt: _entries[index].confirmedAt,
+      disputeReason: _entries[index].disputeReason,
+      attachmentUrl: 'https://res.cloudinary.com/mock/ledger_attachments/mock_proof.jpg',
+      createdBy: _entries[index].createdBy,
+    );
+    _entries[index] = updated;
+    return updated;
   }
 
   @override

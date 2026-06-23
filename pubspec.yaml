@@ -53,8 +53,10 @@ dependencies:
   # Secure storage (tokens + onboarding flag)
   flutter_secure_storage: ^9.2.2
 
-  # Image picking (profile photo)
+  # Image picking (profile photo + ledger payment proof)
   image_picker: ^1.1.2
+  cached_network_image: ^3.4.1
+  flutter_image_compress: ^2.3.0
 
   # Map & Location
   flutter_map: ^7.0.2

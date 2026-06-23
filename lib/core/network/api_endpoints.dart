@@ -36,6 +36,8 @@ class ApiEndpoints {
       '/links/$linkId/entries/$entryId/confirm';
   static String disputeEntry(String linkId, String entryId) =>
       '/links/$linkId/entries/$entryId/dispute';
+  static String attachToEntry(String linkId, String entryId) =>
+      '/links/$linkId/entries/$entryId/attachment';
 
   // Voice entry (nested under link) — LLM-normalized ledger draft
   static String parseVoice(String linkId) => '/links/$linkId/voice/parse';
