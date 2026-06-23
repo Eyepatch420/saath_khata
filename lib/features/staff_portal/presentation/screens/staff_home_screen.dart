@@ -99,6 +99,7 @@ class StaffHomeScreen extends StatelessWidget {
                                 'linkId': c.linkId,
                                 'name': c.displayName,
                                 'isVendorView': true,
+                                'isStaffView': true,
                               },
                             ),
                           ),

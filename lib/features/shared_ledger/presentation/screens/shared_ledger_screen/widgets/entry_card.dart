@@ -22,6 +22,7 @@ class LedgerEntryCard extends StatelessWidget {
   final String customerName;
   final String currentUserId;
   final bool isVendorView;
+  final bool isStaffView;
 
   const LedgerEntryCard({
     super.key,
@@ -29,6 +30,7 @@ class LedgerEntryCard extends StatelessWidget {
     required this.customerName,
     required this.currentUserId,
     required this.isVendorView,
+    this.isStaffView = false,
   });
 
   @override
@@ -101,7 +103,10 @@ class LedgerEntryCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (entry.status == EntryStatus.pending &&
+            // Staff act on behalf of the vendor but never confirm/dispute —
+            // only the actual vendor or customer can do that.
+            if (!isStaffView &&
+                entry.status == EntryStatus.pending &&
                 !entry.isLocked &&
                 (isVendorView
                     ? entry.type == EntryType.payment
@@ -271,6 +276,7 @@ class LedgerEntryCard extends StatelessWidget {
         entry: entry,
         currentUserId: currentUserId,
         isVendorView: isVendorView,
+        isStaffView: isStaffView,
         l10n: l10n,
       ),
     );
@@ -281,12 +287,14 @@ class _EntryDetailSheet extends StatefulWidget {
   final LedgerEntry entry;
   final String currentUserId;
   final bool isVendorView;
+  final bool isStaffView;
   final AppLocalizations l10n;
 
   const _EntryDetailSheet({
     required this.entry,
     required this.currentUserId,
     required this.isVendorView,
+    required this.isStaffView,
     required this.l10n,
   });
 

@@ -67,12 +67,30 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
 
   bool get _isDelivery => widget.type == EntryType.credit;
 
+  // Delivery: customer + item name + qty > 0 + price > 0
+  // Payment:  customer + amount > 0 + note (description) not empty
+  bool get _isSubmitEnabled {
+    if (_customer == null) return false;
+    if (_submitting || _uploadingPhoto) return false;
+    if (_isDelivery) {
+      return _itemCtrl.text.trim().isNotEmpty &&
+          (double.tryParse(_qtyCtrl.text) ?? 0) > 0 &&
+          (double.tryParse(_priceCtrl.text) ?? 0) > 0;
+    } else {
+      return (double.tryParse(_amountCtrl.text) ?? 0) > 0 &&
+          _noteCtrl.text.trim().isNotEmpty;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     _customer = widget.preselected;
+    _itemCtrl.addListener(_recompute);
     _qtyCtrl.addListener(_recompute);
     _priceCtrl.addListener(_recompute);
+    _amountCtrl.addListener(_recompute);
+    _noteCtrl.addListener(_recompute);
   }
 
   @override
@@ -275,7 +293,7 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
               TextField(
                 controller: _noteCtrl,
                 decoration: InputDecoration(
-                  labelText: l10n.noteOptional,
+                  labelText: l10n.descriptionItemDetails,
                   prefixIcon: const Icon(Icons.note_outlined),
                 ),
               ),
@@ -326,7 +344,7 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton.icon(
-                onPressed: _submitting ? null : _submit,
+                onPressed: _isSubmitEnabled ? _submit : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: accent,
                   padding: const EdgeInsets.symmetric(vertical: 14),

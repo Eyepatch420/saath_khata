@@ -31,12 +31,14 @@ class SharedLedgerScreen extends StatefulWidget {
   final String linkId;
   final String customerName;
   final bool isVendorView;
+  final bool isStaffView;
 
   const SharedLedgerScreen({
     super.key,
     required this.linkId,
     required this.customerName,
     this.isVendorView = true,
+    this.isStaffView = false,
   });
 
   @override
@@ -108,6 +110,7 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
         customerName: widget.customerName,
         linkId: widget.linkId,
         isVendorView: widget.isVendorView,
+        isStaffView: widget.isStaffView,
       ),
     );
   }
@@ -119,12 +122,14 @@ class SharedLedgerView extends StatefulWidget {
   final String customerName;
   final String linkId;
   final bool isVendorView;
+  final bool isStaffView;
 
   const SharedLedgerView({
     super.key,
     required this.customerName,
     required this.linkId,
     this.isVendorView = true,
+    this.isStaffView = false,
   });
 
   @override
@@ -230,6 +235,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
                 customerName: widget.customerName,
                 currentUserId: currentUserId,
                 isVendorView: widget.isVendorView,
+                isStaffView: widget.isStaffView,
               ),
             ),
           ),

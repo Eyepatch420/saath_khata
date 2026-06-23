@@ -15,6 +15,7 @@ class LedgerList extends StatefulWidget {
   final String customerName;
   final String currentUserId;
   final bool isVendorView;
+  final bool isStaffView;
 
   const LedgerList({
     super.key,
@@ -22,6 +23,7 @@ class LedgerList extends StatefulWidget {
     required this.customerName,
     required this.currentUserId,
     required this.isVendorView,
+    this.isStaffView = false,
   });
 
   @override
@@ -118,6 +120,7 @@ class _LedgerListState extends State<LedgerList> {
           customerName: widget.customerName,
           currentUserId: widget.currentUserId,
           isVendorView: widget.isVendorView,
+          isStaffView: widget.isStaffView,
         ),
       ),
     );

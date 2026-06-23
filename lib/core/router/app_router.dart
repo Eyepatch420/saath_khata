@@ -306,6 +306,7 @@ class AppRouter {
             linkId: extras['linkId'] as String,
             customerName: extras['name'] as String,
             isVendorView: extras['isVendorView'] as bool? ?? true,
+            isStaffView: extras['isStaffView'] as bool? ?? false,
           );
         },
       ),
