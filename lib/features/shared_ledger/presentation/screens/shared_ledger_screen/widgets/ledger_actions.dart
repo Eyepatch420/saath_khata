@@ -125,6 +125,21 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
   String? _pendingUrl;
   bool _uploading = false;
 
+  bool get _isSubmitEnabled {
+    if (_uploading) return false;
+    return (double.tryParse(_amountCtrl.text) ?? 0) > 0 &&
+        _descCtrl.text.trim().isNotEmpty;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _amountCtrl.addListener(_rebuild);
+    _descCtrl.addListener(_rebuild);
+  }
+
+  void _rebuild() => setState(() {});
+
   @override
   void dispose() {
     _amountCtrl.dispose();
@@ -284,21 +299,19 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  final amount = double.tryParse(_amountCtrl.text);
-                  if (amount == null || amount <= 0) return;
-                  Navigator.pop(context);
-                  widget.bloc.add(AddLedgerEntry(
-                    amount: amount,
-                    type: type,
-                    linkId: widget.linkId,
-                    description: _descCtrl.text.trim().isEmpty
-                        ? null
-                        : _descCtrl.text.trim(),
-                    quantity: double.tryParse(_qtyCtrl.text),
-                    attachmentUrl: _pendingUrl,
-                  ));
-                },
+                onPressed: _isSubmitEnabled
+                    ? () {
+                        Navigator.pop(context);
+                        widget.bloc.add(AddLedgerEntry(
+                          amount: double.parse(_amountCtrl.text),
+                          type: type,
+                          linkId: widget.linkId,
+                          description: _descCtrl.text.trim(),
+                          quantity: double.tryParse(_qtyCtrl.text),
+                          attachmentUrl: _pendingUrl,
+                        ));
+                      }
+                    : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: type == EntryType.credit
                       ? AppColors.error

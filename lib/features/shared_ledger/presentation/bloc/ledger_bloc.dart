@@ -21,18 +21,16 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
     on<SocketLedgerEntryUpdated>(_onSocketEntryUpdated);
   }
 
-  /// Mirrors the backend's running-balance logic exactly so the on-screen
-  /// number matches the server's authoritative balance.
-  ///
-  ///  - Disputed entries have their balance effect REVERTED on the server,
-  ///    so they must be skipped here (otherwise the local total drifts high).
-  ///  - The backend's balanceDelta() is: credit => +amount, everything else
-  ///    (payment / advance / adjustment) => -amount. We match that — the old
-  ///    version ignored advance/adjustment, which also caused drift.
+  /// Balance = sum of confirmed entries only.
+  /// Pending entries have not been confirmed by the other party yet,
+  /// so they must not affect the displayed balance.
   double _calcBalance(List<LedgerEntry> entries) {
     double balance = 0;
     for (final entry in entries) {
-      if (entry.status == EntryStatus.disputed) continue;
+      if (entry.status != EntryStatus.confirmed &&
+          entry.status != EntryStatus.autoConfirmed) {
+        continue;
+      }
       if (entry.type == EntryType.credit) {
         balance += entry.amount;
       } else {
