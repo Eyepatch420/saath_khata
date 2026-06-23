@@ -103,14 +103,15 @@ class LedgerEntryCard extends StatelessWidget {
                 ),
               ],
             ),
-            // Staff act on behalf of the vendor but never confirm/dispute —
-            // only the actual vendor or customer can do that.
+            // Confirm/dispute is shown to whichever party did NOT create
+            // the entry — never to the creator and never to staff.
+            //
+            // createdBy == customerId  →  customer created it  →  vendor confirms
+            // createdBy != customerId  →  vendor/staff created →  customer confirms
             if (!isStaffView &&
                 entry.status == EntryStatus.pending &&
                 !entry.isLocked &&
-                (isVendorView
-                    ? entry.type == EntryType.payment
-                    : entry.type == EntryType.credit)) ...[
+                _shouldShowConfirmDispute(entry, isVendorView)) ...[
               const Divider(height: 20),
               Row(
                 children: [
@@ -166,6 +167,13 @@ class LedgerEntryCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  // Returns true for the party that did NOT create the entry.
+  // Customer created → vendor confirms. Vendor/staff created → customer confirms.
+  bool _shouldShowConfirmDispute(LedgerEntry entry, bool isVendorView) {
+    final customerCreated = entry.createdBy == entry.customerId;
+    return customerCreated ? isVendorView : !isVendorView;
   }
 
   void _confirmEntry(BuildContext context, AppLocalizations l10n) {
