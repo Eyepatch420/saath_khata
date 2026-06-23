@@ -101,14 +101,6 @@ class LedgerEntryCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (entry.attachmentUrl != null) ...[
-              const SizedBox(height: 12),
-              LedgerAttachmentSection(
-                attachmentUrl: entry.attachmentUrl,
-                isLocked: entry.isLocked,
-                heroTag: 'entry_attachment_${entry.id}',
-              ),
-            ],
             if (entry.status == EntryStatus.pending &&
                 !entry.isLocked &&
                 (isVendorView

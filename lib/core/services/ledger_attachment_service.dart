@@ -21,12 +21,12 @@ class LedgerAttachmentService {
     required String linkId,
     String? entryId,
   }) async {
-    // Compress locally before upload — reduces data usage on slow connections
+    // Compress before upload — keep high-enough quality for readability
     final compressedBytes = await FlutterImageCompress.compressWithFile(
       imageFile.absolute.path,
-      quality: 75,
-      minWidth: 100,
-      minHeight: 100,
+      quality: 88,
+      minWidth: 1080,
+      minHeight: 1080,
       keepExif: false,
     );
 
@@ -44,12 +44,20 @@ class LedgerAttachmentService {
       ),
     });
 
-    final endpoint = entryId != null
-        ? '/links/$linkId/entries/$entryId/attachment'
-        : '/links/$linkId/entries/attachment/temp';
-
-    final response = await _api.patch(endpoint, data: formData);
-    final data = ApiClient.extractData(response);
-    return data['attachmentUrl'] as String;
+    final String attachmentUrl;
+    if (entryId != null) {
+      final response = await _api.patch(
+        '/links/$linkId/entries/$entryId/attachment',
+        data: formData,
+      );
+      attachmentUrl = ApiClient.extractData(response)['attachmentUrl'] as String;
+    } else {
+      final response = await _api.post(
+        '/links/$linkId/entries/attachment/temp',
+        data: formData,
+      );
+      attachmentUrl = ApiClient.extractData(response)['attachmentUrl'] as String;
+    }
+    return attachmentUrl;
   }
 }
