@@ -216,16 +216,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statement => 'Statement';
 
   @override
-  String get giveCredit => 'GIVE CREDIT';
+  String get giveCredit => 'UDHAAR DIYA';
 
   @override
-  String get recordPayment => 'RECORD PAYMENT';
+  String get recordPayment => 'PAISA MILA';
 
   @override
-  String get giveCreditSheet => 'Give Credit';
+  String get giveCreditSheet => 'Udhaar Diya';
 
   @override
-  String get recordPaymentSheet => 'Record Payment';
+  String get recordPaymentSheet => 'Paisa Mila';
 
   @override
   String get filterAll => 'All';
@@ -1983,16 +1983,16 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get recordDelivery => 'Record Delivery';
+  String get recordDelivery => 'Udhaar Diya';
 
   @override
-  String get recordDeliverySubtitle => 'Add a delivery to a customer\'s ledger';
+  String get recordDeliverySubtitle => 'Customer took goods — add to their khata';
 
   @override
-  String get collectPayment => 'Collect Payment';
+  String get collectPayment => 'Paisa Mila';
 
   @override
-  String get collectPaymentSubtitle => 'Record cash collected from a customer';
+  String get collectPaymentSubtitle => 'Customer paid — reduce their khata';
 
   @override
   String get viewAll2 => 'View all';
@@ -2151,10 +2151,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterValidAmount => 'Enter a valid amount';
 
   @override
-  String get addsCredit => 'Adds a credit to the customer\'s ledger';
+  String get addsCredit => 'Customer took goods — add to their khata';
 
   @override
-  String get recordsCash => 'Records cash collected from the customer';
+  String get recordsCash => 'Customer paid — reduce their khata';
 
   @override
   String deliveryRecordedFor(String name) {
@@ -2182,10 +2182,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addSlot => 'Add Slot';
 
   @override
-  String noSlotsForDay(String day) => 'No slots for $day';
+  String noSlotsForDay(String day) {
+    return 'No slots for $day';
+  }
 
   @override
-  String get tapAddSlotHint => 'Tap "Add Slot" to set your availability';
+  String get tapAddSlotHint => 'Tap \"Add Slot\" to set your availability';
 
   @override
   String get slotAvailable => 'Available';
@@ -2203,7 +2205,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteSlotTitle => 'Delete Slot';
 
   @override
-  String deleteSlotConfirm(String time) => 'Remove the $time slot?';
+  String deleteSlotConfirm(String time) {
+    return 'Remove the $time slot?';
+  }
 
   @override
   String get endTimeAfterStart => 'End time must be after start time';
@@ -2249,16 +2253,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get slotDetailTitle => 'Slot Details';
 
   @override
-  String bookingsCount(int count) => '$count booking';
+  String bookingsCount(int count) {
+    return '$count booking';
+  }
 
   @override
-  String bookingsCountPlural(int count) => '$count bookings';
+  String bookingsCountPlural(int count) {
+    return '$count bookings';
+  }
 
   @override
-  String pendingCountLabel(int count) => '$count pending';
+  String pendingCountLabel(int count) {
+    return '$count pending';
+  }
 
   @override
-  String slotTimeRange(String start, String end) => '$start – $end';
+  String slotTimeRange(String start, String end) {
+    return '$start – $end';
+  }
 
   @override
   String get keepButton => 'Keep';

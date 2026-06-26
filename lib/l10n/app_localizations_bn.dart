@@ -2175,10 +2175,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get addSlot => 'Add Slot';
 
   @override
-  String noSlotsForDay(String day) => 'No slots for $day';
+  String noSlotsForDay(String day) {
+    return 'No slots for $day';
+  }
 
   @override
-  String get tapAddSlotHint => 'Tap "Add Slot" to set your availability';
+  String get tapAddSlotHint => 'Tap \"Add Slot\" to set your availability';
 
   @override
   String get slotAvailable => 'Available';
@@ -2196,7 +2198,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get deleteSlotTitle => 'Delete Slot';
 
   @override
-  String deleteSlotConfirm(String time) => 'Remove the $time slot?';
+  String deleteSlotConfirm(String time) {
+    return 'Remove the $time slot?';
+  }
 
   @override
   String get endTimeAfterStart => 'End time must be after start time';
@@ -2242,16 +2246,24 @@ class AppLocalizationsBn extends AppLocalizations {
   String get slotDetailTitle => 'Slot Details';
 
   @override
-  String bookingsCount(int count) => '$count booking';
+  String bookingsCount(int count) {
+    return '$count booking';
+  }
 
   @override
-  String bookingsCountPlural(int count) => '$count bookings';
+  String bookingsCountPlural(int count) {
+    return '$count bookings';
+  }
 
   @override
-  String pendingCountLabel(int count) => '$count pending';
+  String pendingCountLabel(int count) {
+    return '$count pending';
+  }
 
   @override
-  String slotTimeRange(String start, String end) => '$start – $end';
+  String slotTimeRange(String start, String end) {
+    return '$start – $end';
+  }
 
   @override
   String get keepButton => 'Keep';

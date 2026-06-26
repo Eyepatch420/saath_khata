@@ -4048,38 +4048,202 @@ abstract class AppLocalizations {
   /// **'Payment collected from {name}'**
   String paymentCollectedFrom(String name);
 
+  /// No description provided for @manageSchedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Schedule'**
   String get manageSchedule;
+
+  /// No description provided for @bookingsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
   String get bookingsTab;
+
+  /// No description provided for @bySlotTab.
+  ///
+  /// In en, this message translates to:
+  /// **'By Slot'**
   String get bySlotTab;
+
+  /// No description provided for @scheduleSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule saved!'**
   String get scheduleSaved;
+
+  /// No description provided for @addSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Slot'**
   String get addSlot;
+
+  /// No description provided for @noSlotsForDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots for {day}'**
   String noSlotsForDay(String day);
+
+  /// No description provided for @tapAddSlotHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Add Slot\" to set your availability'**
   String get tapAddSlotHint;
+
+  /// No description provided for @slotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
   String get slotAvailable;
+
+  /// No description provided for @slotsFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Slots Full'**
   String get slotsFull;
+
+  /// No description provided for @slotFullHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark this slot as fully booked'**
   String get slotFullHint;
+
+  /// No description provided for @enableSlotFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable slot first'**
   String get enableSlotFirst;
+
+  /// No description provided for @deleteSlotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Slot'**
   String get deleteSlotTitle;
+
+  /// No description provided for @deleteSlotConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove the {time} slot?'**
   String deleteSlotConfirm(String time);
+
+  /// No description provided for @endTimeAfterStart.
+  ///
+  /// In en, this message translates to:
+  /// **'End time must be after start time'**
   String get endTimeAfterStart;
+
+  /// No description provided for @slotOverlaps.
+  ///
+  /// In en, this message translates to:
+  /// **'This slot overlaps with an existing one'**
   String get slotOverlaps;
+
+  /// No description provided for @addTimeSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Time Slot'**
   String get addTimeSlot;
+
+  /// No description provided for @editTimeSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Time Slot'**
   String get editTimeSlot;
+
+  /// No description provided for @selectTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select start and end time in 12-hour format'**
   String get selectTimeHint;
+
+  /// No description provided for @startLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
   String get startLabel;
+
+  /// No description provided for @endLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End'**
   String get endLabel;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
   String get update;
+
+  /// No description provided for @notifTabAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
   String get notifTabAll;
+
+  /// No description provided for @notifTabBookings.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
   String get notifTabBookings;
+
+  /// No description provided for @noBookingNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No booking notifications'**
   String get noBookingNotifications;
+
+  /// No description provided for @noBookingNotificationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking requests and updates will appear here'**
   String get noBookingNotificationsSubtitle;
+
+  /// No description provided for @bookingPillLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking'**
   String get bookingPillLabel;
+
+  /// No description provided for @slotDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Slot Details'**
   String get slotDetailTitle;
+
+  /// No description provided for @bookingsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} booking'**
   String bookingsCount(int count);
+
+  /// No description provided for @bookingsCountPlural.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} bookings'**
   String bookingsCountPlural(int count);
+
+  /// No description provided for @pendingCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pending'**
   String pendingCountLabel(int count);
+
+  /// No description provided for @slotTimeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{start} – {end}'**
   String slotTimeRange(String start, String end);
+
+  /// No description provided for @keepButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep'**
   String get keepButton;
+
+  /// No description provided for @deleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
   String get deleteButton;
 }
 

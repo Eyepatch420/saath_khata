@@ -83,10 +83,10 @@
   "sharedLedger": "Shared Ledger",
   "totalBalance": "TOTAL BALANCE",
   "statement": "Statement",
-  "giveCredit": "GIVE CREDIT",
-  "recordPayment": "RECORD PAYMENT",
-  "giveCreditSheet": "Give Credit",
-  "recordPaymentSheet": "Record Payment",
+  "giveCredit": "UDHAAR DIYA",
+  "recordPayment": "PAISA MILA",
+  "giveCreditSheet": "Udhaar Diya",
+  "recordPaymentSheet": "Paisa Mila",
   "filterAll": "All",
   "balanceCustomerOwes": "Customer owes you",
   "balanceYouOwe": "You owe customer",
@@ -1039,10 +1039,10 @@
       "name": { "type": "String" }
     }
   },
-  "recordDelivery": "Record Delivery",
-  "recordDeliverySubtitle": "Add a delivery to a customer's ledger",
-  "collectPayment": "Collect Payment",
-  "collectPaymentSubtitle": "Record cash collected from a customer",
+  "recordDelivery": "Udhaar Diya",
+  "recordDeliverySubtitle": "Customer took goods — add to their khata",
+  "collectPayment": "Paisa Mila",
+  "collectPaymentSubtitle": "Customer paid — reduce their khata",
   "viewAll2": "View all",
   "noCustomersStaff": "No customers yet",
 
@@ -1144,8 +1144,8 @@
   },
   "selectCustomerFirst": "Select a customer first",
   "enterValidAmount": "Enter a valid amount",
-  "addsCredit": "Adds a credit to the customer's ledger",
-  "recordsCash": "Records cash collected from the customer",
+  "addsCredit": "Customer took goods — add to their khata",
+  "recordsCash": "Customer paid — reduce their khata",
   "deliveryRecordedFor": "Delivery recorded for {name}",
   "@deliveryRecordedFor": {
     "placeholders": {
