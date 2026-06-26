@@ -29,8 +29,8 @@ class CustomerDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => CustomerBloc(getIt())..add(LoadCustomerDashboard()),
+    return BlocProvider.value(
+      value: getIt<CustomerBloc>()..add(LoadCustomerDashboard()),
       child: const CustomerDashboardView(),
     );
   }
@@ -85,37 +85,42 @@ class CustomerDashboardView extends StatelessWidget {
           if (state is CustomerLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is CustomerLoaded) {
-            return SingleChildScrollView(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SearchBarPill(viewAs: SearchViewAs.customer),
-                  const SizedBox(height: 16),
-                  const _PendingVendorRequestsBanner(),
-                  TotalDueCard(
-                    amount: state.totalDue,
-                    onPayAllDues: state.totalDue > 0
-                        ? () => _showPayAllDuesSheet(context, state.vendors)
-                        : null,
-                  ),
-                  const SizedBox(height: 16),
-                  const _UpcomingAppointmentsCard(),
-                  const SizedBox(height: 24),
-                  Text(l10n.myVendors, style: AppTypography.h3),
-                  const SizedBox(height: 12),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: state.vendors.length,
-                    separatorBuilder: (context, index) =>
-                        const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final vendor = state.vendors[index];
-                      return VendorTile(vendor: vendor);
-                    },
-                  ),
-                ],
+            return RefreshIndicator(
+              onRefresh: () async =>
+                  context.read<CustomerBloc>().add(LoadCustomerDashboard()),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SearchBarPill(viewAs: SearchViewAs.customer),
+                    const SizedBox(height: 16),
+                    const _PendingVendorRequestsBanner(),
+                    TotalDueCard(
+                      amount: state.totalDue,
+                      onPayAllDues: state.totalDue > 0
+                          ? () => _showPayAllDuesSheet(context, state.vendors)
+                          : null,
+                    ),
+                    const SizedBox(height: 16),
+                    const _UpcomingAppointmentsCard(),
+                    const SizedBox(height: 24),
+                    Text(l10n.myVendors, style: AppTypography.h3),
+                    const SizedBox(height: 12),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: state.vendors.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final vendor = state.vendors[index];
+                        return VendorTile(vendor: vendor);
+                      },
+                    ),
+                  ],
+                ),
               ),
             );
           }

@@ -363,7 +363,7 @@ class _CustomerBookingRow extends StatelessWidget {
         booking.status == BookingStatus.confirmed;
 
     return InkWell(
-      onTap: isActionable ? () => _showActionSheet(context, booking) : null,
+      onTap: isActionable ? () => _showBookingActionSheet(context, booking) : null,
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         child: Row(
@@ -414,125 +414,125 @@ class _CustomerBookingRow extends StatelessWidget {
     );
   }
 
-  void _showActionSheet(BuildContext context, BookingModel booking) {
-    final l10n = AppLocalizations.of(context)!;
-    final bloc = context.read<BookingBloc>();
-    final dateStr =
-        '${DateTime.parse(booking.date).day}/${DateTime.parse(booking.date).month}';
+}
 
-    showModalBottomSheet(
-      context: context,
-      useRootNavigator: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.divider,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+// ─── Shared action sheet (used by both _BookingCard and _CustomerBookingRow) ──
+
+void _showBookingActionSheet(BuildContext context, BookingModel booking) {
+  final l10n = AppLocalizations.of(context)!;
+  final bloc = context.read<BookingBloc>();
+  final dateStr =
+      '${DateTime.parse(booking.date).day}/${DateTime.parse(booking.date).month}';
+
+  showModalBottomSheet(
+    context: context,
+    useRootNavigator: true,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) => SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.divider,
+                  borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const SizedBox(height: 16),
-              Text(booking.customerName, style: AppTypography.h3),
-              Text(
-                '$dateStr  •  ${_to12h(booking.startTime)}'
-                '${booking.serviceType != null ? '  •  ${booking.serviceType}' : ''}',
-                style:
-                    AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
-              ),
-              const SizedBox(height: 20),
-              if (booking.status == BookingStatus.pending) ...[
-                _ActionTile(
-                  icon: Icons.check_circle_outline_rounded,
-                  label: l10n.confirmBooking,
-                  color: AppColors.success,
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    bloc.add(UpdateBookingStatus(
-                      bookingId: booking.id,
-                      status: BookingStatus.confirmed,
-                    ));
-                  },
-                ),
-                const SizedBox(height: 8),
-              ],
-              if (booking.status == BookingStatus.confirmed) ...[
-                _ActionTile(
-                  icon: Icons.task_alt_rounded,
-                  label: l10n.markComplete,
-                  color: AppColors.primary,
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    bloc.add(UpdateBookingStatus(
-                      bookingId: booking.id,
-                      status: BookingStatus.completed,
-                    ));
-                  },
-                ),
-                const SizedBox(height: 8),
-              ],
+            ),
+            const SizedBox(height: 16),
+            Text(booking.customerName, style: AppTypography.h3),
+            Text(
+              '$dateStr  •  ${_to12h(booking.startTime)}'
+              '${booking.serviceType != null ? '  •  ${booking.serviceType}' : ''}',
+              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 20),
+            if (booking.status == BookingStatus.pending) ...[
               _ActionTile(
-                icon: Icons.cancel_outlined,
-                label: l10n.cancelBooking,
-                color: AppColors.error,
+                icon: Icons.check_circle_outline_rounded,
+                label: l10n.confirmBooking,
+                color: AppColors.success,
                 onTap: () {
                   Navigator.pop(ctx);
-                  _confirmCancel(context, bloc, booking, dateStr, l10n);
+                  bloc.add(UpdateBookingStatus(
+                    bookingId: booking.id,
+                    status: BookingStatus.confirmed,
+                  ));
                 },
               ),
               const SizedBox(height: 8),
             ],
-          ),
+            if (booking.status == BookingStatus.confirmed) ...[
+              _ActionTile(
+                icon: Icons.task_alt_rounded,
+                label: l10n.markComplete,
+                color: AppColors.primary,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  bloc.add(UpdateBookingStatus(
+                    bookingId: booking.id,
+                    status: BookingStatus.completed,
+                  ));
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+            _ActionTile(
+              icon: Icons.cancel_outlined,
+              label: l10n.cancelBooking,
+              color: AppColors.error,
+              onTap: () {
+                Navigator.pop(ctx);
+                _showCancelConfirmDialog(context, bloc, booking, dateStr, l10n);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  void _confirmCancel(
-    BuildContext context,
-    BookingBloc bloc,
-    BookingModel booking,
-    String dateStr,
-    AppLocalizations l10n,
-  ) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.cancelAppointmentTitle),
-        content: Text(
-          l10n.cancelAppointmentMessage(dateStr, _to12h(booking.startTime)),
+void _showCancelConfirmDialog(
+  BuildContext context,
+  BookingBloc bloc,
+  BookingModel booking,
+  String dateStr,
+  AppLocalizations l10n,
+) {
+  showDialog(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l10n.cancelAppointmentTitle),
+      content: Text(l10n.cancelAppointmentMessage(dateStr, _to12h(booking.startTime))),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx),
+          child: Text(l10n.keepBooking),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.keepBooking),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              bloc.add(UpdateBookingStatus(
-                bookingId: booking.id,
-                status: BookingStatus.cancelled,
-              ));
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.cancelBooking),
-          ),
-        ],
-      ),
-    );
-  }
+        TextButton(
+          onPressed: () {
+            Navigator.pop(ctx);
+            bloc.add(UpdateBookingStatus(
+              bookingId: booking.id,
+              status: BookingStatus.cancelled,
+            ));
+          },
+          style: TextButton.styleFrom(foregroundColor: AppColors.error),
+          child: Text(l10n.cancelBooking),
+        ),
+      ],
+    ),
+  );
 }
 
 // ─── Date Selector ────────────────────────────────────────────────────────────
@@ -617,8 +617,7 @@ class _BookingCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: isActionable
-          ? () => _CustomerBookingRow(booking: booking)
-              ._showActionSheet(context, booking)
+          ? () => _showBookingActionSheet(context, booking)
           : null,
       child: Container(
         padding: const EdgeInsets.all(16),

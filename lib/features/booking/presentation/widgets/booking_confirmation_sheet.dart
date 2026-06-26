@@ -73,7 +73,7 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
   Widget build(BuildContext context) {
     return BlocListener<BookingBloc, BookingState>(
       listenWhen: (_, c) => c is BookingError,
-      listener: (_, _) => setState(() => _isLoading = false),
+      listener: (ctx, s) => setState(() => _isLoading = false),
       child: Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,

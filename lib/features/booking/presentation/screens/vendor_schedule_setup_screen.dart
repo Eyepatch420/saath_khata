@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
@@ -159,6 +160,7 @@ class _ScheduleSetupViewState extends State<_ScheduleSetupView>
         } else if (state is BookingConfigSaved) {
           _applyConfig(state.config);
           AppToast.show(context, 'Schedule saved!', type: ToastType.success);
+          if (context.mounted) context.pop();
         } else if (state is BookingConfigError) {
           AppToast.show(context, state.message, type: ToastType.error);
           if (state.config != null) _applyConfig(state.config!);
@@ -611,6 +613,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _start,
+      initialEntryMode: TimePickerEntryMode.input,
       builder: (ctx, child) => MediaQuery(
         data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: false),
         child: child!,
@@ -623,6 +626,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
     final picked = await showTimePicker(
       context: context,
       initialTime: _end,
+      initialEntryMode: TimePickerEntryMode.input,
       builder: (ctx, child) => MediaQuery(
         data: MediaQuery.of(ctx).copyWith(alwaysUse24HourFormat: false),
         child: child!,
