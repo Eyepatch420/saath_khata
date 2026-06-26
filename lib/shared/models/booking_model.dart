@@ -95,8 +95,9 @@ class AppointmentSlot extends Equatable {
   final String endTime;
   final int durationMinutes;
   final bool isAvailable;
-  final bool isFull;       // vendor marked full — show "Slots Full" badge
-  final int bookingCount;  // how many bookings exist for this slot
+  final bool isFull;          // vendor marked full — show "Slots Full" badge
+  final int bookingCount;     // how many bookings exist for this slot
+  final bool isAlreadyBooked; // customer already has a booking for this slot
 
   const AppointmentSlot({
     required this.id,
@@ -107,7 +108,20 @@ class AppointmentSlot extends Equatable {
     this.isAvailable = true,
     this.isFull = false,
     this.bookingCount = 0,
+    this.isAlreadyBooked = false,
   });
+
+  AppointmentSlot copyWith({bool? isAlreadyBooked, bool? isFull}) => AppointmentSlot(
+        id: id,
+        vendorId: vendorId,
+        startTime: startTime,
+        endTime: endTime,
+        durationMinutes: durationMinutes,
+        isAvailable: isAvailable,
+        isFull: isFull ?? this.isFull,
+        bookingCount: bookingCount,
+        isAlreadyBooked: isAlreadyBooked ?? this.isAlreadyBooked,
+      );
 
   factory AppointmentSlot.fromJson(Map<String, dynamic> json) => AppointmentSlot(
         id: json['id'] as String,
@@ -122,7 +136,7 @@ class AppointmentSlot extends Equatable {
 
   @override
   List<Object?> get props =>
-      [id, vendorId, startTime, endTime, durationMinutes, isAvailable, isFull, bookingCount];
+      [id, vendorId, startTime, endTime, durationMinutes, isAvailable, isFull, bookingCount, isAlreadyBooked];
 }
 
 // ─── BookingModel ─────────────────────────────────────────────────────────────

@@ -52,6 +52,7 @@ class _BookAppointmentBody extends StatefulWidget {
 
 class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
   late DateTime _selectedDate;
+  String? _lastAttemptedSlotTime;
   static const _daysToShow = 14;
 
   @override
@@ -75,6 +76,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
   void _onSlotTapped(AppointmentSlot slot) {
     final authState = context.read<AuthBloc>().state;
     if (authState is! AuthAuthenticated) return;
+    setState(() => _lastAttemptedSlotTime = slot.startTime);
 
     showModalBottomSheet<void>(
       context: context,
@@ -105,11 +107,13 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
     final dates = List.generate(_daysToShow, (i) => today.add(Duration(days: i)));
 
     return BlocListener<BookingBloc, BookingState>(
-      listenWhen: (_, c) => c is BookingCreated || c is BookingError,
+      listenWhen: (_, c) => c is BookingCreated || c is BookingError || c is BookingCreateError,
       listener: (context, state) {
         if (state is BookingCreated) {
           AppToast.show(context, AppLocalizations.of(context)!.bookingConfirmedToast, type: ToastType.success);
           context.go(AppRouter.customerBookings);
+        } else if (state is BookingCreateError) {
+          AppToast.show(context, state.message, type: ToastType.error);
         } else if (state is BookingError) {
           AppToast.show(context, state.message, type: ToastType.error);
         }
@@ -153,6 +157,30 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                               date: _selectedDate,
                             ),
                           ),
+                    );
+                  }
+                  // Booking failed but keep slot grid visible
+                  if (state is BookingCreateError) {
+                    if (state.slots.isEmpty) {
+                      final l10n = AppLocalizations.of(context)!;
+                      return EmptyStateWidget(
+                        icon: Icons.event_busy_rounded,
+                        title: l10n.noSlotsAvailable,
+                        subtitle: l10n.trySelectingDifferentDate,
+                      );
+                    }
+                    // Mark the slot the user just tried to book as "already booked"
+                    final bookedTime = _lastAttemptedSlotTime;
+                    final updatedSlots = bookedTime == null
+                        ? state.slots
+                        : state.slots
+                            .map((s) => s.startTime == bookedTime
+                                ? s.copyWith(isAlreadyBooked: true)
+                                : s)
+                            .toList();
+                    return _SlotGrid(
+                      slots: updatedSlots,
+                      onSlotTapped: _onSlotTapped,
                     );
                   }
                   if (state is SlotsLoaded) {
@@ -306,23 +334,28 @@ class _SlotChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isFull = slot.isFull;
-    final borderColor = isFull
-        ? AppColors.warning.withValues(alpha: 0.5)
-        : AppColors.primary.withValues(alpha: 0.4);
-    final textColor = isFull ? AppColors.textHint : AppColors.primary;
+    final isBooked = slot.isAlreadyBooked;
+    final isDisabled = isFull || isBooked;
+
+    final borderColor = isBooked
+        ? AppColors.primary.withValues(alpha: 0.3)
+        : isFull
+            ? AppColors.warning.withValues(alpha: 0.5)
+            : AppColors.primary.withValues(alpha: 0.4);
+    final textColor = isDisabled ? AppColors.textHint : AppColors.primary;
 
     return InkWell(
-      onTap: isFull ? null : onTap,
+      onTap: isDisabled ? null : onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isFull
+          color: isDisabled
               ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
               : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: borderColor, width: 1.5),
-          boxShadow: isFull
+          boxShadow: isDisabled
               ? null
               : [
                   BoxShadow(
@@ -339,11 +372,27 @@ class _SlotChip extends StatelessWidget {
               _to12h(slot.startTime),
               style: AppTypography.labelLarge.copyWith(
                 color: textColor,
-                decoration: isFull ? TextDecoration.lineThrough : null,
+                decoration: isDisabled ? TextDecoration.lineThrough : null,
               ),
             ),
             const SizedBox(height: 4),
-            if (isFull)
+            if (isBooked)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Already Booked',
+                  style: AppTypography.bodySmall.copyWith(
+                    fontSize: 10,
+                    color: AppColors.primary.withValues(alpha: 0.6),
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              )
+            else if (isFull)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                 decoration: BoxDecoration(
@@ -351,7 +400,7 @@ class _SlotChip extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  'Slots Full',
+                  AppLocalizations.of(context)!.slotsFull,
                   style: AppTypography.bodySmall.copyWith(
                     fontSize: 10,
                     color: AppColors.warning,

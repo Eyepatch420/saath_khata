@@ -207,32 +207,29 @@ class _NotificationCard extends StatelessWidget {
   const _NotificationCard({required this.notification});
 
   void _handleTap(BuildContext context) {
+    // Capture router before any state changes that could trigger a rebuild
+    final router = GoRouter.of(context);
+    final data = notification.data;
+
     if (!notification.isRead) {
       context.read<NotificationBloc>().add(MarkNotificationRead(notification.id));
     }
-    final data = notification.data;
+
     switch (notification.type) {
       case NotificationType.bookingRequested:
-        // Vendor taps → go to bookings screen for that date
-        final date = data?['date'] as String?;
-        if (date != null) {
-          context.push(AppRouter.vendorBookings);
-        } else {
-          context.push(AppRouter.vendorBookings);
-        }
+        router.push(AppRouter.vendorBookings);
       case NotificationType.bookingConfirmed:
       case NotificationType.bookingCancelled:
-        // Customer taps → go to their bookings list
-        context.push(AppRouter.customerBookings);
+        router.push(AppRouter.customerBookings);
       case NotificationType.linkRequestReceived:
         final requestId = data?['requestId'] as String?;
         if (requestId != null) {
-          context.push(AppRouter.linkRequestDetail, extra: requestId);
+          router.push(AppRouter.linkRequestDetail, extra: requestId);
         }
       case NotificationType.vendorLinkRequestReceived:
         final requestId = data?['requestId'] as String?;
         if (requestId != null) {
-          context.push(AppRouter.customerLinkRequestDetail, extra: requestId);
+          router.push(AppRouter.customerLinkRequestDetail, extra: requestId);
         }
       case NotificationType.linkRequestAccepted:
         getIt<CustomerBloc>().add(LoadCustomerDashboard());

@@ -33,8 +33,27 @@ class SlotsLoaded extends BookingState {
 
   const SlotsLoaded({required this.slots, required this.date});
 
+  SlotsLoaded copyWith({List<AppointmentSlot>? slots}) =>
+      SlotsLoaded(slots: slots ?? this.slots, date: date);
+
   @override
   List<Object?> get props => [slots, date];
+}
+
+/// Booking creation failed but we still have the slot grid to show.
+class BookingCreateError extends BookingState {
+  final List<AppointmentSlot> slots;
+  final DateTime date;
+  final String message;
+
+  const BookingCreateError({
+    required this.slots,
+    required this.date,
+    required this.message,
+  });
+
+  @override
+  List<Object?> get props => [slots, date, message];
 }
 
 class BookingCreated extends BookingState {

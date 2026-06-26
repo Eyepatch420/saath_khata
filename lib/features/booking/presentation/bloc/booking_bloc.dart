@@ -64,13 +64,25 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
   Future<void> _onCreate(CreateBooking event, Emitter<BookingState> emit) async {
     AppLogger.i(_m, 'Creating booking — vendorId:${event.booking.vendorId} date:${event.booking.date}');
+    // Remember slot state so we can restore it on failure
+    final prevState = state;
     emit(BookingLoading());
     try {
       final booking = await _repository.createBooking(event.booking);
       emit(BookingCreated(booking));
     } catch (e) {
       AppLogger.e(_m, 'Create booking failed', e);
-      emit(BookingError(e.toString().replaceFirst('Exception: ', '')));
+      final msg = e.toString().replaceFirst('Exception: ', '');
+      // Restore the slot grid on failure so the user can still see the screen
+      if (prevState is SlotsLoaded) {
+        emit(BookingCreateError(
+          slots: prevState.slots,
+          date: prevState.date,
+          message: msg,
+        ));
+      } else {
+        emit(BookingError(msg));
+      }
     }
   }
 
