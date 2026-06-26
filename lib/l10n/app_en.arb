@@ -442,6 +442,16 @@
   },
   "accrueMonthSalaryTitle": "Add Month's Salary",
   "@accrueMonthSalaryTitle": {},
+  "removeStaffTitle": "Remove Staff Member",
+  "@removeStaffTitle": {},
+  "removeStaffConfirm": "Remove {name} from your staff? This will revoke their app access immediately.",
+  "@removeStaffConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "accrueMonthSalaryConfirm": "Add ₹{amount} to {name}'s unpaid balance for this month?",
   "@accrueMonthSalaryConfirm": {
     "placeholders": {
@@ -1147,5 +1157,70 @@
     "placeholders": {
       "name": { "type": "String" }
     }
-  }
+  },
+
+  "manageSchedule": "Manage Schedule",
+  "bookingsTab": "Bookings",
+  "bySlotTab": "By Slot",
+  "scheduleSaved": "Schedule saved!",
+  "addSlot": "Add Slot",
+  "noSlotsForDay": "No slots for {day}",
+  "@noSlotsForDay": {
+    "placeholders": {
+      "day": { "type": "String" }
+    }
+  },
+  "tapAddSlotHint": "Tap \"Add Slot\" to set your availability",
+  "slotAvailable": "Available",
+  "slotsFull": "Slots Full",
+  "slotFullHint": "Mark this slot as fully booked",
+  "enableSlotFirst": "Enable slot first",
+  "deleteSlotTitle": "Delete Slot",
+  "deleteSlotConfirm": "Remove the {time} slot?",
+  "@deleteSlotConfirm": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "endTimeAfterStart": "End time must be after start time",
+  "slotOverlaps": "This slot overlaps with an existing one",
+  "addTimeSlot": "Add Time Slot",
+  "editTimeSlot": "Edit Time Slot",
+  "selectTimeHint": "Select start and end time in 12-hour format",
+  "startLabel": "Start",
+  "endLabel": "End",
+  "update": "Update",
+  "notifTabAll": "All",
+  "notifTabBookings": "Bookings",
+  "noBookingNotifications": "No booking notifications",
+  "noBookingNotificationsSubtitle": "Booking requests and updates will appear here",
+  "bookingPillLabel": "Booking",
+  "slotDetailTitle": "Slot Details",
+  "bookingsCount": "{count} booking",
+  "@bookingsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookingsCountPlural": "{count} bookings",
+  "@bookingsCountPlural": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pendingCountLabel": "{count} pending",
+  "@pendingCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "slotTimeRange": "{start} – {end}",
+  "@slotTimeRange": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "keepButton": "Keep",
+  "deleteButton": "Delete"
 }

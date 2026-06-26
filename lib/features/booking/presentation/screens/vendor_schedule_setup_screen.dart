@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../shared/models/booking_model.dart';
@@ -159,7 +160,7 @@ class _ScheduleSetupViewState extends State<_ScheduleSetupView>
           _applyConfig(state.config);
         } else if (state is BookingConfigSaved) {
           _applyConfig(state.config);
-          AppToast.show(context, 'Schedule saved!', type: ToastType.success);
+          AppToast.show(context, AppLocalizations.of(context)!.scheduleSaved, type: ToastType.success);
           if (context.mounted) context.pop();
         } else if (state is BookingConfigError) {
           AppToast.show(context, state.message, type: ToastType.error);
@@ -170,7 +171,7 @@ class _ScheduleSetupViewState extends State<_ScheduleSetupView>
         final isLoading = state is BookingConfigLoading;
         return Scaffold(
           appBar: AppBar(
-            title: Text('Manage Schedule', style: AppTypography.h3),
+            title: Text(AppLocalizations.of(context)!.manageSchedule, style: AppTypography.h3),
             bottom: TabBar(
               controller: _tabController,
               isScrollable: true,
@@ -215,7 +216,7 @@ class _ScheduleSetupViewState extends State<_ScheduleSetupView>
                 TextButton(
                   onPressed: _save,
                   child: Text(
-                    'Save',
+                    AppLocalizations.of(context)!.save,
                     style: AppTypography.labelLarge.copyWith(color: AppColors.primary),
                   ),
                 ),
@@ -279,7 +280,7 @@ class _DayTab extends StatelessWidget {
                 TextButton.icon(
                   onPressed: onAdd,
                   icon: const Icon(Icons.add_circle_outline_rounded, size: 18),
-                  label: const Text('Add Slot'),
+                  label: Text(AppLocalizations.of(context)!.addSlot),
                   style: TextButton.styleFrom(foregroundColor: AppColors.primary),
                 ),
               ],
@@ -300,14 +301,14 @@ class _DayTab extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'No slots for ${_daysFull[day]}',
+                    AppLocalizations.of(context)!.noSlotsForDay(_daysFull[day]),
                     style: AppTypography.bodyMedium.copyWith(
                       color: colorScheme.onSurface.withValues(alpha: 0.4),
                     ),
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    'Tap "Add Slot" to set your availability',
+                    AppLocalizations.of(context)!.tapAddSlotHint,
                     style: AppTypography.bodySmall.copyWith(
                       color: colorScheme.onSurface.withValues(alpha: 0.3),
                     ),
@@ -455,7 +456,7 @@ class _SlotCard extends StatelessWidget {
                         ? colorScheme.outline.withValues(alpha: 0.3)
                         : AppColors.primary,
                   ),
-                  tooltip: 'Edit slot',
+                  tooltip: AppLocalizations.of(context)!.editTimeSlot,
                 ),
                 // Delete
                 IconButton(
@@ -465,7 +466,7 @@ class _SlotCard extends StatelessWidget {
                     size: 20,
                     color: AppColors.error.withValues(alpha: isDisabled ? 0.4 : 1),
                   ),
-                  tooltip: 'Delete slot',
+                  tooltip: AppLocalizations.of(context)!.deleteSlotTitle,
                 ),
               ],
             ),
@@ -478,7 +479,7 @@ class _SlotCard extends StatelessWidget {
                 // Available toggle
                 Expanded(
                   child: _ToggleRow(
-                    label: 'Available',
+                    label: AppLocalizations.of(context)!.slotAvailable,
                     value: slot.isEnabled,
                     activeColor: AppColors.success,
                     onChanged: onToggleEnabled,
@@ -488,13 +489,13 @@ class _SlotCard extends StatelessWidget {
                 // Slot Full toggle
                 Expanded(
                   child: _ToggleRow(
-                    label: 'Slots Full',
+                    label: AppLocalizations.of(context)!.slotsFull,
                     value: slot.isFull,
                     activeColor: AppColors.warning,
                     onChanged: slot.isEnabled ? onToggleFull : null,
                     tooltip: slot.isEnabled
-                        ? 'Mark this slot as fully booked'
-                        : 'Enable slot first',
+                        ? AppLocalizations.of(context)!.slotFullHint
+                        : AppLocalizations.of(context)!.enableSlotFirst,
                   ),
                 ),
               ],
@@ -506,17 +507,18 @@ class _SlotCard extends StatelessWidget {
   }
 
   void _confirmDelete(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Slot'),
+        title: Text(l10n.deleteSlotTitle),
         content: Text(
-          'Remove the ${_to12h(slot.startTime)} – ${_to12h(slot.endTime)} slot?',
+          l10n.deleteSlotConfirm('${_to12h(slot.startTime)} – ${_to12h(slot.endTime)}'),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Keep'),
+            child: Text(l10n.keepButton),
           ),
           TextButton(
             onPressed: () {
@@ -524,7 +526,7 @@ class _SlotCard extends StatelessWidget {
               onDelete();
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Delete'),
+            child: Text(l10n.deleteButton),
           ),
         ],
       ),
@@ -639,8 +641,9 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
     final startStr = _tod24(_start);
     final endStr = _tod24(_end);
 
+    final l10n = AppLocalizations.of(context)!;
     if (_toMins(endStr) <= _toMins(startStr)) {
-      setState(() => _error = 'End time must be after start time');
+      setState(() => _error = l10n.endTimeAfterStart);
       return;
     }
 
@@ -648,7 +651,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
     final candidate = DaySlot(startTime: startStr, endTime: endStr);
     final testList = [...widget.existingSlots, candidate];
     if (_slotsOverlap(testList)) {
-      setState(() => _error = 'This slot overlaps with an existing one');
+      setState(() => _error = l10n.slotOverlaps);
       return;
     }
 
@@ -658,6 +661,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final isEdit = widget.initial != null;
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -668,12 +672,12 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              isEdit ? 'Edit Time Slot' : 'Add Time Slot',
+              isEdit ? l10n.editTimeSlot : l10n.addTimeSlot,
               style: AppTypography.h3,
             ),
             const SizedBox(height: 6),
             Text(
-              'Select start and end time in 12-hour format',
+              l10n.selectTimeHint,
               style: AppTypography.bodySmall.copyWith(
                 color: colorScheme.onSurface.withValues(alpha: 0.5),
               ),
@@ -683,7 +687,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
               children: [
                 Expanded(
                   child: _TimePickerButton(
-                    label: 'Start',
+                    label: l10n.startLabel,
                     time: _start,
                     onTap: _pickStart,
                   ),
@@ -699,7 +703,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
                 ),
                 Expanded(
                   child: _TimePickerButton(
-                    label: 'End',
+                    label: l10n.endLabel,
                     time: _end,
                     onTap: _pickEnd,
                   ),
@@ -733,7 +737,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text(l10n.cancel),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -748,7 +752,7 @@ class _AddSlotDialogState extends State<_AddSlotDialog> {
                       ),
                     ),
                     child: Text(
-                      isEdit ? 'Update' : 'Add',
+                      isEdit ? l10n.update : l10n.add,
                       style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
                     ),
                   ),

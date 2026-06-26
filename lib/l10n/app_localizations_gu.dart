@@ -907,6 +907,14 @@ class AppLocalizationsGu extends AppLocalizations {
   String get accrueMonthSalaryTitle => 'મહિનો પગાર ઉમેરો';
 
   @override
+  String get removeStaffTitle => 'Remove Staff Member';
+
+  @override
+  String removeStaffConfirm(String name) {
+    return 'Remove $name from your staff? This will revoke their app access immediately.';
+  }
+
+  @override
   String accrueMonthSalaryConfirm(String name, String amount) {
     return '$name ની બાકીમાં આ મહિને ₹$amount ઉમેરવું?';
   }
@@ -2151,4 +2159,104 @@ class AppLocalizationsGu extends AppLocalizations {
   String paymentCollectedFrom(String name) {
     return 'Payment collected from $name';
   }
+
+  @override
+  String get manageSchedule => 'Manage Schedule';
+
+  @override
+  String get bookingsTab => 'Bookings';
+
+  @override
+  String get bySlotTab => 'By Slot';
+
+  @override
+  String get scheduleSaved => 'Schedule saved!';
+
+  @override
+  String get addSlot => 'Add Slot';
+
+  @override
+  String noSlotsForDay(String day) => 'No slots for $day';
+
+  @override
+  String get tapAddSlotHint => 'Tap "Add Slot" to set your availability';
+
+  @override
+  String get slotAvailable => 'Available';
+
+  @override
+  String get slotsFull => 'Slots Full';
+
+  @override
+  String get slotFullHint => 'Mark this slot as fully booked';
+
+  @override
+  String get enableSlotFirst => 'Enable slot first';
+
+  @override
+  String get deleteSlotTitle => 'Delete Slot';
+
+  @override
+  String deleteSlotConfirm(String time) => 'Remove the $time slot?';
+
+  @override
+  String get endTimeAfterStart => 'End time must be after start time';
+
+  @override
+  String get slotOverlaps => 'This slot overlaps with an existing one';
+
+  @override
+  String get addTimeSlot => 'Add Time Slot';
+
+  @override
+  String get editTimeSlot => 'Edit Time Slot';
+
+  @override
+  String get selectTimeHint => 'Select start and end time in 12-hour format';
+
+  @override
+  String get startLabel => 'Start';
+
+  @override
+  String get endLabel => 'End';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get notifTabAll => 'All';
+
+  @override
+  String get notifTabBookings => 'Bookings';
+
+  @override
+  String get noBookingNotifications => 'No booking notifications';
+
+  @override
+  String get noBookingNotificationsSubtitle =>
+      'Booking requests and updates will appear here';
+
+  @override
+  String get bookingPillLabel => 'Booking';
+
+  @override
+  String get slotDetailTitle => 'Slot Details';
+
+  @override
+  String bookingsCount(int count) => '$count booking';
+
+  @override
+  String bookingsCountPlural(int count) => '$count bookings';
+
+  @override
+  String pendingCountLabel(int count) => '$count pending';
+
+  @override
+  String slotTimeRange(String start, String end) => '$start – $end';
+
+  @override
+  String get keepButton => 'Keep';
+
+  @override
+  String get deleteButton => 'Delete';
 }

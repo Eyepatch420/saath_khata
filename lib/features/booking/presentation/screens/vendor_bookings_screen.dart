@@ -70,7 +70,7 @@ class _VendorBookingsViewState extends State<_VendorBookingsView>
           IconButton(
             onPressed: () => context.push(AppRouter.vendorScheduleSetup),
             icon: const Icon(Icons.calendar_month_rounded),
-            tooltip: 'Manage Schedule',
+            tooltip: AppLocalizations.of(context)!.manageSchedule,
           ),
         ],
         bottom: TabBar(
@@ -78,9 +78,9 @@ class _VendorBookingsViewState extends State<_VendorBookingsView>
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textHint,
           indicatorColor: AppColors.primary,
-          tabs: const [
-            Tab(text: 'Bookings'),
-            Tab(text: 'By Slot'),
+          tabs: [
+            Tab(text: AppLocalizations.of(context)!.bookingsTab),
+            Tab(text: AppLocalizations.of(context)!.bySlotTab),
           ],
         ),
       ),
@@ -224,13 +224,30 @@ class _SlotGroup extends StatefulWidget {
 class _SlotGroupState extends State<_SlotGroup> {
   bool _expanded = true;
 
+  void _showSlotDetail(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => _SlotDetailSheet(
+        slotTime: widget.slotTime,
+        bookings: widget.bookings,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final l10n = AppLocalizations.of(context)!;
     final confirmedCount =
         widget.bookings.where((b) => b.status == BookingStatus.confirmed).length;
     final pendingCount =
         widget.bookings.where((b) => b.status == BookingStatus.pending).length;
+    final total = widget.bookings.length;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -248,9 +265,9 @@ class _SlotGroupState extends State<_SlotGroup> {
       ),
       child: Column(
         children: [
-          // ── Slot header ───────────────────────────────────────────────────
+          // ── Slot header — tap to see full details ─────────────────────────
           InkWell(
-            onTap: () => setState(() => _expanded = !_expanded),
+            onTap: () => _showSlotDetail(context),
             borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
@@ -275,8 +292,8 @@ class _SlotGroupState extends State<_SlotGroup> {
                           style: AppTypography.labelLarge,
                         ),
                         Text(
-                          '${widget.bookings.length} booking${widget.bookings.length == 1 ? '' : 's'}'
-                          '${pendingCount > 0 ? '  •  $pendingCount pending' : ''}',
+                          '${total == 1 ? l10n.bookingsCount(total) : l10n.bookingsCountPlural(total)}'
+                          '${pendingCount > 0 ? '  •  ${l10n.pendingCountLabel(pendingCount)}' : ''}',
                           style: AppTypography.bodySmall.copyWith(
                             color: pendingCount > 0
                                 ? AppColors.warning
@@ -294,9 +311,16 @@ class _SlotGroupState extends State<_SlotGroup> {
                     _MiniChip(label: '$pendingCount ⏳', color: AppColors.warning),
                   ],
                   const SizedBox(width: 6),
-                  Icon(
-                    _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-                    color: AppColors.textHint,
+                  // Expand/collapse toggle (separate from sheet-open tap)
+                  GestureDetector(
+                    onTap: () => setState(() => _expanded = !_expanded),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Icon(
+                        _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                        color: AppColors.textHint,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -323,6 +347,231 @@ class _SlotGroupState extends State<_SlotGroup> {
             }),
           ],
         ],
+      ),
+    );
+  }
+}
+
+// ─── Slot Detail Bottom Sheet ─────────────────────────────────────────────────
+
+class _SlotDetailSheet extends StatelessWidget {
+  final String slotTime;
+  final List<BookingModel> bookings;
+  const _SlotDetailSheet({required this.slotTime, required this.bookings});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
+    final total = bookings.length;
+    final confirmedCount = bookings.where((b) => b.status == BookingStatus.confirmed).length;
+    final pendingCount = bookings.where((b) => b.status == BookingStatus.pending).length;
+    final cancelledCount = bookings.where((b) => b.status == BookingStatus.cancelled).length;
+    final completedCount = bookings.where((b) => b.status == BookingStatus.completed).length;
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.6,
+      minChildSize: 0.4,
+      maxChildSize: 0.92,
+      expand: false,
+      builder: (_, scrollCtrl) => Column(
+        children: [
+          // Handle + header
+          Container(
+            decoration: BoxDecoration(
+              color: colorScheme.surface,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.textHint.withValues(alpha: 0.4),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.access_time_rounded,
+                          color: AppColors.primary, size: 22),
+                    ),
+                    const SizedBox(width: 14),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(_to12h(slotTime), style: AppTypography.h3),
+                        Text(
+                          total == 1
+                              ? l10n.bookingsCount(total)
+                              : l10n.bookingsCountPlural(total),
+                          style: AppTypography.bodySmall
+                              .copyWith(color: AppColors.textSecondary),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                // Summary chips row
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      if (pendingCount > 0) ...[
+                        _MiniChip(
+                            label: '$pendingCount pending',
+                            color: AppColors.warning),
+                        const SizedBox(width: 8),
+                      ],
+                      if (confirmedCount > 0) ...[
+                        _MiniChip(
+                            label: '$confirmedCount confirmed',
+                            color: AppColors.success),
+                        const SizedBox(width: 8),
+                      ],
+                      if (completedCount > 0) ...[
+                        _MiniChip(
+                            label: '$completedCount done',
+                            color: AppColors.primary),
+                        const SizedBox(width: 8),
+                      ],
+                      if (cancelledCount > 0)
+                        _MiniChip(
+                            label: '$cancelledCount cancelled',
+                            color: AppColors.error),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Divider(height: 1, color: colorScheme.outline.withValues(alpha: 0.15)),
+              ],
+            ),
+          ),
+          // Customer list
+          Expanded(
+            child: ListView.separated(
+              controller: scrollCtrl,
+              padding: EdgeInsets.fromLTRB(
+                  20, 12, 20, MediaQuery.of(context).padding.bottom + 20),
+              itemCount: bookings.length,
+              separatorBuilder: (_, i) => Divider(
+                height: 1,
+                color: colorScheme.outline.withValues(alpha: 0.1),
+              ),
+              itemBuilder: (ctx, i) => _SlotCustomerTile(booking: bookings[i]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SlotCustomerTile extends StatelessWidget {
+  final BookingModel booking;
+  const _SlotCustomerTile({required this.booking});
+
+  @override
+  Widget build(BuildContext context) {
+    final isActionable = booking.status == BookingStatus.pending ||
+        booking.status == BookingStatus.confirmed;
+
+    return InkWell(
+      onTap: isActionable
+          ? () {
+              Navigator.pop(context);
+              _showBookingActionSheet(context, booking);
+            }
+          : null,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CircleAvatar(
+              radius: 22,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+              child: Text(
+                booking.customerName.isNotEmpty
+                    ? booking.customerName[0].toUpperCase()
+                    : '?',
+                style: AppTypography.h3.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(booking.customerName, style: AppTypography.labelLarge),
+                  const SizedBox(height: 2),
+                  if (booking.serviceType != null)
+                    Text(
+                      booking.serviceType!,
+                      style: AppTypography.bodySmall
+                          .copyWith(color: AppColors.textSecondary),
+                    ),
+                  if (booking.notes != null && booking.notes!.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        const Icon(Icons.notes_rounded,
+                            size: 13, color: AppColors.textHint),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            booking.notes!,
+                            style: AppTypography.bodySmall
+                                .copyWith(color: AppColors.textHint),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 6),
+                  Text(
+                    '${_to12h(booking.startTime)} – ${_to12h(booking.endTime)}',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textHint,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                _StatusBadge(status: booking.status),
+                if (isActionable) ...[
+                  const SizedBox(height: 4),
+                  const Icon(Icons.chevron_right_rounded,
+                      size: 16, color: AppColors.textHint),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

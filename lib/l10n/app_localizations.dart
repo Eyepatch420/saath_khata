@@ -1810,6 +1810,18 @@ abstract class AppLocalizations {
   /// **'Add Month\'s Salary'**
   String get accrueMonthSalaryTitle;
 
+  /// No description provided for @removeStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Staff Member'**
+  String get removeStaffTitle;
+
+  /// No description provided for @removeStaffConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from your staff? This will revoke their app access immediately.'**
+  String removeStaffConfirm(String name);
+
   /// No description provided for @accrueMonthSalaryConfirm.
   ///
   /// In en, this message translates to:
@@ -4035,6 +4047,40 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment collected from {name}'**
   String paymentCollectedFrom(String name);
+
+  String get manageSchedule;
+  String get bookingsTab;
+  String get bySlotTab;
+  String get scheduleSaved;
+  String get addSlot;
+  String noSlotsForDay(String day);
+  String get tapAddSlotHint;
+  String get slotAvailable;
+  String get slotsFull;
+  String get slotFullHint;
+  String get enableSlotFirst;
+  String get deleteSlotTitle;
+  String deleteSlotConfirm(String time);
+  String get endTimeAfterStart;
+  String get slotOverlaps;
+  String get addTimeSlot;
+  String get editTimeSlot;
+  String get selectTimeHint;
+  String get startLabel;
+  String get endLabel;
+  String get update;
+  String get notifTabAll;
+  String get notifTabBookings;
+  String get noBookingNotifications;
+  String get noBookingNotificationsSubtitle;
+  String get bookingPillLabel;
+  String get slotDetailTitle;
+  String bookingsCount(int count);
+  String bookingsCountPlural(int count);
+  String pendingCountLabel(int count);
+  String slotTimeRange(String start, String end);
+  String get keepButton;
+  String get deleteButton;
 }
 
 class _AppLocalizationsDelegate

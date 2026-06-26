@@ -80,9 +80,9 @@ class _NotificationsViewState extends State<_NotificationsView>
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textHint,
           indicatorColor: AppColors.primary,
-          tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Bookings'),
+          tabs: [
+            Tab(text: l10n.notifTabAll),
+            Tab(text: l10n.notifTabBookings),
           ],
         ),
       ),
@@ -112,8 +112,8 @@ class _NotificationsViewState extends State<_NotificationsView>
                             n.type == NotificationType.bookingCancelled)
                         .toList(),
                     emptyIcon: Icons.calendar_today_rounded,
-                    emptyTitle: 'No booking notifications',
-                    emptySubtitle: 'Booking requests and updates will appear here',
+                    emptyTitle: AppLocalizations.of(context)!.noBookingNotifications,
+                    emptySubtitle: AppLocalizations.of(context)!.noBookingNotificationsSubtitle,
                   ),
                 ],
               );
@@ -331,7 +331,7 @@ class _NotificationCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
-                            'Booking',
+                            AppLocalizations.of(context)!.bookingPillLabel,
                             style: AppTypography.bodySmall.copyWith(
                               fontSize: 10,
                               color: _iconColor(notification.type),
