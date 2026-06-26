@@ -159,7 +159,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                           ),
                     );
                   }
-                  // Booking failed but keep slot grid visible
+                  // Booking failed — keep slot grid visible, mark attempted slot
                   if (state is BookingCreateError) {
                     if (state.slots.isEmpty) {
                       final l10n = AppLocalizations.of(context)!;
@@ -169,7 +169,6 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                         subtitle: l10n.trySelectingDifferentDate,
                       );
                     }
-                    // Mark the slot the user just tried to book as "already booked"
                     final bookedTime = _lastAttemptedSlotTime;
                     final updatedSlots = bookedTime == null
                         ? state.slots
@@ -178,10 +177,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                                 ? s.copyWith(isAlreadyBooked: true)
                                 : s)
                             .toList();
-                    return _SlotGrid(
-                      slots: updatedSlots,
-                      onSlotTapped: _onSlotTapped,
-                    );
+                    return _SlotGrid(slots: updatedSlots, onSlotTapped: _onSlotTapped);
                   }
                   if (state is SlotsLoaded) {
                     if (state.slots.isEmpty) {

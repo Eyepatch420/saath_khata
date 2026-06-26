@@ -51,11 +51,35 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   }
 
   Future<void> _onLoadSlots(LoadAvailableSlots event, Emitter<BookingState> emit) async {
-    AppLogger.i(_m, 'Loading slots — vendorId:${event.vendorId} date:${_toDateString(event.date)}');
+    final dateStr = _toDateString(event.date);
+    AppLogger.i(_m, 'Loading slots — vendorId:${event.vendorId} date:$dateStr');
     emit(BookingLoading());
     try {
-      final slots = await _repository.getAvailableSlots(event.vendorId, _toDateString(event.date));
-      emit(SlotsLoaded(slots: slots, date: event.date));
+      // Fetch slots and customer's existing bookings concurrently
+      final results = await Future.wait([
+        _repository.getAvailableSlots(event.vendorId, dateStr),
+        _repository.getCustomerBookings(),
+      ]);
+
+      final slots = results[0] as List<AppointmentSlot>;
+      final myBookings = results[1] as List<BookingModel>;
+
+      // Find start times the customer already has active on this vendor+date
+      final bookedTimes = myBookings
+          .where((b) =>
+              b.vendorId == event.vendorId &&
+              b.date == dateStr &&
+              (b.status == BookingStatus.pending || b.status == BookingStatus.confirmed))
+          .map((b) => b.startTime)
+          .toSet();
+
+      final markedSlots = bookedTimes.isEmpty
+          ? slots
+          : slots
+              .map((s) => bookedTimes.contains(s.startTime) ? s.copyWith(isAlreadyBooked: true) : s)
+              .toList();
+
+      emit(SlotsLoaded(slots: markedSlots, date: event.date));
     } catch (e) {
       AppLogger.e(_m, 'Load slots failed', e);
       emit(const BookingError('Failed to load slots'));
