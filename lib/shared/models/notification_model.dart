@@ -1,25 +1,24 @@
 import 'package:equatable/equatable.dart';
 
-// Must match backend notification type strings (snake_case):
-// entry_added, entry_confirmed, entry_disputed, payment_received,
-// booking_confirmed, booking_cancelled, salary_paid, reminder_due, monthly_summary
 enum NotificationType {
   entryAdded,
   entryConfirmed,
   entryDisputed,
   paymentReceived,
-  bookingConfirmed,
+  bookingRequested,   // vendor: customer wants to book (new)
+  bookingConfirmed,   // customer: vendor confirmed their booking
   bookingCancelled,
   salaryPaid,
   reminderDue,
   monthlySummary,
-  linkRequestReceived,        // vendor: customer wants to connect
-  vendorLinkRequestReceived,  // customer: vendor wants to add them
-  linkRequestAccepted,        // either: the other party approved
-  linkRequestDeclined,        // either: the other party declined
-  membershipRequested,  // vendor: customer applied for a tier
-  membershipChanged,    // customer: tier assigned / approved / elevated
-  membershipRequestDeclined, // customer: tier request declined
+  linkRequestReceived,
+  vendorLinkRequestReceived,
+  linkRequestAccepted,
+  linkRequestDeclined,
+  membershipRequested,
+  membershipChanged,
+  membershipRequestDeclined,
+  staffDeleted,
 }
 
 NotificationType _notifTypeFromJson(String v) {
@@ -28,6 +27,7 @@ NotificationType _notifTypeFromJson(String v) {
     'entry_confirmed': NotificationType.entryConfirmed,
     'entry_disputed': NotificationType.entryDisputed,
     'payment_received': NotificationType.paymentReceived,
+    'booking_requested': NotificationType.bookingRequested,
     'booking_confirmed': NotificationType.bookingConfirmed,
     'booking_cancelled': NotificationType.bookingCancelled,
     'salary_paid': NotificationType.salaryPaid,
@@ -40,6 +40,7 @@ NotificationType _notifTypeFromJson(String v) {
     'membership_requested': NotificationType.membershipRequested,
     'membership_changed': NotificationType.membershipChanged,
     'membership_request_declined': NotificationType.membershipRequestDeclined,
+    'staff_deleted': NotificationType.staffDeleted,
   };
   return map[v] ?? NotificationType.entryAdded;
 }

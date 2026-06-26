@@ -156,18 +156,16 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                     );
                   }
                   if (state is SlotsLoaded) {
-                    final available =
-                        state.slots.where((s) => s.isAvailable).toList();
-                    if (available.isEmpty) {
+                    if (state.slots.isEmpty) {
                       final l10n = AppLocalizations.of(context)!;
-                    return EmptyStateWidget(
+                      return EmptyStateWidget(
                         icon: Icons.event_busy_rounded,
                         title: l10n.noSlotsAvailable,
                         subtitle: l10n.trySelectingDifferentDate,
                       );
                     }
                     return _SlotGrid(
-                      slots: available,
+                      slots: state.slots,
                       onSlotTapped: _onSlotTapped,
                     );
                   }
@@ -289,6 +287,16 @@ class _SlotGrid extends StatelessWidget {
   }
 }
 
+String _to12h(String hhmm) {
+  final p = hhmm.split(':');
+  int h = int.parse(p[0]);
+  final m = p[1];
+  final period = h < 12 ? 'AM' : 'PM';
+  if (h == 0) h = 12;
+  if (h > 12) h -= 12;
+  return '$h:$m $period';
+}
+
 class _SlotChip extends StatelessWidget {
   final AppointmentSlot slot;
   final VoidCallback onTap;
@@ -297,41 +305,65 @@ class _SlotChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isFull = slot.isFull;
+    final borderColor = isFull
+        ? AppColors.warning.withValues(alpha: 0.5)
+        : AppColors.primary.withValues(alpha: 0.4);
+    final textColor = isFull ? AppColors.textHint : AppColors.primary;
+
     return InkWell(
-      onTap: onTap,
+      onTap: isFull ? null : onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: isFull
+              ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.5)
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: AppColors.primary.withValues(alpha: 0.4),
-            width: 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 4,
-              offset: const Offset(0, 2),
-            ),
-          ],
+          border: Border.all(color: borderColor, width: 1.5),
+          boxShadow: isFull
+              ? null
+              : [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              slot.startTime,
-              style: AppTypography.labelLarge.copyWith(color: AppColors.primary),
+              _to12h(slot.startTime),
+              style: AppTypography.labelLarge.copyWith(
+                color: textColor,
+                decoration: isFull ? TextDecoration.lineThrough : null,
+              ),
             ),
-            if (slot.durationMinutes > 0) ...[
-              const SizedBox(height: 2),
+            const SizedBox(height: 4),
+            if (isFull)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Slots Full',
+                  style: AppTypography.bodySmall.copyWith(
+                    fontSize: 10,
+                    color: AppColors.warning,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              )
+            else if (slot.durationMinutes > 0)
               Text(
                 AppLocalizations.of(context)!.durationMinutes(slot.durationMinutes),
-                style:
-                    AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+                style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
               ),
-            ],
           ],
         ),
       ),

@@ -38,7 +38,6 @@ class CancelBooking extends BookingEvent {
   List<Object?> get props => [bookingId];
 }
 
-/// Vendor-initiated status update (confirm / complete / cancel).
 class UpdateBookingStatus extends BookingEvent {
   final String bookingId;
   final BookingStatus status;
@@ -52,4 +51,24 @@ class SelectBookingDate extends BookingEvent {
   const SelectBookingDate(this.date);
   @override
   List<Object?> get props => [date];
+}
+
+// ─── Schedule / Config events ─────────────────────────────────────────────────
+
+class LoadBookingConfig extends BookingEvent {}
+
+class SaveBookingConfig extends BookingEvent {
+  final BookingConfig config;
+  const SaveBookingConfig(this.config);
+  @override
+  List<Object?> get props => [config];
+}
+
+class ToggleSlotFull extends BookingEvent {
+  final int dayOfWeek;
+  final String startTime;
+  final bool isFull;
+  const ToggleSlotFull({required this.dayOfWeek, required this.startTime, required this.isFull});
+  @override
+  List<Object?> get props => [dayOfWeek, startTime, isFull];
 }

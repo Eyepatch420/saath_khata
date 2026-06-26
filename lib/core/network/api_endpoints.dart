@@ -69,6 +69,7 @@ class ApiEndpoints {
   // Bookings
   static const String bookings = '/bookings';
   static const String bookingConfig = '/bookings/config';
+  static const String bookingSlotFull = '/bookings/config/slot-full';
   static String publicSlots(String vendorId) => '/bookings/slots/$vendorId';
   static const String vendorBookings = '/bookings/vendor';
   static const String customerBookings = '/bookings/customer';

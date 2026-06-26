@@ -51,7 +51,6 @@ class BookingError extends BookingState {
   List<Object?> get props => [message];
 }
 
-/// Non-fatal error for a status update action — list remains visible.
 class BookingActionError extends BookingState {
   final List<BookingModel> bookings;
   final DateTime selectedDate;
@@ -63,4 +62,30 @@ class BookingActionError extends BookingState {
   });
   @override
   List<Object?> get props => [bookings, selectedDate, message];
+}
+
+// ─── Config states ────────────────────────────────────────────────────────────
+
+class BookingConfigLoading extends BookingState {}
+
+class BookingConfigLoaded extends BookingState {
+  final BookingConfig config;
+  const BookingConfigLoaded(this.config);
+  @override
+  List<Object?> get props => [config];
+}
+
+class BookingConfigSaved extends BookingState {
+  final BookingConfig config;
+  const BookingConfigSaved(this.config);
+  @override
+  List<Object?> get props => [config];
+}
+
+class BookingConfigError extends BookingState {
+  final String message;
+  final BookingConfig? config;
+  const BookingConfigError(this.message, {this.config});
+  @override
+  List<Object?> get props => [message, config];
 }

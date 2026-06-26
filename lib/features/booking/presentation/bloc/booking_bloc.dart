@@ -21,16 +21,16 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     on<CancelBooking>(_onCancel);
     on<UpdateBookingStatus>(_onUpdateStatus);
     on<SelectBookingDate>(_onSelectDate);
+    on<LoadBookingConfig>(_onLoadConfig);
+    on<SaveBookingConfig>(_onSaveConfig);
+    on<ToggleSlotFull>(_onToggleSlotFull);
   }
 
-  Future<void> _onLoadVendor(
-      LoadVendorBookings event, Emitter<BookingState> emit) async {
+  Future<void> _onLoadVendor(LoadVendorBookings event, Emitter<BookingState> emit) async {
     AppLogger.i(_m, 'Loading vendor bookings for date:${_toDateString(event.date)}');
     emit(BookingLoading());
     try {
-      final bookings =
-          await _repository.getVendorBookings(_toDateString(event.date));
-      AppLogger.i(_m, 'Vendor bookings loaded — ${bookings.length} bookings');
+      final bookings = await _repository.getVendorBookings(_toDateString(event.date));
       emit(BookingLoaded(bookings: bookings, selectedDate: event.date));
     } catch (e) {
       AppLogger.e(_m, 'Load vendor bookings failed', e);
@@ -38,13 +38,11 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     }
   }
 
-  Future<void> _onLoadCustomer(
-      LoadCustomerBookings event, Emitter<BookingState> emit) async {
+  Future<void> _onLoadCustomer(LoadCustomerBookings event, Emitter<BookingState> emit) async {
     AppLogger.i(_m, 'Loading customer bookings...');
     emit(BookingLoading());
     try {
       final bookings = await _repository.getCustomerBookings();
-      AppLogger.i(_m, 'Customer bookings loaded — ${bookings.length} bookings');
       emit(BookingLoaded(bookings: bookings, selectedDate: DateTime.now()));
     } catch (e) {
       AppLogger.e(_m, 'Load customer bookings failed', e);
@@ -52,14 +50,11 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     }
   }
 
-  Future<void> _onLoadSlots(
-      LoadAvailableSlots event, Emitter<BookingState> emit) async {
+  Future<void> _onLoadSlots(LoadAvailableSlots event, Emitter<BookingState> emit) async {
     AppLogger.i(_m, 'Loading slots — vendorId:${event.vendorId} date:${_toDateString(event.date)}');
     emit(BookingLoading());
     try {
-      final slots = await _repository.getAvailableSlots(
-          event.vendorId, _toDateString(event.date));
-      AppLogger.i(_m, 'Slots loaded — ${slots.length} available');
+      final slots = await _repository.getAvailableSlots(event.vendorId, _toDateString(event.date));
       emit(SlotsLoaded(slots: slots, date: event.date));
     } catch (e) {
       AppLogger.e(_m, 'Load slots failed', e);
@@ -67,41 +62,34 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
     }
   }
 
-  Future<void> _onCreate(
-      CreateBooking event, Emitter<BookingState> emit) async {
+  Future<void> _onCreate(CreateBooking event, Emitter<BookingState> emit) async {
     AppLogger.i(_m, 'Creating booking — vendorId:${event.booking.vendorId} date:${event.booking.date}');
     emit(BookingLoading());
     try {
       final booking = await _repository.createBooking(event.booking);
-      AppLogger.i(_m, 'Booking created — id:${booking.id} status:${booking.status.name}');
       emit(BookingCreated(booking));
     } catch (e) {
       AppLogger.e(_m, 'Create booking failed', e);
-      emit(const BookingError('Failed to create booking'));
+      emit(BookingError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
-  Future<void> _onCancel(
-      CancelBooking event, Emitter<BookingState> emit) async {
+  Future<void> _onCancel(CancelBooking event, Emitter<BookingState> emit) async {
     AppLogger.i(_m, 'Cancelling booking id:${event.bookingId}');
     try {
-      await _repository.updateBookingStatus(
-          event.bookingId, BookingStatus.cancelled);
-      AppLogger.i(_m, 'Booking cancelled — refreshing list');
+      await _repository.updateBookingStatus(event.bookingId, BookingStatus.cancelled);
       add(LoadCustomerBookings());
     } catch (e) {
       AppLogger.e(_m, 'Cancel booking failed id:${event.bookingId}', e);
     }
   }
 
-  Future<void> _onUpdateStatus(
-      UpdateBookingStatus event, Emitter<BookingState> emit) async {
+  Future<void> _onUpdateStatus(UpdateBookingStatus event, Emitter<BookingState> emit) async {
     final current = state;
     if (current is! BookingLoaded) return;
 
     AppLogger.i(_m, 'Updating booking id:${event.bookingId} → ${event.status.name}');
 
-    // Optimistic update
     final optimistic = current.bookings
         .map((b) => b.id == event.bookingId ? b.copyWith(status: event.status) : b)
         .toList();
@@ -109,14 +97,12 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
 
     try {
       final updated = await _repository.updateBookingStatus(event.bookingId, event.status);
-      AppLogger.i(_m, 'Booking status confirmed by server — ${updated.status.name}');
       final confirmed = current.bookings
           .map((b) => b.id == updated.id ? updated : b)
           .toList();
       emit(current.copyWith(bookings: confirmed));
     } catch (e) {
       AppLogger.e(_m, 'Booking status update failed — reverting', e);
-      // Revert optimistic update and surface the error
       emit(BookingActionError(
         bookings: current.bookings,
         selectedDate: current.selectedDate,
@@ -128,5 +114,57 @@ class BookingBloc extends Bloc<BookingEvent, BookingState> {
   void _onSelectDate(SelectBookingDate event, Emitter<BookingState> emit) {
     AppLogger.v(_m, 'Date selected: ${_toDateString(event.date)}');
     add(LoadVendorBookings(event.date));
+  }
+
+  // ─── Config handlers ─────────────────────────────────────────────────────────
+
+  Future<void> _onLoadConfig(LoadBookingConfig event, Emitter<BookingState> emit) async {
+    AppLogger.i(_m, 'Loading booking config');
+    emit(BookingConfigLoading());
+    try {
+      final config = await _repository.getBookingConfig();
+      emit(BookingConfigLoaded(config ?? BookingConfig.empty()));
+    } catch (e) {
+      AppLogger.e(_m, 'Load booking config failed', e);
+      emit(const BookingConfigError('Failed to load schedule'));
+    }
+  }
+
+  Future<void> _onSaveConfig(SaveBookingConfig event, Emitter<BookingState> emit) async {
+    AppLogger.i(_m, 'Saving booking config');
+    emit(BookingConfigLoading());
+    try {
+      final saved = await _repository.saveBookingConfig(event.config);
+      emit(BookingConfigSaved(saved));
+    } catch (e) {
+      AppLogger.e(_m, 'Save booking config failed', e);
+      emit(BookingConfigError(
+        e.toString().replaceFirst('Exception: ', ''),
+        config: event.config,
+      ));
+    }
+  }
+
+  Future<void> _onToggleSlotFull(ToggleSlotFull event, Emitter<BookingState> emit) async {
+    AppLogger.i(_m, 'Toggle slot full day:${event.dayOfWeek} time:${event.startTime} full:${event.isFull}');
+
+    // Keep the current config visible while updating
+    final current = state;
+    final currentConfig = current is BookingConfigLoaded ? current.config : null;
+
+    try {
+      final updated = await _repository.toggleSlotFull(
+        dayOfWeek: event.dayOfWeek,
+        startTime: event.startTime,
+        isFull: event.isFull,
+      );
+      emit(BookingConfigLoaded(updated));
+    } catch (e) {
+      AppLogger.e(_m, 'Toggle slot full failed', e);
+      emit(BookingConfigError(
+        e.toString().replaceFirst('Exception: ', ''),
+        config: currentConfig,
+      ));
+    }
   }
 }

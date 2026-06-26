@@ -1,17 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../shared/widgets/app_toast.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
-import 'package:intl/intl.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/booking_model.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../bloc/booking_bloc.dart';
 import '../bloc/booking_event.dart';
 import '../bloc/booking_state.dart';
+
+// 24h 'HH:MM' → 12h display
+String _to12h(String hhmm) {
+  final p = hhmm.split(':');
+  int h = int.parse(p[0]);
+  final m = p[1];
+  final period = h < 12 ? 'AM' : 'PM';
+  if (h == 0) h = 12;
+  if (h > 12) h -= 12;
+  return '$h:$m $period';
+}
 
 class VendorBookingsScreen extends StatelessWidget {
   const VendorBookingsScreen({super.key});
@@ -25,53 +38,101 @@ class VendorBookingsScreen extends StatelessWidget {
   }
 }
 
-class _VendorBookingsView extends StatelessWidget {
+class _VendorBookingsView extends StatefulWidget {
   const _VendorBookingsView();
 
   @override
+  State<_VendorBookingsView> createState() => _VendorBookingsViewState();
+}
+
+class _VendorBookingsViewState extends State<_VendorBookingsView>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appointments)),
-      body: SafeArea(child: BlocConsumer<BookingBloc, BookingState>(
-        listener: (context, state) {
-          if (state is BookingActionError) {
-            AppToast.show(context, state.message, type: ToastType.error);
-          }
-        },
-        builder: (context, state) {
-          if (state is BookingLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is BookingError) {
-            return ErrorStateWidget(
-              message: state.message,
-              onRetry: () => context.read<BookingBloc>().add(LoadVendorBookings(DateTime.now())),
-            );
-          }
-          if (state is BookingLoaded) {
-            return _BookingsContent(state: state);
-          }
-          if (state is BookingActionError) {
-            // Show list with reverted bookings while error snackbar shows
-            return _BookingsContent(
-              state: BookingLoaded(
-                bookings: state.bookings,
-                selectedDate: state.selectedDate,
-              ),
-            );
-          }
-          return const SizedBox();
-        },
+      appBar: AppBar(
+        title: Text(AppLocalizations.of(context)!.appointments, style: AppTypography.h3),
+        actions: [
+          IconButton(
+            onPressed: () => context.push(AppRouter.vendorScheduleSetup),
+            icon: const Icon(Icons.calendar_month_rounded),
+            tooltip: 'Manage Schedule',
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: AppColors.primary,
+          unselectedLabelColor: AppColors.textHint,
+          indicatorColor: AppColors.primary,
+          tabs: const [
+            Tab(text: 'Bookings'),
+            Tab(text: 'By Slot'),
+          ],
+        ),
       ),
+      body: SafeArea(
+        child: BlocConsumer<BookingBloc, BookingState>(
+          listener: (context, state) {
+            if (state is BookingActionError) {
+              AppToast.show(context, state.message, type: ToastType.error);
+            }
+          },
+          builder: (context, state) {
+            if (state is BookingLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is BookingError) {
+              return ErrorStateWidget(
+                message: state.message,
+                onRetry: () =>
+                    context.read<BookingBloc>().add(LoadVendorBookings(DateTime.now())),
+              );
+            }
+
+            final bookingState = state is BookingLoaded
+                ? state
+                : state is BookingActionError
+                    ? BookingLoaded(
+                        bookings: state.bookings,
+                        selectedDate: state.selectedDate,
+                      )
+                    : null;
+
+            if (bookingState == null) return const SizedBox();
+
+            return TabBarView(
+              controller: _tabController,
+              children: [
+                _BookingsTab(state: bookingState),
+                _BySlotTab(state: bookingState),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 }
 
-class _BookingsContent extends StatelessWidget {
+// ─── Bookings Tab (flat list by date) ─────────────────────────────────────────
+
+class _BookingsTab extends StatelessWidget {
   final BookingLoaded state;
-  const _BookingsContent({required this.state});
+  const _BookingsTab({required this.state});
 
   @override
   Widget build(BuildContext context) {
@@ -87,11 +148,12 @@ class _BookingsContent extends StatelessWidget {
                   subtitle: l10n.noBookingsTodaySubtitle,
                 )
               : ListView.separated(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).padding.bottom + 16),
+                  padding: EdgeInsets.fromLTRB(
+                      16, 16, 16, MediaQuery.of(context).padding.bottom + 16),
                   itemCount: state.bookings.length,
-                  separatorBuilder: (context, index) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) =>
-                      _BookingCard(booking: state.bookings[index]),
+                  separatorBuilder: (context, i) => const SizedBox(height: 12),
+                  itemBuilder: (context, i) =>
+                      _BookingCard(booking: state.bookings[i]),
                 ),
         ),
       ],
@@ -99,136 +161,253 @@ class _BookingsContent extends StatelessWidget {
   }
 }
 
-class _DateSelector extends StatelessWidget {
-  final DateTime selected;
-  const _DateSelector({required this.selected});
+// ─── By Slot Tab (group customers under each slot) ────────────────────────────
+
+class _BySlotTab extends StatelessWidget {
+  final BookingLoaded state;
+  const _BySlotTab({required this.state});
 
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context).toString();
-    final now = DateTime.now();
-    final days = List.generate(7, (i) => now.add(Duration(days: i - 1)));
+    final l10n = AppLocalizations.of(context)!;
+    return Column(
+      children: [
+        _DateSelector(selected: state.selectedDate),
+        Expanded(
+          child: state.bookings.isEmpty
+              ? EmptyStateWidget(
+                  icon: Icons.event_available_rounded,
+                  title: l10n.noBookingsToday,
+                  subtitle: l10n.noBookingsTodaySubtitle,
+                )
+              : _SlotGroupedList(bookings: state.bookings),
+        ),
+      ],
+    );
+  }
+}
+
+class _SlotGroupedList extends StatelessWidget {
+  final List<BookingModel> bookings;
+  const _SlotGroupedList({required this.bookings});
+
+  @override
+  Widget build(BuildContext context) {
+    // Group bookings by startTime
+    final grouped = <String, List<BookingModel>>{};
+    for (final b in bookings) {
+      grouped.putIfAbsent(b.startTime, () => []).add(b);
+    }
+    final slotTimes = grouped.keys.toList()..sort();
+
+    return ListView.builder(
+      padding: EdgeInsets.fromLTRB(16, 16, 16, MediaQuery.of(context).padding.bottom + 16),
+      itemCount: slotTimes.length,
+      itemBuilder: (context, i) {
+        final time = slotTimes[i];
+        final slotBookings = grouped[time]!;
+        return _SlotGroup(slotTime: time, bookings: slotBookings);
+      },
+    );
+  }
+}
+
+class _SlotGroup extends StatefulWidget {
+  final String slotTime;
+  final List<BookingModel> bookings;
+  const _SlotGroup({required this.slotTime, required this.bookings});
+
+  @override
+  State<_SlotGroup> createState() => _SlotGroupState();
+}
+
+class _SlotGroupState extends State<_SlotGroup> {
+  bool _expanded = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final confirmedCount =
+        widget.bookings.where((b) => b.status == BookingStatus.confirmed).length;
+    final pendingCount =
+        widget.bookings.where((b) => b.status == BookingStatus.pending).length;
 
     return Container(
-      color: Theme.of(context).colorScheme.surface,
-      padding: const EdgeInsets.symmetric(vertical: 12),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Row(
-          children: days.map((day) {
-            final isSelected = _isSameDay(day, selected);
-            final isToday = _isSameDay(day, now);
-            return GestureDetector(
-              onTap: () => context.read<BookingBloc>().add(SelectBookingDate(day)),
-              child: Container(
-                margin: const EdgeInsets.only(right: 8),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: isSelected ? AppColors.primary : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                  border: isToday && !isSelected
-                      ? Border.all(color: AppColors.primary, width: 1.5)
-                      : null,
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      DateFormat('E', locale).format(day),
-                      style: AppTypography.bodySmall.copyWith(
-                        color: isSelected ? Colors.white : AppColors.textHint,
-                        fontSize: 11,
-                      ),
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // ── Slot header ───────────────────────────────────────────────────
+          InkWell(
+            onTap: () => setState(() => _expanded = !_expanded),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${day.day}',
-                      style: AppTypography.labelLarge.copyWith(
-                        color: isSelected
-                            ? Colors.white
-                            : Theme.of(context).colorScheme.onSurface,
-                      ),
+                    child: const Icon(Icons.access_time_rounded,
+                        color: AppColors.primary, size: 18),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _to12h(widget.slotTime),
+                          style: AppTypography.labelLarge,
+                        ),
+                        Text(
+                          '${widget.bookings.length} booking${widget.bookings.length == 1 ? '' : 's'}'
+                          '${pendingCount > 0 ? '  •  $pendingCount pending' : ''}',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: pendingCount > 0
+                                ? AppColors.warning
+                                : AppColors.textHint,
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  // Confirmed / pending summary chips
+                  if (confirmedCount > 0)
+                    _MiniChip(label: '$confirmedCount ✓', color: AppColors.success),
+                  if (pendingCount > 0) ...[
+                    const SizedBox(width: 6),
+                    _MiniChip(label: '$pendingCount ⏳', color: AppColors.warning),
                   ],
-                ),
+                  const SizedBox(width: 6),
+                  Icon(
+                    _expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                    color: AppColors.textHint,
+                  ),
+                ],
               ),
-            );
-          }).toList(),
+            ),
+          ),
+          // ── Customer list ─────────────────────────────────────────────────
+          if (_expanded) ...[
+            Divider(
+                height: 1,
+                color: colorScheme.outline.withValues(alpha: 0.15)),
+            ...widget.bookings.asMap().entries.map((entry) {
+              final isLast = entry.key == widget.bookings.length - 1;
+              return Column(
+                children: [
+                  _CustomerBookingRow(booking: entry.value),
+                  if (!isLast)
+                    Divider(
+                        height: 1,
+                        indent: 16,
+                        endIndent: 16,
+                        color: colorScheme.outline.withValues(alpha: 0.1)),
+                ],
+              );
+            }),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  const _MiniChip({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: AppTypography.bodySmall.copyWith(
+          fontSize: 11,
+          color: color,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );
   }
-
-  bool _isSameDay(DateTime a, DateTime b) =>
-      a.year == b.year && a.month == b.month && a.day == b.day;
 }
 
-class _BookingCard extends StatelessWidget {
+class _CustomerBookingRow extends StatelessWidget {
   final BookingModel booking;
-  const _BookingCard({required this.booking});
+  const _CustomerBookingRow({required this.booking});
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = _statusColor(booking.status);
     final isActionable = booking.status == BookingStatus.pending ||
         booking.status == BookingStatus.confirmed;
 
-    return GestureDetector(
+    return InkWell(
       onTap: isActionable ? () => _showActionSheet(context, booking) : null,
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border(left: BorderSide(color: statusColor, width: 4)),
-        ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
         child: Row(
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(booking.startTime, style: AppTypography.h3.copyWith(fontSize: 16)),
-                Text(
-                  '${DateTime.parse(booking.date).day}/${DateTime.parse(booking.date).month}',
-                  style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+            CircleAvatar(
+              radius: 18,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.12),
+              child: Text(
+                booking.customerName.isNotEmpty
+                    ? booking.customerName[0].toUpperCase()
+                    : '?',
+                style: AppTypography.labelLarge.copyWith(
+                  color: AppColors.primary,
+                  fontSize: 14,
                 ),
-              ],
+              ),
             ),
-            const SizedBox(width: 16),
-            Container(width: 1, height: 44, color: AppColors.divider),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(booking.customerName, style: AppTypography.labelLarge),
                   if (booking.serviceType != null)
-                    Text(booking.serviceType!, style: AppTypography.bodySmall),
+                    Text(booking.serviceType!,
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textHint)),
                   if (booking.notes != null && booking.notes!.isNotEmpty)
                     Text(
                       booking.notes!,
-                      style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+                      style: AppTypography.bodySmall
+                          .copyWith(color: AppColors.textHint),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                 ],
               ),
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _StatusBadge(status: booking.status),
-                if (isActionable) ...[
-                  const SizedBox(width: 4),
-                  Icon(
-                    Icons.chevron_right_rounded,
-                    size: 18,
-                    color: AppColors.textHint,
-                  ),
-                ],
-              ],
-            ),
+            _StatusBadge(status: booking.status),
+            if (isActionable) ...[
+              const SizedBox(width: 4),
+              const Icon(Icons.chevron_right_rounded,
+                  size: 18, color: AppColors.textHint),
+            ],
           ],
         ),
       ),
@@ -265,14 +444,12 @@ class _BookingCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
+              Text(booking.customerName, style: AppTypography.h3),
               Text(
-                booking.customerName,
-                style: AppTypography.h3,
-              ),
-              Text(
-                '$dateStr  •  ${booking.startTime}'
+                '$dateStr  •  ${_to12h(booking.startTime)}'
                 '${booking.serviceType != null ? '  •  ${booking.serviceType}' : ''}',
-                style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                style:
+                    AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
               ),
               const SizedBox(height: 20),
               if (booking.status == BookingStatus.pending) ...[
@@ -334,7 +511,7 @@ class _BookingCard extends StatelessWidget {
       builder: (ctx) => AlertDialog(
         title: Text(l10n.cancelAppointmentTitle),
         content: Text(
-          l10n.cancelAppointmentMessage(dateStr, booking.startTime),
+          l10n.cancelAppointmentMessage(dateStr, _to12h(booking.startTime)),
         ),
         actions: [
           TextButton(
@@ -356,20 +533,159 @@ class _BookingCard extends StatelessWidget {
       ),
     );
   }
-
-  Color _statusColor(BookingStatus s) {
-    switch (s) {
-      case BookingStatus.confirmed:
-        return AppColors.success;
-      case BookingStatus.pending:
-        return AppColors.warning;
-      case BookingStatus.cancelled:
-        return AppColors.error;
-      case BookingStatus.completed:
-        return AppColors.primary;
-    }
-  }
 }
+
+// ─── Date Selector ────────────────────────────────────────────────────────────
+
+class _DateSelector extends StatelessWidget {
+  final DateTime selected;
+  const _DateSelector({required this.selected});
+
+  @override
+  Widget build(BuildContext context) {
+    final locale = Localizations.localeOf(context).toString();
+    final now = DateTime.now();
+    final days = List.generate(14, (i) => now.add(Duration(days: i - 2)));
+
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Row(
+          children: days.map((day) {
+            final isSelected = _isSameDay(day, selected);
+            final isToday = _isSameDay(day, now);
+            return GestureDetector(
+              onTap: () =>
+                  context.read<BookingBloc>().add(SelectBookingDate(day)),
+              child: Container(
+                margin: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppColors.primary : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: isToday && !isSelected
+                      ? Border.all(color: AppColors.primary, width: 1.5)
+                      : null,
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      DateFormat('E', locale).format(day),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: isSelected ? Colors.white : AppColors.textHint,
+                        fontSize: 11,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '${day.day}',
+                      style: AppTypography.labelLarge.copyWith(
+                        color: isSelected
+                            ? Colors.white
+                            : Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) =>
+      a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+// ─── Flat booking card (Bookings tab) ─────────────────────────────────────────
+
+class _BookingCard extends StatelessWidget {
+  final BookingModel booking;
+  const _BookingCard({required this.booking});
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColor = _statusColor(booking.status);
+    final isActionable = booking.status == BookingStatus.pending ||
+        booking.status == BookingStatus.confirmed;
+
+    return GestureDetector(
+      onTap: isActionable
+          ? () => _CustomerBookingRow(booking: booking)
+              ._showActionSheet(context, booking)
+          : null,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(16),
+          border: Border(left: BorderSide(color: statusColor, width: 4)),
+        ),
+        child: Row(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(_to12h(booking.startTime),
+                    style: AppTypography.h3.copyWith(fontSize: 16)),
+                Text(
+                  '${DateTime.parse(booking.date).day}/${DateTime.parse(booking.date).month}',
+                  style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+                ),
+              ],
+            ),
+            const SizedBox(width: 16),
+            Container(width: 1, height: 44, color: AppColors.divider),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(booking.customerName, style: AppTypography.labelLarge),
+                  if (booking.serviceType != null)
+                    Text(booking.serviceType!, style: AppTypography.bodySmall),
+                  if (booking.notes != null && booking.notes!.isNotEmpty)
+                    Text(
+                      booking.notes!,
+                      style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _StatusBadge(status: booking.status),
+                if (isActionable) ...[
+                  const SizedBox(width: 4),
+                  const Icon(Icons.chevron_right_rounded,
+                      size: 18, color: AppColors.textHint),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _statusColor(BookingStatus s) => switch (s) {
+        BookingStatus.confirmed => AppColors.success,
+        BookingStatus.pending => AppColors.warning,
+        BookingStatus.cancelled => AppColors.error,
+        BookingStatus.completed => AppColors.primary,
+      };
+}
+
+// ─── Shared widgets ───────────────────────────────────────────────────────────
 
 class _ActionTile extends StatelessWidget {
   final IconData icon;
@@ -399,10 +715,7 @@ class _ActionTile extends StatelessWidget {
           children: [
             Icon(icon, color: color, size: 22),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: AppTypography.labelLarge.copyWith(color: color),
-            ),
+            Text(label, style: AppTypography.labelLarge.copyWith(color: color)),
           ],
         ),
       ),
@@ -423,7 +736,6 @@ class _StatusBadge extends StatelessWidget {
       BookingStatus.cancelled => (l10n.bookingStatusCancelled, AppColors.error),
       BookingStatus.completed => (l10n.bookingStatusDone, AppColors.primary),
     };
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(

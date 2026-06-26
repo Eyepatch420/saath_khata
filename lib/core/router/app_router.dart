@@ -48,6 +48,7 @@ import '../../features/auth/presentation/screens/edit_profile_screen.dart';
 import '../../features/auth/data/models/user_model.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/booking/presentation/screens/vendor_bookings_screen.dart';
+import '../../features/booking/presentation/screens/vendor_schedule_setup_screen.dart';
 import '../../features/booking/presentation/screens/customer_bookings_screen.dart';
 import '../../features/booking/presentation/screens/book_appointment_screen.dart';
 import '../../features/location/presentation/screens/location_picker_screen.dart';
@@ -93,6 +94,7 @@ class AppRouter {
   static const String staffManagement = '/staff';
   static const String notifications = '/notifications';
   static const String vendorBookings = '/booking';
+  static const String vendorScheduleSetup = '/booking/schedule';
   static const String customerBookings = '/customer/booking';
   static const String upiPayment = '/upi-payment';
   static const String reports = '/reports';
@@ -363,6 +365,10 @@ class AppRouter {
             endpoint: extras['endpoint'] as String,
           );
         },
+      ),
+      GoRoute(
+        path: vendorScheduleSetup,
+        builder: (context, state) => const VendorScheduleSetupScreen(),
       ),
       GoRoute(
         path: bookAppointment,
