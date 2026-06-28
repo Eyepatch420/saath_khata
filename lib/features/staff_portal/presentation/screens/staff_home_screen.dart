@@ -52,6 +52,14 @@ class StaffHomeScreen extends StatelessWidget {
                     20, 20, 20, MediaQuery.of(context).padding.bottom + 24),
                 children: [
                   _ActionButton(
+                    icon: Icons.flash_on_rounded,
+                    label: 'Quick Delivery',
+                    subtitle: 'Pre-filled with customer defaults',
+                    color: AppColors.primary,
+                    onTap: () => context.push(AppRouter.staffQuickDelivery),
+                  ),
+                  const SizedBox(height: 14),
+                  _ActionButton(
                     icon: Icons.local_shipping_rounded,
                     label: l10n.recordDelivery,
                     subtitle: l10n.recordDeliverySubtitle,

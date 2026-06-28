@@ -19,6 +19,7 @@ import '../../features/staff_portal/presentation/screens/staff_shell.dart';
 import '../../features/staff_portal/presentation/screens/staff_home_screen.dart';
 import '../../features/staff_portal/presentation/screens/staff_customers_screen.dart';
 import '../../features/staff_portal/presentation/screens/staff_pay_screen.dart';
+import '../../features/staff_portal/presentation/screens/staff_quick_delivery_screen.dart';
 
 import '../../features/shared_ledger/presentation/screens/shared_ledger_screen.dart';
 
@@ -85,6 +86,7 @@ class AppRouter {
   static const String staffHome = '/staff-home';
   static const String staffCustomers = '/staff-home/customers';
   static const String staffPay = '/staff-home/pay';
+  static const String staffQuickDelivery = '/staff-home/quick-delivery';
   static const String customerKhatas = '/customer/khatas';
   static const String customerPayments = '/customer/payments';
   static const String customerProfile = '/customer/profile';
@@ -277,6 +279,10 @@ class AppRouter {
           GoRoute(
             path: staffPay,
             builder: (context, state) => const StaffPayScreen(),
+          ),
+          GoRoute(
+            path: staffQuickDelivery,
+            builder: (context, state) => const StaffQuickDeliveryScreen(),
           ),
         ],
       ),
