@@ -71,7 +71,12 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     emit(OrderActionLoading(orders: currentOrders, pending: currentPending));
     try {
-      final updated = await _repo.updateOrderStatus(event.orderId, event.status);
+      final updated = await _repo.updateOrderStatus(
+        event.orderId,
+        event.status,
+        deliveryNote: event.deliveryNote,
+        proofUrl: event.proofUrl,
+      );
       final newOrders = currentOrders
           .map((o) => o.id == event.orderId ? updated : o)
           .toList();

@@ -128,6 +128,26 @@ class LedgerEntry extends Equatable {
     );
   }
 
+  /// Auto-created delivery entries from the order flow. The backend writes the
+  /// description as "Order delivery (by vendor|staff)".
+  bool get isDelivery =>
+      (description ?? '').toLowerCase().startsWith('order delivery');
+
+  /// "vendor" / "staff" parsed from the delivery description, else null.
+  String? get deliveredByRole {
+    final d = description ?? '';
+    final m = RegExp(r'\(by (vendor|staff)\)', caseSensitive: false)
+        .firstMatch(d);
+    return m?.group(1)?.toLowerCase();
+  }
+
+  /// Friendly attribution label, e.g. "Delivered by vendor".
+  String get deliveryLabel {
+    final role = deliveredByRole;
+    if (role == null) return 'Delivered';
+    return 'Delivered by $role';
+  }
+
   @override
   List<Object?> get props => [
         id,

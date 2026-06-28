@@ -21,6 +21,9 @@ class OrderItem extends Equatable {
   final String id;
   final String name;
   final String? qty;
+  final String? unit;
+  final double? pricePerUnit;
+  final double? subtotal;
   final String? note;
   final int sortOrder;
 
@@ -28,6 +31,9 @@ class OrderItem extends Equatable {
     required this.id,
     required this.name,
     this.qty,
+    this.unit,
+    this.pricePerUnit,
+    this.subtotal,
     this.note,
     required this.sortOrder,
   });
@@ -36,6 +42,9 @@ class OrderItem extends Equatable {
         id: json['id'] as String,
         name: json['name'] as String,
         qty: json['qty'] as String?,
+        unit: json['unit'] as String?,
+        pricePerUnit: (json['pricePerUnit'] as num?)?.toDouble(),
+        subtotal: (json['subtotal'] as num?)?.toDouble(),
         note: json['note'] as String?,
         sortOrder: json['sortOrder'] as int? ?? 0,
       );
@@ -44,12 +53,15 @@ class OrderItem extends Equatable {
         'id': id,
         'name': name,
         if (qty != null) 'qty': qty,
+        if (unit != null) 'unit': unit,
+        if (pricePerUnit != null) 'pricePerUnit': pricePerUnit,
         if (note != null) 'note': note,
         'sortOrder': sortOrder,
       };
 
   @override
-  List<Object?> get props => [id, name, qty, note, sortOrder];
+  List<Object?> get props =>
+      [id, name, qty, unit, pricePerUnit, subtotal, note, sortOrder];
 }
 
 class Order extends Equatable {
@@ -61,8 +73,12 @@ class Order extends Equatable {
   final OrderStatus status;
   final String? note;
   final List<OrderItem> items;
+  final double total;
   final String? deliveredBy;
+  final String? deliveredByRole; // 'vendor' | 'staff'
   final DateTime? deliveredAt;
+  final String? deliveryNote;
+  final String? proofUrl;
   final String? ledgerEntryId;
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -76,8 +92,12 @@ class Order extends Equatable {
     required this.status,
     this.note,
     required this.items,
+    this.total = 0,
     this.deliveredBy,
+    this.deliveredByRole,
     this.deliveredAt,
+    this.deliveryNote,
+    this.proofUrl,
     this.ledgerEntryId,
     required this.createdAt,
     required this.updatedAt,
@@ -94,10 +114,14 @@ class Order extends Equatable {
         items: (json['items'] as List<dynamic>)
             .map((e) => OrderItem.fromJson(e as Map<String, dynamic>))
             .toList(),
+        total: (json['total'] as num?)?.toDouble() ?? 0,
         deliveredBy: json['deliveredBy'] as String?,
+        deliveredByRole: json['deliveredByRole'] as String?,
         deliveredAt: json['deliveredAt'] != null
             ? DateTime.tryParse(json['deliveredAt'] as String)
             : null,
+        deliveryNote: json['deliveryNote'] as String?,
+        proofUrl: json['proofUrl'] as String?,
         ledgerEntryId: json['ledgerEntryId'] as String?,
         createdAt: DateTime.parse(json['createdAt'] as String),
         updatedAt: DateTime.parse(json['updatedAt'] as String),
@@ -112,8 +136,12 @@ class Order extends Equatable {
     OrderStatus? status,
     String? note,
     List<OrderItem>? items,
+    double? total,
     String? deliveredBy,
+    String? deliveredByRole,
     DateTime? deliveredAt,
+    String? deliveryNote,
+    String? proofUrl,
     String? ledgerEntryId,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -127,8 +155,12 @@ class Order extends Equatable {
         status: status ?? this.status,
         note: note ?? this.note,
         items: items ?? this.items,
+        total: total ?? this.total,
         deliveredBy: deliveredBy ?? this.deliveredBy,
+        deliveredByRole: deliveredByRole ?? this.deliveredByRole,
         deliveredAt: deliveredAt ?? this.deliveredAt,
+        deliveryNote: deliveryNote ?? this.deliveryNote,
+        proofUrl: proofUrl ?? this.proofUrl,
         ledgerEntryId: ledgerEntryId ?? this.ledgerEntryId,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -144,8 +176,12 @@ class Order extends Equatable {
         status,
         note,
         items,
+        total,
         deliveredBy,
+        deliveredByRole,
         deliveredAt,
+        deliveryNote,
+        proofUrl,
         ledgerEntryId,
         createdAt,
         updatedAt,

@@ -24,7 +24,7 @@ class LoadStaffOrders extends OrderEvent {
 
 class PlaceOrder extends OrderEvent {
   final String linkId;
-  final List<Map<String, String?>> items;
+  final List<Map<String, dynamic>> items;
   final String? note;
   const PlaceOrder({required this.linkId, required this.items, this.note});
   @override
@@ -34,7 +34,14 @@ class PlaceOrder extends OrderEvent {
 class UpdateOrderStatus extends OrderEvent {
   final String orderId;
   final OrderStatus status;
-  const UpdateOrderStatus({required this.orderId, required this.status});
+  final String? deliveryNote;
+  final String? proofUrl;
+  const UpdateOrderStatus({
+    required this.orderId,
+    required this.status,
+    this.deliveryNote,
+    this.proofUrl,
+  });
   @override
-  List<Object?> get props => [orderId, status];
+  List<Object?> get props => [orderId, status, deliveryNote, proofUrl];
 }

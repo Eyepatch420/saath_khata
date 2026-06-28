@@ -6,8 +6,13 @@ abstract class OrderRepository {
   Future<OrderListResult> getStaffOrders();
   Future<Order> placeOrder({
     required String linkId,
-    required List<Map<String, String?>> items,
+    required List<Map<String, dynamic>> items,
     String? note,
   });
-  Future<Order> updateOrderStatus(String orderId, OrderStatus status);
+  Future<Order> updateOrderStatus(
+    String orderId,
+    OrderStatus status, {
+    String? deliveryNote,
+    String? proofUrl,
+  });
 }

@@ -162,6 +162,9 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
       ));
     } catch (e) {
       AppLogger.e(_m, 'Multi-item entry failed', e);
+      // Surface the failure (a transient LedgerError a listener can snackbar),
+      // then restore the loaded list so the screen stays usable.
+      emit(LedgerError(e.toString().replaceFirst('Exception: ', '')));
       emit(LedgerLoaded(
         allEntries: current.allEntries,
         entries: current.entries,

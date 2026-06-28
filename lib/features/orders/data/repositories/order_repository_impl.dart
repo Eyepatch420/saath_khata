@@ -48,7 +48,7 @@ class OrderRepositoryImpl implements OrderRepository {
   @override
   Future<Order> placeOrder({
     required String linkId,
-    required List<Map<String, String?>> items,
+    required List<Map<String, dynamic>> items,
     String? note,
   }) async {
     try {
@@ -67,11 +67,21 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
-  Future<Order> updateOrderStatus(String orderId, OrderStatus status) async {
+  Future<Order> updateOrderStatus(
+    String orderId,
+    OrderStatus status, {
+    String? deliveryNote,
+    String? proofUrl,
+  }) async {
     try {
       final response = await _api.patch(
         ApiEndpoints.updateOrderStatus(orderId),
-        data: {'status': status.toJson()},
+        data: {
+          'status': status.toJson(),
+          if (deliveryNote != null && deliveryNote.isNotEmpty)
+            'deliveryNote': deliveryNote,
+          if (proofUrl != null && proofUrl.isNotEmpty) 'proofUrl': proofUrl,
+        },
       );
       return Order.fromJson(_data(response));
     } on DioException catch (e) {

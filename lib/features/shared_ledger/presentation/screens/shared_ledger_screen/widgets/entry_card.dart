@@ -171,7 +171,11 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
               const SizedBox(height: 4),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [LedgerStatusChip(status: entry.status)],
+                children: [
+                  entry.isDelivery
+                      ? _DeliveryChip(entry: entry)
+                      : LedgerStatusChip(status: entry.status),
+                ],
               ),
             ],
             // Confirm/dispute is shown to whichever party did NOT create
@@ -399,6 +403,40 @@ class _ChildEntryRow extends StatelessWidget {
   }
 }
 
+/// Friendly chip for auto-created delivery entries: "Delivered by vendor/staff"
+/// instead of the raw "Auto-Confirmed" status.
+class _DeliveryChip extends StatelessWidget {
+  final LedgerEntry entry;
+  const _DeliveryChip({required this.entry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: AppColors.success.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.local_shipping_rounded,
+              size: 12, color: AppColors.success),
+          const SizedBox(width: 4),
+          Text(
+            entry.deliveryLabel,
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.success,
+              fontWeight: FontWeight.w600,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _EntryDetailSheet extends StatefulWidget {
   final LedgerEntry entry;
   final String currentUserId;
@@ -499,7 +537,9 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(l10n.entryDetails, style: AppTypography.h3),
-              LedgerStatusChip(status: entry.status),
+              entry.isDelivery
+                  ? _DeliveryChip(entry: entry)
+                  : LedgerStatusChip(status: entry.status),
             ],
           ),
           const SizedBox(height: 20),

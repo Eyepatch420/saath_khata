@@ -21,6 +21,7 @@ import '../../../vendor/domain/repositories/vendor_repository.dart';
 import '../../../voice_entry/presentation/widgets/voice_entry_sheet.dart';
 import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
+import '../bloc/ledger_state.dart';
 import 'monthly_settlement_screen.dart';
 import 'shared_ledger_screen/widgets/balance_header.dart';
 import 'shared_ledger_screen/widgets/filter_bar.dart';
@@ -234,7 +235,21 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           ),
         ],
       ),
-      body: Column(
+      body: BlocListener<LedgerBloc, LedgerState>(
+        listenWhen: (prev, curr) => curr is LedgerError,
+        listener: (context, state) {
+          if (state is LedgerError) {
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+          }
+        },
+        child: Column(
         children: [
           // Balance + membership header (fixed)
           LedgerBalanceHeader(
@@ -262,6 +277,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
             ),
           ),
         ],
+      ),
       ),
       floatingActionButton: FadeTransition(
         opacity: _fabAnim,
