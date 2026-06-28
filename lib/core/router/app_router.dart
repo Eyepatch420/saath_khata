@@ -36,6 +36,8 @@ import '../../features/customer/presentation/screens/customer_profile_screen.dar
 
 import '../../features/reports/presentation/screens/all_customers_report_screen.dart';
 import '../../features/vendor/presentation/screens/all_customers_screen.dart';
+import '../../features/vendor/presentation/screens/customer_detail_screen.dart';
+import '../../shared/models/link_model.dart';
 import '../../features/vendor/presentation/screens/outstanding_list_screen.dart';
 import '../../features/vendor/presentation/screens/collected_today_screen.dart';
 import '../../features/reports/presentation/screens/customer_detail_report_screen.dart';
@@ -101,6 +103,7 @@ class AppRouter {
   static const String upiPayment = '/upi-payment';
   static const String reports = '/reports';
   static const String allCustomers = '/vendor/customers';
+  static const String customerDetail = '/vendor/customer-detail';
   static const String outstandingList = '/vendor/outstanding';
   static const String collectedToday = '/vendor/collected-today';
   static const String allCustomersReport = '/reports/all-customers';
@@ -297,6 +300,13 @@ class AppRouter {
       GoRoute(
         path: allCustomers,
         builder: (context, state) => const AllCustomersScreen(),
+      ),
+      GoRoute(
+        path: customerDetail,
+        builder: (context, state) {
+          final customer = state.extra as CustomerLinkItem;
+          return CustomerDetailScreen(customer: customer);
+        },
       ),
       GoRoute(
         path: allCustomersReport,

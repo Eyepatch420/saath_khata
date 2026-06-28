@@ -95,10 +95,7 @@ class _CustomerTile extends StatelessWidget {
     final displayName = customer.displayName as String;
     final subName = customer.subName as String?;
     return InkWell(
-      onTap: () => context.push(
-        AppRouter.sharedLedger,
-        extra: {'linkId': customer.linkId, 'name': displayName, 'isVendorView': true},
-      ),
+      onTap: () => context.push(AppRouter.customerDetail, extra: customer),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),

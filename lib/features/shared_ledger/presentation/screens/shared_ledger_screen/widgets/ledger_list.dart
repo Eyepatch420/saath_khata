@@ -16,6 +16,10 @@ class LedgerList extends StatefulWidget {
   final String currentUserId;
   final bool isVendorView;
   final bool isStaffView;
+  /// When set, only entries with this status are shown (client-side filter).
+  final EntryStatus? filterStatus;
+  /// When set, only entries with this type are shown (client-side filter).
+  final EntryType? filterType;
 
   const LedgerList({
     super.key,
@@ -24,6 +28,8 @@ class LedgerList extends StatefulWidget {
     required this.currentUserId,
     required this.isVendorView,
     this.isStaffView = false,
+    this.filterStatus,
+    this.filterType,
   });
 
   @override
@@ -60,11 +66,18 @@ class _LedgerListState extends State<LedgerList> {
           );
         }
 
-        final entries = state is LedgerLoaded
+        var entries = state is LedgerLoaded
             ? state.entries
             : state is LedgerActionLoading
                 ? state.entries
                 : <LedgerEntry>[];
+
+        if (widget.filterStatus != null) {
+          entries = entries.where((e) => e.status == widget.filterStatus).toList();
+        }
+        if (widget.filterType != null) {
+          entries = entries.where((e) => e.type == widget.filterType).toList();
+        }
 
         if (state is LedgerActionLoading) {
           return Stack(

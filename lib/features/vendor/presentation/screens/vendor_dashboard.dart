@@ -459,24 +459,17 @@ class _ActionCard extends StatelessWidget {
 // ─── Customer Tile ────────────────────────────────────────────────────────────
 
 class _CustomerTile extends StatelessWidget {
-  final dynamic customer;
+  final CustomerLinkItem customer;
 
   const _CustomerTile({required this.customer});
 
   @override
   Widget build(BuildContext context) {
-    final displayName = customer.displayName as String;
-    final subName = customer.subName as String?;
+    final displayName = customer.displayName;
+    final subName = customer.subName;
     final surface = Theme.of(context).colorScheme.surface;
     return InkWell(
-      onTap: () => context.push(
-        AppRouter.sharedLedger,
-        extra: {
-          'linkId': customer.linkId,
-          'name': displayName,
-          'isVendorView': true,
-        },
-      ),
+      onTap: () => context.push(AppRouter.customerDetail, extra: customer),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -682,7 +675,7 @@ class _PendingRequestTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = request.customer.name;
-    final contact = request.customer.mobile ?? request.customer.email;
+    final contact = request.customer.mobile ?? request.customer.email ?? '';
     final surface = Theme.of(context).colorScheme.surface;
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
