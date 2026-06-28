@@ -19,6 +19,7 @@ import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/filter_bar.dart';
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/ledger_actions.dart';
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/ledger_list.dart';
+import '../../../shared_ledger/presentation/screens/monthly_settlement_screen.dart';
 import '../widgets/customer_defaults_sheet.dart';
 
 
@@ -258,6 +259,28 @@ class _DuesTab extends StatelessWidget {
             currentUserId: currentUserId,
             isVendorView: true,
             filterStatus: EntryStatus.pending,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          child: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<LedgerBloc>(),
+                    child: MonthlySettlementScreen(
+                      customerName: customer.displayName,
+                      isVendorView: true,
+                    ),
+                  ),
+                ),
+              ),
+              icon: const Icon(Icons.calendar_month_rounded, size: 16),
+              label: const Text('View Monthly Statement'),
+            ),
           ),
         ),
       ],

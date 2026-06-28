@@ -21,6 +21,7 @@ import '../../../vendor/domain/repositories/vendor_repository.dart';
 import '../../../voice_entry/presentation/widgets/voice_entry_sheet.dart';
 import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
+import 'monthly_settlement_screen.dart';
 import 'shared_ledger_screen/widgets/balance_header.dart';
 import 'shared_ledger_screen/widgets/filter_bar.dart';
 import 'shared_ledger_screen/widgets/info_row.dart';
@@ -159,6 +160,21 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
     super.dispose();
   }
 
+  void _showMonthlySettlement(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<LedgerBloc>(),
+          child: MonthlySettlementScreen(
+            customerName: widget.customerName,
+            isVendorView: widget.isVendorView,
+          ),
+        ),
+      ),
+    );
+  }
+
   bool _onScroll(ScrollNotification notification) {
     if (notification is ScrollUpdateNotification) {
       final delta = notification.scrollDelta ?? 0;
@@ -200,6 +216,12 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           ],
         ),
         actions: [
+          if (!widget.isStaffView)
+            IconButton(
+              onPressed: () => _showMonthlySettlement(context),
+              icon: const Icon(Icons.calendar_month_rounded),
+              tooltip: 'Monthly Statement',
+            ),
           IconButton(
             onPressed: () => _confirmDeleteLink(context, l10n),
             icon: const Icon(Icons.link_off_rounded),
