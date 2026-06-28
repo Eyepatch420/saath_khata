@@ -50,6 +50,29 @@ class VendorRepositoryImpl implements VendorRepository {
   }
 
   @override
+  Future<void> updateLinkDefaults(
+    String linkId, {
+    String? defaultProduct,
+    String? defaultUnit,
+    double? defaultQty,
+    double? defaultPricePerUnit,
+  }) async {
+    try {
+      await _api.patch(
+        ApiEndpoints.linkDefaults(linkId),
+        data: {
+          'defaultProduct': defaultProduct,
+          'defaultUnit': defaultUnit,
+          'defaultQty': defaultQty,
+          'defaultPricePerUnit': defaultPricePerUnit,
+        },
+      );
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<void> deactivateLink(String linkId) async {
     try {
       await _api.delete(ApiEndpoints.linkById(linkId));

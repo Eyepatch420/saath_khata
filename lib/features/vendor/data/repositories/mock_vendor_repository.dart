@@ -51,6 +51,17 @@ class MockVendorRepository implements VendorRepository {
   }
 
   @override
+  Future<void> updateLinkDefaults(
+    String linkId, {
+    String? defaultProduct,
+    String? defaultUnit,
+    double? defaultQty,
+    double? defaultPricePerUnit,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+  }
+
+  @override
   Future<void> deactivateLink(String linkId) async {
     await Future.delayed(const Duration(milliseconds: 300));
     _links.removeWhere((l) => l.linkId == linkId);

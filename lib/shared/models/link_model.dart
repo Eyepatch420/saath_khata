@@ -76,6 +76,11 @@ class CustomerLinkItem extends Equatable {
   final int? tierLevel;
   final String? tierName;
 
+  final String? defaultProduct;
+  final String? defaultUnit;
+  final double? defaultQty;
+  final double? defaultPricePerUnit;
+
   const CustomerLinkItem({
     required this.linkId,
     required this.balance,
@@ -84,6 +89,10 @@ class CustomerLinkItem extends Equatable {
     required this.createdAt,
     this.tierLevel,
     this.tierName,
+    this.defaultProduct,
+    this.defaultUnit,
+    this.defaultQty,
+    this.defaultPricePerUnit,
   });
 
   /// The display name: nickname if set, otherwise the actual login name.
@@ -102,12 +111,27 @@ class CustomerLinkItem extends Equatable {
       createdAt: json['createdAt'] as String,
       tierLevel: (tier?['level'] as num?)?.toInt(),
       tierName: tier?['name'] as String?,
+      defaultProduct: json['defaultProduct'] as String?,
+      defaultUnit: json['defaultUnit'] as String?,
+      defaultQty: (json['defaultQty'] as num?)?.toDouble(),
+      defaultPricePerUnit: (json['defaultPricePerUnit'] as num?)?.toDouble(),
     );
   }
 
   @override
-  List<Object?> get props =>
-      [linkId, balance, nickname, customer, createdAt, tierLevel, tierName];
+  List<Object?> get props => [
+        linkId,
+        balance,
+        nickname,
+        customer,
+        createdAt,
+        tierLevel,
+        tierName,
+        defaultProduct,
+        defaultUnit,
+        defaultQty,
+        defaultPricePerUnit,
+      ];
 }
 
 /// Response from POST /api/v1/links/remind-all

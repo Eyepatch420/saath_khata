@@ -8,6 +8,15 @@ abstract class VendorRepository {
   Future<void> deactivateLink(String linkId);
   /// Update the caller's nickname on a link. Pass null to clear.
   Future<void> updateLinkNickname(String linkId, String? nickname);
+
+  /// Vendor sets per-customer default delivery product/qty.
+  Future<void> updateLinkDefaults(
+    String linkId, {
+    String? defaultProduct,
+    String? defaultUnit,
+    double? defaultQty,
+    double? defaultPricePerUnit,
+  });
   Future<VendorSummaryReport> getVendorSummary();
   Future<RemindAllResult> remindAll();
 
