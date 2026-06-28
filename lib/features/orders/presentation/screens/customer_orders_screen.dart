@@ -5,6 +5,7 @@ import '../../../../shared/models/order_model.dart';
 import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
 import '../bloc/order_state.dart';
+import 'order_detail_screen.dart';
 
 class CustomerOrdersScreen extends StatefulWidget {
   const CustomerOrdersScreen({super.key});
@@ -62,7 +63,17 @@ class _CustomerOrdersScreenState extends State<CustomerOrdersScreen> {
               itemBuilder: (ctx, i) {
                 final order = orders[i];
                 return Card(
-                  child: Padding(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => BlocProvider.value(
+                          value: context.read<OrderBloc>(),
+                          child: OrderDetailScreen(order: order, role: 'customer'),
+                        ),
+                      ),
+                    ),
+                    child: Padding(
                     padding: const EdgeInsets.all(12),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,6 +138,7 @@ class _CustomerOrdersScreenState extends State<CustomerOrdersScreen> {
                         ),
                       ],
                     ),
+                  ),
                   ),
                 );
               },

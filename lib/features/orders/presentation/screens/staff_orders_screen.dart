@@ -5,6 +5,7 @@ import '../../../../shared/models/order_model.dart';
 import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
 import '../bloc/order_state.dart';
+import 'order_detail_screen.dart';
 
 class StaffOrdersScreen extends StatefulWidget {
   const StaffOrdersScreen({super.key});
@@ -84,85 +85,79 @@ class _DeliveryCard extends StatelessWidget {
 
   const _DeliveryCard({required this.order});
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (order.customerName != null)
-              Text(
-                order.customerName!,
-                style:
-                    const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-              ),
-            const SizedBox(height: 8),
-            ...order.items.map((item) => Padding(
-                  padding: const EdgeInsets.only(bottom: 3),
-                  child: Row(
-                    children: [
-                      const Text('• ',
-                          style: TextStyle(color: AppColors.textSecondary)),
-                      Expanded(child: Text(item.name)),
-                      if (item.qty != null)
-                        Text(item.qty!,
-                            style: const TextStyle(
-                                color: AppColors.textSecondary)),
-                    ],
-                  ),
-                )),
-            if (order.note != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                'Note: ${order.note}',
-                style: const TextStyle(
-                    color: AppColors.textSecondary,
-                    fontStyle: FontStyle.italic,
-                    fontSize: 13),
-              ),
-            ],
-            const SizedBox(height: 10),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: () => _confirmDeliver(context),
-                icon: const Icon(Icons.local_shipping_outlined),
-                label: const Text('Mark as Delivered'),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-              ),
-            ),
-          ],
+  void _openDetail(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<OrderBloc>(),
+          child: OrderDetailScreen(order: order, role: 'staff'),
         ),
       ),
     );
   }
 
-  void _confirmDeliver(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Confirm Delivery'),
-        content: Text(
-            'Mark order for ${order.customerName ?? 'customer'} as delivered?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: () => _openDetail(context),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      order.customerName ?? 'Customer',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w600, fontSize: 15),
+                    ),
+                  ),
+                  Text('₹${order.total.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.primary)),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ...order.items.take(3).map((item) => Padding(
+                    padding: const EdgeInsets.only(bottom: 3),
+                    child: Row(
+                      children: [
+                        const Text('• ',
+                            style: TextStyle(color: AppColors.textSecondary)),
+                        Expanded(
+                            child: Text(item.name,
+                                overflow: TextOverflow.ellipsis)),
+                        if (item.qty != null)
+                          Text(
+                              '${item.qty}${item.unit != null ? ' ${item.unit}' : ''}',
+                              style: const TextStyle(
+                                  color: AppColors.textSecondary)),
+                      ],
+                    ),
+                  )),
+              if (order.items.length > 3)
+                Text('+ ${order.items.length - 3} more',
+                    style: const TextStyle(
+                        color: AppColors.textHint, fontSize: 12)),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: () => _openDetail(context),
+                  icon: const Icon(Icons.local_shipping_outlined),
+                  label: const Text('Deliver'),
+                  style:
+                      FilledButton.styleFrom(backgroundColor: AppColors.primary),
+                ),
+              ),
+            ],
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context.read<OrderBloc>().add(
-                    UpdateOrderStatus(
-                        orderId: order.id, status: OrderStatus.delivered),
-                  );
-            },
-            style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-            child: const Text('Delivered'),
-          ),
-        ],
+        ),
       ),
     );
   }
