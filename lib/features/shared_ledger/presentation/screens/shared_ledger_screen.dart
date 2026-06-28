@@ -17,6 +17,7 @@ import '../../../customer/domain/repositories/customer_repository.dart';
 import '../../../memberships/domain/repositories/membership_repository.dart';
 import '../../../memberships/presentation/bloc/membership_cubit.dart';
 import '../../../memberships/presentation/widgets/membership_banner.dart';
+import '../../../memberships/presentation/widgets/membership_appbar_chip.dart';
 import '../../../vendor/domain/repositories/vendor_repository.dart';
 import '../../../voice_entry/presentation/widgets/voice_entry_sheet.dart';
 import '../bloc/ledger_bloc.dart';
@@ -217,6 +218,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           ],
         ),
         actions: [
+          const MembershipAppBarChip(),
           if (!widget.isStaffView)
             IconButton(
               onPressed: () => _showMonthlySettlement(context),
@@ -260,6 +262,7 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           MembershipBanner(
             customerName: widget.customerName,
             isVendorView: widget.isVendorView,
+            isStaffView: widget.isStaffView,
           ),
           // Filter bar (fixed)
           const LedgerFilterBar(),

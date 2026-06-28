@@ -14,10 +14,14 @@ class MembershipBanner extends StatelessWidget {
   final String customerName;
   final bool isVendorView;
 
+  /// Staff are read-only: they see the tier but get no apply/change/approve UI.
+  final bool isStaffView;
+
   const MembershipBanner({
     super.key,
     required this.customerName,
     required this.isVendorView,
+    this.isStaffView = false,
   });
 
   static Color tierColor(int level) => switch (level) {
@@ -66,6 +70,7 @@ class MembershipBanner extends StatelessWidget {
               _CurrentTierRow(
                 tier: status.currentTier,
                 isVendorView: isVendorView,
+                readOnly: isStaffView,
                 hasPendingRequest: status.pendingRequest != null,
                 busy: busy,
                 onChange: () => _openTierPicker(context, cubit, status.tiers,
@@ -75,7 +80,7 @@ class MembershipBanner extends StatelessWidget {
               ),
 
               // Vendor only: an actionable card for the pending request.
-              if (isVendorView && status.pendingRequest != null) ...[
+              if (isVendorView && !isStaffView && status.pendingRequest != null) ...[
                 const SizedBox(height: 12),
                 _PendingRequestCard(
                   tierName: status.pendingRequest!.requestedTier.name,
@@ -89,7 +94,7 @@ class MembershipBanner extends StatelessWidget {
               ],
 
               // Customer only: awaiting-approval hint.
-              if (!isVendorView && status.pendingRequest != null) ...[
+              if (!isVendorView && !isStaffView && status.pendingRequest != null) ...[
                 const SizedBox(height: 8),
                 Text(
                   l10n.requestedTierAwaiting(status.pendingRequest!.requestedTier.name),
@@ -196,6 +201,7 @@ class MembershipBanner extends StatelessWidget {
 class _CurrentTierRow extends StatelessWidget {
   final MembershipTier? tier;
   final bool isVendorView;
+  final bool readOnly;
   final bool hasPendingRequest;
   final bool busy;
   final VoidCallback onChange;
@@ -208,6 +214,7 @@ class _CurrentTierRow extends StatelessWidget {
     required this.busy,
     required this.onChange,
     required this.onApply,
+    this.readOnly = false,
   });
 
   @override
@@ -259,6 +266,8 @@ class _CurrentTierRow extends StatelessWidget {
   }
 
   Widget _trailingAction(BuildContext context, AppLocalizations l10n) {
+    // Staff are read-only — never offer set/change/apply.
+    if (readOnly) return const SizedBox.shrink();
     if (busy) {
       return const SizedBox(
         width: 18,
