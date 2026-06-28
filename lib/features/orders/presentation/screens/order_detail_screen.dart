@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +7,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/services/ledger_attachment_service.dart';
 import '../../../../shared/models/order_model.dart';
+import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/full_screen_photo_viewer.dart';
 import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
 import '../bloc/order_state.dart';
@@ -111,7 +113,7 @@ class OrderDetailScreen extends StatelessWidget {
               ],
               if (current.status == OrderStatus.delivered) ...[
                 const SizedBox(height: 12),
-                _deliveryProofCard(current),
+                _deliveryProofCard(context, current),
               ],
               const SizedBox(height: 24),
             ],
@@ -157,7 +159,7 @@ class OrderDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _deliveryProofCard(Order order) {
+  Widget _deliveryProofCard(BuildContext context, Order order) {
     return _SectionCard(
       title: 'Delivery',
       child: Column(
@@ -180,11 +182,49 @@ class OrderDetailScreen extends StatelessWidget {
           ],
           if (order.proofUrl != null && order.proofUrl!.isNotEmpty) ...[
             const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.network(order.proofUrl!,
-                  height: 160, width: double.infinity, fit: BoxFit.cover),
+            const Text('Proof photo',
+                style: TextStyle(
+                    color: AppColors.textSecondary, fontSize: 12)),
+            const SizedBox(height: 6),
+            GestureDetector(
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => FullScreenPhotoViewer(
+                    imageUrl: order.proofUrl!,
+                    heroTag: 'order_proof_${order.id}',
+                    isLocked: true,
+                  ),
+                ),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Hero(
+                  tag: 'order_proof_${order.id}',
+                  child: CachedNetworkImage(
+                    imageUrl: order.proofUrl!,
+                    height: 180,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    placeholder: (ctx, url) => Container(
+                      height: 180,
+                      color: AppColors.textHint.withValues(alpha: 0.1),
+                      child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2)),
+                    ),
+                    errorWidget: (ctx, url, err) => Container(
+                      height: 180,
+                      color: AppColors.textHint.withValues(alpha: 0.1),
+                      child: const Center(
+                          child: Icon(Icons.broken_image_outlined,
+                              color: AppColors.textHint)),
+                    ),
+                  ),
+                ),
+              ),
             ),
+            const SizedBox(height: 4),
+            const Text('Tap to view full screen',
+                style: TextStyle(color: AppColors.textHint, fontSize: 11)),
           ],
         ],
       ),
@@ -358,8 +398,20 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
   }
 
   Future<void> _pickPhoto(ImageSource source) async {
-    final picked = await ImagePicker().pickImage(source: source, imageQuality: 85);
-    if (picked != null) setState(() => _photo = File(picked.path));
+    try {
+      final picked =
+          await ImagePicker().pickImage(source: source, imageQuality: 85);
+      if (picked != null && mounted) setState(() => _photo = File(picked.path));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Could not access ${source == ImageSource.camera ? 'camera' : 'gallery'}. Check app permissions.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
   }
 
   Future<void> _confirm() async {
@@ -421,25 +473,53 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
             maxLines: 2,
           ),
           const SizedBox(height: 12),
-          if (_photo != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.file(_photo!,
-                  height: 140, width: double.infinity, fit: BoxFit.cover),
+          if (_photo != null) ...[
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.file(_photo!,
+                      height: 140, width: double.infinity, fit: BoxFit.cover),
+                ),
+                Positioned(
+                  top: 6,
+                  right: 6,
+                  child: GestureDetector(
+                    onTap: _uploading
+                        ? null
+                        : () => setState(() => _photo = null),
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: const BoxDecoration(
+                        color: Colors.black54,
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(Icons.close,
+                          color: Colors.white, size: 18),
+                    ),
+                  ),
+                ),
+              ],
             ),
+            const SizedBox(height: 8),
+          ],
           Row(
             children: [
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _pickPhoto(ImageSource.camera),
+                  onPressed: _uploading
+                      ? null
+                      : () => _pickPhoto(ImageSource.camera),
                   icon: const Icon(Icons.camera_alt_outlined, size: 18),
-                  label: const Text('Camera'),
+                  label: Text(_photo == null ? 'Camera' : 'Retake'),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => _pickPhoto(ImageSource.gallery),
+                  onPressed: _uploading
+                      ? null
+                      : () => _pickPhoto(ImageSource.gallery),
                   icon: const Icon(Icons.photo_library_outlined, size: 18),
                   label: const Text('Gallery'),
                 ),

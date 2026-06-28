@@ -219,16 +219,28 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
 
     return Scaffold(
       appBar: AppBar(
+        titleSpacing: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(widget.customerName, style: AppTypography.h3),
+            Text(
+              widget.customerName,
+              style: AppTypography.h3,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  l10n.sharedLedger,
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.primary),
+                Flexible(
+                  child: Text(
+                    l10n.sharedLedger,
+                    style: AppTypography.bodySmall
+                        .copyWith(color: AppColors.primary),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 const SizedBox(width: 6),
                 _LiveDot(socket: getIt<LedgerSocketService>()),
@@ -242,22 +254,26 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
             onPressed: () => _showDeliveries(context, currentUserId),
             icon: const Icon(Icons.local_shipping_outlined),
             tooltip: 'Deliveries',
+            visualDensity: VisualDensity.compact,
           ),
           if (!widget.isStaffView)
             IconButton(
               onPressed: () => _showMonthlySettlement(context),
               icon: const Icon(Icons.calendar_month_rounded),
               tooltip: 'Monthly Statement',
+              visualDensity: VisualDensity.compact,
             ),
           IconButton(
             onPressed: () => _confirmDeleteLink(context, l10n),
             icon: const Icon(Icons.link_off_rounded),
             tooltip: l10n.removeLedgerConfirmation,
             color: AppColors.error,
+            visualDensity: VisualDensity.compact,
           ),
           IconButton(
             onPressed: () => _showLedgerInfo(context, l10n),
             icon: const Icon(Icons.info_outline_rounded),
+            visualDensity: VisualDensity.compact,
           ),
         ],
       ),

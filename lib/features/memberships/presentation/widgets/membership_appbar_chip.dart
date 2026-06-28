@@ -43,12 +43,17 @@ class MembershipAppBarChip extends StatelessWidget {
                 children: [
                   Icon(Icons.workspace_premium_rounded, size: 14, color: color),
                   const SizedBox(width: 4),
-                  Text(
-                    tier?.name ?? 'No tier',
-                    style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 12,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 70),
+                    child: Text(
+                      tier?.name ?? 'No tier',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: color,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ],

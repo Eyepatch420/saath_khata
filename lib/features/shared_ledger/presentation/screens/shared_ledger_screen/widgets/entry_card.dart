@@ -177,6 +177,26 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                       : LedgerStatusChip(status: entry.status),
                 ],
               ),
+              // Delivery proof photo (if the deliverer attached one).
+              if (entry.isDelivery && entry.attachmentUrl != null) ...[
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Icon(Icons.photo_camera_rounded,
+                        size: 14, color: AppColors.textSecondary),
+                    const SizedBox(width: 6),
+                    Text('Delivery proof',
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textSecondary)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                LedgerAttachmentSection(
+                  attachmentUrl: entry.attachmentUrl,
+                  isLocked: entry.isLocked,
+                  heroTag: 'delivery_proof_${entry.id}',
+                ),
+              ],
             ],
             // Confirm/dispute is shown to whichever party did NOT create
             // the entry — never to the creator and never to staff.

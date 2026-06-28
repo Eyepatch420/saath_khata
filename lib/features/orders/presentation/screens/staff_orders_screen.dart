@@ -44,11 +44,16 @@ class _StaffOrdersScreenState extends State<StaffOrdersScreen> {
             if (state is OrderLoading) {
               return const Center(child: CircularProgressIndicator());
             }
-            final orders = switch (state) {
+            final all = switch (state) {
               OrderLoaded(orders: final o) => o,
               OrderActionLoading(orders: final o) => o,
               _ => <Order>[],
             };
+            // Staff queue = orders still awaiting delivery. Once delivered (or
+            // cancelled), drop them from the list immediately.
+            final orders = all
+                .where((o) => o.status == OrderStatus.confirmed)
+                .toList();
             if (orders.isEmpty) {
               return const Center(
                 child: Column(
