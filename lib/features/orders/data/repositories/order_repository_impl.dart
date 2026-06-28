@@ -57,6 +57,7 @@ class OrderRepositoryImpl implements OrderRepository {
         data: {
           'linkId': linkId,
           'items': items,
+          // ignore: use_null_aware_elements
           if (note != null) 'note': note,
         },
       );

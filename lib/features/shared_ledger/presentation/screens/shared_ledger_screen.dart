@@ -24,6 +24,7 @@ import '../bloc/ledger_bloc.dart';
 import '../bloc/ledger_event.dart';
 import '../bloc/ledger_state.dart';
 import 'monthly_settlement_screen.dart';
+import 'deliveries_screen.dart';
 import 'shared_ledger_screen/widgets/balance_header.dart';
 import 'shared_ledger_screen/widgets/filter_bar.dart';
 import 'shared_ledger_screen/widgets/info_row.dart';
@@ -177,6 +178,24 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
     );
   }
 
+  void _showDeliveries(BuildContext context, String currentUserId) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => BlocProvider.value(
+          value: context.read<LedgerBloc>(),
+          child: DeliveriesScreen(
+            linkId: widget.linkId,
+            customerName: widget.customerName,
+            currentUserId: currentUserId,
+            isVendorView: widget.isVendorView,
+            isStaffView: widget.isStaffView,
+          ),
+        ),
+      ),
+    );
+  }
+
   bool _onScroll(ScrollNotification notification) {
     if (notification is ScrollUpdateNotification) {
       final delta = notification.scrollDelta ?? 0;
@@ -219,6 +238,11 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
         ),
         actions: [
           const MembershipAppBarChip(),
+          IconButton(
+            onPressed: () => _showDeliveries(context, currentUserId),
+            icon: const Icon(Icons.local_shipping_outlined),
+            tooltip: 'Deliveries',
+          ),
           if (!widget.isStaffView)
             IconButton(
               onPressed: () => _showMonthlySettlement(context),

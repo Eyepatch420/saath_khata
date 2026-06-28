@@ -20,6 +20,8 @@ class LedgerList extends StatefulWidget {
   final EntryStatus? filterStatus;
   /// When set, only entries with this type are shown (client-side filter).
   final EntryType? filterType;
+  /// When true, only auto-created order delivery entries are shown.
+  final bool filterDeliveriesOnly;
 
   const LedgerList({
     super.key,
@@ -30,6 +32,7 @@ class LedgerList extends StatefulWidget {
     this.isStaffView = false,
     this.filterStatus,
     this.filterType,
+    this.filterDeliveriesOnly = false,
   });
 
   @override
@@ -77,6 +80,9 @@ class _LedgerListState extends State<LedgerList> {
         }
         if (widget.filterType != null) {
           entries = entries.where((e) => e.type == widget.filterType).toList();
+        }
+        if (widget.filterDeliveriesOnly) {
+          entries = entries.where((e) => e.isDelivery).toList();
         }
 
         if (state is LedgerActionLoading) {

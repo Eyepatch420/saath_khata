@@ -71,6 +71,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
         'name': r.nameCtrl.text.trim(),
         if (r.qtyCtrl.text.trim().isNotEmpty) 'qty': r.qtyCtrl.text.trim(),
         if (r.unitCtrl.text.trim().isNotEmpty) 'unit': r.unitCtrl.text.trim(),
+        // ignore: use_null_aware_elements
         if (price != null) 'pricePerUnit': price,
       };
     }).toList();

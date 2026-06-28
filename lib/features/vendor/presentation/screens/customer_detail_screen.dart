@@ -76,10 +76,9 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen>
 
     _socket.onMembershipUpdated((_) => _membershipCubit.reload());
 
-    // Determine if delivery tab should show (based on vendor's business category)
-    // We'll detect it from the auth user's vendor profile via DI context later;
-    // for now we default to false and can be overridden via constructor arg.
-    _showDeliveryTab = false;
+    // Always show the Deliveries tab — it's the consolidated view of orders
+    // delivered to this customer (separate from in-person ledger entries).
+    _showDeliveryTab = true;
 
     final tabCount = _showDeliveryTab ? 4 : 3;
     _tabController = TabController(length: tabCount, vsync: this);
@@ -300,13 +299,14 @@ class _DeliveryTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        const _DeliveriesHeader(),
         Expanded(
           child: LedgerList(
             linkId: customer.linkId,
             customerName: customer.displayName,
             currentUserId: currentUserId,
             isVendorView: true,
-            filterType: EntryType.credit,
+            filterDeliveriesOnly: true,
           ),
         ),
         LedgerActions(
@@ -315,6 +315,37 @@ class _DeliveryTab extends StatelessWidget {
           isVendorView: true,
         ),
       ],
+    );
+  }
+}
+
+/// Small banner explaining the deliveries view — shown above the filtered list.
+class _DeliveriesHeader extends StatelessWidget {
+  const _DeliveriesHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: AppColors.primary.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.local_shipping_rounded,
+              size: 16, color: AppColors.primary),
+          SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              'Orders delivered to this customer. Tap an entry to see items.',
+              style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
