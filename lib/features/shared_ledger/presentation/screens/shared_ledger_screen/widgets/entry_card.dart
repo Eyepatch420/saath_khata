@@ -17,7 +17,7 @@ import 'attachment_section.dart';
 import 'detail_row.dart';
 import 'status_chip.dart';
 
-class LedgerEntryCard extends StatelessWidget {
+class LedgerEntryCard extends StatefulWidget {
   final LedgerEntry entry;
   final String customerName;
   final String currentUserId;
@@ -34,12 +34,23 @@ class LedgerEntryCard extends StatelessWidget {
   });
 
   @override
+  State<LedgerEntryCard> createState() => _LedgerEntryCardState();
+}
+
+class _LedgerEntryCardState extends State<LedgerEntryCard> {
+  bool _expanded = false;
+
+  LedgerEntry get entry => widget.entry;
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isCredit = entry.type == EntryType.credit;
 
     return GestureDetector(
-      onTap: () => _showEntryDetail(context, l10n),
+      onTap: entry.isParent
+          ? () => setState(() => _expanded = !_expanded)
+          : () => _showEntryDetail(context, l10n),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
@@ -73,12 +84,34 @@ class LedgerEntryCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        entry.description ??
-                            (isCredit
-                                ? l10n.entryTypeCreditLabel
-                                : l10n.entryTypePaymentLabel),
-                        style: AppTypography.labelLarge,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              entry.description ??
+                                  (isCredit
+                                      ? l10n.entryTypeCreditLabel
+                                      : l10n.entryTypePaymentLabel),
+                              style: AppTypography.labelLarge,
+                            ),
+                          ),
+                          if (entry.isParent) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.textHint.withValues(alpha: 0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '${entry.childCount} items',
+                                style: AppTypography.bodySmall
+                                    .copyWith(fontSize: 10),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -98,20 +131,58 @@ class LedgerEntryCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    LedgerStatusChip(status: entry.status),
+                    if (entry.isParent)
+                      Icon(
+                        _expanded
+                            ? Icons.keyboard_arrow_up_rounded
+                            : Icons.keyboard_arrow_down_rounded,
+                        size: 18,
+                        color: AppColors.textHint,
+                      )
+                    else
+                      LedgerStatusChip(status: entry.status),
                   ],
                 ),
               ],
             ),
+            // Expanded children section for parent entries
+            if (entry.isParent && _expanded && entry.children.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Divider(height: 1),
+              const SizedBox(height: 8),
+              ...entry.children.map((child) => _ChildEntryRow(child: child)),
+              const Divider(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Total',
+                    style: AppTypography.labelLarge
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                  Text(
+                    '₹${entry.amount.toStringAsFixed(2)}',
+                    style: AppTypography.labelLarge.copyWith(
+                      color: isCredit ? AppColors.error : AppColors.success,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [LedgerStatusChip(status: entry.status)],
+              ),
+            ],
             // Confirm/dispute is shown to whichever party did NOT create
             // the entry — never to the creator and never to staff.
             //
             // createdBy == customerId  →  customer created it  →  vendor confirms
             // createdBy != customerId  →  vendor/staff created →  customer confirms
-            if (!isStaffView &&
+            if (!widget.isStaffView &&
                 entry.status == EntryStatus.pending &&
                 !entry.isLocked &&
-                _shouldShowConfirmDispute(entry, isVendorView)) ...[
+                _shouldShowConfirmDispute(entry, widget.isVendorView)) ...[
               const Divider(height: 20),
               Row(
                 children: [
@@ -282,10 +353,47 @@ class LedgerEntryCard extends StatelessWidget {
       ),
       builder: (_) => _EntryDetailSheet(
         entry: entry,
-        currentUserId: currentUserId,
-        isVendorView: isVendorView,
-        isStaffView: isStaffView,
+        currentUserId: widget.currentUserId,
+        isVendorView: widget.isVendorView,
+        isStaffView: widget.isStaffView,
         l10n: l10n,
+      ),
+    );
+  }
+}
+
+class _ChildEntryRow extends StatelessWidget {
+  final LedgerEntry child;
+  const _ChildEntryRow({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          const SizedBox(width: 4),
+          const Icon(Icons.subdirectory_arrow_right_rounded,
+              size: 14, color: AppColors.textHint),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              child.description ?? 'Item',
+              style: AppTypography.bodyMedium,
+            ),
+          ),
+          if (child.quantity != null)
+            Text(
+              '${child.quantity!.toStringAsFixed(child.quantity! % 1 == 0 ? 0 : 2)} ${child.unit ?? ''}',
+              style: AppTypography.bodySmall
+                  .copyWith(color: AppColors.textSecondary),
+            ),
+          const SizedBox(width: 12),
+          Text(
+            '₹${child.amount.toStringAsFixed(2)}',
+            style: AppTypography.labelLarge,
+          ),
+        ],
       ),
     );
   }

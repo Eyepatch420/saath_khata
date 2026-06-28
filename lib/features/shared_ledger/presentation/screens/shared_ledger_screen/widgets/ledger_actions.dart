@@ -12,6 +12,7 @@ import '../../../../../../shared/widgets/app_toast.dart';
 import '../../../bloc/ledger_bloc.dart';
 import '../../../bloc/ledger_event.dart';
 import 'attachment_section.dart';
+import 'multi_item_entry_sheet.dart';
 
 class LedgerActions extends StatelessWidget {
   final String linkId;
@@ -59,8 +60,7 @@ class LedgerActions extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton.icon(
-                onPressed: () =>
-                    _showAddEntrySheet(context, l10n, EntryType.credit),
+                onPressed: () => _showMultiItemEntrySheet(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -73,6 +73,21 @@ class LedgerActions extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  void _showMultiItemEntrySheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => MultiItemEntrySheet(
+        linkId: linkId,
+        customerName: customerName,
       ),
     );
   }

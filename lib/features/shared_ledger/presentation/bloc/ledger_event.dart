@@ -39,6 +39,35 @@ class AddLedgerEntry extends LedgerEvent {
   List<Object?> get props => [amount, type, description, quantity, unit, linkId, attachmentUrl];
 }
 
+class ItemRow {
+  final String description;
+  final double amount;
+  final double? quantity;
+  final String? unit;
+
+  const ItemRow({
+    required this.description,
+    required this.amount,
+    this.quantity,
+    this.unit,
+  });
+}
+
+/// Vendor-side multi-item credit entry.
+/// Creates one parent entry (total) + N child entries sequentially.
+class AddMultiItemLedgerEntry extends LedgerEvent {
+  final String linkId;
+  final List<ItemRow> items;
+
+  const AddMultiItemLedgerEntry({
+    required this.linkId,
+    required this.items,
+  });
+
+  @override
+  List<Object?> get props => [linkId, items];
+}
+
 class ConfirmLedgerEntry extends LedgerEvent {
   final String entryId;
   const ConfirmLedgerEntry(this.entryId);

@@ -38,6 +38,10 @@ class LedgerEntry extends Equatable {
   final String? disputeReason;
   final String? attachmentUrl;
   final String createdBy;
+  final String? parentEntryId;
+  final bool isParent;
+  final int childCount;
+  final List<LedgerEntry> children;
 
   const LedgerEntry({
     required this.id,
@@ -56,6 +60,10 @@ class LedgerEntry extends Equatable {
     this.disputeReason,
     this.attachmentUrl,
     required this.createdBy,
+    this.parentEntryId,
+    this.isParent = false,
+    this.childCount = 0,
+    this.children = const [],
   });
 
   factory LedgerEntry.fromJson(Map<String, dynamic> json) => LedgerEntry(
@@ -79,6 +87,13 @@ class LedgerEntry extends Equatable {
         disputeReason: json['disputeReason'] as String?,
         attachmentUrl: json['attachmentUrl'] as String?,
         createdBy: json['createdBy'] as String? ?? '',
+        parentEntryId: json['parentEntryId'] as String?,
+        isParent: json['isParent'] as bool? ?? false,
+        childCount: json['childCount'] as int? ?? 0,
+        children: (json['children'] as List<dynamic>?)
+                ?.map((e) => LedgerEntry.fromJson(e as Map<String, dynamic>))
+                .toList() ??
+            const [],
       );
 
   LedgerEntry copyWith({
@@ -86,6 +101,8 @@ class LedgerEntry extends Equatable {
     bool? isLocked,
     DateTime? confirmedAt,
     String? disputeReason,
+    List<LedgerEntry>? children,
+    int? childCount,
   }) {
     return LedgerEntry(
       id: id,
@@ -104,6 +121,10 @@ class LedgerEntry extends Equatable {
       disputeReason: disputeReason ?? this.disputeReason,
       attachmentUrl: attachmentUrl,
       createdBy: createdBy,
+      parentEntryId: parentEntryId,
+      isParent: isParent,
+      childCount: childCount ?? this.childCount,
+      children: children ?? this.children,
     );
   }
 
@@ -125,5 +146,9 @@ class LedgerEntry extends Equatable {
         disputeReason,
         attachmentUrl,
         createdBy,
+        parentEntryId,
+        isParent,
+        childCount,
+        children,
       ];
 }

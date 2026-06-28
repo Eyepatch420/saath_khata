@@ -53,6 +53,8 @@ class LedgerRepositoryImpl implements LedgerRepository {
       if (entry.quantity != null) body['quantity'] = entry.quantity;
       if (entry.unit != null) body['unit'] = entry.unit;
       if (entry.attachmentUrl != null) body['attachmentUrl'] = entry.attachmentUrl;
+      if (entry.parentEntryId != null) body['parentEntryId'] = entry.parentEntryId;
+      if (entry.isParent) body['isParent'] = true;
 
       final response = await _api.post(
         ApiEndpoints.linkEntries(entry.linkId),

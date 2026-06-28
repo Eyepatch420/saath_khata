@@ -13,6 +13,7 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
   LedgerBloc(this._repository) : super(LedgerInitial()) {
     on<LoadLedger>(_onLoadLedger);
     on<AddLedgerEntry>(_onAddEntry);
+    on<AddMultiItemLedgerEntry>(_onAddMultiItemEntry);
     on<ConfirmLedgerEntry>(_onConfirmEntry);
     on<DisputeLedgerEntry>(_onDisputeEntry);
     on<FilterLedger>(_onFilterLedger);
@@ -96,6 +97,71 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
       ));
     } catch (e) {
       AppLogger.e(_m, 'Add entry failed', e);
+      emit(LedgerLoaded(
+        allEntries: current.allEntries,
+        entries: current.entries,
+        balance: current.balance,
+        activeFilter: current.activeFilter,
+      ));
+    }
+  }
+
+  Future<void> _onAddMultiItemEntry(
+      AddMultiItemLedgerEntry event, Emitter<LedgerState> emit) async {
+    AppLogger.i(_m, 'Adding multi-item entry — ${event.items.length} items');
+    final current = state;
+    if (current is! LedgerLoaded) return;
+
+    emit(LedgerActionLoading(entries: current.entries, balance: current.balance));
+    try {
+      final total = event.items.fold(0.0, (sum, i) => sum + i.amount);
+
+      // 1. Create parent entry
+      final parentEntry = LedgerEntry(
+        id: '',
+        linkId: event.linkId,
+        amount: total,
+        type: EntryType.credit,
+        date: DateTime.now(),
+        description: '${event.items.length} items',
+        status: EntryStatus.pending,
+        createdBy: '',
+        isParent: true,
+        childCount: event.items.length,
+      );
+      final createdParent = await _repository.addEntry(parentEntry);
+
+      // 2. Create child entries sequentially
+      final children = <LedgerEntry>[];
+      for (final item in event.items) {
+        final child = LedgerEntry(
+          id: '',
+          linkId: event.linkId,
+          amount: item.amount,
+          type: EntryType.credit,
+          date: DateTime.now(),
+          description: item.description,
+          quantity: item.quantity,
+          unit: item.unit,
+          status: EntryStatus.pending,
+          createdBy: '',
+          parentEntryId: createdParent.id,
+        );
+        final createdChild = await _repository.addEntry(child);
+        children.add(createdChild);
+      }
+
+      // Attach children to parent for immediate display
+      final parentWithChildren = createdParent.copyWith(children: children);
+      final updatedAll = [parentWithChildren, ...current.allEntries];
+      emit(LedgerLoaded(
+        allEntries: updatedAll,
+        entries: _applyFilter(updatedAll, current.activeFilter),
+        balance: _calcBalance(updatedAll),
+        activeFilter: current.activeFilter,
+      ));
+    } catch (e) {
+      AppLogger.e(_m, 'Multi-item entry failed', e);
       emit(LedgerLoaded(
         allEntries: current.allEntries,
         entries: current.entries,
