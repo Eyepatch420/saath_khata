@@ -26,39 +26,33 @@ class MembershipAppBarChip extends StatelessWidget {
             ? MembershipBanner.tierColor(tier.level)
             : AppColors.textHint;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(20),
-            onTap: () => _showInfo(context, status),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: color.withValues(alpha: 0.4)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.workspace_premium_rounded, size: 14, color: color),
-                  const SizedBox(width: 4),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 70),
-                    child: Text(
-                      tier?.name ?? 'No tier',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 12,
-                      ),
+        // Icon-only to keep the AppBar compact. A small dot indicates an active
+        // tier; tap opens the tier + discount info dialog.
+        return IconButton(
+          tooltip: tier?.name ?? 'No membership',
+          visualDensity: VisualDensity.compact,
+          onPressed: () => _showInfo(context, status),
+          icon: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Icon(Icons.workspace_premium_rounded, color: color),
+              if (tier != null)
+                Positioned(
+                  right: -1,
+                  top: -1,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                          width: 1),
                     ),
                   ),
-                ],
-              ),
-            ),
+                ),
+            ],
           ),
         );
       },

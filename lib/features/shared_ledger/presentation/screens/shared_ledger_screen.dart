@@ -299,11 +299,14 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
             customerName: widget.customerName,
             isVendorView: widget.isVendorView,
           ),
-          MembershipBanner(
-            customerName: widget.customerName,
-            isVendorView: widget.isVendorView,
-            isStaffView: widget.isStaffView,
-          ),
+          // Vendor keeps the body banner (their assign/approve surface).
+          // Customer & staff see membership only via the AppBar chip.
+          if (widget.isVendorView && !widget.isStaffView)
+            MembershipBanner(
+              customerName: widget.customerName,
+              isVendorView: widget.isVendorView,
+              isStaffView: widget.isStaffView,
+            ),
           // Filter bar (fixed)
           const LedgerFilterBar(),
           // Scrollable entry list — drives the FAB hide/show animation
