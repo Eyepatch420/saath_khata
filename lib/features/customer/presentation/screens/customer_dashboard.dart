@@ -105,6 +105,12 @@ class CustomerDashboardView extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     const _UpcomingAppointmentsCard(),
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: () => context.push(AppRouter.customerOrders),
+                      icon: const Icon(Icons.shopping_bag_outlined),
+                      label: const Text('My Orders'),
+                    ),
                     const SizedBox(height: 24),
                     Text(l10n.myVendors, style: AppTypography.h3),
                     const SizedBox(height: 12),

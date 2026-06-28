@@ -110,6 +110,37 @@ class _ActiveVendorTile extends StatelessWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 4),
+                GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => context.push(AppRouter.placeOrder, extra: vendor),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFF6B35).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: const Color(0xFFFF6B35).withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.shopping_bag_outlined,
+                            size: 11, color: Color(0xFFFF6B35)),
+                        const SizedBox(width: 4),
+                        Text(
+                          'Order',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: const Color(0xFFFF6B35),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(width: 8),

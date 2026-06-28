@@ -38,6 +38,8 @@ import '../../features/voice_entry/data/repositories/voice_repository_impl.dart'
 import '../../features/voice_entry/domain/repositories/voice_repository.dart';
 import '../services/speech_service.dart';
 import '../../features/bulk_charge/data/repositories/template_repository.dart';
+import '../../features/orders/data/repositories/order_repository_impl.dart';
+import '../../features/orders/domain/repositories/order_repository.dart';
 
 // Auth + network
 import '../services/storage_service.dart';
@@ -98,7 +100,8 @@ Future<void> configureDependencies() async {
       () => VoiceRepositoryImpl(apiClient));
   getIt.registerLazySingleton<SpeechService>(() => SpeechService());
   getIt.registerLazySingleton<TemplateRepository>(() => TemplateRepository(apiClient));
-  AppLogger.i(module, 'All repositories registered (12 lazy singletons + SpeechService)');
+  getIt.registerLazySingleton<OrderRepository>(() => OrderRepositoryImpl(apiClient));
+  AppLogger.i(module, 'All repositories registered (13 lazy singletons + SpeechService)');
 
   // SearchCubit — factory: fresh instance + debounce per screen
   getIt.registerFactory<SearchCubit>(() => SearchCubit(getIt<SearchRepository>()));

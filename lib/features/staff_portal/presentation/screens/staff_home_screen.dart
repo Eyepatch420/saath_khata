@@ -60,6 +60,14 @@ class StaffHomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 14),
                   _ActionButton(
+                    icon: Icons.shopping_bag_outlined,
+                    label: 'Orders',
+                    subtitle: 'Confirmed orders awaiting delivery',
+                    color: const Color(0xFFFF6B35),
+                    onTap: () => context.push(AppRouter.staffOrders),
+                  ),
+                  const SizedBox(height: 14),
+                  _ActionButton(
                     icon: Icons.local_shipping_rounded,
                     label: l10n.recordDelivery,
                     subtitle: l10n.recordDeliverySubtitle,

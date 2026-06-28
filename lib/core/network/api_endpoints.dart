@@ -114,6 +114,13 @@ class ApiEndpoints {
   static const String searchVendors = '/search/vendors';
   static String vendorPublicProfile(String vendorId) => '/search/vendors/$vendorId';
 
+  // Orders
+  static const String placeOrder = '/orders';
+  static const String vendorOrders = '/orders/vendor';
+  static const String customerOrders = '/orders/customer';
+  static const String staffOrders = '/orders/staff';
+  static String updateOrderStatus(String id) => '/orders/$id/status';
+
   // Reports (vendor-only)
   static const String reportSummary = '/reports/summary';
   static const String reportCustomers = '/reports/customers';

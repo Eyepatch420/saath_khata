@@ -71,6 +71,12 @@ import '../../shared/widgets/app_toast.dart';
 import '../../core/constants/app_typography.dart';
 import '../../features/memberships/presentation/screens/membership_tiers_screen.dart';
 import '../../features/bulk_charge/presentation/screens/bulk_charge_screen.dart';
+import '../../features/orders/presentation/screens/vendor_orders_screen.dart';
+import '../../features/orders/presentation/screens/customer_orders_screen.dart';
+import '../../features/orders/presentation/screens/staff_orders_screen.dart';
+import '../../features/orders/presentation/screens/place_order_screen.dart';
+import '../../features/orders/presentation/bloc/order_bloc.dart';
+import '../../features/orders/domain/repositories/order_repository.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
 
@@ -122,6 +128,10 @@ class AppRouter {
   static const String membershipTiers = '/membership-tiers';
   static const String bulkCharge = '/bulk-charge';
   static const String emailLogin = '/email-login';
+  static const String vendorOrders = '/vendor/orders';
+  static const String customerOrders = '/customer/orders';
+  static const String staffOrders = '/staff-home/orders';
+  static const String placeOrder = '/place-order';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -306,6 +316,37 @@ class AppRouter {
         builder: (context, state) {
           final customer = state.extra as CustomerLinkItem;
           return CustomerDetailScreen(customer: customer);
+        },
+      ),
+      GoRoute(
+        path: vendorOrders,
+        builder: (context, state) => BlocProvider(
+          create: (_) => OrderBloc(getIt<OrderRepository>()),
+          child: const VendorOrdersScreen(),
+        ),
+      ),
+      GoRoute(
+        path: customerOrders,
+        builder: (context, state) => BlocProvider(
+          create: (_) => OrderBloc(getIt<OrderRepository>()),
+          child: const CustomerOrdersScreen(),
+        ),
+      ),
+      GoRoute(
+        path: staffOrders,
+        builder: (context, state) => BlocProvider(
+          create: (_) => OrderBloc(getIt<OrderRepository>()),
+          child: const StaffOrdersScreen(),
+        ),
+      ),
+      GoRoute(
+        path: placeOrder,
+        builder: (context, state) {
+          final vendor = state.extra as VendorLinkItem;
+          return BlocProvider(
+            create: (_) => OrderBloc(getIt<OrderRepository>()),
+            child: PlaceOrderScreen(vendor: vendor),
+          );
         },
       ),
       GoRoute(
