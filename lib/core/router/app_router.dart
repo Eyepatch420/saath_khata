@@ -70,6 +70,7 @@ import '../../features/link_requests/domain/repositories/link_request_repository
 import '../../shared/widgets/app_toast.dart';
 import '../../core/constants/app_typography.dart';
 import '../../features/memberships/presentation/screens/membership_tiers_screen.dart';
+import '../../features/memberships/presentation/screens/membership_requests_screen.dart';
 import '../../features/bulk_charge/presentation/screens/bulk_charge_screen.dart';
 import '../../features/orders/presentation/screens/vendor_orders_screen.dart';
 import '../../features/orders/presentation/screens/customer_orders_screen.dart';
@@ -126,6 +127,7 @@ class AppRouter {
   static const String linkRequestDetail = '/link-request';
   static const String customerLinkRequestDetail = '/customer-link-request';
   static const String membershipTiers = '/membership-tiers';
+  static const String membershipRequests = '/membership-requests';
   static const String bulkCharge = '/bulk-charge';
   static const String emailLogin = '/email-login';
   static const String vendorOrders = '/vendor/orders';
@@ -484,6 +486,10 @@ class AppRouter {
       GoRoute(
         path: membershipTiers,
         builder: (context, state) => const MembershipTiersScreen(),
+      ),
+      GoRoute(
+        path: membershipRequests,
+        builder: (context, state) => const MembershipRequestsScreen(),
       ),
     ],
   );

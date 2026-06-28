@@ -13,6 +13,8 @@ import '../../../auth/data/models/user_model.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../memberships/domain/repositories/membership_repository.dart';
+import '../../../../core/di/injection.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -83,11 +85,23 @@ class SettingsScreen extends StatelessWidget {
                   }
                 },
               ),
-              _SettingsTile(
-                icon: Icons.workspace_premium_rounded,
-                title: l10n.membershipTiers,
-                subtitle: l10n.membershipTiersDescription,
-                onTap: () => context.push(AppRouter.membershipTiers),
+              BlocBuilder<AuthBloc, AuthState>(
+                buildWhen: (_, s) => s is AuthAuthenticated,
+                builder: (context, authState) {
+                  final user = authState is AuthAuthenticated ? authState.user : null;
+                  if (user == null || !user.isVendor) return const SizedBox.shrink();
+                  return Column(
+                    children: [
+                      _SettingsTile(
+                        icon: Icons.workspace_premium_rounded,
+                        title: l10n.membershipTiers,
+                        subtitle: l10n.membershipTiersDescription,
+                        onTap: () => context.push(AppRouter.membershipTiers),
+                      ),
+                      const _MembershipRequestsTile(),
+                    ],
+                  );
+                },
               ),
               _SettingsTile(
                 icon: Icons.help_outline_rounded,
@@ -460,6 +474,75 @@ class _SettingsTile extends StatelessWidget {
         trailing:
             const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
       ),
+    );
+  }
+}
+
+/// Shows a "Membership Requests" settings tile with a live pending-count badge.
+/// Uses a FutureBuilder so it fetches once on mount — lightweight, no extra BLoC.
+class _MembershipRequestsTile extends StatefulWidget {
+  const _MembershipRequestsTile();
+
+  @override
+  State<_MembershipRequestsTile> createState() => _MembershipRequestsTileState();
+}
+
+class _MembershipRequestsTileState extends State<_MembershipRequestsTile> {
+  late Future<int> _pendingCount;
+
+  @override
+  void initState() {
+    super.initState();
+    _pendingCount = _fetchCount();
+  }
+
+  Future<int> _fetchCount() async {
+    try {
+      final requests = await getIt<MembershipRepository>().getPendingRequests();
+      return requests.length;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<int>(
+      future: _pendingCount,
+      builder: (context, snap) {
+        final count = snap.data ?? 0;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: ListTile(
+            onTap: () => context.push(AppRouter.membershipRequests),
+            tileColor: Theme.of(context).colorScheme.surface,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            leading: const Icon(Icons.how_to_reg_rounded, color: AppColors.primary),
+            title: Text('Membership Requests',
+                style: AppTypography.labelLarge),
+            subtitle: Text(
+              count > 0 ? '$count pending request${count == 1 ? '' : 's'}' : 'No pending requests',
+              style: AppTypography.bodySmall,
+            ),
+            trailing: count > 0
+                ? Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: AppColors.warning,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '$count',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  )
+                : const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
+          ),
+        );
+      },
     );
   }
 }
