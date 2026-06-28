@@ -91,13 +91,14 @@ class ApiEndpoints {
   static String acceptLinkRequest(String id) => '/link-requests/$id/accept';
   static String declineLinkRequest(String id) => '/link-requests/$id/decline';
 
-  // Memberships
-  static const String membershipTiers = '/memberships/tiers';
-  static String updateMembershipTier(String tierId) => '/memberships/tiers/$tierId';
-  static String membershipDiscount(String linkId) =>
-      '/memberships/links/$linkId/discount';
+  // Memberships (Phase 3 — plans)
+  static const String membershipPlans = '/memberships/plans';
+  static String membershipPlanById(String id) => '/memberships/plans/$id';
+  static const String membersDashboard = '/memberships/members';
+  static String useBenefit(String membershipId) =>
+      '/memberships/members/$membershipId/use-benefit';
   static String membershipStatus(String linkId) => '/memberships/links/$linkId';
-  static String assignMembership(String linkId) => '/memberships/links/$linkId/assign';
+  static String enrollMember(String linkId) => '/memberships/links/$linkId/enroll';
   static String requestMembership(String linkId) => '/memberships/links/$linkId/request';
   static const String pendingMembershipRequests = '/memberships/requests/pending';
   static String approveMembershipRequest(String id) =>

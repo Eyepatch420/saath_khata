@@ -17,7 +17,7 @@ import '../../../../shared/widgets/search_bar_pill.dart';
 import '../../../notifications/presentation/bloc/notification_bloc.dart';
 import '../../../notifications/presentation/bloc/notification_state.dart';
 import '../../../search/presentation/screens/vendor_search_screen.dart';
-import '../../../memberships/presentation/widgets/membership_tier_badge.dart';
+import '../../../memberships/presentation/widgets/membership_plan_badge.dart';
 import '../../../../shared/models/link_model.dart';
 
 class VendorDashboard extends StatelessWidget {
@@ -514,10 +514,7 @@ class _CustomerTile extends StatelessWidget {
                       ),
                       if (customer.tierName != null) ...[
                         const SizedBox(width: 8),
-                        MembershipTierBadge(
-                          tierName: customer.tierName,
-                          tierLevel: customer.tierLevel,
-                        ),
+                        MembershipPlanBadge(name: customer.tierName!),
                       ],
                     ],
                   ),

@@ -85,29 +85,43 @@ class SettingsScreen extends StatelessWidget {
                   }
                 },
               ),
-              BlocBuilder<AuthBloc, AuthState>(
-                buildWhen: (_, s) => s is AuthAuthenticated,
-                builder: (context, authState) {
-                  final user = authState is AuthAuthenticated ? authState.user : null;
-                  if (user == null || !user.isVendor) return const SizedBox.shrink();
-                  return Column(
-                    children: [
-                      _SettingsTile(
-                        icon: Icons.workspace_premium_rounded,
-                        title: l10n.membershipTiers,
-                        subtitle: l10n.membershipTiersDescription,
-                        onTap: () => context.push(AppRouter.membershipTiers),
-                      ),
-                      const _MembershipRequestsTile(),
-                    ],
-                  );
-                },
-              ),
               _SettingsTile(
                 icon: Icons.help_outline_rounded,
                 title: l10n.helpSupport,
                 subtitle: l10n.settingsFaqsContact,
                 onTap: () {},
+              ),
+              // ─── Memberships (vendor only) ─────────────────────────────────
+              BlocBuilder<AuthBloc, AuthState>(
+                buildWhen: (_, s) => s is AuthAuthenticated,
+                builder: (context, authState) {
+                  final user =
+                      authState is AuthAuthenticated ? authState.user : null;
+                  if (user == null || !user.isVendor) {
+                    return const SizedBox.shrink();
+                  }
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 12),
+                      _SectionLabel(label: 'Memberships'),
+                      const SizedBox(height: 8),
+                      _SettingsTile(
+                        icon: Icons.workspace_premium_rounded,
+                        title: 'Membership Plans',
+                        subtitle: 'Create and manage your plans',
+                        onTap: () => context.push(AppRouter.membershipPlans),
+                      ),
+                      _SettingsTile(
+                        icon: Icons.people_alt_rounded,
+                        title: 'Members',
+                        subtitle: 'Active members, MRR, expiring soon',
+                        onTap: () => context.push(AppRouter.membersDashboard),
+                      ),
+                      const _MembershipRequestsTile(),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 12),
               _SectionLabel(label: l10n.legalInfo),

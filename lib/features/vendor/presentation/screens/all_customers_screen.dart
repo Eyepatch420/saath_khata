@@ -8,7 +8,7 @@ import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/empty_state_widget.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
-import '../../../memberships/presentation/widgets/membership_tier_badge.dart';
+import '../../../memberships/presentation/widgets/membership_plan_badge.dart';
 import '../bloc/vendor_bloc.dart';
 import '../bloc/vendor_event.dart';
 import '../bloc/vendor_state.dart';
@@ -127,10 +127,7 @@ class _CustomerTile extends StatelessWidget {
                       ),
                       if (customer.tierName != null) ...[
                         const SizedBox(width: 8),
-                        MembershipTierBadge(
-                          tierName: customer.tierName,
-                          tierLevel: customer.tierLevel,
-                        ),
+                        MembershipPlanBadge(name: customer.tierName!),
                       ],
                     ],
                   ),

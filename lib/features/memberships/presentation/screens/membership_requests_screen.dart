@@ -6,9 +6,8 @@ import '../../../../core/di/injection.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../domain/models/membership_request.dart';
-import '../../domain/models/membership_tier.dart';
 import '../bloc/membership_requests_cubit.dart';
-import '../widgets/membership_banner.dart';
+import '../membership_theme.dart';
 
 class MembershipRequestsScreen extends StatelessWidget {
   const MembershipRequestsScreen({super.key});
@@ -125,8 +124,8 @@ class _RequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tier = request.requestedTier;
-    final tierColor = MembershipBanner.tierColor(tier.level);
+    final plan = request.requestedPlan;
+    const planColor = MembershipTheme.purple;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -134,7 +133,7 @@ class _RequestCard extends StatelessWidget {
         color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: tierColor.withValues(alpha: 0.3),
+          color: planColor.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -144,11 +143,11 @@ class _RequestCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundColor: tierColor.withValues(alpha: 0.12),
+                backgroundColor: planColor.withValues(alpha: 0.12),
                 child: Text(
                   request.customer.name[0].toUpperCase(),
-                  style: TextStyle(
-                      color: tierColor, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      color: planColor, fontWeight: FontWeight.bold),
                 ),
               ),
               const SizedBox(width: 12),
@@ -165,7 +164,7 @@ class _RequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-              _TierBadge(tier: tier, color: tierColor),
+              _PlanBadge(name: plan?.name ?? 'Plan', color: planColor),
             ],
           ),
           if (request.message != null && request.message!.isNotEmpty) ...[
@@ -238,16 +237,17 @@ class _RequestCard extends StatelessWidget {
   }
 }
 
-class _TierBadge extends StatelessWidget {
-  final MembershipTier tier;
+class _PlanBadge extends StatelessWidget {
+  final String name;
   final Color color;
 
-  const _TierBadge({required this.tier, required this.color});
+  const _PlanBadge({required this.name, required this.color});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      constraints: const BoxConstraints(maxWidth: 120),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
@@ -258,12 +258,14 @@ class _TierBadge extends StatelessWidget {
         children: [
           Icon(Icons.workspace_premium_rounded, size: 14, color: color),
           const SizedBox(width: 4),
-          Text(
-            tier.name,
-            style: TextStyle(
-                color: color,
-                fontWeight: FontWeight.w600,
-                fontSize: 12),
+          Flexible(
+            child: Text(
+              name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  color: color, fontWeight: FontWeight.w600, fontSize: 12),
+            ),
           ),
         ],
       ),

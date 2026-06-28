@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../domain/models/membership_tier.dart';
+import '../../domain/models/membership_plan.dart';
 import '../bloc/membership_cubit.dart';
 import '../bloc/membership_state.dart';
+import '../membership_theme.dart';
 
-/// Membership banner shown on the shared ledger screen, under the balance header.
-/// Vendor: see/approve a pending request and change the customer's tier.
-/// Customer: see current tier and apply for one.
+/// Membership banner on the shared ledger (vendor view only). Shows the active
+/// plan + benefit usage, lets the vendor enroll a customer into a plan, and
+/// surfaces an actionable card for any pending request.
 class MembershipBanner extends StatelessWidget {
   final String customerName;
   final bool isVendorView;
-
-  /// Staff are read-only: they see the tier but get no apply/change/approve UI.
   final bool isStaffView;
 
   const MembershipBanner({
@@ -24,12 +22,6 @@ class MembershipBanner extends StatelessWidget {
     this.isStaffView = false,
   });
 
-  static Color tierColor(int level) => switch (level) {
-        3 => const Color(0xFFFFC107), // gold
-        2 => const Color(0xFF9E9E9E), // silver
-        _ => const Color(0xFFCD7F32), // bronze
-      };
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<MembershipCubit, MembershipState>(
@@ -38,23 +30,16 @@ class MembershipBanner extends StatelessWidget {
         if (state is MembershipError) {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: AppColors.error,
-              ),
-            );
+            ..showSnackBar(SnackBar(
+                content: Text(state.message), backgroundColor: AppColors.error));
         }
       },
       builder: (context, state) {
-        if (state is! MembershipLoaded) {
-          // Initial / loading / first error — stay out of the way.
-          return const SizedBox.shrink();
-        }
+        if (state is! MembershipLoaded) return const SizedBox.shrink();
         final status = state.status;
         final busy = state.actionInProgress;
         final cubit = context.read<MembershipCubit>();
-        final l10n = AppLocalizations.of(context)!;
+        final current = status.current;
 
         return Container(
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
@@ -67,39 +52,100 @@ class MembershipBanner extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _CurrentTierRow(
-                tier: status.currentTier,
-                isVendorView: isVendorView,
-                readOnly: isStaffView,
-                hasPendingRequest: status.pendingRequest != null,
-                busy: busy,
-                onChange: () => _openTierPicker(context, cubit, status.tiers,
-                    status.currentTier, isVendorRequest: false),
-                onApply: () => _openTierPicker(context, cubit, status.tiers,
-                    status.currentTier, isVendorRequest: true),
+              Row(
+                children: [
+                  Icon(Icons.workspace_premium_rounded,
+                      color: current != null
+                          ? MembershipTheme.purple
+                          : AppColors.textHint,
+                      size: 22),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Membership',
+                            style: AppTypography.bodySmall
+                                .copyWith(color: AppColors.textSecondary)),
+                        Text(
+                          current?.plan.name ?? 'No membership',
+                          style: AppTypography.bodyLarge.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: current != null
+                                ? MembershipTheme.purpleDark
+                                : AppColors.textSecondary,
+                          ),
+                        ),
+                        if (current != null)
+                          Text('${current.daysLeft} days left',
+                              style: AppTypography.bodySmall
+                                  .copyWith(color: AppColors.textSecondary)),
+                      ],
+                    ),
+                  ),
+                  if (busy)
+                    const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2))
+                  else
+                    TextButton.icon(
+                      onPressed: () => _openEnrollPicker(context, cubit, status.plans,
+                          current?.plan.id),
+                      icon: Icon(current == null
+                          ? Icons.add_rounded
+                          : Icons.swap_horiz_rounded,
+                          size: 16),
+                      label: Text(current == null ? 'Enroll' : 'Change'),
+                      style: TextButton.styleFrom(
+                          foregroundColor: MembershipTheme.purple),
+                    ),
+                ],
               ),
 
-              // Vendor only: an actionable card for the pending request.
-              if (isVendorView && !isStaffView && status.pendingRequest != null) ...[
+              // Quota benefit usage with "mark used" controls (vendor only).
+              if (current != null && current.benefitUsage.any((b) => b.hasQuota)) ...[
+                const Divider(height: 18),
+                ...current.benefitUsage.where((b) => b.hasQuota).map((b) {
+                  final done = b.used >= (b.quota ?? 0);
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 6),
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(b.label)),
+                        Text('${b.used}/${b.quota}',
+                            style: TextStyle(
+                                color: done ? AppColors.error : AppColors.success,
+                                fontWeight: FontWeight.w700)),
+                        const SizedBox(width: 8),
+                        OutlinedButton(
+                          onPressed: (busy || done)
+                              ? null
+                              : () => cubit.useBenefit(current.id, b.benefitId),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 32),
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            foregroundColor: MembershipTheme.purple,
+                          ),
+                          child: Text(done ? 'Used' : 'Use',
+                              style: const TextStyle(fontSize: 12)),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+
+              // Pending request — approve / decline.
+              if (status.pendingRequest != null) ...[
                 const SizedBox(height: 12),
                 _PendingRequestCard(
-                  tierName: status.pendingRequest!.requestedTier.name,
-                  tierLevel: status.pendingRequest!.requestedTier.level,
+                  planName: status.pendingRequest!.requestedPlan?.name ?? 'a plan',
                   message: status.pendingRequest!.message,
                   customerName: customerName,
                   busy: busy,
                   onApprove: () => cubit.approve(status.pendingRequest!.id),
                   onDecline: () => cubit.decline(status.pendingRequest!.id),
-                ),
-              ],
-
-              // Customer only: awaiting-approval hint.
-              if (!isVendorView && !isStaffView && status.pendingRequest != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  l10n.requestedTierAwaiting(status.pendingRequest!.requestedTier.name),
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.warning, fontWeight: FontWeight.w600),
                 ),
               ],
             ],
@@ -109,16 +155,13 @@ class MembershipBanner extends StatelessWidget {
     );
   }
 
-  // ── Tier picker bottom sheet ────────────────────────────────────────────────
-  void _openTierPicker(
+  void _openEnrollPicker(
     BuildContext context,
     MembershipCubit cubit,
-    List<MembershipTier> tiers,
-    MembershipTier? current, {
-    required bool isVendorRequest, // true = customer applying, false = vendor assigning
-  }) {
-    final l10n = AppLocalizations.of(context)!;
-    showModalBottomSheet(
+    List<MembershipPlan> plans,
+    String? currentPlanId,
+  ) {
+    showModalBottomSheet<void>(
       context: context,
       useRootNavigator: true,
       shape: const RoundedRectangleBorder(
@@ -130,67 +173,43 @@ class MembershipBanner extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              isVendorRequest ? l10n.applyForMembership : l10n.setMembershipTier,
-              style: AppTypography.h3,
-            ),
+            Text('Enroll ${customerName.isEmpty ? 'customer' : customerName}',
+                style: AppTypography.h3),
             const SizedBox(height: 4),
-            Text(
-              isVendorRequest
-                  ? l10n.chooseTierToRequestFromVendor
-                  : l10n.chooseTierFor(customerName),
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
-            ),
+            const Text('Choose a plan to start their membership.',
+                style: TextStyle(color: AppColors.textSecondary)),
             const SizedBox(height: 16),
-            ...tiers.map((t) {
-              final isCurrent = current?.id == t.id;
-              return ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: CircleAvatar(
-                  backgroundColor: tierColor(t.level).withValues(alpha: 0.15),
-                  child: Icon(Icons.workspace_premium_rounded,
-                      color: tierColor(t.level)),
-                ),
-                title: Text(t.name, style: AppTypography.bodyLarge),
-                subtitle: Text(l10n.levelLabel(t.level),
-                    style: AppTypography.bodySmall
-                        .copyWith(color: AppColors.textSecondary)),
-                trailing: isCurrent
-                    ? const Icon(Icons.check_circle_rounded,
-                        color: AppColors.success)
-                    : null,
-                onTap: isCurrent
-                    ? null
-                    : () {
-                        Navigator.pop(sheetCtx);
-                        if (isVendorRequest) {
-                          cubit.requestTier(t.id);
-                        } else {
-                          cubit.assignTier(t.id);
-                        }
-                      },
-              );
-            }),
-            // Vendor can remove an existing membership.
-            if (!isVendorRequest && current != null) ...[
-              const Divider(),
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const CircleAvatar(
-                  backgroundColor: Color(0x14E53935),
-                  child: Icon(Icons.do_not_disturb_on_rounded,
-                      color: AppColors.error),
-                ),
-                title: Text(l10n.removeMembership,
-                    style: AppTypography.bodyLarge
-                        .copyWith(color: AppColors.error)),
-                onTap: () {
-                  Navigator.pop(sheetCtx);
-                  cubit.assignTier(null);
-                },
-              ),
-            ],
+            if (plans.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Text(
+                    'No active plans. Create one in Memberships → Plans first.',
+                    style: TextStyle(color: AppColors.textSecondary)),
+              )
+            else
+              ...plans.map((p) {
+                final isCurrent = p.id == currentPlanId;
+                return ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const CircleAvatar(
+                    backgroundColor: MembershipTheme.purpleSoft,
+                    child: Icon(Icons.workspace_premium_rounded,
+                        color: MembershipTheme.purple),
+                  ),
+                  title: Text(p.name),
+                  subtitle: Text(
+                      '₹${p.price.toStringAsFixed(0)} · ${p.durationDays} days'),
+                  trailing: isCurrent
+                      ? const Icon(Icons.check_circle, color: AppColors.success)
+                      : null,
+                  onTap: isCurrent
+                      ? null
+                      : () {
+                          Navigator.pop(sheetCtx);
+                          cubit.enroll(p.id);
+                        },
+                );
+              }),
           ],
         ),
       ),
@@ -198,103 +217,8 @@ class MembershipBanner extends StatelessWidget {
   }
 }
 
-class _CurrentTierRow extends StatelessWidget {
-  final MembershipTier? tier;
-  final bool isVendorView;
-  final bool readOnly;
-  final bool hasPendingRequest;
-  final bool busy;
-  final VoidCallback onChange;
-  final VoidCallback onApply;
-
-  const _CurrentTierRow({
-    required this.tier,
-    required this.isVendorView,
-    required this.hasPendingRequest,
-    required this.busy,
-    required this.onChange,
-    required this.onApply,
-    this.readOnly = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color =
-        tier != null ? MembershipBanner.tierColor(tier!.level) : AppColors.textHint;
-    final l10n = AppLocalizations.of(context)!;
-
-    return Row(
-      children: [
-        Icon(Icons.workspace_premium_rounded, color: color, size: 22),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.membershipLabel,
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.textSecondary)),
-              Text(
-                tier?.name ?? l10n.noMembership,
-                style: AppTypography.bodyLarge.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: tier != null ? color : AppColors.textSecondary,
-                ),
-              ),
-              if (tier != null && tier!.hasDiscount)
-                Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.local_offer_rounded,
-                          size: 12, color: AppColors.success),
-                      const SizedBox(width: 4),
-                      Text(
-                        tier!.discountLabel,
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.success),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          ),
-        ),
-        _trailingAction(context, l10n),
-      ],
-    );
-  }
-
-  Widget _trailingAction(BuildContext context, AppLocalizations l10n) {
-    // Staff are read-only — never offer set/change/apply.
-    if (readOnly) return const SizedBox.shrink();
-    if (busy) {
-      return const SizedBox(
-        width: 18,
-        height: 18,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      );
-    }
-    if (isVendorView) {
-      return TextButton.icon(
-        onPressed: onChange,
-        icon: const Icon(Icons.edit_rounded, size: 16),
-        label: Text(tier == null ? l10n.setButton : l10n.changeButton),
-      );
-    }
-    // Customer: only offer Apply when there's no pending request.
-    if (hasPendingRequest) return const SizedBox.shrink();
-    return TextButton.icon(
-      onPressed: onApply,
-      icon: const Icon(Icons.add_rounded, size: 16),
-      label: Text(l10n.applyButton),
-    );
-  }
-}
-
 class _PendingRequestCard extends StatelessWidget {
-  final String tierName;
-  final int tierLevel;
+  final String planName;
   final String? message;
   final String customerName;
   final bool busy;
@@ -302,8 +226,7 @@ class _PendingRequestCard extends StatelessWidget {
   final VoidCallback onDecline;
 
   const _PendingRequestCard({
-    required this.tierName,
-    required this.tierLevel,
+    required this.planName,
     required this.message,
     required this.customerName,
     required this.busy,
@@ -313,28 +236,25 @@ class _PendingRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = MembershipBanner.tierColor(tierLevel);
-    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.08),
+        color: MembershipTheme.purpleSoft,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
+        border: Border.all(color: MembershipTheme.purple.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.upgrade_rounded, color: color, size: 18),
+              const Icon(Icons.upgrade_rounded,
+                  color: MembershipTheme.purple, size: 18),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
-                  l10n.customerRequestedTier(customerName, tierName),
-                  style: AppTypography.bodyMedium
-                      .copyWith(fontWeight: FontWeight.w600),
-                ),
+                child: Text('$customerName requested $planName',
+                    style: AppTypography.bodyMedium
+                        .copyWith(fontWeight: FontWeight.w600)),
               ),
             ],
           ),
@@ -354,7 +274,7 @@ class _PendingRequestCard extends StatelessWidget {
                     foregroundColor: AppColors.error,
                     side: const BorderSide(color: AppColors.error),
                   ),
-                  child: Text(l10n.declineRequest),
+                  child: const Text('Decline'),
                 ),
               ),
               const SizedBox(width: 10),
@@ -365,7 +285,7 @@ class _PendingRequestCard extends StatelessWidget {
                     backgroundColor: AppColors.success,
                     foregroundColor: Colors.white,
                   ),
-                  child: Text(l10n.approveButton),
+                  child: const Text('Approve'),
                 ),
               ),
             ],

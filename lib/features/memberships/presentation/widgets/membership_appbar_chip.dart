@@ -1,42 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../domain/models/membership_status.dart';
 import '../bloc/membership_cubit.dart';
 import '../bloc/membership_state.dart';
-import 'membership_banner.dart';
+import '../membership_theme.dart';
+import '../screens/browse_plans_screen.dart';
 
-/// Compact membership indicator for the shared-ledger AppBar, visible to all
-/// three roles. Tapping shows the tier + discount details.
-///
-/// Staff are strictly read-only — they can SEE the customer's membership but the
-/// info sheet never offers change/assign/apply actions. Vendor and customer act
-/// through the body banner below; this chip is an at-a-glance indicator + detail.
+/// Compact membership indicator for the shared-ledger AppBar, all three roles.
+/// - Customer: tap opens the Browse Plans screen (apply / view current).
+/// - Vendor/staff: tap shows a read-only info dialog (vendor manages via banner).
 class MembershipAppBarChip extends StatelessWidget {
-  const MembershipAppBarChip({super.key});
+  /// 'vendor' | 'customer' | 'staff' — controls tap behaviour.
+  final String role;
+  final String vendorName;
+
+  const MembershipAppBarChip({
+    super.key,
+    required this.role,
+    required this.vendorName,
+  });
+
+  bool get _isCustomer => role == 'customer';
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<MembershipCubit, MembershipState>(
       builder: (context, state) {
         if (state is! MembershipLoaded) return const SizedBox.shrink();
-        final status = state.status;
-        final tier = status.currentTier;
-        final color = tier != null
-            ? MembershipBanner.tierColor(tier.level)
-            : AppColors.textHint;
+        final current = state.status.current;
+        final hasPlan = current != null;
+        final color = hasPlan ? MembershipTheme.purple : AppColors.textHint;
 
-        // Icon-only to keep the AppBar compact. A small dot indicates an active
-        // tier; tap opens the tier + discount info dialog.
         return IconButton(
-          tooltip: tier?.name ?? 'No membership',
+          tooltip: hasPlan ? current.plan.name : 'Membership',
           visualDensity: VisualDensity.compact,
-          onPressed: () => _showInfo(context, status),
+          onPressed: () => _onTap(context, state),
           icon: Stack(
             clipBehavior: Clip.none,
             children: [
               Icon(Icons.workspace_premium_rounded, color: color),
-              if (tier != null)
+              if (hasPlan)
                 Positioned(
                   right: -1,
                   top: -1,
@@ -44,7 +47,7 @@ class MembershipAppBarChip extends StatelessWidget {
                     width: 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: color,
+                      color: MembershipTheme.purple,
                       shape: BoxShape.circle,
                       border: Border.all(
                           color: Theme.of(context).scaffoldBackgroundColor,
@@ -59,54 +62,72 @@ class MembershipAppBarChip extends StatelessWidget {
     );
   }
 
-  void _showInfo(BuildContext context, MembershipStatus status) {
-    final tier = status.currentTier;
-    final color = tier != null
-        ? MembershipBanner.tierColor(tier.level)
-        : AppColors.textHint;
+  void _onTap(BuildContext context, MembershipLoaded state) {
+    if (_isCustomer) {
+      // Customer: go to the browse/apply screen (share the same cubit).
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: context.read<MembershipCubit>(),
+            child: BrowsePlansScreen(vendorName: vendorName),
+          ),
+        ),
+      );
+      return;
+    }
+    _showInfo(context, state);
+  }
 
+  void _showInfo(BuildContext context, MembershipLoaded state) {
+    final current = state.status.current;
     showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Row(
-          children: [
-            Icon(Icons.workspace_premium_rounded, color: color),
-            const SizedBox(width: 8),
-            const Text('Membership'),
+          children: const [
+            Icon(Icons.workspace_premium_rounded, color: MembershipTheme.purple),
+            SizedBox(width: 8),
+            Text('Membership'),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              tier?.name ?? 'No membership',
-              style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: color),
-            ),
-            if (tier != null) ...[
+            Text(current?.plan.name ?? 'No membership',
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: current != null
+                        ? MembershipTheme.purpleDark
+                        : AppColors.textSecondary)),
+            if (current != null) ...[
               const SizedBox(height: 6),
-              Text('Level ${tier.level}',
+              Text(
+                  '₹${current.plan.price.toStringAsFixed(0)} · ${current.daysLeft} days left',
                   style: const TextStyle(color: AppColors.textSecondary)),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  const Icon(Icons.local_offer_rounded,
-                      size: 14, color: AppColors.success),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      tier.hasDiscount ? tier.discountLabel : 'No discount',
-                      style: const TextStyle(color: AppColors.textSecondary),
+              const SizedBox(height: 10),
+              ...current.benefitUsage.map((b) => Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle,
+                            size: 14, color: AppColors.success),
+                        const SizedBox(width: 6),
+                        Expanded(child: Text(b.label)),
+                        if (b.hasQuota)
+                          Text('${b.used}/${b.quota}',
+                              style: const TextStyle(
+                                  color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w600)),
+                      ],
                     ),
-                  ),
-                ],
-              ),
+                  )),
             ],
-            if (status.pendingRequest != null) ...[
+            if (state.status.pendingRequest != null) ...[
               const SizedBox(height: 10),
               Text(
-                'Pending request: ${status.pendingRequest!.requestedTier.name}',
+                'Pending: ${state.status.pendingRequest!.requestedPlan?.name ?? 'a plan'}',
                 style: const TextStyle(
                     color: AppColors.warning, fontWeight: FontWeight.w600),
               ),
@@ -115,9 +136,7 @@ class MembershipAppBarChip extends StatelessWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Close'),
-          ),
+              onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
         ],
       ),
     );

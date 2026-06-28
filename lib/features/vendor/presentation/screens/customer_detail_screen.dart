@@ -12,7 +12,7 @@ import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../memberships/domain/repositories/membership_repository.dart';
 import '../../../memberships/presentation/bloc/membership_cubit.dart';
 import '../../../memberships/presentation/widgets/membership_banner.dart';
-import '../../../memberships/presentation/widgets/membership_tier_badge.dart';
+import '../../../memberships/presentation/widgets/membership_plan_badge.dart';
 import '../../../shared_ledger/presentation/bloc/ledger_bloc.dart';
 import '../../../shared_ledger/presentation/bloc/ledger_event.dart';
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/balance_header.dart';
@@ -154,10 +154,7 @@ class _CustomerDetailView extends StatelessWidget {
             ),
             if (customer.tierName != null) ...[
               const SizedBox(width: 8),
-              MembershipTierBadge(
-                tierName: customer.tierName,
-                tierLevel: customer.tierLevel,
-              ),
+              MembershipPlanBadge(name: customer.tierName!),
             ],
           ],
         ),

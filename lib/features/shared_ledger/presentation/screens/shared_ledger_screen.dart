@@ -249,7 +249,14 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           ],
         ),
         actions: [
-          const MembershipAppBarChip(),
+          MembershipAppBarChip(
+            role: widget.isStaffView
+                ? 'staff'
+                : widget.isVendorView
+                    ? 'vendor'
+                    : 'customer',
+            vendorName: widget.customerName,
+          ),
           IconButton(
             onPressed: () => _showDeliveries(context, currentUserId),
             icon: const Icon(Icons.local_shipping_outlined),
