@@ -29,7 +29,9 @@ class MembershipAppBarChip extends StatelessWidget {
         if (state is! MembershipLoaded) return const SizedBox.shrink();
         final current = state.status.current;
         final hasPlan = current != null;
-        final color = hasPlan ? MembershipTheme.purple : AppColors.textHint;
+        final color = hasPlan
+            ? MembershipTheme.purple
+            : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
 
         return IconButton(
           tooltip: hasPlan ? current.plan.name : 'Membership',
@@ -94,36 +96,47 @@ class MembershipAppBarChip extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(current?.plan.name ?? 'No membership',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: current != null
-                        ? MembershipTheme.purpleDark
-                        : AppColors.textSecondary)),
-            if (current != null) ...[
-              const SizedBox(height: 6),
-              Text(
-                  '₹${current.plan.price.toStringAsFixed(0)} · ${current.daysLeft} days left',
-                  style: const TextStyle(color: AppColors.textSecondary)),
-              const SizedBox(height: 10),
-              ...current.benefitUsage.map((b) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle,
-                            size: 14, color: AppColors.success),
-                        const SizedBox(width: 6),
-                        Expanded(child: Text(b.label)),
-                        if (b.hasQuota)
-                          Text('${b.used}/${b.quota}',
-                              style: const TextStyle(
-                                  color: AppColors.textSecondary,
-                                  fontWeight: FontWeight.w600)),
-                      ],
-                    ),
-                  )),
-            ],
+            Builder(builder: (ctx) {
+              final cs = Theme.of(ctx).colorScheme;
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(current?.plan.name ?? 'No membership',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: current != null
+                              ? MembershipTheme.purple
+                              : cs.onSurfaceVariant)),
+                  if (current != null) ...[
+                    const SizedBox(height: 6),
+                    Text(
+                        '₹${current.plan.price.toStringAsFixed(0)} · ${current.daysLeft} days left',
+                        style: TextStyle(color: cs.onSurfaceVariant)),
+                    const SizedBox(height: 10),
+                    ...current.benefitUsage.map((b) => Padding(
+                          padding: const EdgeInsets.only(bottom: 4),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.check_circle_rounded,
+                                  size: 14, color: AppColors.success),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                  child: Text(b.label,
+                                      style: TextStyle(color: cs.onSurface))),
+                              if (b.hasQuota)
+                                Text('${b.used}/${b.quota}',
+                                    style: TextStyle(
+                                        color: cs.onSurfaceVariant,
+                                        fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        )),
+                  ],
+                ],
+              );
+            }),
             if (state.status.pendingRequest != null) ...[
               const SizedBox(height: 10),
               Text(

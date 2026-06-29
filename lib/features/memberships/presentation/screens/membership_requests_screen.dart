@@ -67,21 +67,24 @@ class _RequestList extends StatelessWidget {
     final cubit = context.read<MembershipRequestsCubit>();
 
     if (state.requests.isEmpty) {
+      final cs = Theme.of(context).colorScheme;
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.inbox_outlined,
-                size: 64, color: AppColors.textHint.withValues(alpha: 0.5)),
+                size: 64,
+                color: cs.onSurfaceVariant.withValues(alpha: 0.4)),
             const SizedBox(height: 12),
-            const Text('No pending requests',
-                style: TextStyle(
-                    color: AppColors.textSecondary, fontSize: 16)),
+            Text('No pending requests',
+                style: TextStyle(color: cs.onSurfaceVariant, fontSize: 16)),
             const SizedBox(height: 6),
-            const Text(
+            Text(
               'Customers can apply for membership\nfrom their ledger screen.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: AppColors.textHint, fontSize: 13),
+              style: TextStyle(
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                  fontSize: 13),
             ),
           ],
         ),
@@ -126,15 +129,27 @@ class _RequestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final plan = request.requestedPlan;
     const planColor = MembershipTheme.purple;
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : planColor.withValues(alpha: 0.25);
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: planColor.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: borderColor),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,11 +171,12 @@ class _RequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(request.customer.name,
-                        style: AppTypography.labelLarge),
+                        style: AppTypography.labelLarge
+                            .copyWith(color: cs.onSurface)),
                     const SizedBox(height: 2),
                     Text(_formatDate(request.createdAt),
-                        style: const TextStyle(
-                            color: AppColors.textHint, fontSize: 12)),
+                        style: TextStyle(
+                            color: cs.onSurfaceVariant, fontSize: 12)),
                   ],
                 ),
               ),
@@ -172,20 +188,22 @@ class _RequestCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.05)
+                    : Colors.black.withValues(alpha: 0.03),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.format_quote_rounded,
-                      size: 16, color: AppColors.textHint),
+                  Icon(Icons.format_quote_rounded,
+                      size: 16, color: cs.onSurfaceVariant),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       request.message!,
-                      style: const TextStyle(
-                          color: AppColors.textSecondary, fontSize: 13),
+                      style: TextStyle(
+                          color: cs.onSurfaceVariant, fontSize: 13),
                     ),
                   ),
                 ],
