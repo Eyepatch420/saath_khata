@@ -101,6 +101,37 @@ class CustomerLinkItem extends Equatable {
   /// The sub-label shown below the display name. Null if nickname is not set.
   String? get subName => nickname?.isNotEmpty == true ? customer.name : null;
 
+  CustomerLinkItem copyWith({
+    double? balance,
+    String? nickname,
+    int? tierLevel,
+    String? tierName,
+    String? defaultProduct,
+    String? defaultUnit,
+    double? defaultQty,
+    double? defaultPricePerUnit,
+    bool clearDefaultProduct = false,
+    bool clearDefaultUnit = false,
+    bool clearDefaultQty = false,
+    bool clearDefaultPrice = false,
+  }) =>
+      CustomerLinkItem(
+        linkId: linkId,
+        balance: balance ?? this.balance,
+        nickname: nickname ?? this.nickname,
+        customer: customer,
+        createdAt: createdAt,
+        tierLevel: tierLevel ?? this.tierLevel,
+        tierName: tierName ?? this.tierName,
+        defaultProduct:
+            clearDefaultProduct ? null : (defaultProduct ?? this.defaultProduct),
+        defaultUnit: clearDefaultUnit ? null : (defaultUnit ?? this.defaultUnit),
+        defaultQty: clearDefaultQty ? null : (defaultQty ?? this.defaultQty),
+        defaultPricePerUnit: clearDefaultPrice
+            ? null
+            : (defaultPricePerUnit ?? this.defaultPricePerUnit),
+      );
+
   factory CustomerLinkItem.fromJson(Map<String, dynamic> json) {
     final tier = json['tier'] as Map<String, dynamic>?;
     return CustomerLinkItem(

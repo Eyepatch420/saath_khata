@@ -20,6 +20,8 @@ import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/ledger_actions.dart';
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/ledger_list.dart';
 import '../../../shared_ledger/presentation/screens/monthly_settlement_screen.dart';
+import '../bloc/vendor_bloc.dart';
+import '../bloc/vendor_event.dart';
 import '../widgets/customer_defaults_sheet.dart';
 
 
@@ -41,12 +43,15 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen>
   late final LedgerSocketService _socket;
   late final TabController _tabController;
 
-  // Delivery tab is only shown for delivery-category vendors
+  // Mutable local copy so the Info tab can update immediately after save.
+  late CustomerLinkItem _customer;
+
   bool _showDeliveryTab = false;
 
   @override
   void initState() {
     super.initState();
+    _customer = widget.customer;
     _bloc = LedgerBloc(getIt())..add(LoadLedger(widget.customer.linkId));
     _membershipCubit =
         MembershipCubit(getIt<MembershipRepository>(), widget.customer.linkId)
@@ -84,6 +89,28 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen>
     _tabController = TabController(length: tabCount, vsync: this);
   }
 
+  void _onDefaultsSaved({
+    required String? product,
+    required String? unit,
+    required double? qty,
+    required double? price,
+  }) {
+    setState(() {
+      _customer = _customer.copyWith(
+        defaultProduct: product,
+        defaultUnit: unit,
+        defaultQty: qty,
+        defaultPricePerUnit: price,
+        clearDefaultProduct: product == null,
+        clearDefaultUnit: unit == null,
+        clearDefaultQty: qty == null,
+        clearDefaultPrice: price == null,
+      );
+    });
+    // Keep the global customer list in sync.
+    context.read<VendorBloc>().add(LoadVendorDashboard());
+  }
+
   @override
   void dispose() {
     _socket.leaveLedger(widget.customer.linkId);
@@ -104,9 +131,10 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen>
         BlocProvider.value(value: _membershipCubit),
       ],
       child: _CustomerDetailView(
-        customer: widget.customer,
+        customer: _customer,
         tabController: _tabController,
         showDeliveryTab: _showDeliveryTab,
+        onDefaultsSaved: _onDefaultsSaved,
       ),
     );
   }
@@ -116,11 +144,18 @@ class _CustomerDetailView extends StatelessWidget {
   final CustomerLinkItem customer;
   final TabController tabController;
   final bool showDeliveryTab;
+  final void Function({
+    required String? product,
+    required String? unit,
+    required double? qty,
+    required double? price,
+  }) onDefaultsSaved;
 
   const _CustomerDetailView({
     required this.customer,
     required this.tabController,
     required this.showDeliveryTab,
+    required this.onDefaultsSaved,
   });
 
   @override
@@ -184,7 +219,7 @@ class _CustomerDetailView extends StatelessWidget {
           if (showDeliveryTab)
             _DeliveryTab(customer: customer, currentUserId: currentUserId),
           // Info tab — customer details + set defaults
-          _InfoTab(customer: customer),
+          _InfoTab(customer: customer, onDefaultsSaved: onDefaultsSaved),
         ],
       ),
     );
@@ -351,8 +386,14 @@ class _DeliveriesHeader extends StatelessWidget {
 
 class _InfoTab extends StatelessWidget {
   final CustomerLinkItem customer;
+  final void Function({
+    required String? product,
+    required String? unit,
+    required double? qty,
+    required double? price,
+  }) onDefaultsSaved;
 
-  const _InfoTab({required this.customer});
+  const _InfoTab({required this.customer, required this.onDefaultsSaved});
 
   @override
   Widget build(BuildContext context) {
@@ -426,7 +467,10 @@ class _InfoTab extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => CustomerDefaultsSheet(customer: customer),
+      builder: (_) => CustomerDefaultsSheet(
+        customer: customer,
+        onSaved: onDefaultsSaved,
+      ),
     );
   }
 

@@ -10,7 +10,12 @@ import '../../domain/repositories/vendor_repository.dart';
 /// Pre-fills with existing defaults if set.
 class CustomerDefaultsSheet extends StatefulWidget {
   final CustomerLinkItem customer;
-  final VoidCallback? onSaved;
+  final void Function({
+    required String? product,
+    required String? unit,
+    required double? qty,
+    required double? price,
+  })? onSaved;
 
   const CustomerDefaultsSheet({
     super.key,
@@ -73,7 +78,12 @@ class _CustomerDefaultsSheetState extends State<CustomerDefaultsSheet> {
       if (mounted) {
         Navigator.pop(context);
         AppToast.show(context, 'Default delivery saved', type: ToastType.success);
-        widget.onSaved?.call();
+        widget.onSaved?.call(
+          product: product.isEmpty ? null : product,
+          unit: unit.isEmpty ? null : unit,
+          qty: qty,
+          price: price,
+        );
       }
     } catch (e) {
       if (mounted) {
