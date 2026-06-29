@@ -9,7 +9,6 @@ import '../bloc/plans_cubit.dart';
 import '../membership_theme.dart';
 import 'create_plan_screen.dart';
 
-/// Vendor: list + manage membership plans. Entry point to create/edit plans.
 class MembershipPlansScreen extends StatelessWidget {
   const MembershipPlansScreen({super.key});
 
@@ -39,15 +38,16 @@ class _PlansView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Membership Plans'),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _openEditor(context),
         backgroundColor: MembershipTheme.purple,
+        foregroundColor: Colors.white,
         icon: const Icon(Icons.add),
         label: const Text('New Plan'),
       ),
@@ -129,18 +129,34 @@ class _PlanCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardColor = cs.surface;
+    final borderColor = isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.07);
+    final secondaryText = cs.onSurfaceVariant;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: borderColor),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Gradient header — always same purple gradient, looks fine on dark
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
             decoration: const BoxDecoration(gradient: MembershipTheme.headerGradient),
             child: Row(
               children: [
@@ -152,11 +168,12 @@ class _PlanCard extends StatelessWidget {
                           style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 17)),
-                      const SizedBox(height: 2),
+                              fontSize: 18)),
+                      const SizedBox(height: 3),
                       Text(
                         '₹${plan.price.toStringAsFixed(0)} / ${plan.durationDays} days',
-                        style: const TextStyle(color: Colors.white70, fontSize: 13),
+                        style: const TextStyle(
+                            color: Colors.white70, fontSize: 13),
                       ),
                     ],
                   ),
@@ -164,68 +181,111 @@ class _PlanCard extends StatelessWidget {
                 if (!plan.isActive)
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.25),
-                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.black.withValues(alpha: 0.30),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Text('Inactive',
-                        style: TextStyle(color: Colors.white, fontSize: 11)),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600)),
                   ),
               ],
             ),
           ),
+
+          // Body
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ...plan.benefits.map((b) => Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.check_circle,
-                              size: 16, color: AppColors.success),
-                          const SizedBox(width: 8),
-                          Expanded(child: Text(b.label)),
-                          if (b.hasQuota)
-                            Text('×${b.quota}',
-                                style: const TextStyle(
-                                    color: AppColors.textSecondary,
-                                    fontWeight: FontWeight.w600)),
-                        ],
-                      ),
-                    )),
+                if (plan.benefits.isEmpty)
+                  Text('No benefits added.',
+                      style: TextStyle(color: secondaryText, fontSize: 13))
+                else
+                  ...plan.benefits.map((b) => Padding(
+                        padding: const EdgeInsets.only(bottom: 7),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.check_circle_rounded,
+                                size: 16, color: AppColors.success),
+                            const SizedBox(width: 8),
+                            Expanded(
+                                child: Text(b.label,
+                                    style: TextStyle(color: cs.onSurface))),
+                            if (b.hasQuota)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: MembershipTheme.purple
+                                      .withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text('×${b.quota}',
+                                    style: const TextStyle(
+                                        color: MembershipTheme.purple,
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12)),
+                              ),
+                          ],
+                        ),
+                      )),
                 if (plan.advanceRequired > 0) ...[
                   const SizedBox(height: 4),
-                  Text('Advance: ₹${plan.advanceRequired.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                          color: AppColors.textSecondary, fontSize: 13)),
+                  Row(
+                    children: [
+                      Icon(Icons.account_balance_wallet_outlined,
+                          size: 14, color: secondaryText),
+                      const SizedBox(width: 6),
+                      Text(
+                          'Advance: ₹${plan.advanceRequired.toStringAsFixed(0)}',
+                          style:
+                              TextStyle(color: secondaryText, fontSize: 13)),
+                    ],
+                  ),
                 ],
-                const Divider(height: 24),
+                Divider(
+                    height: 22,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.06)),
                 Row(
                   children: [
                     Icon(Icons.people_alt_rounded,
-                        size: 16, color: MembershipTheme.purple),
-                    const SizedBox(width: 6),
+                        size: 15, color: MembershipTheme.purple),
+                    const SizedBox(width: 5),
                     Text('${plan.activeMembers} active',
                         style: const TextStyle(
                             fontWeight: FontWeight.w600,
-                            color: MembershipTheme.purple)),
+                            color: MembershipTheme.purple,
+                            fontSize: 13)),
                     const Spacer(),
                     TextButton(
                       onPressed: onToggle,
-                      child: Text(plan.isActive ? 'Deactivate' : 'Activate'),
+                      style: TextButton.styleFrom(
+                        foregroundColor: plan.isActive
+                            ? AppColors.error
+                            : AppColors.success,
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                      ),
+                      child:
+                          Text(plan.isActive ? 'Deactivate' : 'Activate'),
                     ),
                     IconButton(
                       onPressed: onEdit,
                       icon: const Icon(Icons.edit_outlined, size: 20),
                       color: MembershipTheme.purple,
+                      visualDensity: VisualDensity.compact,
                     ),
                     IconButton(
                       onPressed: onDelete,
                       icon: const Icon(Icons.delete_outline, size: 20),
                       color: AppColors.error,
+                      visualDensity: VisualDensity.compact,
                     ),
                   ],
                 ),
@@ -242,6 +302,7 @@ class _EmptyPlans extends StatelessWidget {
   const _EmptyPlans();
   @override
   Widget build(BuildContext context) {
+    final secondaryText = Theme.of(context).colorScheme.onSurfaceVariant;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -249,11 +310,14 @@ class _EmptyPlans extends StatelessWidget {
           Icon(Icons.workspace_premium_rounded,
               size: 64, color: MembershipTheme.purple.withValues(alpha: 0.4)),
           const SizedBox(height: 12),
-          const Text('No membership plans yet',
-              style: TextStyle(fontSize: 16, color: AppColors.textSecondary)),
+          Text('No membership plans yet',
+              style:
+                  TextStyle(fontSize: 16, color: secondaryText)),
           const SizedBox(height: 6),
-          const Text('Tap "New Plan" to create your first one.',
-              style: TextStyle(fontSize: 13, color: AppColors.textHint)),
+          Text('Tap "New Plan" to create your first one.',
+              style: TextStyle(
+                  fontSize: 13,
+                  color: secondaryText.withValues(alpha: 0.6))),
         ],
       ),
     );

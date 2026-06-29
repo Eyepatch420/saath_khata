@@ -7,9 +7,6 @@ import '../bloc/membership_cubit.dart';
 import '../bloc/membership_state.dart';
 import '../membership_theme.dart';
 
-/// Membership banner on the shared ledger (vendor view only). Shows the active
-/// plan + benefit usage, lets the vendor enroll a customer into a plan, and
-/// surfaces an actionable card for any pending request.
 class MembershipBanner extends StatelessWidget {
   final String customerName;
   final bool isVendorView;
@@ -31,7 +28,8 @@ class MembershipBanner extends StatelessWidget {
           ScaffoldMessenger.of(context)
             ..hideCurrentSnackBar()
             ..showSnackBar(SnackBar(
-                content: Text(state.message), backgroundColor: AppColors.error));
+                content: Text(state.message),
+                backgroundColor: AppColors.error));
         }
       },
       builder: (context, state) {
@@ -40,14 +38,20 @@ class MembershipBanner extends StatelessWidget {
         final busy = state.actionInProgress;
         final cubit = context.read<MembershipCubit>();
         final current = status.current;
+        final cs = Theme.of(context).colorScheme;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        final borderColor = isDark
+            ? Colors.white.withValues(alpha: 0.08)
+            : Colors.black.withValues(alpha: 0.07);
+        final secondaryColor = cs.onSurfaceVariant;
 
         return Container(
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
+            color: cs.surface,
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.divider),
+            border: Border.all(color: borderColor),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,7 +61,7 @@ class MembershipBanner extends StatelessWidget {
                   Icon(Icons.workspace_premium_rounded,
                       color: current != null
                           ? MembershipTheme.purple
-                          : AppColors.textHint,
+                          : secondaryColor.withValues(alpha: 0.5),
                       size: 22),
                   const SizedBox(width: 10),
                   Expanded(
@@ -66,20 +70,20 @@ class MembershipBanner extends StatelessWidget {
                       children: [
                         Text('Membership',
                             style: AppTypography.bodySmall
-                                .copyWith(color: AppColors.textSecondary)),
+                                .copyWith(color: secondaryColor)),
                         Text(
                           current?.plan.name ?? 'No membership',
                           style: AppTypography.bodyLarge.copyWith(
                             fontWeight: FontWeight.bold,
                             color: current != null
-                                ? MembershipTheme.purpleDark
-                                : AppColors.textSecondary,
+                                ? MembershipTheme.purple
+                                : secondaryColor,
                           ),
                         ),
                         if (current != null)
                           Text('${current.daysLeft} days left',
                               style: AppTypography.bodySmall
-                                  .copyWith(color: AppColors.textSecondary)),
+                                  .copyWith(color: secondaryColor)),
                       ],
                     ),
                   ),
@@ -90,11 +94,12 @@ class MembershipBanner extends StatelessWidget {
                         child: CircularProgressIndicator(strokeWidth: 2))
                   else
                     TextButton.icon(
-                      onPressed: () => _openEnrollPicker(context, cubit, status.plans,
-                          current?.plan.id),
-                      icon: Icon(current == null
-                          ? Icons.add_rounded
-                          : Icons.swap_horiz_rounded,
+                      onPressed: () => _openEnrollPicker(
+                          context, cubit, status.plans, current?.plan.id),
+                      icon: Icon(
+                          current == null
+                              ? Icons.add_rounded
+                              : Icons.swap_horiz_rounded,
                           size: 16),
                       label: Text(current == null ? 'Enroll' : 'Change'),
                       style: TextButton.styleFrom(
@@ -103,29 +108,42 @@ class MembershipBanner extends StatelessWidget {
                 ],
               ),
 
-              // Quota benefit usage with "mark used" controls (vendor only).
-              if (current != null && current.benefitUsage.any((b) => b.hasQuota)) ...[
-                const Divider(height: 18),
+              // Quota benefit usage rows (vendor only).
+              if (current != null &&
+                  current.benefitUsage.any((b) => b.hasQuota)) ...[
+                Divider(
+                    height: 18,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.08)
+                        : Colors.black.withValues(alpha: 0.06)),
                 ...current.benefitUsage.where((b) => b.hasQuota).map((b) {
                   final done = b.used >= (b.quota ?? 0);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 6),
                     child: Row(
                       children: [
-                        Expanded(child: Text(b.label)),
+                        Expanded(
+                            child: Text(b.label,
+                                style: TextStyle(color: cs.onSurface))),
                         Text('${b.used}/${b.quota}',
                             style: TextStyle(
-                                color: done ? AppColors.error : AppColors.success,
+                                color: done
+                                    ? AppColors.error
+                                    : AppColors.success,
                                 fontWeight: FontWeight.w700)),
                         const SizedBox(width: 8),
                         OutlinedButton(
                           onPressed: (busy || done)
                               ? null
-                              : () => cubit.useBenefit(current.id, b.benefitId),
+                              : () =>
+                                  cubit.useBenefit(current.id, b.benefitId),
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(0, 32),
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 10),
                             foregroundColor: MembershipTheme.purple,
+                            side: const BorderSide(
+                                color: MembershipTheme.purple),
                           ),
                           child: Text(done ? 'Used' : 'Use',
                               style: const TextStyle(fontSize: 12)),
@@ -136,11 +154,12 @@ class MembershipBanner extends StatelessWidget {
                 }),
               ],
 
-              // Pending request — approve / decline.
+              // Pending request card — approve / decline.
               if (status.pendingRequest != null) ...[
                 const SizedBox(height: 12),
                 _PendingRequestCard(
-                  planName: status.pendingRequest!.requestedPlan?.name ?? 'a plan',
+                  planName:
+                      status.pendingRequest!.requestedPlan?.name ?? 'a plan',
                   message: status.pendingRequest!.message,
                   customerName: customerName,
                   busy: busy,
@@ -167,52 +186,62 @@ class MembershipBanner extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (sheetCtx) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Enroll ${customerName.isEmpty ? 'customer' : customerName}',
-                style: AppTypography.h3),
-            const SizedBox(height: 4),
-            const Text('Choose a plan to start their membership.',
-                style: TextStyle(color: AppColors.textSecondary)),
-            const SizedBox(height: 16),
-            if (plans.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Text(
-                    'No active plans. Create one in Memberships → Plans first.',
-                    style: TextStyle(color: AppColors.textSecondary)),
-              )
-            else
-              ...plans.map((p) {
-                final isCurrent = p.id == currentPlanId;
-                return ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const CircleAvatar(
-                    backgroundColor: MembershipTheme.purpleSoft,
-                    child: Icon(Icons.workspace_premium_rounded,
-                        color: MembershipTheme.purple),
-                  ),
-                  title: Text(p.name),
-                  subtitle: Text(
-                      '₹${p.price.toStringAsFixed(0)} · ${p.durationDays} days'),
-                  trailing: isCurrent
-                      ? const Icon(Icons.check_circle, color: AppColors.success)
-                      : null,
-                  onTap: isCurrent
-                      ? null
-                      : () {
-                          Navigator.pop(sheetCtx);
-                          cubit.enroll(p.id);
-                        },
-                );
-              }),
-          ],
-        ),
-      ),
+      builder: (sheetCtx) {
+        final cs = Theme.of(sheetCtx).colorScheme;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                  'Enroll ${customerName.isEmpty ? 'customer' : customerName}',
+                  style: AppTypography.h3
+                      .copyWith(color: cs.onSurface)),
+              const SizedBox(height: 4),
+              Text('Choose a plan to start their membership.',
+                  style:
+                      TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
+              const SizedBox(height: 16),
+              if (plans.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Text(
+                      'No active plans. Create one in Memberships → Plans first.',
+                      style: TextStyle(color: cs.onSurfaceVariant)),
+                )
+              else
+                ...plans.map((p) {
+                  final isCurrent = p.id == currentPlanId;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: CircleAvatar(
+                      backgroundColor:
+                          MembershipTheme.purple.withValues(alpha: 0.12),
+                      child: const Icon(Icons.workspace_premium_rounded,
+                          color: MembershipTheme.purple),
+                    ),
+                    title: Text(p.name,
+                        style: TextStyle(color: cs.onSurface)),
+                    subtitle: Text(
+                        '₹${p.price.toStringAsFixed(0)} · ${p.durationDays} days',
+                        style: TextStyle(color: cs.onSurfaceVariant)),
+                    trailing: isCurrent
+                        ? const Icon(Icons.check_circle,
+                            color: AppColors.success)
+                        : null,
+                    onTap: isCurrent
+                        ? null
+                        : () {
+                            Navigator.pop(sheetCtx);
+                            cubit.enroll(p.id);
+                          },
+                  );
+                }),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -236,12 +265,15 @@ class _PendingRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cs = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: MembershipTheme.purpleSoft,
+        color: MembershipTheme.purple.withValues(alpha: isDark ? 0.12 : 0.07),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: MembershipTheme.purple.withValues(alpha: 0.3)),
+        border: Border.all(
+            color: MembershipTheme.purple.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -253,16 +285,17 @@ class _PendingRequestCard extends StatelessWidget {
               const SizedBox(width: 8),
               Expanded(
                 child: Text('$customerName requested $planName',
-                    style: AppTypography.bodyMedium
-                        .copyWith(fontWeight: FontWeight.w600)),
+                    style: TextStyle(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14)),
               ),
             ],
           ),
           if (message != null && message!.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text('"$message"',
-                style: AppTypography.bodySmall
-                    .copyWith(color: AppColors.textSecondary)),
+                style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
           ],
           const SizedBox(height: 10),
           Row(
@@ -279,9 +312,9 @@ class _PendingRequestCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: ElevatedButton(
+                child: FilledButton(
                   onPressed: busy ? null : onApprove,
-                  style: ElevatedButton.styleFrom(
+                  style: FilledButton.styleFrom(
                     backgroundColor: AppColors.success,
                     foregroundColor: Colors.white,
                   ),

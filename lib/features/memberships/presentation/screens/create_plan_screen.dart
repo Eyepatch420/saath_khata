@@ -7,7 +7,6 @@ import '../../domain/models/membership_plan.dart';
 import '../bloc/plans_cubit.dart';
 import '../membership_theme.dart';
 
-/// Create or edit a membership plan. Pass [existing] to edit.
 class CreatePlanScreen extends StatefulWidget {
   final MembershipPlan? existing;
   const CreatePlanScreen({super.key, this.existing});
@@ -36,7 +35,6 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
   final _customAdvanceCtrl = TextEditingController();
   final List<_BenefitRow> _benefits = [];
 
-  // null = None, otherwise the chosen advance amount; -1 sentinel = custom
   double _advance = 0;
   bool _customAdvance = false;
 
@@ -51,7 +49,9 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
       _durationCtrl.text = e.durationDays.toString();
       _priceCtrl.text = e.price.toStringAsFixed(0);
       _advance = e.advanceRequired;
-      if (e.advanceRequired != 0 && e.advanceRequired != 200 && e.advanceRequired != 500) {
+      if (e.advanceRequired != 0 &&
+          e.advanceRequired != 200 &&
+          e.advanceRequired != 500) {
         _customAdvance = true;
         _customAdvanceCtrl.text = e.advanceRequired.toStringAsFixed(0);
       }
@@ -75,7 +75,9 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
   }
 
   double get _effectiveAdvance {
-    if (_customAdvance) return double.tryParse(_customAdvanceCtrl.text.trim()) ?? 0;
+    if (_customAdvance) {
+      return double.tryParse(_customAdvanceCtrl.text.trim()) ?? 0;
+    }
     return _advance;
   }
 
@@ -120,30 +122,39 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(_isEdit ? 'Edit Plan' : 'Create Membership Plan'),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
           children: [
+            _SectionLabel('Plan details'),
+            const SizedBox(height: 8),
             _Card(
+              isDark: isDark,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   TextFormField(
                     controller: _nameCtrl,
                     textCapitalization: TextCapitalization.words,
-                    decoration: _dec('Plan name', hint: 'e.g. Gold Membership'),
+                    decoration: const InputDecoration(
+                      labelText: 'Plan name',
+                      hintText: 'e.g. Gold Membership',
+                      prefixIcon: Icon(Icons.workspace_premium_outlined),
+                    ),
                     validator: (v) =>
                         (v == null || v.trim().isEmpty) ? 'Required' : null,
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
                   Row(
                     children: [
                       Expanded(
@@ -153,7 +164,10 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
-                          decoration: _dec('Duration (days)'),
+                          decoration: const InputDecoration(
+                            labelText: 'Duration (days)',
+                            prefixIcon: Icon(Icons.calendar_today_outlined),
+                          ),
                           validator: (v) {
                             final n = int.tryParse(v?.trim() ?? '');
                             if (n == null || n < 1) return 'Min 1';
@@ -168,9 +182,13 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                           keyboardType: const TextInputType.numberWithOptions(
                               decimal: true),
                           inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
+                            FilteringTextInputFormatter.allow(
+                                RegExp(r'[0-9.]'))
                           ],
-                          decoration: _dec('Price ₹'),
+                          decoration: const InputDecoration(
+                            labelText: 'Price ₹',
+                            prefixIcon: Icon(Icons.currency_rupee_rounded),
+                          ),
                           validator: (v) {
                             final n = double.tryParse(v?.trim() ?? '');
                             if (n == null || n < 0) return 'Invalid';
@@ -183,14 +201,15 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             _SectionLabel('Benefits'),
             const SizedBox(height: 8),
             _Card(
+              isDark: isDark,
               child: Column(
                 children: [
                   ...List.generate(_benefits.length, (i) => _benefitRow(i)),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: TextButton.icon(
@@ -205,15 +224,17 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             _SectionLabel('Advance required'),
             const SizedBox(height: 8),
             _Card(
+              isDark: isDark,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Wrap(
                     spacing: 8,
+                    runSpacing: 8,
                     children: [
                       _advanceChip('None', 0),
                       _advanceChip('₹200', 200),
@@ -221,13 +242,24 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                       ChoiceChip(
                         label: const Text('Custom'),
                         selected: _customAdvance,
-                        selectedColor: MembershipTheme.purpleSoft,
-                        onSelected: (_) => setState(() => _customAdvance = true),
+                        selectedColor:
+                            MembershipTheme.purple.withValues(alpha: 0.15),
+                        checkmarkColor: MembershipTheme.purple,
+                        labelStyle: TextStyle(
+                          color: _customAdvance
+                              ? MembershipTheme.purple
+                              : null,
+                          fontWeight: _customAdvance
+                              ? FontWeight.w600
+                              : null,
+                        ),
+                        onSelected: (_) =>
+                            setState(() => _customAdvance = true),
                       ),
                     ],
                   ),
                   if (_customAdvance) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     TextFormField(
                       controller: _customAdvanceCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
@@ -235,13 +267,17 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
                       ],
-                      decoration: _dec('Custom advance ₹'),
+                      decoration: const InputDecoration(
+                        labelText: 'Custom advance ₹',
+                        prefixIcon:
+                            Icon(Icons.currency_rupee_rounded),
+                      ),
                     ),
                   ],
                 ],
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 32),
           ],
         ),
       ),
@@ -250,7 +286,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
           final saving = state is PlansLoaded && state.saving;
           return SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: FilledButton.icon(
                 onPressed: saving ? null : _submit,
                 icon: saving
@@ -263,7 +299,11 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                 label: Text(_isEdit ? 'Save Changes' : 'Publish Plan'),
                 style: FilledButton.styleFrom(
                   backgroundColor: MembershipTheme.purple,
+                  foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
               ),
             ),
@@ -276,40 +316,49 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
   Widget _benefitRow(int i) {
     final row = _benefits[i];
     return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
-            padding: EdgeInsets.only(top: 12),
-            child: Icon(Icons.check_circle, size: 18, color: AppColors.success),
+            padding: EdgeInsets.only(top: 14),
+            child: Icon(Icons.check_circle_rounded,
+                size: 18, color: AppColors.success),
           ),
           const SizedBox(width: 8),
           Expanded(
             flex: 3,
             child: TextFormField(
               controller: row.labelCtrl,
-              decoration: _dec('Benefit', hint: 'e.g. 4 haircuts'),
+              textCapitalization: TextCapitalization.sentences,
+              decoration: const InputDecoration(
+                labelText: 'Benefit',
+                hintText: 'e.g. 4 haircuts',
+              ),
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(
-            flex: 1,
+          SizedBox(
+            width: 70,
             child: TextFormField(
               controller: row.quotaCtrl,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: _dec('Qty'),
+              decoration: const InputDecoration(labelText: 'Qty'),
+              textAlign: TextAlign.center,
             ),
           ),
           if (_benefits.length > 1)
             IconButton(
-              icon: const Icon(Icons.close, size: 18, color: AppColors.error),
+              icon: const Icon(Icons.close_rounded,
+                  size: 18, color: AppColors.error),
               onPressed: () => setState(() {
                 _benefits[i].dispose();
                 _benefits.removeAt(i);
               }),
-            ),
+            )
+          else
+            const SizedBox(width: 40),
         ],
       ),
     );
@@ -320,51 +369,57 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
     return ChoiceChip(
       label: Text(label),
       selected: selected,
-      selectedColor: MembershipTheme.purpleSoft,
+      selectedColor: MembershipTheme.purple.withValues(alpha: 0.15),
+      checkmarkColor: MembershipTheme.purple,
+      labelStyle: TextStyle(
+        color: selected ? MembershipTheme.purple : null,
+        fontWeight: selected ? FontWeight.w600 : null,
+      ),
       onSelected: (_) => setState(() {
         _customAdvance = false;
         _advance = value;
       }),
     );
   }
-
-  InputDecoration _dec(String label, {String? hint}) => InputDecoration(
-        labelText: label,
-        hintText: hint,
-        isDense: true,
-        border: const OutlineInputBorder(),
-        focusedBorder: const OutlineInputBorder(
-          borderSide: BorderSide(color: MembershipTheme.purple, width: 1.5),
-        ),
-      );
 }
 
 class _Card extends StatelessWidget {
   final Widget child;
-  const _Card({required this.child});
+  final bool isDark;
+  const _Card({required this.child, required this.isDark});
+
   @override
-  Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.divider),
-        ),
-        child: child,
-      );
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.07);
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cs.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: borderColor),
+      ),
+      child: child,
+    );
+  }
 }
 
 class _SectionLabel extends StatelessWidget {
   final String text;
   const _SectionLabel(this.text);
   @override
-  Widget build(BuildContext context) => Text(
-        text.toUpperCase(),
-        style: const TextStyle(
-          color: AppColors.textSecondary,
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.6,
-        ),
-      );
+  Widget build(BuildContext context) {
+    final color = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Text(
+      text.toUpperCase(),
+      style: TextStyle(
+        color: color,
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.8,
+      ),
+    );
+  }
 }

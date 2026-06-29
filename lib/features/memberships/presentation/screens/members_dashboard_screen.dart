@@ -7,7 +7,6 @@ import '../../domain/models/members_dashboard.dart';
 import '../bloc/members_dashboard_cubit.dart';
 import '../membership_theme.dart';
 
-/// Vendor: members dashboard — MRR, active count, expiring, filterable by plan.
 class MembersDashboardScreen extends StatelessWidget {
   const MembersDashboardScreen({super.key});
 
@@ -27,16 +26,16 @@ class _DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<_DashboardView> {
-  String _planFilter = 'all'; // 'all' or a planId
+  String _planFilter = 'all';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Members'),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: BlocBuilder<MembersDashboardCubit, MembersDashboardState>(
         builder: (context, state) {
@@ -62,6 +61,7 @@ class _DashboardViewState extends State<_DashboardView> {
     final members = _planFilter == 'all'
         ? data.members
         : data.members.where((m) => m.planId == _planFilter).toList();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return RefreshIndicator(
       onRefresh: () => context.read<MembersDashboardCubit>().load(),
@@ -73,17 +73,30 @@ class _DashboardViewState extends State<_DashboardView> {
           _planFilterChips(data),
           const SizedBox(height: 8),
           if (members.isEmpty)
-            const Padding(
-              padding: EdgeInsets.only(top: 48),
+            Padding(
+              padding: const EdgeInsets.only(top: 56),
               child: Center(
-                child: Text('No members in this view',
-                    style: TextStyle(color: AppColors.textSecondary)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.people_outline_rounded,
+                        size: 48,
+                        color: MembershipTheme.purple.withValues(alpha: 0.35)),
+                    const SizedBox(height: 12),
+                    Text(
+                      'No members yet',
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+                    ),
+                  ],
+                ),
               ),
             )
           else
             ...members.map((m) => Padding(
                   padding: const EdgeInsets.only(bottom: 10),
-                  child: _MemberCard(member: m),
+                  child: _MemberCard(member: m, isDark: isDark),
                 )),
         ],
       ),
@@ -105,21 +118,22 @@ class _DashboardViewState extends State<_DashboardView> {
   Widget _stat(String value, String label, Color color) {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
+        padding: const EdgeInsets.symmetric(vertical: 18),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.10),
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: color.withValues(alpha: 0.25)),
+          border: Border.all(color: color.withValues(alpha: 0.22)),
         ),
         child: Column(
           children: [
             Text(value,
                 style: TextStyle(
-                    fontSize: 20, fontWeight: FontWeight.bold, color: color)),
-            const SizedBox(height: 2),
+                    fontSize: 22, fontWeight: FontWeight.bold, color: color)),
+            const SizedBox(height: 3),
             Text(label,
-                style: const TextStyle(
-                    fontSize: 12, color: AppColors.textSecondary)),
+                style: TextStyle(
+                    fontSize: 12,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
           ],
         ),
       ),
@@ -146,9 +160,12 @@ class _DashboardViewState extends State<_DashboardView> {
       child: ChoiceChip(
         label: Text(label),
         selected: selected,
-        selectedColor: MembershipTheme.purpleSoft,
+        selectedColor: MembershipTheme.purple.withValues(alpha: 0.15),
+        checkmarkColor: MembershipTheme.purple,
         labelStyle: TextStyle(
-          color: selected ? MembershipTheme.purpleDark : AppColors.textSecondary,
+          color: selected
+              ? MembershipTheme.purple
+              : Theme.of(context).colorScheme.onSurfaceVariant,
           fontWeight: selected ? FontWeight.w700 : FontWeight.normal,
         ),
         onSelected: (_) => setState(() => _planFilter = value),
@@ -159,38 +176,62 @@ class _DashboardViewState extends State<_DashboardView> {
 
 class _MemberCard extends StatelessWidget {
   final MemberRow member;
-  const _MemberCard({required this.member});
+  final bool isDark;
+  const _MemberCard({required this.member, required this.isDark});
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     final expSoon = member.daysLeft <= 7;
-    final usageColor = member.totalUsed >= member.totalQuota && member.totalQuota > 0
-        ? AppColors.error
-        : member.totalUsed > 0
-            ? AppColors.warning
-            : AppColors.success;
+    final borderColor = isDark
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.07);
+
+    Color usageColor;
+    if (member.hasQuota) {
+      if (member.totalUsed >= member.totalQuota) {
+        usageColor = AppColors.error;
+      } else if (member.totalUsed > 0) {
+        usageColor = AppColors.warning;
+      } else {
+        usageColor = AppColors.success;
+      }
+    } else {
+      usageColor = AppColors.success;
+    }
 
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: cs.surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.divider),
+        border: Border.all(color: borderColor),
+        boxShadow: isDark
+            ? null
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.04),
+                  blurRadius: 6,
+                  offset: const Offset(0, 2),
+                ),
+              ],
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 22,
-            backgroundColor: MembershipTheme.purpleSoft,
+            backgroundColor:
+                MembershipTheme.purple.withValues(alpha: 0.15),
             backgroundImage: member.customerPhotoUrl != null
                 ? NetworkImage(member.customerPhotoUrl!)
                 : null,
             child: member.customerPhotoUrl == null
-                ? Text(member.customerName.isNotEmpty
-                    ? member.customerName[0].toUpperCase()
-                    : '?',
+                ? Text(
+                    member.customerName.isNotEmpty
+                        ? member.customerName[0].toUpperCase()
+                        : '?',
                     style: const TextStyle(
-                        color: MembershipTheme.purpleDark,
+                        color: MembershipTheme.purple,
                         fontWeight: FontWeight.bold))
                 : null,
           ),
@@ -200,14 +241,16 @@ class _MemberCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(member.customerName,
-                    style: const TextStyle(
-                        fontWeight: FontWeight.w600, fontSize: 15),
+                    style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: cs.onSurface),
                     overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 2),
+                const SizedBox(height: 3),
                 Text(
-                  '${member.planName} · Exp: ${_fmt(member.expiresAt)}',
-                  style: const TextStyle(
-                      color: AppColors.textSecondary, fontSize: 12),
+                  '${member.planName} · ${_fmt(member.expiresAt)}',
+                  style:
+                      TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -218,18 +261,29 @@ class _MemberCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               if (member.hasQuota)
-                Text('${member.totalUsed}/${member.totalQuota} used',
-                    style: TextStyle(
-                        color: usageColor,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13)),
-              const SizedBox(height: 2),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: usageColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text('${member.totalUsed}/${member.totalQuota}',
+                      style: TextStyle(
+                          color: usageColor,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12)),
+                ),
+              const SizedBox(height: 4),
               Text(
-                expSoon ? '${member.daysLeft}d left' : '${member.daysLeft} days',
+                expSoon
+                    ? '${member.daysLeft}d left ⚠'
+                    : '${member.daysLeft} days',
                 style: TextStyle(
-                  color: expSoon ? AppColors.warning : AppColors.textHint,
+                  color: expSoon ? AppColors.warning : cs.onSurfaceVariant,
                   fontSize: 11,
-                  fontWeight: expSoon ? FontWeight.w700 : FontWeight.normal,
+                  fontWeight:
+                      expSoon ? FontWeight.w700 : FontWeight.normal,
                 ),
               ),
             ],
