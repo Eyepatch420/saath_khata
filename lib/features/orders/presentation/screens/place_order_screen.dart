@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/link_model.dart' show VendorLinkItem;
 import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
@@ -89,7 +90,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       listener: (context, state) {
         if (state is OrderPlaced) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Order placed successfully!')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.orderPlacedSuccess)),
           );
           Navigator.of(context).pop();
         } else if (state is OrderError) {
@@ -100,7 +101,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Order from ${widget.vendor.displayName}',
+          title: Text(AppLocalizations.of(context)!.orderFromVendor(widget.vendor.displayName),
               overflow: TextOverflow.ellipsis),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
@@ -125,18 +126,18 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                 child: TextButton.icon(
                   onPressed: _addRow,
                   icon: const Icon(Icons.add_circle_outline),
-                  label: const Text('Add item'),
+                  label: Text(AppLocalizations.of(context)!.addItemButton),
                 ),
               ),
               const SizedBox(height: 8),
-              TextFormField(
+              Builder(builder: (ctx) => TextFormField(
                 controller: _noteCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Order note (optional)',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(ctx)!.orderNoteOptional,
+                  border: const OutlineInputBorder(),
                 ),
                 maxLines: 2,
-              ),
+              )),
               const SizedBox(height: 24),
             ],
           ),
@@ -144,6 +145,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
         bottomNavigationBar: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
             final loading = state is OrderActionLoading;
+            final l10n = AppLocalizations.of(context)!;
             return SafeArea(
               child: Container(
                 padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -163,8 +165,8 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Total',
-                            style: TextStyle(
+                        Text(l10n.totalLabel,
+                            style: const TextStyle(
                                 fontSize: 15, fontWeight: FontWeight.w600)),
                         Text(
                           '₹${_grandTotal.toStringAsFixed(2)}',
@@ -190,8 +192,8 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
                               child: CircularProgressIndicator(
                                   color: Colors.white, strokeWidth: 2),
                             )
-                          : const Text('Place Order',
-                              style: TextStyle(fontSize: 16)),
+                          : Text(l10n.placeOrderButton,
+                              style: const TextStyle(fontSize: 16)),
                     ),
                   ],
                 ),
@@ -216,6 +218,7 @@ class _ItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -225,7 +228,7 @@ class _ItemCard extends StatelessWidget {
           children: [
             Row(
               children: [
-                Text('Item ${index + 1}',
+                Text(l10n.itemNumber(index + 1),
                     style: const TextStyle(fontWeight: FontWeight.w600)),
                 const Spacer(),
                 if (onRemove != null)
@@ -242,13 +245,13 @@ class _ItemCard extends StatelessWidget {
             TextFormField(
               controller: row.nameCtrl,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Item name *',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: l10n.itemNameRequired,
+                border: const OutlineInputBorder(),
                 isDense: true,
               ),
               validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  (v == null || v.trim().isEmpty) ? l10n.required : null,
             ),
             const SizedBox(height: 8),
             Row(
@@ -260,9 +263,9 @@ class _ItemCard extends StatelessWidget {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                     ],
-                    decoration: const InputDecoration(
-                      labelText: 'Qty',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.qty,
+                      border: const OutlineInputBorder(),
                       isDense: true,
                     ),
                   ),
@@ -271,10 +274,10 @@ class _ItemCard extends StatelessWidget {
                 Expanded(
                   child: TextFormField(
                     controller: row.unitCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Unit',
-                      hintText: 'kg, L…',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.unitLabel,
+                      hintText: l10n.unitHint,
+                      border: const OutlineInputBorder(),
                       isDense: true,
                     ),
                   ),
@@ -287,9 +290,9 @@ class _ItemCard extends StatelessWidget {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[0-9.]')),
                     ],
-                    decoration: const InputDecoration(
-                      labelText: 'Unit ₹',
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: l10n.unitPriceLabel,
+                      border: const OutlineInputBorder(),
                       isDense: true,
                     ),
                   ),
@@ -300,7 +303,7 @@ class _ItemCard extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: Text(
-                'Subtotal: ₹${row.subtotal.toStringAsFixed(2)}',
+                l10n.subtotalLabel(row.subtotal.toStringAsFixed(2)),
                 style: const TextStyle(
                   color: AppColors.textSecondary,
                   fontWeight: FontWeight.w600,

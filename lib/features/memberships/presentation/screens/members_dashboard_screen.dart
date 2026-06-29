@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../domain/models/members_dashboard.dart';
 import '../bloc/members_dashboard_cubit.dart';
@@ -32,7 +33,7 @@ class _DashboardViewState extends State<_DashboardView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Members'),
+        title: Text(AppLocalizations.of(context)!.membersTitle),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -84,7 +85,7 @@ class _DashboardViewState extends State<_DashboardView> {
                         color: MembershipTheme.purple.withValues(alpha: 0.35)),
                     const SizedBox(height: 12),
                     Text(
-                      'No members yet',
+                      AppLocalizations.of(context)!.noMembersYet,
                       style: TextStyle(
                           fontSize: 16,
                           color: Theme.of(context).colorScheme.onSurfaceVariant),
@@ -104,13 +105,14 @@ class _DashboardViewState extends State<_DashboardView> {
   }
 
   Widget _statsRow(MembersDashboard data) {
+    final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        _stat('${data.activeCount}', 'Active', MembershipTheme.purple),
+        _stat('${data.activeCount}', l10n.activeStatLabel, MembershipTheme.purple),
         const SizedBox(width: 10),
-        _stat('₹${data.mrr}', 'MRR', AppColors.success),
+        _stat('₹${data.mrr}', l10n.mrrStatLabel, AppColors.success),
         const SizedBox(width: 10),
-        _stat('${data.expiringSoon}', 'Expiring', AppColors.warning),
+        _stat('${data.expiringSoon}', l10n.expiringStatLabel, AppColors.warning),
       ],
     );
   }
@@ -146,7 +148,7 @@ class _DashboardViewState extends State<_DashboardView> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: [
-          _filterChip('All Plans', 'all'),
+          _filterChip(AppLocalizations.of(context)!.allPlansFilter, 'all'),
           ...data.plans.map((p) => _filterChip(p.name, p.id)),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../bloc/ledger_bloc.dart';
 import 'shared_ledger_screen/widgets/ledger_list.dart';
 
@@ -27,7 +28,7 @@ class DeliveriesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Deliveries'),
+        title: Text(AppLocalizations.of(context)!.deliveriesTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -43,15 +44,15 @@ class DeliveriesScreen extends StatelessWidget {
                 color: AppColors.primary.withValues(alpha: 0.06),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.local_shipping_rounded,
+                  const Icon(Icons.local_shipping_rounded,
                       size: 16, color: AppColors.primary),
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Items delivered through orders. Tap an entry to see the items.',
-                      style: TextStyle(
+                      AppLocalizations.of(context)!.deliveriesHint,
+                      style: const TextStyle(
                           fontSize: 12, color: AppColors.textSecondary),
                     ),
                   ),

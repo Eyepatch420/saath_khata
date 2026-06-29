@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/services/ledger_attachment_service.dart';
 import '../../../../shared/models/order_model.dart';
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/full_screen_photo_viewer.dart';
@@ -53,7 +54,7 @@ class OrderDetailScreen extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Order Details'),
+            title: Text(AppLocalizations.of(context)!.orderDetailsTitle),
             backgroundColor: AppColors.primary,
             foregroundColor: Colors.white,
           ),
@@ -64,7 +65,7 @@ class OrderDetailScreen extends StatelessWidget {
               const SizedBox(height: 16),
               if (current.customerName != null) ...[
                 _SectionCard(
-                  title: 'Customer',
+                  title: AppLocalizations.of(context)!.customer,
                   child: Row(
                     children: [
                       CircleAvatar(
@@ -83,7 +84,7 @@ class OrderDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
               _SectionCard(
-                title: 'Items (${current.items.length})',
+                title: AppLocalizations.of(context)!.itemsCount(current.items.length),
                 child: Column(
                   children: [
                     ...current.items.map((it) => _ItemRow(item: it)),
@@ -91,8 +92,8 @@ class OrderDetailScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Total',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        Text(AppLocalizations.of(context)!.totalLabel,
+                            style: const TextStyle(fontWeight: FontWeight.bold)),
                         Text('₹${current.total.toStringAsFixed(2)}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
@@ -106,7 +107,7 @@ class OrderDetailScreen extends StatelessWidget {
               if (current.note != null && current.note!.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 _SectionCard(
-                  title: 'Order note',
+                  title: AppLocalizations.of(context)!.orderNoteOptional,
                   child: Text(current.note!,
                       style: const TextStyle(color: AppColors.textSecondary)),
                 ),
@@ -160,13 +161,14 @@ class OrderDetailScreen extends StatelessWidget {
   }
 
   Widget _deliveryProofCard(BuildContext context, Order order) {
+    final l10n = AppLocalizations.of(context)!;
     return _SectionCard(
-      title: 'Delivery',
+      title: l10n.deliveryLabel,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (order.deliveredByRole != null)
-            Text('Marked delivered by ${order.deliveredByRole}',
+            Text(l10n.markedDeliveredBy(order.deliveredByRole!),
                 style: const TextStyle(fontWeight: FontWeight.w600)),
           if (order.deliveredAt != null)
             Padding(
@@ -182,8 +184,8 @@ class OrderDetailScreen extends StatelessWidget {
           ],
           if (order.proofUrl != null && order.proofUrl!.isNotEmpty) ...[
             const SizedBox(height: 10),
-            const Text('Proof photo',
-                style: TextStyle(
+            Text(l10n.proofPhotoLabel,
+                style: const TextStyle(
                     color: AppColors.textSecondary, fontSize: 12)),
             const SizedBox(height: 6),
             GestureDetector(
@@ -223,8 +225,8 @@ class OrderDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            const Text('Tap to view full screen',
-                style: TextStyle(color: AppColors.textHint, fontSize: 11)),
+            Text(l10n.tapToViewFullScreen,
+                style: const TextStyle(color: AppColors.textHint, fontSize: 11)),
           ],
         ],
       ),
@@ -233,6 +235,7 @@ class OrderDetailScreen extends StatelessWidget {
 
   Widget _actionBar(BuildContext context, Order order, bool busy) {
     final bloc = context.read<OrderBloc>();
+    final l10n = AppLocalizations.of(context)!;
     Widget body;
     if (order.status == OrderStatus.pending && role == 'vendor') {
       body = Row(
@@ -244,7 +247,7 @@ class OrderDetailScreen extends StatelessWidget {
                   : () => bloc.add(UpdateOrderStatus(
                       orderId: order.id, status: OrderStatus.rejected)),
               style: OutlinedButton.styleFrom(foregroundColor: AppColors.error),
-              child: const Text('Reject'),
+              child: Text(l10n.rejectButton),
             ),
           ),
           const SizedBox(width: 12),
@@ -255,7 +258,7 @@ class OrderDetailScreen extends StatelessWidget {
                   : () => bloc.add(UpdateOrderStatus(
                       orderId: order.id, status: OrderStatus.confirmed)),
               style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
-              child: const Text('Confirm'),
+              child: Text(l10n.confirmButton),
             ),
           ),
         ],
@@ -264,7 +267,7 @@ class OrderDetailScreen extends StatelessWidget {
       body = FilledButton.icon(
         onPressed: busy ? null : () => _openDeliverySheet(context, bloc, order),
         icon: const Icon(Icons.local_shipping_outlined),
-        label: const Text('Mark as Delivered'),
+        label: Text(l10n.markAsDeliveredButton),
         style: FilledButton.styleFrom(
           backgroundColor: AppColors.primary,
           minimumSize: const Size.fromHeight(50),
@@ -429,7 +432,7 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
       setState(() => _uploading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text('Photo upload failed: $e'),
+            content: Text(AppLocalizations.of(context)!.photoUploadFailed(e.toString())),
             backgroundColor: AppColors.error),
       );
       return;
@@ -447,6 +450,7 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: EdgeInsets.only(
         left: 20,
@@ -458,17 +462,17 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Confirm Delivery',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(l10n.confirmDeliveryTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Text('₹${widget.order.total.toStringAsFixed(2)} will be added to the customer\'s due.',
               style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
           const SizedBox(height: 16),
           TextField(
             controller: _noteCtrl,
-            decoration: const InputDecoration(
-              labelText: 'Delivery note (optional)',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.deliveryNoteOptional,
+              border: const OutlineInputBorder(),
             ),
             maxLines: 2,
           ),
@@ -511,7 +515,7 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
                       ? null
                       : () => _pickPhoto(ImageSource.camera),
                   icon: const Icon(Icons.camera_alt_outlined, size: 18),
-                  label: Text(_photo == null ? 'Camera' : 'Retake'),
+                  label: Text(_photo == null ? l10n.camera : l10n.retakeLabel),
                 ),
               ),
               const SizedBox(width: 8),
@@ -521,7 +525,7 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
                       ? null
                       : () => _pickPhoto(ImageSource.gallery),
                   icon: const Icon(Icons.photo_library_outlined, size: 18),
-                  label: const Text('Gallery'),
+                  label: Text(l10n.gallery),
                 ),
               ),
             ],
@@ -539,7 +543,7 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
                     height: 22,
                     child: CircularProgressIndicator(
                         color: Colors.white, strokeWidth: 2))
-                : const Text('Mark as Delivered'),
+                : Text(l10n.markAsDeliveredButton),
           ),
         ],
       ),

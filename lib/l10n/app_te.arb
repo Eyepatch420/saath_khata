@@ -593,5 +593,812 @@
         "type": "String"
       }
     }
-  }
+  },
+  "removeStaffTitle": "సిబ్బందిని తొలగించు",
+  "@removeStaffTitle": {},
+  "removeStaffConfirm": "{name}ని మీ సిబ్బంది నుండి తొలగించాలా? వారి యాప్ యాక్సెస్ వెంటనే రద్దు అవుతుంది.",
+  "@removeStaffConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "invalidPhoneNumber": "చెల్లుబాటు అయ్యే 10 అంకెల భారతీయ మొబైల్ నంబర్ నమోదు చేయండి",
+  "enterAll6Digits": "6 అంకెలు పూర్తిగా నమోదు చేయండి",
+  "invalidEmailAddress": "చెల్లుబాటు అయ్యే ఇమెయిల్ చిరునామా నమోదు చేయండి",
+  "passwordRequired": "పాస్‌వర్డ్ నమోదు చేయండి",
+  "nameRequired": "పేరు అవసరం",
+  "required": "అవసరం",
+  "invalidUpiFormat": "చెల్లని UPI ID ఫార్మాట్ (ఉదా. name@upi)",
+  "upiIdAlreadyAdded": "ఈ UPI ID ఇప్పటికే జోడించబడింది",
+  "verifyButton": "ధృవీకరించు",
+  "createAccountButton": "ఖాతా తెరవండి",
+  "phonePlaceholder": "98765 43210",
+  "enterPassword": "పాస్‌వర్డ్ నమోదు చేయండి",
+  "mobileNumberLabel": "మొబైల్ నంబర్",
+  "personalInfo": "వ్యక్తిగత వివరాలు",
+  "businessInfo": "వ్యాపార వివరాలు",
+  "enterOtpTitle": "OTP నమోదు చేయండి",
+  "sentToLabel": "పంపిన నంబర్",
+  "noOtpReceived": "OTP రాలేదా?",
+  "resendOtp": "OTP మళ్ళీ పంపు",
+  "uploadingPhotoLabel": "ఫోటో అప్‌లోడ్ అవుతోంది...",
+  "phoneNumberLabel": "ఫోన్ నంబర్",
+  "iAmA": "నేను ఒక",
+  "dualRoleExplanation": "మీరు ప్రధానంగా వ్యాపారి అనుభవాన్ని ఉపయోగిస్తారు. మీ కస్టమర్ ఖాతాను వేరుగా యాక్సెస్ చేయవచ్చు.",
+  "profileSavedPhotoFailed": "ప్రొఫైల్ సేవ్ అయింది — ఇప్పుడు ఫోటో అప్‌లోడ్ చేయలేకపోయింది",
+  "profileUpdatedSuccess": "ప్రొఫైల్ విజయవంతంగా అప్‌డేట్ అయింది",
+  "addUpiIdTitle": "UPI ID జోడించు",
+  "upiIdHint": "yourname@upi",
+  "cancelButton": "రద్దు",
+  "primaryUpiInfo": "ప్రాథమిక UPI ID",
+  "primaryUpiDescription": "ప్రాథమిక ID కస్టమర్లతో చెల్లింపు కోసం షేర్ చేయబడుతుంది. స్టార్ నొక్కి ప్రాథమికాన్ని మార్చండి.",
+  "upiIdCounter": "{count} / {max} UPI IDలు",
+  "@upiIdCounter": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "primaryUpiIdTooltip": "ప్రాథమిక UPI ID",
+  "setAsPrimaryTooltip": "ప్రాథమికంగా సెట్ చేయి",
+  "primaryLabel": "ప్రాథమికం",
+  "removeButtonLabel": "తొలగించు",
+  "noUpiIdsEmpty": "ఇంకా UPI IDలు లేవు",
+  "upiEmptyDescription": "గరిష్టంగా 5 UPI IDలు జోడించవచ్చు. ప్రాథమిక ID చెల్లింపుల కోసం కస్టమర్లతో షేర్ అవుతుంది.",
+  "changePasswordSubtitle": "మీ ప్రస్తుత పాస్‌వర్డ్ నమోదు చేసి కొత్తది ఎంచుకోండి.",
+  "alreadyHaveAccount": "ఇప్పటికే ఖాతా ఉందా?",
+  "goBackButton": "వెనక్కి వెళ్ళు",
+  "saveButton": "సేవ్ చేయి",
+  "language": "భాష",
+  "languageEnglish": "English",
+  "languageHindi": "हिंदी",
+  "languageBengali": "বাংলা",
+  "languageMarathi": "मराठी",
+  "languageTamil": "தமிழ்",
+  "languageTelugu": "తెలుగు",
+  "languageKannada": "ಕನ್ನಡ",
+  "languageGujarati": "ગુજરાતી",
+  "languagePunjabi": "ਪੰਜਾਬੀ",
+  "languageMalayalam": "മലയാളം",
+  "languageBhojpuri": "भोजपुरी",
+  "languageMaithili": "मैथिली",
+  "needPasswordForEmail": "ఇది వాడాలంటే మీ ఖాతాలో పాస్‌వర్డ్ సెట్ అయి ఉండాలి.\nసెట్టింగ్స్ → పాస్‌వర్డ్ మార్చు నుండి సెట్ చేయండి.",
+  "usePhoneInstead": "ఫోన్ నంబర్ ఉపయోగించు →",
+  "sessionExpiredVerifyPhoneAgain": "సెషన్ గడువు తీరింది. మళ్ళీ ఫోన్ ధృవీకరించండి.",
+  "upiIdsSavedSuccessfully": "UPI IDలు విజయవంతంగా సేవ్ అయ్యాయి",
+  "chooseYourLanguageHindi": "మీ భాషను ఎంచుకోండి",
+  "unknownLanguage": "తెలియని భాష",
+  "businessCategoryMilkDairy": "పాలు / డెయిరీ",
+  "businessCategoryPressDhobi": "ప్రెస్ / ధోబి",
+  "businessCategoryMaidCook": "పనిమనిషి / వంట",
+  "businessCategoryNewspaper": "న్యూస్‌పేపర్",
+  "businessCategoryWaterCan": "వాటర్ క్యాన్",
+  "businessCategoryTiffinFood": "టిఫిన్ / తిండి",
+  "businessCategoryKiranaGrocery": "కిరాణా",
+  "businessCategorySalonParlour": "సెలూన్ / పార్లర్",
+  "businessCategoryConstructionLabour": "నిర్మాణ కార్మికులు",
+  "businessCategoryTransportAuto": "రవాణా / ఆటో",
+  "businessCategoryOther": "ఇతర",
+  "bookAnAppointment": "అపాయింట్‌మెంట్ బుక్ చేయండి",
+  "noSlotsAvailable": "స్లాట్‌లు లేవు",
+  "trySelectingDifferentDate": "వేరే తేదీ ఎంచుకోండి",
+  "availableSlots": "అందుబాటులో ఉన్న స్లాట్‌లు",
+  "bookingConfirmedToast": "బుకింగ్ నిర్ధారించబడింది!",
+  "date": "తేదీ",
+  "time": "సమయం",
+  "notesOptional": "నోట్స్ (ఐచ్ఛికం)",
+  "durationMinutes": "{minutes} నిమిషాలు",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "saveChanges": "మార్పులు సేవ్ చేయి",
+  "saveProduct": "ఉత్పత్తి సేవ్ చేయి",
+  "editProductMenuItem": "ఉత్పత్తి సవరించు",
+  "deleteProductMenuItem": "ఉత్పత్తి తొలగించు",
+  "noProductsYetDescription": "మీరు అమ్మే వస్తువులు — పాలు, పనీర్ మొదలైనవి — ఒకసారి నిర్వచించండి, తర్వాత రోజూ వాడండి.",
+  "selectProductToAssignQty": "పరిమాణం నిర్ణయించడానికి పై నుండి ఉత్పత్తి ఎంచుకోండి",
+  "noCustomersLinked": "ఇంకా కస్టమర్లు లింక్ కాలేదు",
+  "chargeAll": "అందరికీ చార్జ్ చేయి",
+  "chargedSuccessfully": "{count} కస్టమర్‌కు విజయవంతంగా చార్జ్ చేయబడింది",
+  "@chargedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chargedSuccessfullyPlural": "{count} కస్టమర్లకు విజయవంతంగా చార్జ్ చేయబడింది",
+  "@chargedSuccessfullyPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chargedPartial": "{ok} చార్జ్ అయ్యారు, {fail} విఫలమైంది",
+  "@chargedPartial": {
+    "placeholders": {
+      "ok": {
+        "type": "int"
+      },
+      "fail": {
+        "type": "int"
+      }
+    }
+  },
+  "bulkSummaryLine": "{count} కస్టమర్  •  {qty} {unit}",
+  "@bulkSummaryLine": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "bulkSummaryLinePlural": "{count} కస్టమర్లు  •  {qty} {unit}",
+  "@bulkSummaryLinePlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "totalAmount": "₹{amount} మొత్తం",
+  "@totalAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "appointmentNext": "తదుపరి: {vendorName} · {date} {time}కి",
+  "@appointmentNext": {
+    "placeholders": {
+      "vendorName": { "type": "String" },
+      "date": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "outstandingShortLabel": "బాకీ",
+  "payViaUpiAmount": "UPI ద్వారా ₹{amount} చెల్లించు",
+  "@payViaUpiAmount": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "paymentSummarySkipped": "{count} వ్యాపారులకు చెల్లించారు, {skipped} దాటవేశారు.",
+  "@paymentSummarySkipped": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "skipped": { "type": "int" }
+    }
+  },
+  "paymentSummarySkippedSingular": "{count} వ్యాపారికి చెల్లించారు, {skipped} దాటవేశారు.",
+  "@paymentSummarySkippedSingular": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "skipped": { "type": "int" }
+    }
+  },
+  "paymentSummaryComplete": "అందరు {count} వ్యాపారులకూ చెల్లించారు.",
+  "@paymentSummaryComplete": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "paymentSummaryCompleteSingular": "అందరు {count} వ్యాపారికీ చెల్లించారు.",
+  "@paymentSummaryCompleteSingular": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "tapToAcceptOrDecline": "అంగీకరించడానికి లేదా తిరస్కరించడానికి నొక్కండి",
+  "helpSupportContactPrefix": "ఏదైనా సహాయం కావాలంటే మాకు సంప్రదించండి:",
+  "supportEmail": "igurus@info.in",
+  "bookButton": "బుక్ చేయి",
+  "waitingForVendorAcceptance": "{name} మీ అభ్యర్థనను అంగీకరించడానికి వేచి ఉంది.",
+  "@waitingForVendorAcceptance": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "vendorWantsToConnectAsCustomer": "ఒక వ్యాపారి కనెక్ట్ కావాలనుకుంటున్నారు",
+  "vendorWantsToConnectDesc": "వారు మిమ్మల్ని కస్టమర్‌గా జోడించి మీ ఖాతాను ట్రాక్ చేయాలనుకుంటున్నారు.",
+  "someoneWantsToConnect": "ఎవరో కనెక్ట్ కావాలనుకుంటున్నారు",
+  "someoneWantsToConnectDesc": "వారు మీ ఖాతాకు కస్టమర్‌గా జోడించబడతారు.",
+  "requestedTimeAgo": "{time} క్రితం అభ్యర్థించారు",
+  "@requestedTimeAgo": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "connectedVendorLinked": "కనెక్ట్ అయింది! {name} మీ ఖాతాకు లింక్ అయ్యారు.",
+  "@connectedVendorLinked": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "requestDeclinedFrom": "{name} అభ్యర్థన తిరస్కరించబడింది.",
+  "@requestDeclinedFrom": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "connectedCustomerLinked": "కనెక్ట్ అయింది! {name} మీ వ్యాపారానికి లింక్ అయ్యారు.",
+  "@connectedCustomerLinked": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "processing": "ప్రాసెస్ అవుతోంది…",
+  "retryButton": "మళ్ళీ ప్రయత్నించు",
+  "memberDiscountDescription": "ఈ స్థాయిలోని సభ్యులకు వారి బాకీపై ఈ తగ్గింపు వర్తిస్తుంది.",
+  "discountValueInvalid": "0 కంటే ఎక్కువ చెల్లుబాటు అయ్యే మొత్తం నమోదు చేయండి",
+  "percentageExceedsMax": "శాతం 100 దాటకూడదు",
+  "levelLabel": "స్థాయి {level}",
+  "@levelLabel": {
+    "placeholders": {
+      "level": { "type": "int" }
+    }
+  },
+  "rename": "పేరు మార్చు",
+  "membershipLabel": "సభ్యత్వం",
+  "noMembership": "సభ్యత్వం లేదు",
+  "applyForMembership": "సభ్యత్వానికి దరఖాస్తు చేయి",
+  "setMembershipTier": "సభ్యత్వ స్థాయి సెట్ చేయి",
+  "chooseTierToRequestFromVendor": "ఈ వ్యాపారి నుండి అభ్యర్థించడానికి స్థాయి ఎంచుకోండి",
+  "chooseTierFor": "{customerName} కోసం స్థాయి ఎంచుకోండి",
+  "@chooseTierFor": {
+    "placeholders": {
+      "customerName": { "type": "String" }
+    }
+  },
+  "setButton": "సెట్ చేయి",
+  "changeButton": "మార్చు",
+  "applyButton": "అప్లై చేయి",
+  "approveButton": "ఆమోదించు",
+  "customerRequestedTier": "{customerName} {tierName} అభ్యర్థించారు",
+  "@customerRequestedTier": {
+    "placeholders": {
+      "customerName": { "type": "String" },
+      "tierName": { "type": "String" }
+    }
+  },
+  "requestedTierAwaiting": "{tierName} అభ్యర్థించబడింది — ఆమోదం కోసం వేచి ఉంది",
+  "@requestedTierAwaiting": {
+    "placeholders": {
+      "tierName": { "type": "String" }
+    }
+  },
+  "verificationConnecting": "మీ బ్యాంక్‌కు కనెక్ట్ అవుతోంది…",
+  "verificationVerifying": "లావాదేవీ ధృవీకరిస్తోంది…",
+  "verificationWaiting": "నిర్ధారణ కోసం వేచి ఉంది…",
+  "verificationAlmostThere": "దాదాపు అయింది…",
+  "verificationDoNotClose": "ఈ స్క్రీన్ మూయకండి",
+  "verificationElapsed": "{seconds}s  •  ఈ స్క్రీన్ మూయకండి",
+  "@verificationElapsed": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "txnLabel": "Txn: {txnId}",
+  "@txnLabel": {
+    "placeholders": {
+      "txnId": { "type": "String" }
+    }
+  },
+  "paidAmountToRecipient": "₹{amount} {name}కి చెల్లించబడింది",
+  "@paidAmountToRecipient": {
+    "placeholders": {
+      "amount": { "type": "String" },
+      "name": { "type": "String" }
+    }
+  },
+  "verificationTimeoutBody": "30 సెకన్లలో మీ చెల్లింపు నిర్ధారించలేకపోయాం. మీ డబ్బు డెబిట్ కాకపోవచ్చు — మళ్ళీ ప్రయత్నించే ముందు మీ బ్యాంక్ స్టేట్‌మెంట్ తనిఖీ చేయండి.",
+  "ifDebitedContactSupport": "డెబిట్ అయినట్లయితే, Txn ID తో సపోర్ట్ సంప్రదించండి.",
+  "thisMonthSubtitle": "ఈ నెల",
+  "billedNet": "బిల్ (నెట్)",
+  "exclDisputed": "వివాదాస్పదం మినహా",
+  "receivedLabel": "స్వీకరించినది",
+  "paymentsAndAdj": "చెల్లింపులు & సర్దుబాటు",
+  "currentBalance": "ప్రస్తుత బ్యాలెన్స్",
+  "paymentCount": "{count} చెల్లింపు",
+  "@paymentCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "paymentCountPlural": "{count} చెల్లింపులు",
+  "@paymentCountPlural": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "customersCount": "{count} కస్టమర్లు",
+  "@customersCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "rankedByOutstanding": "బాకీ మొత్తం ఆధారంగా క్రమబద్ధం చేయబడింది",
+  "collectedThisMonth": "ఈ నెల ₹{amount}",
+  "@collectedThisMonth": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "collectedThisMonthShort": "₹{amount} ఈ నె.",
+  "@collectedThisMonthShort": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "categoryAll": "అన్నీ",
+  "findVendorsNearYou": "మీ దగ్గర వ్యాపారులను వెతకండి",
+  "searchByNameOrCategory": "పేరు, వ్యాపార పేరు ద్వారా వెతకండి\nలేదా పై నుండి వర్గం ఎంచుకోండి.",
+  "noResultsForQuery": "\"{query}\" కు ఫలితాలు లేవు.\nవేరే పేరు లేదా వర్గం ప్రయత్నించండి.",
+  "@noResultsForQuery": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "addressLabel": "చిరునామా",
+  "emailLabel": "ఇమెయిల్",
+  "upiLabel": "UPI",
+  "upiIdLabel": "UPI ID",
+  "upiEmailLabel": "UPI / ఇమెయిల్",
+  "couldNotLoadRetry": "లోడ్ కాలేదు — రీట్రై చేయడానికి నొక్కండి",
+  "labelCopied": "{label} కాపీ చేయబడింది!",
+  "@labelCopied": {
+    "placeholders": {
+      "label": { "type": "String" }
+    }
+  },
+  "upiIdCopied": "UPI ID కాపీ చేయబడింది!",
+  "requestSentButton": "అభ్యర్థన పంపబడింది",
+  "alreadyConnected": "ఇప్పటికే కనెక్ట్ అయింది",
+  "sendingEllipsis": "పంపుతోంది…",
+  "sendConnectionRequest": "కనెక్షన్ అభ్యర్థన పంపు",
+  "copyUpiIdToPay": "చెల్లించడానికి UPI ID కాపీ చేయి",
+  "requestSentToVendor": "అభ్యర్థన పంపబడింది! {name}కు నోటిఫికేషన్ వస్తుంది.",
+  "@requestSentToVendor": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "byOwnerName": "{name} ద్వారా",
+  "@byOwnerName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "logOut": "లాగ్ అవుట్",
+  "confirmLogoutTitle": "లాగ్ అవుట్",
+  "areYouSureLogout": "మీరు నిజంగా లాగ్ అవుట్ కావాలా?",
+  "showQrToCollect": "నేరుగా చెల్లింపు స్వీకరించడానికి ఈ QR కస్టమర్‌కు చూపించండి.",
+  "uploadQr": "QR అప్‌లోడ్ చేయి",
+  "replaceQr": "మార్చు",
+  "qrUploaded": "QR అప్‌లోడ్ అయింది",
+  "scanToPayName": "{name}కు చెల్లించడానికి స్కాన్ చేయి",
+  "@scanToPayName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "salarySingle": "జీతం",
+  "advanceSingle": "అడ్వాన్స్",
+  "customersTitle": "కస్టమర్లు",
+  "balanceDue": "₹{balance} బాకీ",
+  "@balanceDue": {
+    "placeholders": {
+      "balance": { "type": "String" }
+    }
+  },
+  "recordDeliveryTooltip": "డెలివరీ నమోదు చేయి",
+  "viewLedgerTooltip": "ఖాతా చూడు",
+  "staffRoleSubtitle": "సిబ్బంది · {name}",
+  "@staffRoleSubtitle": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "recordDelivery": "అప్పు ఇచ్చారు",
+  "recordDeliverySubtitle": "కస్టమర్ వస్తువులు తీసుకున్నారు — వారి ఖాతాలో జోడించు",
+  "collectPayment": "పైసా వచ్చింది",
+  "collectPaymentSubtitle": "కస్టమర్ చెల్లించారు — వారి ఖాతా తగ్గించు",
+  "viewAll2": "అన్నీ చూడు",
+  "noCustomersStaff": "ఇంకా కస్టమర్లు లేరు",
+  "myVendorsSection": "నా వ్యాపారులు",
+  "shopsYouBuyFrom": "మీరు కొనే దుకాణాలు",
+  "awaitingAcceptanceTitle": "అంగీకారం కోసం వేచి ఉంది",
+  "customersHaventConfirmed": "ఈ కస్టమర్లు ఇంకా నిర్ధారించలేదు",
+  "pendingBadge": "పెండింగ్",
+  "notifyCustomersWithDues": "బాకీ ఉన్న కస్టమర్లకు గుర్తు చేయి",
+  "linkANewCustomer": "కొత్త కస్టమర్‌ని లింక్ చేయి",
+  "dailyCharge": "రోజువారీ చార్జ్",
+  "dailyChargeSubtitle": "పరిమాణాలు సెట్ చేసి ఒకేసారి చార్జ్ చేయి",
+  "findByPhoneOrEmailHint": "ఫోన్ నంబర్ లేదా ఇమెయిల్ ద్వారా వెతకండి",
+  "phoneOrEmailLabel": "ఫోన్ లేదా ఇమెయిల్",
+  "phoneMobileOrEmail": "10 అంకెల మొబైల్ లేదా ఇమెయిల్ చిరునామా",
+  "nicknameOptionalLabel": "మారుపేరు (ఐచ్ఛికం)",
+  "howYouKnowCustomer": "మీకు ఈ కస్టమర్ ఎలా తెలుసు",
+  "requestSentWillBeNotified": "అభ్యర్థన పంపబడింది! నిర్ధారించడానికి వారికి నోటిఫికేషన్ వస్తుంది.",
+  "outstandingTitle": "బాకీ",
+  "customersWithDues": "{count}+ కస్టమర్లకు బాకీ ఉంది",
+  "@customersWithDues": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "dueLabel": "బాకీ",
+  "collectedTodayTitle": "నేడు వసూలు",
+  "paymentsCountSubtitle": "{count}+ చెల్లింపులు",
+  "@paymentsCountSubtitle": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "noPaymentsYetSubtitle": "ఇంకా చెల్లింపులు లేవు",
+  "removeLedgerVendorContent": "ఇది {name}తో మీ లింక్ నిష్క్రియం చేస్తుంది. ఇరు పక్షాలూ ఈ భాగస్వామ్య ఖాతాకు యాక్సెస్ కోల్పోతారు.",
+  "@removeLedgerVendorContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "removeLedgerCustomerContent": "ఇది {name}తో మీ కనెక్షన్ తొలగిస్తుంది.",
+  "@removeLedgerCustomerContent": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "offlineUpdatesPaused": "ఆఫ్‌లైన్ — అప్‌డేట్‌లు నిలిపివేయబడ్డాయి",
+  "exportStatementTitle": "స్టేట్‌మెంట్ ఎగుమతి చేయి",
+  "chooseExportDateRange": "PDF లో చేర్చడానికి తేదీ పరిధి ఎంచుకోండి.",
+  "last7DaysRange": "గత 7 రోజుల ఎంట్రీలు",
+  "last30DaysRange": "గత 30 రోజుల ఎంట్రీలు",
+  "last3MonthsRange": "గత 3 నెలల ఎంట్రీలు",
+  "completeLedgerHistory": "పూర్తి ఖాతా చరిత్ర",
+  "appAccessActive": "చురుకుగా · {phone}",
+  "@appAccessActive": {
+    "placeholders": {
+      "phone": { "type": "String" }
+    }
+  },
+  "appAccessDisabled": "నిష్క్రియం",
+  "appAccessGranted": "{name} ఇప్పుడు {phone} తో లాగిన్ చేయవచ్చు",
+  "@appAccessGranted": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "phone": { "type": "String" }
+    }
+  },
+  "appAccessRevoked": "{name} యాప్ యాక్సెస్ రద్దు చేయబడింది",
+  "@appAccessRevoked": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "appAccessDescription": "ఆన్ చేస్తే {name} తమ స్వంత నంబర్ ({phone}) తో లాగిన్ చేసి డెలివరీలు & చెల్లింపులు నమోదు చేయవచ్చు, వారి QR చూపించవచ్చు — కానీ హాజరు మార్చలేరు, కస్టమర్లు జోడించలేరు, ఇతర సిబ్బందిని చూడలేరు.",
+  "@appAccessDescription": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "phone": { "type": "String" }
+    }
+  },
+  "paymentHistoryTitle": "చెల్లింపుల చరిత్ర",
+  "couldNotLoadPaymentHistory": "చెల్లింపుల చరిత్ర లోడ్ కాలేదు",
+  "voicePleaseCheck": "దయచేసి తనిఖీ చేయండి",
+  "navHome": "హోమ్",
+  "qty": "పరిమాణం",
+  "totalRupees": "మొత్తం: ₹{amount}",
+  "@totalRupees": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "selectCustomerFirst": "ముందు కస్టమర్‌ని ఎంచుకోండి",
+  "enterValidAmount": "చెల్లుబాటు అయ్యే మొత్తం నమోదు చేయండి",
+  "addsCredit": "కస్టమర్ వస్తువులు తీసుకున్నారు — వారి ఖాతాలో జోడించు",
+  "recordsCash": "కస్టమర్ చెల్లించారు — వారి ఖాతా తగ్గించు",
+  "deliveryRecordedFor": "{name} కోసం డెలివరీ నమోదు చేయబడింది",
+  "@deliveryRecordedFor": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "paymentCollectedFrom": "{name} నుండి చెల్లింపు వసూలు చేయబడింది",
+  "@paymentCollectedFrom": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "manageSchedule": "షెడ్యూల్ నిర్వహించు",
+  "bookingsTab": "బుకింగ్‌లు",
+  "bySlotTab": "స్లాట్ వారీగా",
+  "scheduleSaved": "షెడ్యూల్ సేవ్ అయింది!",
+  "addSlot": "స్లాట్ జోడించు",
+  "noSlotsForDay": "{day}కి స్లాట్‌లు లేవు",
+  "@noSlotsForDay": {
+    "placeholders": {
+      "day": { "type": "String" }
+    }
+  },
+  "tapAddSlotHint": "మీ అందుబాటు సెట్ చేయడానికి \"స్లాట్ జోడించు\" నొక్కండి",
+  "slotAvailable": "అందుబాటులో ఉంది",
+  "slotsFull": "స్లాట్‌లు నిండాయి",
+  "slotFullHint": "ఈ స్లాట్ పూర్తిగా బుక్ అయినట్లు గుర్తించు",
+  "enableSlotFirst": "ముందు స్లాట్ ఎనేబుల్ చేయండి",
+  "deleteSlotTitle": "స్లాట్ తొలగించు",
+  "deleteSlotConfirm": "{time} స్లాట్ తొలగించాలా?",
+  "@deleteSlotConfirm": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "endTimeAfterStart": "ముగింపు సమయం ప్రారంభ సమయం తర్వాత ఉండాలి",
+  "slotOverlaps": "ఈ స్లాట్ ఇప్పటికే ఉన్న స్లాట్‌తో అతివ్యాపించింది",
+  "addTimeSlot": "సమయ స్లాట్ జోడించు",
+  "editTimeSlot": "సమయ స్లాట్ సవరించు",
+  "selectTimeHint": "12 గంటల ఫార్మాట్‌లో ప్రారంభ మరియు ముగింపు సమయం ఎంచుకోండి",
+  "startLabel": "ప్రారంభం",
+  "endLabel": "ముగింపు",
+  "update": "అప్‌డేట్ చేయి",
+  "notifTabAll": "అన్నీ",
+  "notifTabBookings": "బుకింగ్‌లు",
+  "noBookingNotifications": "బుకింగ్ నోటిఫికేషన్లు లేవు",
+  "noBookingNotificationsSubtitle": "బుకింగ్ అభ్యర్థనలు మరియు అప్‌డేట్‌లు ఇక్కడ కనిపిస్తాయి",
+  "bookingPillLabel": "బుకింగ్",
+  "slotDetailTitle": "స్లాట్ వివరాలు",
+  "bookingsCount": "{count} బుకింగ్",
+  "@bookingsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "bookingsCountPlural": "{count} బుకింగ్‌లు",
+  "@bookingsCountPlural": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "pendingCountLabel": "{count} పెండింగ్",
+  "@pendingCountLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "slotTimeRange": "{start} – {end}",
+  "@slotTimeRange": {
+    "placeholders": {
+      "start": { "type": "String" },
+      "end": { "type": "String" }
+    }
+  },
+  "keepButton": "ఉంచు",
+  "deleteButton": "తొలగించు",
+  "membershipPlansTitle": "సభ్యత్వ ప్లాన్‌లు",
+  "newPlanButton": "కొత్త ప్లాన్",
+  "deletePlanTitle": "ప్లాన్ తొలగించాలా?",
+  "deletePlanConfirm": "\"{name}\" తొలగించబడుతుంది. ఇది చేయవీలు కాదు.",
+  "@deletePlanConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "inactiveLabel": "నిష్క్రియం",
+  "noBenefitsAdded": "ప్రయోజనాలు జోడించలేదు.",
+  "noMembershipPlans": "ఇంకా సభ్యత్వ ప్లాన్‌లు లేవు",
+  "tapNewPlanHint": "మీ మొదటి ప్లాన్ తయారు చేయడానికి \"కొత్త ప్లాన్\" నొక్కండి.",
+  "membershipRequestsTitle": "సభ్యత్వ అభ్యర్థనలు",
+  "noPendingRequests": "పెండింగ్ అభ్యర్థనలు లేవు",
+  "customersCanApplyHint": "కస్టమర్లు వారి ఖాతా స్క్రీన్ నుండి\nసభ్యత్వానికి దరఖాస్తు చేయవచ్చు.",
+  "membersTitle": "సభ్యులు",
+  "noMembersYet": "ఇంకా సభ్యులు లేరు",
+  "activeStat": "చురుకుగా",
+  "mrrStat": "MRR",
+  "expiringStat": "గడువు తీరుతోంది",
+  "allPlansFilter": "అన్ని ప్లాన్‌లు",
+  "daysLeft": "{count}రో మిగిలింది",
+  "@daysLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "daysLeftFull": "{count} రోజులు",
+  "@daysLeftFull": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "planNameLabel": "ప్లాన్ పేరు",
+  "planNameHint": "ఉదా. గోల్డ్ మెంబర్‌షిప్",
+  "durationDaysLabel": "వ్యవధి (రోజులు)",
+  "priceRupeesLabel": "ధర ₹",
+  "addBenefitButton": "ప్రయోజనం జోడించు",
+  "customLabel": "అనుకూలం",
+  "customAdvanceLabel": "అనుకూల అడ్వాన్స్ ₹",
+  "benefitLabel": "ప్రయోజనం",
+  "benefitHint": "ఉదా. 4 హెయిర్‌కట్‌లు",
+  "planDetailsSection": "ప్లాన్ వివరాలు",
+  "benefitsSection": "ప్రయోజనాలు",
+  "advanceRequiredSection": "అవసరమైన అడ్వాన్స్",
+  "editPlanTitle": "ప్లాన్ సవరించు",
+  "createPlanTitle": "సభ్యత్వ ప్లాన్ తయారు చేయి",
+  "publishPlanButton": "ప్లాన్ ప్రచురించు",
+  "planUpdatedToast": "ప్లాన్ అప్‌డేట్ అయింది",
+  "planPublishedToast": "ప్లాన్ ప్రచురించబడింది",
+  "vendorPlansTitle": "{vendorName} · ప్లాన్‌లు",
+  "@vendorPlansTitle": {
+    "placeholders": {
+      "vendorName": { "type": "String" }
+    }
+  },
+  "noPlansAvailable": "ఇంకా ప్లాన్‌లు అందుబాటులో లేవు",
+  "vendorNoPlansHint": "ఈ వ్యాపారి ఇంకా ఏ సభ్యత్వ ప్లాన్‌లూ తయారు చేయలేదు.",
+  "applyForPlan": "{planName} కోసం దరఖాస్తు చేయి",
+  "@applyForPlan": {
+    "placeholders": {
+      "planName": { "type": "String" }
+    }
+  },
+  "messageToVendorOptional": "వ్యాపారికి సందేశం (ఐచ్ఛికం)",
+  "messageToVendorHint": "ఉదా. దయచేసి ఈ నెల నన్ను నమోదు చేయండి",
+  "sendRequestButton": "అభ్యర్థన పంపు",
+  "activeLabel": "చురుకుగా",
+  "noAdditionalBenefits": "అదనపు ప్రయోజనాలు లేవు",
+  "currentPlanLabel": "ప్రస్తుత ప్లాన్",
+  "requestPendingLabel": "అభ్యర్థన పెండింగ్‌లో ఉంది",
+  "applyLabel": "దరఖాస్తు చేయి",
+  "requestSentToName": "{name}కు అభ్యర్థన పంపబడింది",
+  "@requestSentToName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "membershipDialogTitle": "సభ్యత్వం",
+  "pendingPlanPrefix": "పెండింగ్: {planName}",
+  "@pendingPlanPrefix": {
+    "placeholders": {
+      "planName": { "type": "String" }
+    }
+  },
+  "enrollCustomer": "{name}ని నమోదు చేయి",
+  "@enrollCustomer": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "choosePlanHint": "వారి సభ్యత్వం ప్రారంభించడానికి ఒక ప్లాన్ ఎంచుకోండి.",
+  "noActivePlansHint": "చురుకైన ప్లాన్‌లు లేవు. ముందు సభ్యత్వాలు → ప్లాన్‌లలో ఒకటి తయారు చేయండి.",
+  "enrollLabel": "నమోదు చేయి",
+  "changeLabel": "మార్చు",
+  "usedLabel": "వాడారు",
+  "useLabel": "వాడు",
+  "daysLeftLabel": "{count} రోజులు మిగిలాయి",
+  "@daysLeftLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "orderPlacedSuccess": "ఆర్డర్ విజయవంతంగా పెట్టబడింది!",
+  "orderFromVendor": "{vendorName} నుండి ఆర్డర్",
+  "@orderFromVendor": {
+    "placeholders": {
+      "vendorName": { "type": "String" }
+    }
+  },
+  "addItemButton": "వస్తువు జోడించు",
+  "orderNoteOptional": "ఆర్డర్ నోట్ (ఐచ్ఛికం)",
+  "totalLabel": "మొత్తం",
+  "placeOrderButton": "ఆర్డర్ పెట్టు",
+  "itemNameRequired": "వస్తువు పేరు *",
+  "unitLabel": "యూనిట్",
+  "unitHint": "కేజీ, లీ…",
+  "unitPriceLabel": "యూనిట్ ₹",
+  "itemNumber": "వస్తువు {number}",
+  "@itemNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "subtotalLabel": "సబ్‌టోటల్: ₹{amount}",
+  "@subtotalLabel": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+  "orderDetailsTitle": "ఆర్డర్ వివరాలు",
+  "proofPhotoLabel": "రుజువు ఫోటో",
+  "tapToViewFullScreen": "పూర్తి స్క్రీన్‌లో చూడటానికి నొక్కండి",
+  "rejectButton": "తిరస్కరించు",
+  "confirmButton": "నిర్ధారించు",
+  "markAsDeliveredButton": "డెలివరీ అయినట్లు గుర్తించు",
+  "confirmDeliveryTitle": "డెలివరీ నిర్ధారించు",
+  "deliveryNoteOptional": "డెలివరీ నోట్ (ఐచ్ఛికం)",
+  "retakeLabel": "మళ్ళీ తీయి",
+  "photoUploadFailed": "ఫోటో అప్‌లోడ్ విఫలమైంది: {error}",
+  "@photoUploadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "orderNoteLabel": "ఆర్డర్ నోట్",
+  "customerLabel": "కస్టమర్",
+  "ordersTitle": "ఆర్డర్‌లు",
+  "noOrdersYet": "ఇంకా ఆర్డర్‌లు లేవు",
+  "markDeliveredButton": "డెలివరీ గుర్తించు",
+  "myOrdersTitle": "నా ఆర్డర్‌లు",
+  "deliverButton": "డెలివర్ చేయి",
+  "noPendingDeliveries": "పెండింగ్ డెలివరీలు లేవు",
+  "deliveriesTitle": "డెలివరీలు",
+  "monthlyStatementTitle": "నెలవారీ స్టేట్‌మెంట్",
+  "deliveryProofLabel": "డెలివరీ రుజువు",
+  "replacePhotoButton": "ఫోటో మార్చు",
+  "attachProofButton": "రుజువు జతచేయి",
+  "uploadingLabel": "అప్‌లోడ్ అవుతోంది...",
+  "proofLockedHint": "ఈ రుజువు లాక్ చేయబడింది, మార్చలేరు",
+  "proofAttachedToast": "రుజువు జతచేయబడింది",
+  "itemLabel": "వస్తువు {number}",
+  "@itemLabel": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "amountRequired": "మొత్తం *",
+  "addItemLabel": "వస్తువు జోడించు",
+  "totalAmountLabel": "మొత్తం",
+  "deactivate": "నిష్క్రియం చేయి",
+  "activate": "చురుకు చేయి",
+  "activeStatLabel": "చురుకుగా",
+  "mrrStatLabel": "MRR",
+  "expiringStatLabel": "గడువు తీరుతోంది",
+  "closeLabel": "మూయి",
+  "pendingPlanLabel": "పెండింగ్: {name}",
+  "@pendingPlanLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "customerRequestedPlan": "{customer} {plan} అభ్యర్థించారు",
+  "@customerRequestedPlan": {
+    "placeholders": {
+      "customer": { "type": "String" },
+      "plan": { "type": "String" }
+    }
+  },
+  "itemsCount": "వస్తువులు ({count})",
+  "@itemsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "deliveryLabel": "డెలివరీ",
+  "markedDeliveredBy": "{role} డెలివరీ అయినట్లు గుర్తించారు",
+  "@markedDeliveredBy": {
+    "placeholders": {
+      "role": { "type": "String" }
+    }
+  },
+  "deliveriesHint": "ఆర్డర్ల ద్వారా చేసిన డెలివరీలు. వస్తువులు చూడటానికి ఒక ఎంట్రీ నొక్కండి."
 }

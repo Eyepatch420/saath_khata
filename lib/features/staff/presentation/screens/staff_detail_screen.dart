@@ -9,6 +9,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/staff_model.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import 'staff_detail_screen/widgets/app_access_card.dart';
 import 'staff_detail_screen/widgets/salary_history_section.dart';
 import '../bloc/staff_bloc.dart';
@@ -42,7 +43,19 @@ class _StaffDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return BlocBuilder<StaffBloc, StaffState>(
+    return BlocConsumer<StaffBloc, StaffState>(
+      listener: (context, state) {
+        if (state is StaffDeleted) {
+          AppToast.show(
+            context,
+            '${state.staffName} has been removed',
+            type: ToastType.info,
+          );
+          Navigator.of(context).pop();
+        } else if (state is StaffError) {
+          AppToast.show(context, state.message, type: ToastType.error);
+        }
+      },
       builder: (context, state) {
         final staff = state is StaffDetailLoaded ? state.staff : initialStaff;
         final attendance =
@@ -51,7 +64,6 @@ class _StaffDetailView extends StatelessWidget {
         final month = state is StaffDetailLoaded ? state.month : DateTime.now().month;
 
         return Scaffold(
-
           appBar: AppBar(
             title: Text(staff.name),
             actions: [
@@ -62,6 +74,11 @@ class _StaffDetailView extends StatelessWidget {
                   label: Text(l10n.staffPayButton),
                   style: TextButton.styleFrom(foregroundColor: AppColors.primary),
                 ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error),
+                tooltip: 'Remove staff',
+                onPressed: () => _confirmDelete(context, staff),
+              ),
             ],
           ),
           body: SafeArea(child: state is StaffLoading
@@ -103,6 +120,31 @@ class _StaffDetailView extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  void _confirmDelete(BuildContext context, StaffModel staff) {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.removeStaffTitle),
+        content: Text(l10n.removeStaffConfirm(staff.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<StaffBloc>().add(DeleteStaff(staffId: staff.id));
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: Text(l10n.remove, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

@@ -9,7 +9,10 @@ class BookingRepositoryImpl implements BookingRepository {
 
   BookingRepositoryImpl(this._api);
 
-  List<T> _extractList<T>(Response response, T Function(Map<String, dynamic>) fromJson) {
+  List<T> _extractList<T>(
+    Response response,
+    T Function(Map<String, dynamic>) fromJson,
+  ) {
     final list = (response.data as Map<String, dynamic>)['data'] as List;
     return list.map((e) => fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -38,7 +41,10 @@ class BookingRepositoryImpl implements BookingRepository {
   }
 
   @override
-  Future<List<AppointmentSlot>> getAvailableSlots(String vendorId, String date) async {
+  Future<List<AppointmentSlot>> getAvailableSlots(
+    String vendorId,
+    String date,
+  ) async {
     try {
       final response = await _api.get(
         ApiEndpoints.publicSlots(vendorId),
@@ -72,7 +78,10 @@ class BookingRepositoryImpl implements BookingRepository {
   }
 
   @override
-  Future<BookingModel> updateBookingStatus(String bookingId, BookingStatus status) async {
+  Future<BookingModel> updateBookingStatus(
+    String bookingId,
+    BookingStatus status,
+  ) async {
     try {
       final response = await _api.patch(
         ApiEndpoints.bookingById(bookingId),
@@ -87,9 +96,12 @@ class BookingRepositoryImpl implements BookingRepository {
   @override
   Future<BookingConfig> saveBookingConfig(BookingConfig config) async {
     try {
-      final response = await _api.put(ApiEndpoints.bookingConfig, data: config.toJson());
+      final response = await _api.put(
+        ApiEndpoints.bookingConfig,
+        data: config.toJson(),
+      );
       final data = ApiClient.extractData(response);
-      return BookingConfig.fromJson(data as Map<String, dynamic>);
+      return BookingConfig.fromJson(data);
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
@@ -116,10 +128,14 @@ class BookingRepositoryImpl implements BookingRepository {
     try {
       final response = await _api.patch(
         ApiEndpoints.bookingSlotFull,
-        data: {'dayOfWeek': dayOfWeek, 'startTime': startTime, 'isFull': isFull},
+        data: {
+          'dayOfWeek': dayOfWeek,
+          'startTime': startTime,
+          'isFull': isFull,
+        },
       );
       final data = ApiClient.extractData(response);
-      return BookingConfig.fromJson(data as Map<String, dynamic>);
+      return BookingConfig.fromJson(data);
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }

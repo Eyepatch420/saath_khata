@@ -16,7 +16,7 @@ LinkRequestInitiator _initiatorFromJson(String? s) {
 class LinkRequestUserBrief {
   final String id;
   final String name;
-  final String email;
+  final String? email;
   final String? mobile;
   final String? profilePhotoUrl;
   final String? businessName;
@@ -25,7 +25,7 @@ class LinkRequestUserBrief {
   const LinkRequestUserBrief({
     required this.id,
     required this.name,
-    required this.email,
+    this.email,
     this.mobile,
     this.profilePhotoUrl,
     this.businessName,
@@ -36,7 +36,7 @@ class LinkRequestUserBrief {
     return LinkRequestUserBrief(
       id: json['id'] as String,
       name: json['name'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String?,
       mobile: json['mobile'] as String?,
       profilePhotoUrl: json['profilePhotoUrl'] as String?,
       businessName: json['businessName'] as String?,

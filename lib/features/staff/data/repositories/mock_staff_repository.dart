@@ -157,4 +157,10 @@ class MockStaffRepository implements StaffRepository {
     await Future.delayed(const Duration(milliseconds: 300));
     return const [];
   }
+
+  @override
+  Future<void> deleteStaff(String staffId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    _staff.removeWhere((s) => s.id == staffId);
+  }
 }

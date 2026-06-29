@@ -236,7 +236,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final isVendor = _role == 'vendor';
 
     return BlocConsumer<AuthBloc, AuthState>(
@@ -329,7 +328,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                         vertical: 14,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.surface,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: AppColors.divider),
                       ),

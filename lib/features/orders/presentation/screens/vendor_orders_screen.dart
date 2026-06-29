@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/order_model.dart';
 import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
@@ -44,7 +45,7 @@ class _VendorOrdersScreenState extends State<VendorOrdersScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Orders'),
+        title: Text(AppLocalizations.of(context)!.ordersTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
         bottom: TabBar(
@@ -69,7 +70,7 @@ class _VendorOrdersScreenState extends State<VendorOrdersScreen>
             _ => <Order>[],
           };
           if (orders.isEmpty) {
-            return const Center(child: Text('No orders yet'));
+            return Center(child: Text(AppLocalizations.of(context)!.noOrdersYet));
           }
           return RefreshIndicator(
             onRefresh: () async {
@@ -192,7 +193,7 @@ class _OrderCard extends StatelessWidget {
                             ),
                         style: OutlinedButton.styleFrom(
                             foregroundColor: AppColors.error),
-                        child: const Text('Reject'),
+                        child: Builder(builder: (ctx) => Text(AppLocalizations.of(ctx)!.rejectButton)),
                       ),
                     ),
                     const SizedBox(width: 8),
@@ -205,7 +206,7 @@ class _OrderCard extends StatelessWidget {
                             ),
                         style: FilledButton.styleFrom(
                             backgroundColor: AppColors.primary),
-                        child: const Text('Confirm'),
+                        child: Builder(builder: (ctx) => Text(AppLocalizations.of(ctx)!.confirmButton)),
                       ),
                     ),
                   ],
@@ -220,7 +221,7 @@ class _OrderCard extends StatelessWidget {
                     // confirmation + optional proof (note/photo) flow.
                     onPressed: () => _openDetail(context),
                     icon: const Icon(Icons.local_shipping_outlined, size: 18),
-                    label: const Text('Mark Delivered'),
+                    label: Builder(builder: (ctx) => Text(AppLocalizations.of(ctx)!.markDeliveredButton)),
                     style: FilledButton.styleFrom(backgroundColor: Colors.blue),
                   ),
                 ),

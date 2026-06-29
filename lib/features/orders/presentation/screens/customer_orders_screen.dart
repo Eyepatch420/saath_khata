@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/order_model.dart';
 import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
@@ -33,7 +34,7 @@ class _CustomerOrdersScreenState extends State<CustomerOrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Orders'),
+        title: Text(AppLocalizations.of(context)!.myOrdersTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -51,7 +52,7 @@ class _CustomerOrdersScreenState extends State<CustomerOrdersScreen> {
             _ => <Order>[],
           };
           if (orders.isEmpty) {
-            return const Center(child: Text('No orders yet'));
+            return Center(child: Text(AppLocalizations.of(context)!.noOrdersYet));
           }
           return RefreshIndicator(
             onRefresh: () async =>

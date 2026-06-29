@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../domain/models/membership_plan.dart';
@@ -21,8 +22,49 @@ class MembershipPlansScreen extends StatelessWidget {
   }
 }
 
-class _PlansView extends StatelessWidget {
+class _PlansView extends StatefulWidget {
   const _PlansView();
+
+  @override
+  State<_PlansView> createState() => _PlansViewState();
+}
+
+class _PlansViewState extends State<_PlansView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _fabAnim;
+  late final Animation<double> _fabScale;
+  bool _fabVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: 1.0,
+    );
+    _fabScale = CurvedAnimation(parent: _fabAnim, curve: Curves.easeOut);
+  }
+
+  @override
+  void dispose() {
+    _fabAnim.dispose();
+    super.dispose();
+  }
+
+  bool _onScroll(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta > 0 && _fabVisible) {
+        _fabVisible = false;
+        _fabAnim.reverse();
+      } else if (delta < 0 && !_fabVisible) {
+        _fabVisible = true;
+        _fabAnim.forward();
+      }
+    }
+    return false;
+  }
 
   void _openEditor(BuildContext context, {MembershipPlan? plan}) {
     Navigator.of(context).push(
@@ -37,19 +79,26 @@ class _PlansView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Membership Plans'),
+        title: Text(l10n.membershipPlansTitle),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _openEditor(context),
-        backgroundColor: MembershipTheme.purple,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add),
-        label: const Text('New Plan'),
+      floatingActionButton: FadeTransition(
+        opacity: _fabAnim,
+        child: ScaleTransition(
+          scale: _fabScale,
+          child: FloatingActionButton.extended(
+            onPressed: () => _openEditor(context),
+            backgroundColor: MembershipTheme.purple,
+            foregroundColor: Colors.white,
+            icon: const Icon(Icons.add),
+            label: Text(l10n.newPlanButton),
+          ),
+        ),
       ),
       body: BlocBuilder<PlansCubit, PlansState>(
         builder: (context, state) {
@@ -64,18 +113,21 @@ class _PlansView extends StatelessWidget {
           }
           if (state is PlansLoaded) {
             if (state.plans.isEmpty) return const _EmptyPlans();
-            return ListView.separated(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
-              itemCount: state.plans.length,
-              separatorBuilder: (_, i) => const SizedBox(height: 12),
-              itemBuilder: (ctx, i) => _PlanCard(
-                plan: state.plans[i],
-                onEdit: () => _openEditor(context, plan: state.plans[i]),
-                onToggle: () => context.read<PlansCubit>().updatePlan(
-                      state.plans[i].id,
-                      isActive: !state.plans[i].isActive,
-                    ),
-                onDelete: () => _confirmDelete(context, state.plans[i]),
+            return NotificationListener<ScrollNotification>(
+              onNotification: _onScroll,
+              child: ListView.separated(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
+                itemCount: state.plans.length,
+                separatorBuilder: (_, i) => const SizedBox(height: 12),
+                itemBuilder: (ctx, i) => _PlanCard(
+                  plan: state.plans[i],
+                  onEdit: () => _openEditor(context, plan: state.plans[i]),
+                  onToggle: () => context.read<PlansCubit>().updatePlan(
+                        state.plans[i].id,
+                        isActive: !state.plans[i].isActive,
+                      ),
+                  onDelete: () => _confirmDelete(context, state.plans[i]),
+                ),
               ),
             );
           }
@@ -89,20 +141,23 @@ class _PlansView extends StatelessWidget {
     final cubit = context.read<PlansCubit>();
     final ok = await showDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete plan?'),
-        content: Text('"${plan.name}" will be removed. This cannot be undone.'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        final dl10n = AppLocalizations.of(ctx)!;
+        return AlertDialog(
+          title: Text(dl10n.deletePlanTitle),
+          content: Text(dl10n.deletePlanConfirm(plan.name)),
+          actions: [
+            TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(dl10n.cancel)),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+              child: Text(dl10n.deleteButton),
+            ),
+          ],
+        );
+      },
     );
     if (ok != true) return;
     final success = await cubit.deletePlan(plan.id);
@@ -179,19 +234,19 @@ class _PlanCard extends StatelessWidget {
                   ),
                 ),
                 if (!plan.isActive)
-                  Container(
+                  Builder(builder: (ctx) => Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: Colors.black.withValues(alpha: 0.30),
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Text('Inactive',
-                        style: TextStyle(
+                    child: Text(AppLocalizations.of(ctx)!.inactiveLabel,
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: 11,
                             fontWeight: FontWeight.w600)),
-                  ),
+                  )),
               ],
             ),
           ),
@@ -203,7 +258,7 @@ class _PlanCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (plan.benefits.isEmpty)
-                  Text('No benefits added.',
+                  Text(AppLocalizations.of(context)!.noBenefitsAdded,
                       style: TextStyle(color: secondaryText, fontSize: 13))
                 else
                   ...plan.benefits.map((b) => Padding(
@@ -272,8 +327,10 @@ class _PlanCard extends StatelessWidget {
                             : AppColors.success,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                       ),
-                      child:
-                          Text(plan.isActive ? 'Deactivate' : 'Activate'),
+                      child: Builder(builder: (ctx) {
+                        final l = AppLocalizations.of(ctx)!;
+                        return Text(plan.isActive ? l.deactivate : l.activate);
+                      }),
                     ),
                     IconButton(
                       onPressed: onEdit,
@@ -302,6 +359,7 @@ class _EmptyPlans extends StatelessWidget {
   const _EmptyPlans();
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final secondaryText = Theme.of(context).colorScheme.onSurfaceVariant;
     return Center(
       child: Column(
@@ -310,11 +368,10 @@ class _EmptyPlans extends StatelessWidget {
           Icon(Icons.workspace_premium_rounded,
               size: 64, color: MembershipTheme.purple.withValues(alpha: 0.4)),
           const SizedBox(height: 12),
-          Text('No membership plans yet',
-              style:
-                  TextStyle(fontSize: 16, color: secondaryText)),
+          Text(l10n.noMembershipPlans,
+              style: TextStyle(fontSize: 16, color: secondaryText)),
           const SizedBox(height: 6),
-          Text('Tap "New Plan" to create your first one.',
+          Text(l10n.tapNewPlanHint,
               style: TextStyle(
                   fontSize: 13,
                   color: secondaryText.withValues(alpha: 0.6))),

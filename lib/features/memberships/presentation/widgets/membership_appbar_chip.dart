@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../bloc/membership_cubit.dart';
 import '../bloc/membership_state.dart';
 import '../membership_theme.dart';
@@ -34,7 +35,7 @@ class MembershipAppBarChip extends StatelessWidget {
             : Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
 
         return IconButton(
-          tooltip: hasPlan ? current.plan.name : 'Membership',
+          tooltip: hasPlan ? current.plan.name : AppLocalizations.of(context)!.membershipLabel,
           visualDensity: VisualDensity.compact,
           onPressed: () => _onTap(context, state),
           icon: Stack(
@@ -86,10 +87,10 @@ class MembershipAppBarChip extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Row(
-          children: const [
-            Icon(Icons.workspace_premium_rounded, color: MembershipTheme.purple),
-            SizedBox(width: 8),
-            Text('Membership'),
+          children: [
+            const Icon(Icons.workspace_premium_rounded, color: MembershipTheme.purple),
+            const SizedBox(width: 8),
+            Text(AppLocalizations.of(ctx)!.membershipLabel),
           ],
         ),
         content: Column(
@@ -102,7 +103,7 @@ class MembershipAppBarChip extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(current?.plan.name ?? 'No membership',
+                  Text(current?.plan.name ?? AppLocalizations.of(ctx)!.noMembership,
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -140,7 +141,7 @@ class MembershipAppBarChip extends StatelessWidget {
             if (state.status.pendingRequest != null) ...[
               const SizedBox(height: 10),
               Text(
-                'Pending: ${state.status.pendingRequest!.requestedPlan?.name ?? 'a plan'}',
+                AppLocalizations.of(ctx)!.pendingPlanLabel(state.status.pendingRequest!.requestedPlan?.name ?? ''),
                 style: const TextStyle(
                     color: AppColors.warning, fontWeight: FontWeight.w600),
               ),
@@ -149,7 +150,8 @@ class MembershipAppBarChip extends StatelessWidget {
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text('Close')),
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(AppLocalizations.of(ctx)!.closeLabel)),
         ],
       ),
     );

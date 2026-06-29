@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../domain/models/membership_request.dart';
@@ -27,7 +28,7 @@ class _MembershipRequestsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Membership Requests')),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.membershipRequestsTitle)),
       body: SafeArea(
         child: BlocConsumer<MembershipRequestsCubit, MembershipRequestsState>(
           listenWhen: (_, curr) => curr is MembershipRequestsError,
@@ -67,6 +68,7 @@ class _RequestList extends StatelessWidget {
     final cubit = context.read<MembershipRequestsCubit>();
 
     if (state.requests.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
       final cs = Theme.of(context).colorScheme;
       return Center(
         child: Column(
@@ -76,11 +78,11 @@ class _RequestList extends StatelessWidget {
                 size: 64,
                 color: cs.onSurfaceVariant.withValues(alpha: 0.4)),
             const SizedBox(height: 12),
-            Text('No pending requests',
+            Text(l10n.noPendingRequests,
                 style: TextStyle(color: cs.onSurfaceVariant, fontSize: 16)),
             const SizedBox(height: 6),
             Text(
-              'Customers can apply for membership\nfrom their ledger screen.',
+              l10n.customersCanApplyHint,
               textAlign: TextAlign.center,
               style: TextStyle(
                   color: cs.onSurfaceVariant.withValues(alpha: 0.6),
@@ -214,30 +216,33 @@ class _RequestCard extends StatelessWidget {
           if (busy)
             const Center(child: CircularProgressIndicator())
           else
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: onDecline,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      side: const BorderSide(color: AppColors.error),
+            Builder(builder: (ctx) {
+              final l10n = AppLocalizations.of(ctx)!;
+              return Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: onDecline,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.error,
+                        side: const BorderSide(color: AppColors.error),
+                      ),
+                      child: Text(l10n.decline),
                     ),
-                    child: const Text('Decline'),
                   ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: onApprove,
-                    style: FilledButton.styleFrom(
-                      backgroundColor: AppColors.success,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: onApprove,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                      ),
+                      child: Text(l10n.approve),
                     ),
-                    child: const Text('Approve'),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
         ],
       ),
     );

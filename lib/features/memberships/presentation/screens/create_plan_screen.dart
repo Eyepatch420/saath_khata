@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../domain/models/membership_plan.dart';
 import '../bloc/plans_cubit.dart';
@@ -112,7 +113,8 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
 
     if (!mounted) return;
     if (ok) {
-      AppToast.show(context, _isEdit ? 'Plan updated' : 'Plan published');
+      final l10n = AppLocalizations.of(context)!; // ignore: use_build_context_synchronously
+      AppToast.show(context, _isEdit ? l10n.planUpdatedToast : l10n.planPublishedToast);
       Navigator.pop(context);
     } else {
       final s = cubit.state;
@@ -123,10 +125,11 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Plan' : 'Create Membership Plan'),
+        title: Text(_isEdit ? l10n.editPlanTitle : l10n.createPlanTitle),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -136,7 +139,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
         child: ListView(
           padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
           children: [
-            _SectionLabel('Plan details'),
+            _SectionLabel(l10n.planDetailsSection),
             const SizedBox(height: 8),
             _Card(
               isDark: isDark,
@@ -146,13 +149,13 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                   TextFormField(
                     controller: _nameCtrl,
                     textCapitalization: TextCapitalization.words,
-                    decoration: const InputDecoration(
-                      labelText: 'Plan name',
-                      hintText: 'e.g. Gold Membership',
-                      prefixIcon: Icon(Icons.workspace_premium_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.planNameLabel,
+                      hintText: l10n.planNameHint,
+                      prefixIcon: const Icon(Icons.workspace_premium_outlined),
                     ),
                     validator: (v) =>
-                        (v == null || v.trim().isEmpty) ? 'Required' : null,
+                        (v == null || v.trim().isEmpty) ? l10n.required : null,
                   ),
                   const SizedBox(height: 14),
                   Row(
@@ -164,9 +167,9 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
-                          decoration: const InputDecoration(
-                            labelText: 'Duration (days)',
-                            prefixIcon: Icon(Icons.calendar_today_outlined),
+                          decoration: InputDecoration(
+                            labelText: l10n.durationDaysLabel,
+                            prefixIcon: const Icon(Icons.calendar_today_outlined),
                           ),
                           validator: (v) {
                             final n = int.tryParse(v?.trim() ?? '');
@@ -185,9 +188,9 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                             FilteringTextInputFormatter.allow(
                                 RegExp(r'[0-9.]'))
                           ],
-                          decoration: const InputDecoration(
-                            labelText: 'Price ₹',
-                            prefixIcon: Icon(Icons.currency_rupee_rounded),
+                          decoration: InputDecoration(
+                            labelText: l10n.priceRupeesLabel,
+                            prefixIcon: const Icon(Icons.currency_rupee_rounded),
                           ),
                           validator: (v) {
                             final n = double.tryParse(v?.trim() ?? '');
@@ -202,13 +205,13 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _SectionLabel('Benefits'),
+            _SectionLabel(l10n.benefitsSection),
             const SizedBox(height: 8),
             _Card(
               isDark: isDark,
               child: Column(
                 children: [
-                  ...List.generate(_benefits.length, (i) => _benefitRow(i)),
+                  ...List.generate(_benefits.length, (i) => _benefitRow(i, l10n)),
                   const SizedBox(height: 2),
                   Align(
                     alignment: Alignment.centerLeft,
@@ -216,7 +219,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                       onPressed: () =>
                           setState(() => _benefits.add(_BenefitRow())),
                       icon: const Icon(Icons.add_circle_outline, size: 18),
-                      label: const Text('Add benefit'),
+                      label: Text(l10n.addBenefitButton),
                       style: TextButton.styleFrom(
                           foregroundColor: MembershipTheme.purple),
                     ),
@@ -225,7 +228,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
               ),
             ),
             const SizedBox(height: 20),
-            _SectionLabel('Advance required'),
+            _SectionLabel(l10n.advanceRequiredSection),
             const SizedBox(height: 8),
             _Card(
               isDark: isDark,
@@ -236,11 +239,11 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                     spacing: 8,
                     runSpacing: 8,
                     children: [
-                      _advanceChip('None', 0),
+                      _advanceChip(l10n.none, 0),
                       _advanceChip('₹200', 200),
                       _advanceChip('₹500', 500),
                       ChoiceChip(
-                        label: const Text('Custom'),
+                        label: Text(l10n.customLabel),
                         selected: _customAdvance,
                         selectedColor:
                             MembershipTheme.purple.withValues(alpha: 0.15),
@@ -267,10 +270,9 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(RegExp(r'[0-9.]'))
                       ],
-                      decoration: const InputDecoration(
-                        labelText: 'Custom advance ₹',
-                        prefixIcon:
-                            Icon(Icons.currency_rupee_rounded),
+                      decoration: InputDecoration(
+                        labelText: l10n.customAdvanceLabel,
+                        prefixIcon: const Icon(Icons.currency_rupee_rounded),
                       ),
                     ),
                   ],
@@ -284,6 +286,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
       bottomNavigationBar: BlocBuilder<PlansCubit, PlansState>(
         builder: (context, state) {
           final saving = state is PlansLoaded && state.saving;
+          final l10nInner = AppLocalizations.of(context)!;
           return SafeArea(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
@@ -296,7 +299,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
                         child: CircularProgressIndicator(
                             color: Colors.white, strokeWidth: 2))
                     : const Icon(Icons.publish_rounded),
-                label: Text(_isEdit ? 'Save Changes' : 'Publish Plan'),
+                label: Text(_isEdit ? l10nInner.saveChanges : l10nInner.publishPlanButton),
                 style: FilledButton.styleFrom(
                   backgroundColor: MembershipTheme.purple,
                   foregroundColor: Colors.white,
@@ -313,7 +316,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
     );
   }
 
-  Widget _benefitRow(int i) {
+  Widget _benefitRow(int i, AppLocalizations l10n) {
     final row = _benefits[i];
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -331,9 +334,9 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
             child: TextFormField(
               controller: row.labelCtrl,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Benefit',
-                hintText: 'e.g. 4 haircuts',
+              decoration: InputDecoration(
+                labelText: l10n.benefitLabel,
+                hintText: l10n.benefitHint,
               ),
             ),
           ),
@@ -344,7 +347,7 @@ class _CreatePlanScreenState extends State<CreatePlanScreen> {
               controller: row.quotaCtrl,
               keyboardType: TextInputType.number,
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              decoration: const InputDecoration(labelText: 'Qty'),
+              decoration: InputDecoration(labelText: l10n.qty),
               textAlign: TextAlign.center,
             ),
           ),

@@ -24,40 +24,87 @@ class StaffManagementScreen extends StatelessWidget {
   }
 }
 
-class _StaffView extends StatelessWidget {
+class _StaffView extends StatefulWidget {
   const _StaffView();
+
+  @override
+  State<_StaffView> createState() => _StaffViewState();
+}
+
+class _StaffViewState extends State<_StaffView>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _fabAnim;
+  late final Animation<double> _fabScale;
+  bool _fabVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fabAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: 1.0,
+    );
+    _fabScale = CurvedAnimation(parent: _fabAnim, curve: Curves.easeOut);
+  }
+
+  @override
+  void dispose() {
+    _fabAnim.dispose();
+    super.dispose();
+  }
+
+  bool _onScroll(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta > 0 && _fabVisible) {
+        _fabVisible = false;
+        _fabAnim.reverse();
+      } else if (delta < 0 && !_fabVisible) {
+        _fabVisible = true;
+        _fabAnim.forward();
+      }
+    }
+    return false;
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-
       appBar: AppBar(title: Text(l10n.staffAndLabour)),
-      body: SafeArea(child: BlocBuilder<StaffBloc, StaffState>(
-        builder: (context, state) {
-          if (state is StaffLoading || state is StaffActionLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is StaffError) {
-            return ErrorStateWidget(
-              message: state.message,
-              onRetry: () => context.read<StaffBloc>().add(LoadStaff()),
-            );
-          }
-          if (state is StaffLoaded) {
-            return _StaffContent(state: state);
-          }
-          return const SizedBox();
-        },
+      body: SafeArea(
+        child: NotificationListener<ScrollNotification>(
+          onNotification: _onScroll,
+          child: BlocBuilder<StaffBloc, StaffState>(
+            builder: (context, state) {
+              if (state is StaffLoading || state is StaffActionLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is StaffError) {
+                return ErrorStateWidget(
+                  message: state.message,
+                  onRetry: () => context.read<StaffBloc>().add(LoadStaff()),
+                );
+              }
+              if (state is StaffLoaded) {
+                return _StaffContent(state: state);
+              }
+              return const SizedBox();
+            },
+          ),
+        ),
       ),
-      ),
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom + 16),
-        child: FloatingActionButton.extended(
-          onPressed: () => _showAddStaffSheet(context),
-          label: Text(l10n.addStaff),
-          icon: const Icon(Icons.person_add_rounded),
-          backgroundColor: AppColors.primary,
+      floatingActionButton: FadeTransition(
+        opacity: _fabAnim,
+        child: ScaleTransition(
+          scale: _fabScale,
+          child: FloatingActionButton.extended(
+            onPressed: () => _showAddStaffSheet(context),
+            label: Text(l10n.addStaff),
+            icon: const Icon(Icons.person_add_rounded),
+            backgroundColor: AppColors.primary,
+          ),
         ),
       ),
     );

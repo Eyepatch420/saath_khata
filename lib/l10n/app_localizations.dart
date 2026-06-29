@@ -72,8 +72,7 @@ import 'app_localizations_te.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -81,8 +80,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -94,13 +92,12 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -115,7 +112,7 @@ abstract class AppLocalizations {
     Locale('mr'),
     Locale('pa'),
     Locale('ta'),
-    Locale('te'),
+    Locale('te')
   ];
 
   /// The name of the application
@@ -517,25 +514,25 @@ abstract class AppLocalizations {
   /// No description provided for @giveCredit.
   ///
   /// In en, this message translates to:
-  /// **'GIVE CREDIT'**
+  /// **'UDHAAR DIYA'**
   String get giveCredit;
 
   /// No description provided for @recordPayment.
   ///
   /// In en, this message translates to:
-  /// **'RECORD PAYMENT'**
+  /// **'PAISA MILA'**
   String get recordPayment;
 
   /// No description provided for @giveCreditSheet.
   ///
   /// In en, this message translates to:
-  /// **'Give Credit'**
+  /// **'Udhaar Diya'**
   String get giveCreditSheet;
 
   /// No description provided for @recordPaymentSheet.
   ///
   /// In en, this message translates to:
-  /// **'Record Payment'**
+  /// **'Paisa Mila'**
   String get recordPaymentSheet;
 
   /// No description provided for @filterAll.
@@ -3733,25 +3730,25 @@ abstract class AppLocalizations {
   /// No description provided for @recordDelivery.
   ///
   /// In en, this message translates to:
-  /// **'Record Delivery'**
+  /// **'Udhaar Diya'**
   String get recordDelivery;
 
   /// No description provided for @recordDeliverySubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Add a delivery to a customer\'s ledger'**
+  /// **'Customer took goods — add to their khata'**
   String get recordDeliverySubtitle;
 
   /// No description provided for @collectPayment.
   ///
   /// In en, this message translates to:
-  /// **'Collect Payment'**
+  /// **'Paisa Mila'**
   String get collectPayment;
 
   /// No description provided for @collectPaymentSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Record cash collected from a customer'**
+  /// **'Customer paid — reduce their khata'**
   String get collectPaymentSubtitle;
 
   /// No description provided for @viewAll2.
@@ -4027,13 +4024,13 @@ abstract class AppLocalizations {
   /// No description provided for @addsCredit.
   ///
   /// In en, this message translates to:
-  /// **'Adds a credit to the customer\'s ledger'**
+  /// **'Customer took goods — add to their khata'**
   String get addsCredit;
 
   /// No description provided for @recordsCash.
   ///
   /// In en, this message translates to:
-  /// **'Records cash collected from the customer'**
+  /// **'Customer paid — reduce their khata'**
   String get recordsCash;
 
   /// No description provided for @deliveryRecordedFor.
@@ -4245,10 +4242,687 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete'**
   String get deleteButton;
+
+  /// No description provided for @membershipPlansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership Plans'**
+  String get membershipPlansTitle;
+
+  /// No description provided for @newPlanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'New Plan'**
+  String get newPlanButton;
+
+  /// No description provided for @deletePlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete plan?'**
+  String get deletePlanTitle;
+
+  /// No description provided for @deletePlanConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'\"{name}\" will be removed. This cannot be undone.'**
+  String deletePlanConfirm(String name);
+
+  /// No description provided for @inactiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get inactiveLabel;
+
+  /// No description provided for @noBenefitsAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'No benefits added.'**
+  String get noBenefitsAdded;
+
+  /// No description provided for @noMembershipPlans.
+  ///
+  /// In en, this message translates to:
+  /// **'No membership plans yet'**
+  String get noMembershipPlans;
+
+  /// No description provided for @tapNewPlanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"New Plan\" to create your first one.'**
+  String get tapNewPlanHint;
+
+  /// No description provided for @membershipRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership Requests'**
+  String get membershipRequestsTitle;
+
+  /// No description provided for @noPendingRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending requests'**
+  String get noPendingRequests;
+
+  /// No description provided for @customersCanApplyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Customers can apply for membership\nfrom their ledger screen.'**
+  String get customersCanApplyHint;
+
+  /// No description provided for @membersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get membersTitle;
+
+  /// No description provided for @noMembersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No members yet'**
+  String get noMembersYet;
+
+  /// No description provided for @activeStat.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStat;
+
+  /// No description provided for @mrrStat.
+  ///
+  /// In en, this message translates to:
+  /// **'MRR'**
+  String get mrrStat;
+
+  /// No description provided for @expiringStat.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring'**
+  String get expiringStat;
+
+  /// No description provided for @allPlansFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'All Plans'**
+  String get allPlansFilter;
+
+  /// No description provided for @daysLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d left'**
+  String daysLeft(int count);
+
+  /// No description provided for @daysLeftFull.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String daysLeftFull(int count);
+
+  /// No description provided for @planNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan name'**
+  String get planNameLabel;
+
+  /// No description provided for @planNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Gold Membership'**
+  String get planNameHint;
+
+  /// No description provided for @durationDaysLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (days)'**
+  String get durationDaysLabel;
+
+  /// No description provided for @priceRupeesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price ₹'**
+  String get priceRupeesLabel;
+
+  /// No description provided for @addBenefitButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add benefit'**
+  String get addBenefitButton;
+
+  /// No description provided for @customLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get customLabel;
+
+  /// No description provided for @customAdvanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom advance ₹'**
+  String get customAdvanceLabel;
+
+  /// No description provided for @benefitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Benefit'**
+  String get benefitLabel;
+
+  /// No description provided for @benefitHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 4 haircuts'**
+  String get benefitHint;
+
+  /// No description provided for @planDetailsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan details'**
+  String get planDetailsSection;
+
+  /// No description provided for @benefitsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits'**
+  String get benefitsSection;
+
+  /// No description provided for @advanceRequiredSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Advance required'**
+  String get advanceRequiredSection;
+
+  /// No description provided for @editPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Plan'**
+  String get editPlanTitle;
+
+  /// No description provided for @createPlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Membership Plan'**
+  String get createPlanTitle;
+
+  /// No description provided for @publishPlanButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish Plan'**
+  String get publishPlanButton;
+
+  /// No description provided for @planUpdatedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan updated'**
+  String get planUpdatedToast;
+
+  /// No description provided for @planPublishedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan published'**
+  String get planPublishedToast;
+
+  /// No description provided for @vendorPlansTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{vendorName} · Plans'**
+  String vendorPlansTitle(String vendorName);
+
+  /// No description provided for @noPlansAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No plans available yet'**
+  String get noPlansAvailable;
+
+  /// No description provided for @vendorNoPlansHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This vendor hasn\'t created any membership plans.'**
+  String get vendorNoPlansHint;
+
+  /// No description provided for @applyForPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply for {planName}'**
+  String applyForPlan(String planName);
+
+  /// No description provided for @messageToVendorOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Message to vendor (optional)'**
+  String get messageToVendorOptional;
+
+  /// No description provided for @messageToVendorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Please enroll me for this month'**
+  String get messageToVendorHint;
+
+  /// No description provided for @sendRequestButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Request'**
+  String get sendRequestButton;
+
+  /// No description provided for @activeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeLabel;
+
+  /// No description provided for @noAdditionalBenefits.
+  ///
+  /// In en, this message translates to:
+  /// **'No additional benefits'**
+  String get noAdditionalBenefits;
+
+  /// No description provided for @currentPlanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Plan'**
+  String get currentPlanLabel;
+
+  /// No description provided for @requestPendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Pending'**
+  String get requestPendingLabel;
+
+  /// No description provided for @applyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyLabel;
+
+  /// No description provided for @requestSentToName.
+  ///
+  /// In en, this message translates to:
+  /// **'Request sent to {name}'**
+  String requestSentToName(String name);
+
+  /// No description provided for @membershipDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Membership'**
+  String get membershipDialogTitle;
+
+  /// No description provided for @pendingPlanPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending: {planName}'**
+  String pendingPlanPrefix(String planName);
+
+  /// No description provided for @enrollCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Enroll {name}'**
+  String enrollCustomer(String name);
+
+  /// No description provided for @choosePlanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a plan to start their membership.'**
+  String get choosePlanHint;
+
+  /// No description provided for @noActivePlansHint.
+  ///
+  /// In en, this message translates to:
+  /// **'No active plans. Create one in Memberships → Plans first.'**
+  String get noActivePlansHint;
+
+  /// No description provided for @enrollLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Enroll'**
+  String get enrollLabel;
+
+  /// No description provided for @changeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get changeLabel;
+
+  /// No description provided for @usedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get usedLabel;
+
+  /// No description provided for @useLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Use'**
+  String get useLabel;
+
+  /// No description provided for @daysLeftLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days left'**
+  String daysLeftLabel(int count);
+
+  /// No description provided for @orderPlacedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Order placed successfully!'**
+  String get orderPlacedSuccess;
+
+  /// No description provided for @orderFromVendor.
+  ///
+  /// In en, this message translates to:
+  /// **'Order from {vendorName}'**
+  String orderFromVendor(String vendorName);
+
+  /// No description provided for @addItemButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addItemButton;
+
+  /// No description provided for @orderNoteOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Order note (optional)'**
+  String get orderNoteOptional;
+
+  /// No description provided for @totalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalLabel;
+
+  /// No description provided for @placeOrderButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Place Order'**
+  String get placeOrderButton;
+
+  /// No description provided for @itemNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Item name *'**
+  String get itemNameRequired;
+
+  /// No description provided for @unitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit'**
+  String get unitLabel;
+
+  /// No description provided for @unitHint.
+  ///
+  /// In en, this message translates to:
+  /// **'kg, L…'**
+  String get unitHint;
+
+  /// No description provided for @unitPriceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Unit ₹'**
+  String get unitPriceLabel;
+
+  /// No description provided for @itemNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Item {number}'**
+  String itemNumber(int number);
+
+  /// No description provided for @subtotalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Subtotal: ₹{amount}'**
+  String subtotalLabel(String amount);
+
+  /// No description provided for @orderDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Details'**
+  String get orderDetailsTitle;
+
+  /// No description provided for @proofPhotoLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof photo'**
+  String get proofPhotoLabel;
+
+  /// No description provided for @tapToViewFullScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view full screen'**
+  String get tapToViewFullScreen;
+
+  /// No description provided for @rejectButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get rejectButton;
+
+  /// No description provided for @confirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirmButton;
+
+  /// No description provided for @markAsDeliveredButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Delivered'**
+  String get markAsDeliveredButton;
+
+  /// No description provided for @confirmDeliveryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delivery'**
+  String get confirmDeliveryTitle;
+
+  /// No description provided for @deliveryNoteOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery note (optional)'**
+  String get deliveryNoteOptional;
+
+  /// No description provided for @retakeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake'**
+  String get retakeLabel;
+
+  /// No description provided for @photoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo upload failed: {error}'**
+  String photoUploadFailed(String error);
+
+  /// No description provided for @orderNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Order note'**
+  String get orderNoteLabel;
+
+  /// No description provided for @customerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer'**
+  String get customerLabel;
+
+  /// No description provided for @ordersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get ordersTitle;
+
+  /// No description provided for @noOrdersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders yet'**
+  String get noOrdersYet;
+
+  /// No description provided for @markDeliveredButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Delivered'**
+  String get markDeliveredButton;
+
+  /// No description provided for @myOrdersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Orders'**
+  String get myOrdersTitle;
+
+  /// No description provided for @deliverButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver'**
+  String get deliverButton;
+
+  /// No description provided for @noPendingDeliveries.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending deliveries'**
+  String get noPendingDeliveries;
+
+  /// No description provided for @deliveriesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliveries'**
+  String get deliveriesTitle;
+
+  /// No description provided for @monthlyStatementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Statement'**
+  String get monthlyStatementTitle;
+
+  /// No description provided for @deliveryProofLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery proof'**
+  String get deliveryProofLabel;
+
+  /// No description provided for @replacePhotoButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace Photo'**
+  String get replacePhotoButton;
+
+  /// No description provided for @attachProofButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach Proof'**
+  String get attachProofButton;
+
+  /// No description provided for @uploadingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading...'**
+  String get uploadingLabel;
+
+  /// No description provided for @proofLockedHint.
+  ///
+  /// In en, this message translates to:
+  /// **'This proof is locked and cannot be changed'**
+  String get proofLockedHint;
+
+  /// No description provided for @proofAttachedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Proof attached'**
+  String get proofAttachedToast;
+
+  /// No description provided for @itemLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Item {number}'**
+  String itemLabel(int number);
+
+  /// No description provided for @amountRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount *'**
+  String get amountRequired;
+
+  /// No description provided for @addItemLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item'**
+  String get addItemLabel;
+
+  /// No description provided for @totalAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get totalAmountLabel;
+
+  /// No description provided for @deactivate.
+  ///
+  /// In en, this message translates to:
+  /// **'Deactivate'**
+  String get deactivate;
+
+  /// No description provided for @activate.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate'**
+  String get activate;
+
+  /// No description provided for @activeStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStatLabel;
+
+  /// No description provided for @mrrStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'MRR'**
+  String get mrrStatLabel;
+
+  /// No description provided for @expiringStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Expiring'**
+  String get expiringStatLabel;
+
+  /// No description provided for @closeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeLabel;
+
+  /// No description provided for @pendingPlanLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending: {name}'**
+  String pendingPlanLabel(String name);
+
+  /// No description provided for @customerRequestedPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'{customer} requested {plan}'**
+  String customerRequestedPlan(String customer, String plan);
+
+  /// No description provided for @itemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Items ({count})'**
+  String itemsCount(int count);
+
+  /// No description provided for @deliveryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get deliveryLabel;
+
+  /// No description provided for @markedDeliveredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked delivered by {role}'**
+  String markedDeliveredBy(String role);
+
+  /// No description provided for @deliveriesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Items delivered through orders. Tap an entry to see the items.'**
+  String get deliveriesHint;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -4257,58 +4931,35 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) => <String>[
-    'bho',
-    'bn',
-    'en',
-    'gu',
-    'hi',
-    'kn',
-    'mai',
-    'ml',
-    'mr',
-    'pa',
-    'ta',
-    'te',
-  ].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['bho', 'bn', 'en', 'gu', 'hi', 'kn', 'mai', 'ml', 'mr', 'pa', 'ta', 'te'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'bho':
-      return AppLocalizationsBho();
-    case 'bn':
-      return AppLocalizationsBn();
-    case 'en':
-      return AppLocalizationsEn();
-    case 'gu':
-      return AppLocalizationsGu();
-    case 'hi':
-      return AppLocalizationsHi();
-    case 'kn':
-      return AppLocalizationsKn();
-    case 'mai':
-      return AppLocalizationsMai();
-    case 'ml':
-      return AppLocalizationsMl();
-    case 'mr':
-      return AppLocalizationsMr();
-    case 'pa':
-      return AppLocalizationsPa();
-    case 'ta':
-      return AppLocalizationsTa();
-    case 'te':
-      return AppLocalizationsTe();
+    case 'bho': return AppLocalizationsBho();
+    case 'bn': return AppLocalizationsBn();
+    case 'en': return AppLocalizationsEn();
+    case 'gu': return AppLocalizationsGu();
+    case 'hi': return AppLocalizationsHi();
+    case 'kn': return AppLocalizationsKn();
+    case 'mai': return AppLocalizationsMai();
+    case 'ml': return AppLocalizationsMl();
+    case 'mr': return AppLocalizationsMr();
+    case 'pa': return AppLocalizationsPa();
+    case 'ta': return AppLocalizationsTa();
+    case 'te': return AppLocalizationsTe();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

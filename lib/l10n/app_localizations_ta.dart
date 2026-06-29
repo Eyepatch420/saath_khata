@@ -18,22 +18,19 @@ class AppLocalizationsTa extends AppLocalizations {
   String get onboarding1Title => 'இருதரப்பு பகிரப்பட்ட கணக்கு';
 
   @override
-  String get onboarding1Subtitle =>
-      'விற்பனையாளர் மற்றும் வாடிக்கையாளர் இருவருக்கும் ஒரே கணக்கு. இருவரும் ஒரே உண்மையை காண்கிறார்கள்.';
+  String get onboarding1Subtitle => 'விற்பனையாளர் மற்றும் வாடிக்கையாளர் இருவருக்கும் ஒரே கணக்கு. இருவரும் ஒரே உண்மையை காண்கிறார்கள்.';
 
   @override
   String get onboarding2Title => 'குரல் மற்றும் பில் OCR';
 
   @override
-  String get onboarding2Subtitle =>
-      '12 மொழிகளில் உடனடியாக உள்ளீடுகளை உருவாக்க பேசுங்கள் அல்லது பில்களை ஸ்கேன் செய்யுங்கள்.';
+  String get onboarding2Subtitle => '12 மொழிகளில் உடனடியாக உள்ளீடுகளை உருவாக்க பேசுங்கள் அல்லது பில்களை ஸ்கேன் செய்யுங்கள்.';
 
   @override
   String get onboarding3Title => 'ஒரே தட்டில் UPI கட்டணம்';
 
   @override
-  String get onboarding3Subtitle =>
-      'UPI மூலம் ஒரே தட்டில் மாத நிலுவைகளை தீர்க்கவும்.';
+  String get onboarding3Subtitle => 'UPI மூலம் ஒரே தட்டில் மாத நிலுவைகளை தீர்க்கவும்.';
 
   @override
   String get getStarted => 'தொடங்குங்கள்';
@@ -63,22 +60,19 @@ class AppLocalizationsTa extends AppLocalizations {
   String get welcomeToSaathKhata => 'சாத்கதாவிற்கு வரவேற்கிறோம்';
 
   @override
-  String get tellUsHowYouUse =>
-      'நீங்கள் ஆப்பை எவ்வாறு பயன்படுத்துவீர்கள் என்று சொல்லுங்கள்';
+  String get tellUsHowYouUse => 'நீங்கள் ஆப்பை எவ்வாறு பயன்படுத்துவீர்கள் என்று சொல்லுங்கள்';
 
   @override
   String get vendorRoleTitle => 'நான் ஒரு விற்பனையாளர்';
 
   @override
-  String get vendorRoleSubtitle =>
-      'வணிகக் கணக்கு, ஊழியர்களை நிர்வகிக்கவும் மற்றும் கட்டணம் பெறவும்.';
+  String get vendorRoleSubtitle => 'வணிகக் கணக்கு, ஊழியர்களை நிர்வகிக்கவும் மற்றும் கட்டணம் பெறவும்.';
 
   @override
   String get customerRoleTitle => 'நான் ஒரு வாடிக்கையாளர்';
 
   @override
-  String get customerRoleSubtitle =>
-      'விற்பனையாளர்களுடன் கணக்கை கண்காணிக்கவும் மற்றும் UPI மூலம் கட்டணம் செலுத்தவும்.';
+  String get customerRoleSubtitle => 'விற்பனையாளர்களுடன் கணக்கை கண்காணிக்கவும் மற்றும் UPI மூலம் கட்டணம் செலுத்தவும்.';
 
   @override
   String get loginTitle => 'சாத்கதாவில் உள்நுழைக';
@@ -125,12 +119,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get signUp => 'பதிவு செய்யவும்';
 
   @override
-  String get pleaseEnterCredentials =>
-      'மின்னஞ்சல் மற்றும் கடவுச்சொல்லை உள்ளிடுக';
+  String get pleaseEnterCredentials => 'மின்னஞ்சல் மற்றும் கடவுச்சொல்லை உள்ளிடுக';
 
   @override
-  String get fillRequiredFields =>
-      'பெயர், மின்னஞ்சல் மற்றும் கடவுச்சொல்லை நிரப்பவும்';
+  String get fillRequiredFields => 'பெயர், மின்னஞ்சல் மற்றும் கடவுச்சொல்லை நிரப்பவும்';
 
   @override
   String get passwordMinChars => 'குறைந்தது 8 எழுத்துக்கள்';
@@ -255,22 +247,19 @@ class AppLocalizationsTa extends AppLocalizations {
   String get statusConfirmed => 'உறுதிப்படுத்தப்பட்டது';
 
   @override
-  String get statusConfirmedDesc =>
-      'இரு தரப்பும் ஒப்புக்கொண்டனர். உள்ளீடு பூட்டப்பட்டது மற்றும் மாற்ற முடியாது.';
+  String get statusConfirmedDesc => 'இரு தரப்பும் ஒப்புக்கொண்டனர். உள்ளீடு பூட்டப்பட்டது மற்றும் மாற்ற முடியாது.';
 
   @override
   String get statusPending => 'நிலுவையில்';
 
   @override
-  String get statusPendingDesc =>
-      'வாடிக்கையாளர் உறுதிப்படுத்தலுக்காக காத்திருக்கிறது. 72 மணி நேரத்தில் தானாகவே உறுதிப்படுத்தப்படும்.';
+  String get statusPendingDesc => 'வாடிக்கையாளர் உறுதிப்படுத்தலுக்காக காத்திருக்கிறது. 72 மணி நேரத்தில் தானாகவே உறுதிப்படுத்தப்படும்.';
 
   @override
   String get statusDisputed => 'சர்ச்சையில்';
 
   @override
-  String get statusDisputedDesc =>
-      'வாடிக்கையாளர் சர்ச்சை எழுப்பினார். விற்பனையாளர் மதிப்பாய்வு தேவை.';
+  String get statusDisputedDesc => 'வாடிக்கையாளர் சர்ச்சை எழுப்பினார். விற்பனையாளர் மதிப்பாய்வு தேவை.';
 
   @override
   String get statusAutoConfirmed => 'தானியங்கி உறுதிப்படுத்தல்';
@@ -335,8 +324,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noLedgerTransactions => 'இன்னும் பரிவர்த்தனைகள் இல்லை';
 
   @override
-  String get noLedgerTransactionsSubtitle =>
-      'தொடங்க கடன் அல்லது கட்டண உள்ளீட்டை சேர்க்கவும்.';
+  String get noLedgerTransactionsSubtitle => 'தொடங்க கடன் அல்லது கட்டண உள்ளீட்டை சேர்க்கவும்.';
 
   @override
   String get confirmEntryTitle => 'உள்ளீட்டை உறுதிப்படுத்தவும்';
@@ -353,8 +341,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get raiseDisputeTitle => 'சர்ச்சையை எழுப்பவும்';
 
   @override
-  String get raiseDisputeSubtitle =>
-      'இந்த உள்ளீட்டில் என்ன தவறு என்று விவரிக்கவும்.';
+  String get raiseDisputeSubtitle => 'இந்த உள்ளீட்டில் என்ன தவறு என்று விவரிக்கவும்.';
 
   @override
   String get raiseDisputeHint => 'எ.கா. தொகை ₹50 ஆக இருக்க வேண்டும், ₹60 அல்ல';
@@ -381,8 +368,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noStaffAdded => 'இன்னும் ஊழியர்கள் இல்லை';
 
   @override
-  String get noStaffAddedSubtitle =>
-      'முதல் ஊழியரை சேர்க்க கீழே உள்ள பொத்தானை அழுத்துங்கள்.';
+  String get noStaffAddedSubtitle => 'முதல் ஊழியரை சேர்க்க கீழே உள்ள பொத்தானை அழுத்துங்கள்.';
 
   @override
   String get present => 'வருகை';
@@ -402,8 +388,7 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
-  String get upiTransactionIdOptional =>
-      'UPI பரிவர்த்தனை ஐடி (விருப்பத்தேர்வு)';
+  String get upiTransactionIdOptional => 'UPI பரிவர்த்தனை ஐடி (விருப்பத்தேர்வு)';
 
   @override
   String get noDues => 'நிலுவைகள் இல்லை';
@@ -465,8 +450,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get settingsManagePayments => 'கட்டண கணக்குகளை நிர்வகிக்கவும்';
 
   @override
-  String get settingsManageAlerts =>
-      'எச்சரிக்கைகள் மற்றும் நினைவூட்டல்களை நிர்வகிக்கவும்';
+  String get settingsManageAlerts => 'எச்சரிக்கைகள் மற்றும் நினைவூட்டல்களை நிர்வகிக்கவும்';
 
   @override
   String get settingsAppPinFingerprint => 'ஆப் பின் மற்றும் கைரேகை';
@@ -501,8 +485,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noNotificationsTitle => 'இன்னும் அறிவிப்புகள் இல்லை';
 
   @override
-  String get noNotificationsSubtitle =>
-      'இங்கே கணக்கு புதுப்பிப்புகள், கட்டண எச்சரிக்கைகள் மற்றும் நினைவூட்டல்கள் தெரியும்.';
+  String get noNotificationsSubtitle => 'இங்கே கணக்கு புதுப்பிப்புகள், கட்டண எச்சரிக்கைகள் மற்றும் நினைவூட்டல்கள் தெரியும்.';
 
   @override
   String get today => 'இன்று';
@@ -539,8 +522,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get scanAndPay => 'ஸ்கேன் செய்து கட்டணம் செலுத்தவும்';
 
   @override
-  String get scanUpiDesc =>
-      'விற்பனையாளருக்கு கட்டணம் செலுத்த UPI QR ஸ்கேன் செய்யவும்';
+  String get scanUpiDesc => 'விற்பனையாளருக்கு கட்டணம் செலுத்த UPI QR ஸ்கேன் செய்யவும்';
 
   @override
   String get noTransactionsTitle => 'இன்னும் பரிவர்த்தனைகள் இல்லை';
@@ -579,15 +561,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noBookingsToday => 'இன்று முன்பதிவுகள் இல்லை';
 
   @override
-  String get noBookingsTodaySubtitle =>
-      'வாடிக்கையாளர்கள் ஆப் மூலம் சந்திப்புகளை முன்பதிவு செய்யலாம்.';
+  String get noBookingsTodaySubtitle => 'வாடிக்கையாளர்கள் ஆப் மூலம் சந்திப்புகளை முன்பதிவு செய்யலாம்.';
 
   @override
   String get noAppointmentsTitle => 'இன்னும் சந்திப்புகள் இல்லை';
 
   @override
-  String get noAppointmentsSubtitle =>
-      'தொடங்க உங்கள் விற்பனையாளருடன் சந்திப்பை முன்பதிவு செய்யவும்.';
+  String get noAppointmentsSubtitle => 'தொடங்க உங்கள் விற்பனையாளருடன் சந்திப்பை முன்பதிவு செய்யவும்.';
 
   @override
   String get cancelAppointmentTitle => 'சந்திப்பை ரத்து செய்யவதா?';
@@ -645,8 +625,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get done => 'முடிந்தது';
 
   @override
-  String get paymentSomethingWentWrong =>
-      'ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.';
+  String get paymentSomethingWentWrong => 'ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.';
 
   @override
   String upiAppComingSoon(String app) {
@@ -809,8 +788,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get selectCustomer => 'வாடிக்கையாளரை தேர்ந்தெடுக';
 
   @override
-  String get searchCustomerHint =>
-      'வாடிக்கையாளரை தேடுங்கள் அல்லது தேர்ந்தெடுங்கள்';
+  String get searchCustomerHint => 'வாடிக்கையாளரை தேடுங்கள் அல்லது தேர்ந்தெடுங்கள்';
 
   @override
   String get saveToKhata => 'கணக்கில் சேமிக்கவும்';
@@ -869,8 +847,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get loadingContent => 'ஏற்றுகிறது...';
 
   @override
-  String get failedToLoad =>
-      'உள்ளடக்கத்தை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+  String get failedToLoad => 'உள்ளடக்கத்தை ஏற்ற முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
 
   @override
   String get bookingActions => 'முன்பதிவு செயல்கள்';
@@ -907,8 +884,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noCustomersYetSubtitle => 'தொடங்க முதல் வாடிக்கையாளரை சேர்க்கவும்';
 
   @override
-  String get invalidPhone =>
-      '6–9 இல் தொடங்கும் 10 இலக்க வலிய மொபைல் எண்ணை உள்ளிடவும்';
+  String get invalidPhone => '6–9 இல் தொடங்கும் 10 இலக்க வலிய மொபைல் எண்ணை உள்ளிடவும்';
 
   @override
   String accrueMonthSalary(String amount) {
@@ -944,19 +920,16 @@ class AppLocalizationsTa extends AppLocalizations {
   String get deleteAccount => 'Delete Account';
 
   @override
-  String get deleteAccountSubtitle =>
-      'Permanently delete your account and all data';
+  String get deleteAccountSubtitle => 'Permanently delete your account and all data';
 
   @override
   String get deleteAccountConfirmation => 'Delete Account?';
 
   @override
-  String get deleteAccountConfirmationMessage =>
-      'This will permanently delete your account and all your data. This action cannot be undone.';
+  String get deleteAccountConfirmationMessage => 'This will permanently delete your account and all your data. This action cannot be undone.';
 
   @override
-  String get deleteAccountStaffWarning =>
-      'This will permanently delete your account. This cannot be undone.';
+  String get deleteAccountStaffWarning => 'This will permanently delete your account. This cannot be undone.';
 
   @override
   String get deleteForever => 'Delete Forever';
@@ -977,15 +950,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get membershipTiers => 'Membership Tiers';
 
   @override
-  String get membershipTiersDescription =>
-      'Rename tiers and set member discounts';
+  String get membershipTiersDescription => 'Rename tiers and set member discounts';
 
   @override
   String get logIn => 'Log in';
 
   @override
-  String get enterPhoneNumberToContinue =>
-      'Enter your phone number to continue';
+  String get enterPhoneNumberToContinue => 'Enter your phone number to continue';
 
   @override
   String get otpDemoHint => 'OTP is for demo only · enter 123456 to continue';
@@ -1120,8 +1091,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get sendRequest => 'Send Request';
 
   @override
-  String get requestSentNotification =>
-      'Request sent! They will be notified to confirm.';
+  String get requestSentNotification => 'Request sent! They will be notified to confirm.';
 
   @override
   String get awaitingAcceptance => 'Awaiting Acceptance';
@@ -1187,8 +1157,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get nothingCollectedToday => 'Nothing collected today';
 
   @override
-  String get paymentsWillAppearHere =>
-      'Payments received today will appear here.';
+  String get paymentsWillAppearHere => 'Payments received today will appear here.';
 
   @override
   String get customerReport => 'Customer Report';
@@ -1329,8 +1298,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get appAccess => 'App access';
 
   @override
-  String get invalidPhoneNumber =>
-      'Enter a valid 10-digit Indian mobile number';
+  String get invalidPhoneNumber => 'Enter a valid 10-digit Indian mobile number';
 
   @override
   String get enterAll6Digits => 'Enter all 6 digits';
@@ -1396,12 +1364,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get iAmA => 'I am a';
 
   @override
-  String get dualRoleExplanation =>
-      'You\'ll primarily use the Vendor experience. Your Customer account can be accessed separately.';
+  String get dualRoleExplanation => 'You\'ll primarily use the Vendor experience. Your Customer account can be accessed separately.';
 
   @override
-  String get profileSavedPhotoFailed =>
-      'Profile saved — photo could not be uploaded right now';
+  String get profileSavedPhotoFailed => 'Profile saved — photo could not be uploaded right now';
 
   @override
   String get profileUpdatedSuccess => 'Profile updated successfully';
@@ -1419,8 +1385,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get primaryUpiInfo => 'PRIMARY UPI ID';
 
   @override
-  String get primaryUpiDescription =>
-      'The primary ID is shared with customers for payment. Tap the star to switch which one is primary.';
+  String get primaryUpiDescription => 'The primary ID is shared with customers for payment. Tap the star to switch which one is primary.';
 
   @override
   String upiIdCounter(int count, int max) {
@@ -1443,12 +1408,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noUpiIdsEmpty => 'No UPI IDs yet';
 
   @override
-  String get upiEmptyDescription =>
-      'Add up to 5 UPI IDs. Your primary ID will be shared with customers for payment.';
+  String get upiEmptyDescription => 'Add up to 5 UPI IDs. Your primary ID will be shared with customers for payment.';
 
   @override
-  String get changePasswordSubtitle =>
-      'Enter your current password and choose a new one.';
+  String get changePasswordSubtitle => 'Enter your current password and choose a new one.';
 
   @override
   String get alreadyHaveAccount => 'Already have an account?';
@@ -1499,15 +1462,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get languageMaithili => 'Maithili';
 
   @override
-  String get needPasswordForEmail =>
-      'You need a password set on your account to use this.\nSet one from Settings → Change Password.';
+  String get needPasswordForEmail => 'You need a password set on your account to use this.\nSet one from Settings → Change Password.';
 
   @override
   String get usePhoneInstead => 'Use phone number instead →';
 
   @override
-  String get sessionExpiredVerifyPhoneAgain =>
-      'Session expired. Please verify your phone again.';
+  String get sessionExpiredVerifyPhoneAgain => 'Session expired. Please verify your phone again.';
 
   @override
   String get upiIdsSavedSuccessfully => 'UPI IDs saved successfully';
@@ -1593,12 +1554,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get deleteProductMenuItem => 'Delete product';
 
   @override
-  String get noProductsYetDescription =>
-      'Define the items you sell — milk, paneer, etc. — once, then use them every day.';
+  String get noProductsYetDescription => 'Define the items you sell — milk, paneer, etc. — once, then use them every day.';
 
   @override
-  String get selectProductToAssignQty =>
-      'Select a product above to assign quantities';
+  String get selectProductToAssignQty => 'Select a product above to assign quantities';
 
   @override
   String get noCustomersLinked => 'No customers linked yet';
@@ -1673,8 +1632,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get tapToAcceptOrDecline => 'Tap to accept or decline';
 
   @override
-  String get helpSupportContactPrefix =>
-      'For any assistance, reach out to us at:';
+  String get helpSupportContactPrefix => 'For any assistance, reach out to us at:';
 
   @override
   String get supportEmail => 'igurus@info.in';
@@ -1691,15 +1649,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get vendorWantsToConnectAsCustomer => 'A vendor wants to connect';
 
   @override
-  String get vendorWantsToConnectDesc =>
-      'They want to add you as a customer and track your account.';
+  String get vendorWantsToConnectDesc => 'They want to add you as a customer and track your account.';
 
   @override
   String get someoneWantsToConnect => 'Someone wants to connect';
 
   @override
-  String get someoneWantsToConnectDesc =>
-      'They will be added as a customer to your account.';
+  String get someoneWantsToConnectDesc => 'They will be added as a customer to your account.';
 
   @override
   String requestedTimeAgo(String time) {
@@ -1728,8 +1684,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get retryButton => 'Retry';
 
   @override
-  String get memberDiscountDescription =>
-      'Members on this tier get this discount on their dues.';
+  String get memberDiscountDescription => 'Members on this tier get this discount on their dues.';
 
   @override
   String get discountValueInvalid => 'Enter a valid amount greater than 0';
@@ -1758,8 +1713,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get setMembershipTier => 'Set membership tier';
 
   @override
-  String get chooseTierToRequestFromVendor =>
-      'Choose a tier to request from this vendor';
+  String get chooseTierToRequestFromVendor => 'Choose a tier to request from this vendor';
 
   @override
   String chooseTierFor(String customerName) {
@@ -1819,12 +1773,10 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
-  String get verificationTimeoutBody =>
-      'We could not confirm your payment within 30 seconds. Your money may NOT have been debited — please check your bank statement before retrying.';
+  String get verificationTimeoutBody => 'We could not confirm your payment within 30 seconds. Your money may NOT have been debited — please check your bank statement before retrying.';
 
   @override
-  String get ifDebitedContactSupport =>
-      'If debited, contact support with Txn ID.';
+  String get ifDebitedContactSupport => 'If debited, contact support with Txn ID.';
 
   @override
   String get thisMonthSubtitle => 'This month';
@@ -1879,8 +1831,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get findVendorsNearYou => 'Find vendors near you';
 
   @override
-  String get searchByNameOrCategory =>
-      'Search by name, business name,\nor select a category above.';
+  String get searchByNameOrCategory => 'Search by name, business name,\nor select a category above.';
 
   @override
   String noResultsForQuery(String query) {
@@ -1948,8 +1899,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get areYouSureLogout => 'Are you sure you want to log out?';
 
   @override
-  String get showQrToCollect =>
-      'Show this QR to a customer to collect payment directly to you.';
+  String get showQrToCollect => 'Show this QR to a customer to collect payment directly to you.';
 
   @override
   String get uploadQr => 'Upload QR';
@@ -1991,16 +1941,16 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
-  String get recordDelivery => 'Record Delivery';
+  String get recordDelivery => 'Udhaar Diya';
 
   @override
-  String get recordDeliverySubtitle => 'Add a delivery to a customer\'s ledger';
+  String get recordDeliverySubtitle => 'Customer took goods — add to their khata';
 
   @override
-  String get collectPayment => 'Collect Payment';
+  String get collectPayment => 'Paisa Mila';
 
   @override
-  String get collectPaymentSubtitle => 'Record cash collected from a customer';
+  String get collectPaymentSubtitle => 'Customer paid — reduce their khata';
 
   @override
   String get viewAll2 => 'View all';
@@ -2018,8 +1968,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get awaitingAcceptanceTitle => 'Awaiting Acceptance';
 
   @override
-  String get customersHaventConfirmed =>
-      'These customers haven\'t confirmed yet';
+  String get customersHaventConfirmed => 'These customers haven\'t confirmed yet';
 
   @override
   String get pendingBadge => 'Pending';
@@ -2052,8 +2001,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get howYouKnowCustomer => 'How you know this customer';
 
   @override
-  String get requestSentWillBeNotified =>
-      'Request sent! They will be notified to confirm.';
+  String get requestSentWillBeNotified => 'Request sent! They will be notified to confirm.';
 
   @override
   String get outstandingTitle => 'Outstanding';
@@ -2094,8 +2042,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get exportStatementTitle => 'Export Statement';
 
   @override
-  String get chooseExportDateRange =>
-      'Choose the date range to include in the PDF.';
+  String get chooseExportDateRange => 'Choose the date range to include in the PDF.';
 
   @override
   String get last7DaysRange => 'Entries from the past 7 days';
@@ -2159,10 +2106,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get enterValidAmount => 'Enter a valid amount';
 
   @override
-  String get addsCredit => 'Adds a credit to the customer\'s ledger';
+  String get addsCredit => 'Customer took goods — add to their khata';
 
   @override
-  String get recordsCash => 'Records cash collected from the customer';
+  String get recordsCash => 'Customer paid — reduce their khata';
 
   @override
   String deliveryRecordedFor(String name) {
@@ -2251,8 +2198,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get noBookingNotifications => 'No booking notifications';
 
   @override
-  String get noBookingNotificationsSubtitle =>
-      'Booking requests and updates will appear here';
+  String get noBookingNotificationsSubtitle => 'Booking requests and updates will appear here';
 
   @override
   String get bookingPillLabel => 'Booking';
@@ -2285,4 +2231,379 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get deleteButton => 'Delete';
+
+  @override
+  String get membershipPlansTitle => 'Membership Plans';
+
+  @override
+  String get newPlanButton => 'New Plan';
+
+  @override
+  String get deletePlanTitle => 'Delete plan?';
+
+  @override
+  String deletePlanConfirm(String name) {
+    return '\"$name\" will be removed. This cannot be undone.';
+  }
+
+  @override
+  String get inactiveLabel => 'Inactive';
+
+  @override
+  String get noBenefitsAdded => 'No benefits added.';
+
+  @override
+  String get noMembershipPlans => 'No membership plans yet';
+
+  @override
+  String get tapNewPlanHint => 'Tap \"New Plan\" to create your first one.';
+
+  @override
+  String get membershipRequestsTitle => 'Membership Requests';
+
+  @override
+  String get noPendingRequests => 'No pending requests';
+
+  @override
+  String get customersCanApplyHint => 'Customers can apply for membership\nfrom their ledger screen.';
+
+  @override
+  String get membersTitle => 'Members';
+
+  @override
+  String get noMembersYet => 'No members yet';
+
+  @override
+  String get activeStat => 'Active';
+
+  @override
+  String get mrrStat => 'MRR';
+
+  @override
+  String get expiringStat => 'Expiring';
+
+  @override
+  String get allPlansFilter => 'All Plans';
+
+  @override
+  String daysLeft(int count) {
+    return '${count}d left';
+  }
+
+  @override
+  String daysLeftFull(int count) {
+    return '$count days';
+  }
+
+  @override
+  String get planNameLabel => 'Plan name';
+
+  @override
+  String get planNameHint => 'e.g. Gold Membership';
+
+  @override
+  String get durationDaysLabel => 'Duration (days)';
+
+  @override
+  String get priceRupeesLabel => 'Price ₹';
+
+  @override
+  String get addBenefitButton => 'Add benefit';
+
+  @override
+  String get customLabel => 'Custom';
+
+  @override
+  String get customAdvanceLabel => 'Custom advance ₹';
+
+  @override
+  String get benefitLabel => 'Benefit';
+
+  @override
+  String get benefitHint => 'e.g. 4 haircuts';
+
+  @override
+  String get planDetailsSection => 'Plan details';
+
+  @override
+  String get benefitsSection => 'Benefits';
+
+  @override
+  String get advanceRequiredSection => 'Advance required';
+
+  @override
+  String get editPlanTitle => 'Edit Plan';
+
+  @override
+  String get createPlanTitle => 'Create Membership Plan';
+
+  @override
+  String get publishPlanButton => 'Publish Plan';
+
+  @override
+  String get planUpdatedToast => 'Plan updated';
+
+  @override
+  String get planPublishedToast => 'Plan published';
+
+  @override
+  String vendorPlansTitle(String vendorName) {
+    return '$vendorName · Plans';
+  }
+
+  @override
+  String get noPlansAvailable => 'No plans available yet';
+
+  @override
+  String get vendorNoPlansHint => 'This vendor hasn\'t created any membership plans.';
+
+  @override
+  String applyForPlan(String planName) {
+    return 'Apply for $planName';
+  }
+
+  @override
+  String get messageToVendorOptional => 'Message to vendor (optional)';
+
+  @override
+  String get messageToVendorHint => 'e.g. Please enroll me for this month';
+
+  @override
+  String get sendRequestButton => 'Send Request';
+
+  @override
+  String get activeLabel => 'Active';
+
+  @override
+  String get noAdditionalBenefits => 'No additional benefits';
+
+  @override
+  String get currentPlanLabel => 'Current Plan';
+
+  @override
+  String get requestPendingLabel => 'Request Pending';
+
+  @override
+  String get applyLabel => 'Apply';
+
+  @override
+  String requestSentToName(String name) {
+    return 'Request sent to $name';
+  }
+
+  @override
+  String get membershipDialogTitle => 'Membership';
+
+  @override
+  String pendingPlanPrefix(String planName) {
+    return 'Pending: $planName';
+  }
+
+  @override
+  String enrollCustomer(String name) {
+    return 'Enroll $name';
+  }
+
+  @override
+  String get choosePlanHint => 'Choose a plan to start their membership.';
+
+  @override
+  String get noActivePlansHint => 'No active plans. Create one in Memberships → Plans first.';
+
+  @override
+  String get enrollLabel => 'Enroll';
+
+  @override
+  String get changeLabel => 'Change';
+
+  @override
+  String get usedLabel => 'Used';
+
+  @override
+  String get useLabel => 'Use';
+
+  @override
+  String daysLeftLabel(int count) {
+    return '$count days left';
+  }
+
+  @override
+  String get orderPlacedSuccess => 'Order placed successfully!';
+
+  @override
+  String orderFromVendor(String vendorName) {
+    return 'Order from $vendorName';
+  }
+
+  @override
+  String get addItemButton => 'Add item';
+
+  @override
+  String get orderNoteOptional => 'Order note (optional)';
+
+  @override
+  String get totalLabel => 'Total';
+
+  @override
+  String get placeOrderButton => 'Place Order';
+
+  @override
+  String get itemNameRequired => 'Item name *';
+
+  @override
+  String get unitLabel => 'Unit';
+
+  @override
+  String get unitHint => 'kg, L…';
+
+  @override
+  String get unitPriceLabel => 'Unit ₹';
+
+  @override
+  String itemNumber(int number) {
+    return 'Item $number';
+  }
+
+  @override
+  String subtotalLabel(String amount) {
+    return 'Subtotal: ₹$amount';
+  }
+
+  @override
+  String get orderDetailsTitle => 'Order Details';
+
+  @override
+  String get proofPhotoLabel => 'Proof photo';
+
+  @override
+  String get tapToViewFullScreen => 'Tap to view full screen';
+
+  @override
+  String get rejectButton => 'Reject';
+
+  @override
+  String get confirmButton => 'Confirm';
+
+  @override
+  String get markAsDeliveredButton => 'Mark as Delivered';
+
+  @override
+  String get confirmDeliveryTitle => 'Confirm Delivery';
+
+  @override
+  String get deliveryNoteOptional => 'Delivery note (optional)';
+
+  @override
+  String get retakeLabel => 'Retake';
+
+  @override
+  String photoUploadFailed(String error) {
+    return 'Photo upload failed: $error';
+  }
+
+  @override
+  String get orderNoteLabel => 'Order note';
+
+  @override
+  String get customerLabel => 'Customer';
+
+  @override
+  String get ordersTitle => 'Orders';
+
+  @override
+  String get noOrdersYet => 'No orders yet';
+
+  @override
+  String get markDeliveredButton => 'Mark Delivered';
+
+  @override
+  String get myOrdersTitle => 'My Orders';
+
+  @override
+  String get deliverButton => 'Deliver';
+
+  @override
+  String get noPendingDeliveries => 'No pending deliveries';
+
+  @override
+  String get deliveriesTitle => 'Deliveries';
+
+  @override
+  String get monthlyStatementTitle => 'Monthly Statement';
+
+  @override
+  String get deliveryProofLabel => 'Delivery proof';
+
+  @override
+  String get replacePhotoButton => 'Replace Photo';
+
+  @override
+  String get attachProofButton => 'Attach Proof';
+
+  @override
+  String get uploadingLabel => 'Uploading...';
+
+  @override
+  String get proofLockedHint => 'This proof is locked and cannot be changed';
+
+  @override
+  String get proofAttachedToast => 'Proof attached';
+
+  @override
+  String itemLabel(int number) {
+    return 'Item $number';
+  }
+
+  @override
+  String get amountRequired => 'Amount *';
+
+  @override
+  String get addItemLabel => 'Add Item';
+
+  @override
+  String get totalAmountLabel => 'Total';
+
+  @override
+  String get deactivate => 'Deactivate';
+
+  @override
+  String get activate => 'Activate';
+
+  @override
+  String get activeStatLabel => 'Active';
+
+  @override
+  String get mrrStatLabel => 'MRR';
+
+  @override
+  String get expiringStatLabel => 'Expiring';
+
+  @override
+  String get closeLabel => 'Close';
+
+  @override
+  String pendingPlanLabel(String name) {
+    return 'Pending: $name';
+  }
+
+  @override
+  String customerRequestedPlan(String customer, String plan) {
+    return '$customer requested $plan';
+  }
+
+  @override
+  String itemsCount(int count) {
+    return 'Items ($count)';
+  }
+
+  @override
+  String get deliveryLabel => 'Delivery';
+
+  @override
+  String markedDeliveredBy(String role) {
+    return 'Marked delivered by $role';
+  }
+
+  @override
+  String get deliveriesHint => 'Items delivered through orders. Tap an entry to see the items.';
 }

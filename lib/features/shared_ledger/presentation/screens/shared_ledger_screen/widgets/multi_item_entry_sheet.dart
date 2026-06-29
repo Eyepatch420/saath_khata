@@ -140,14 +140,14 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
           TextButton.icon(
             onPressed: _addRow,
             icon: const Icon(Icons.add_circle_outline_rounded, size: 16),
-            label: const Text('Add Item'),
+            label: Text(l10n.addItemLabel),
             style: TextButton.styleFrom(foregroundColor: AppColors.primary),
           ),
           const Divider(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Total', style: AppTypography.labelLarge),
+              Text(l10n.totalAmountLabel, style: AppTypography.labelLarge),
               Text(
                 '₹${_total.toStringAsFixed(2)}',
                 style: AppTypography.h3.copyWith(color: AppColors.error),
@@ -208,6 +208,7 @@ class _ItemRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -221,7 +222,7 @@ class _ItemRowWidget extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Item ${index + 1}',
+                l10n.itemLabel(index + 1),
                 style: AppTypography.labelLarge
                     .copyWith(color: AppColors.textSecondary),
               ),
@@ -238,11 +239,11 @@ class _ItemRowWidget extends StatelessWidget {
           TextField(
             controller: row.descCtrl,
             onChanged: (_) => onChanged(),
-            decoration: const InputDecoration(
-              labelText: 'Item name *',
+            decoration: InputDecoration(
+              labelText: l10n.itemNameRequired,
               isDense: true,
               contentPadding:
-                  EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
           ),
           const SizedBox(height: 8),
@@ -255,12 +256,12 @@ class _ItemRowWidget extends StatelessWidget {
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (_) => onChanged(),
-                  decoration: const InputDecoration(
-                    labelText: 'Amount *',
+                  decoration: InputDecoration(
+                    labelText: l10n.amountRequired,
                     prefixText: '₹ ',
                     isDense: true,
                     contentPadding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   ),
                 ),
               ),
@@ -271,11 +272,11 @@ class _ItemRowWidget extends StatelessWidget {
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   onChanged: (_) => onChanged(),
-                  decoration: const InputDecoration(
-                    labelText: 'Qty',
+                  decoration: InputDecoration(
+                    labelText: l10n.qty,
                     isDense: true,
                     contentPadding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   ),
                 ),
               ),
@@ -284,12 +285,12 @@ class _ItemRowWidget extends StatelessWidget {
                 child: TextField(
                   controller: row.unitCtrl,
                   onChanged: (_) => onChanged(),
-                  decoration: const InputDecoration(
-                    labelText: 'Unit',
+                  decoration: InputDecoration(
+                    labelText: l10n.unitLabel,
                     isDense: true,
-                    hintText: 'kg, L…',
+                    hintText: l10n.unitHint,
                     contentPadding:
-                        EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   ),
                 ),
               ),

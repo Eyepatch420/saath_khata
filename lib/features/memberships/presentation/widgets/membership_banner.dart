@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/models/membership_plan.dart';
 import '../bloc/membership_cubit.dart';
 import '../bloc/membership_state.dart';
@@ -68,11 +69,11 @@ class MembershipBanner extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Membership',
+                        Text(AppLocalizations.of(context)!.membershipLabel,
                             style: AppTypography.bodySmall
                                 .copyWith(color: secondaryColor)),
                         Text(
-                          current?.plan.name ?? 'No membership',
+                          current?.plan.name ?? AppLocalizations.of(context)!.noMembership,
                           style: AppTypography.bodyLarge.copyWith(
                             fontWeight: FontWeight.bold,
                             color: current != null
@@ -101,7 +102,7 @@ class MembershipBanner extends StatelessWidget {
                               ? Icons.add_rounded
                               : Icons.swap_horiz_rounded,
                           size: 16),
-                      label: Text(current == null ? 'Enroll' : 'Change'),
+                      label: Text(current == null ? AppLocalizations.of(context)!.enrollLabel : AppLocalizations.of(context)!.changeLabel),
                       style: TextButton.styleFrom(
                           foregroundColor: MembershipTheme.purple),
                     ),
@@ -145,7 +146,7 @@ class MembershipBanner extends StatelessWidget {
                             side: const BorderSide(
                                 color: MembershipTheme.purple),
                           ),
-                          child: Text(done ? 'Used' : 'Use',
+                          child: Text(done ? AppLocalizations.of(context)!.usedLabel : AppLocalizations.of(context)!.useLabel,
                               style: const TextStyle(fontSize: 12)),
                         ),
                       ],
@@ -194,21 +195,28 @@ class MembershipBanner extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                  'Enroll ${customerName.isEmpty ? 'customer' : customerName}',
-                  style: AppTypography.h3
-                      .copyWith(color: cs.onSurface)),
-              const SizedBox(height: 4),
-              Text('Choose a plan to start their membership.',
-                  style:
-                      TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
+              Builder(builder: (bctx) {
+                final sl10n = AppLocalizations.of(bctx)!;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                        sl10n.enrollCustomer(customerName.isEmpty ? 'customer' : customerName),
+                        style: AppTypography.h3.copyWith(color: cs.onSurface)),
+                    const SizedBox(height: 4),
+                    Text(sl10n.choosePlanHint,
+                        style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
+                  ],
+                );
+              }),
               const SizedBox(height: 16),
               if (plans.isEmpty)
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  child: Text(
-                      'No active plans. Create one in Memberships → Plans first.',
-                      style: TextStyle(color: cs.onSurfaceVariant)),
+                  child: Builder(builder: (bctx) => Text(
+                      AppLocalizations.of(bctx)!.noActivePlansHint,
+                      style: TextStyle(color: cs.onSurfaceVariant))),
                 )
               else
                 ...plans.map((p) {
@@ -284,11 +292,12 @@ class _PendingRequestCard extends StatelessWidget {
                   color: MembershipTheme.purple, size: 18),
               const SizedBox(width: 8),
               Expanded(
-                child: Text('$customerName requested $planName',
+                child: Builder(builder: (ctx) => Text(
+                    AppLocalizations.of(ctx)!.customerRequestedPlan(customerName, planName),
                     style: TextStyle(
                         color: cs.onSurface,
                         fontWeight: FontWeight.w600,
-                        fontSize: 14)),
+                        fontSize: 14))),
               ),
             ],
           ),
@@ -298,31 +307,34 @@ class _PendingRequestCard extends StatelessWidget {
                 style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13)),
           ],
           const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: busy ? null : onDecline,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.error,
-                    side: const BorderSide(color: AppColors.error),
+          Builder(builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx)!;
+            return Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: busy ? null : onDecline,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
+                    ),
+                    child: Text(l10n.decline),
                   ),
-                  child: const Text('Decline'),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: FilledButton(
-                  onPressed: busy ? null : onApprove,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColors.success,
-                    foregroundColor: Colors.white,
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FilledButton(
+                    onPressed: busy ? null : onApprove,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: AppColors.success,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: Text(l10n.approve),
                   ),
-                  child: const Text('Approve'),
                 ),
-              ),
-            ],
-          ),
+              ],
+            );
+          }),
         ],
       ),
     );

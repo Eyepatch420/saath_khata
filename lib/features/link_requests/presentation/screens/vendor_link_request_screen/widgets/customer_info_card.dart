@@ -38,11 +38,13 @@ class CustomerInfoCard extends StatelessWidget {
                   children: [
                     Text(customer.name, style: AppTypography.h3),
                     const SizedBox(height: 4),
-                    Text(
-                      customer.email,
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textSecondary),
-                    ),
+                    if (customer.email != null) ...[
+                      Text(
+                        customer.email!,
+                        style: AppTypography.bodySmall
+                            .copyWith(color: AppColors.textSecondary),
+                      ),
+                    ],
                     if (customer.mobile != null) ...[
                       const SizedBox(height: 2),
                       Text(

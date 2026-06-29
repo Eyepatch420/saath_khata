@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../domain/models/membership_plan.dart';
 import '../bloc/membership_cubit.dart';
@@ -17,7 +18,10 @@ class BrowsePlansScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$vendorName · Plans', overflow: TextOverflow.ellipsis),
+        title: Builder(builder: (ctx) => Text(
+          AppLocalizations.of(ctx)!.vendorPlansTitle(vendorName),
+          overflow: TextOverflow.ellipsis,
+        )),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -39,6 +43,7 @@ class BrowsePlansScreen extends StatelessWidget {
           final pendingPlanId = status.pendingRequest?.requestedPlan?.id;
 
           if (plans.isEmpty) {
+            final l10n = AppLocalizations.of(context)!;
             return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -47,10 +52,10 @@ class BrowsePlansScreen extends StatelessWidget {
                       size: 56,
                       color: MembershipTheme.purple.withValues(alpha: 0.35)),
                   const SizedBox(height: 12),
-                  const Text('No plans available yet',
-                      style: TextStyle(fontSize: 16)),
+                  Text(l10n.noPlansAvailable,
+                      style: const TextStyle(fontSize: 16)),
                   const SizedBox(height: 6),
-                  Text('This vendor hasn\'t created any membership plans.',
+                  Text(l10n.vendorNoPlansHint,
                       style: TextStyle(
                           color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontSize: 13)),
@@ -82,6 +87,7 @@ class BrowsePlansScreen extends StatelessWidget {
   Future<void> _confirmApply(BuildContext context, MembershipPlan plan) async {
     final cubit = context.read<MembershipCubit>();
     final msgCtrl = TextEditingController();
+    final l10n = AppLocalizations.of(context)!;
     final ok = await showModalBottomSheet<bool>(
       context: context,
       isScrollControlled: true,
@@ -89,66 +95,70 @@ class BrowsePlansScreen extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (sheetCtx) => Padding(
-        padding: EdgeInsets.only(
-          left: 20,
-          right: 20,
-          top: 24,
-          bottom: MediaQuery.of(sheetCtx).viewInsets.bottom + 28,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(2),
+      builder: (sheetCtx) {
+        final sl10n = AppLocalizations.of(sheetCtx)!;
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 20,
+            right: 20,
+            top: 24,
+            bottom: MediaQuery.of(sheetCtx).viewInsets.bottom + 28,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withValues(alpha: 0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
+                ],
+              ),
+              Text(sl10n.applyForPlan(plan.name),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 4),
+              Text(
+                '₹${plan.price.toStringAsFixed(0)} / ${plan.durationDays} days'
+                '${plan.advanceRequired > 0 ? ' · advance ₹${plan.advanceRequired.toStringAsFixed(0)}' : ''}',
+                style: TextStyle(
+                    color: Theme.of(sheetCtx).colorScheme.onSurfaceVariant),
+              ),
+              const SizedBox(height: 20),
+              TextField(
+                controller: msgCtrl,
+                decoration: InputDecoration(
+                  labelText: sl10n.messageToVendorOptional,
+                  hintText: sl10n.messageToVendorHint,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.message_outlined),
                 ),
-              ],
-            ),
-            Text('Apply for ${plan.name}',
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Text(
-              '₹${plan.price.toStringAsFixed(0)} / ${plan.durationDays} days'
-              '${plan.advanceRequired > 0 ? ' · advance ₹${plan.advanceRequired.toStringAsFixed(0)}' : ''}',
-              style: TextStyle(
-                  color: Theme.of(sheetCtx).colorScheme.onSurfaceVariant),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: msgCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Message to vendor (optional)',
-                hintText: 'e.g. Please enroll me for this month',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.message_outlined),
+                maxLines: 2,
               ),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 20),
-            FilledButton(
-              onPressed: () => Navigator.pop(sheetCtx, true),
-              style: FilledButton.styleFrom(
-                backgroundColor: MembershipTheme.purple,
-                foregroundColor: Colors.white,
-                minimumSize: const Size.fromHeight(52),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+              const SizedBox(height: 20),
+              FilledButton(
+                onPressed: () => Navigator.pop(sheetCtx, true),
+                style: FilledButton.styleFrom(
+                  backgroundColor: MembershipTheme.purple,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size.fromHeight(52),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14)),
+                ),
+                child: Text(sl10n.sendRequestButton,
+                    style: const TextStyle(fontSize: 16)),
               ),
-              child: const Text('Send Request', style: TextStyle(fontSize: 16)),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
 
     if (ok != true) return;
@@ -156,7 +166,7 @@ class BrowsePlansScreen extends StatelessWidget {
     if (!context.mounted) return;
     final s = cubit.state;
     if (s is MembershipLoaded && s.status.pendingRequest != null) {
-      AppToast.show(context, 'Request sent to $vendorName');
+      AppToast.show(context, l10n.requestSentToName(vendorName));
       Navigator.pop(context);
     }
   }
@@ -226,27 +236,27 @@ class _PlanCard extends StatelessWidget {
                               fontWeight: FontWeight.bold)),
                     ),
                     if (isCurrent)
-                      Container(
+                      Builder(builder: (ctx) => Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.check_circle_rounded,
+                            const Icon(Icons.check_circle_rounded,
                                 size: 13, color: Colors.white),
-                            SizedBox(width: 4),
-                            Text('Active',
-                                style: TextStyle(
+                            const SizedBox(width: 4),
+                            Text(AppLocalizations.of(ctx)!.activeLabel,
+                                style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600)),
                           ],
                         ),
-                      ),
+                      )),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -275,7 +285,7 @@ class _PlanCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (plan.benefits.isEmpty)
-                  Text('No additional benefits',
+                  Text(AppLocalizations.of(context)!.noAdditionalBenefits,
                       style: TextStyle(
                           color: cs.onSurfaceVariant, fontSize: 13))
                 else
@@ -337,11 +347,12 @@ class _PlanCard extends StatelessWidget {
   }
 
   Widget _actionButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (isCurrent) {
       return OutlinedButton.icon(
         onPressed: null,
         icon: const Icon(Icons.check_circle_rounded, size: 18),
-        label: const Text('Current Plan'),
+        label: Text(l10n.currentPlanLabel),
         style: OutlinedButton.styleFrom(
           foregroundColor: MembershipTheme.purple,
           side: const BorderSide(color: MembershipTheme.purple),
@@ -355,7 +366,7 @@ class _PlanCard extends StatelessWidget {
       return OutlinedButton.icon(
         onPressed: null,
         icon: const Icon(Icons.hourglass_top_rounded, size: 18),
-        label: const Text('Request Pending'),
+        label: Text(l10n.requestPendingLabel),
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.warning,
           side: const BorderSide(color: AppColors.warning),
@@ -373,7 +384,7 @@ class _PlanCard extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         minimumSize: const Size.fromHeight(44),
       ),
-      child: const Text('Apply', style: TextStyle(fontSize: 15)),
+      child: Text(l10n.applyLabel, style: const TextStyle(fontSize: 15)),
     );
   }
 }

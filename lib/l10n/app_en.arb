@@ -1222,5 +1222,228 @@
     }
   },
   "keepButton": "Keep",
-  "deleteButton": "Delete"
+  "deleteButton": "Delete",
+
+  "membershipPlansTitle": "Membership Plans",
+  "newPlanButton": "New Plan",
+  "deletePlanTitle": "Delete plan?",
+  "deletePlanConfirm": "\"{name}\" will be removed. This cannot be undone.",
+  "@deletePlanConfirm": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "inactiveLabel": "Inactive",
+  "noBenefitsAdded": "No benefits added.",
+  "noMembershipPlans": "No membership plans yet",
+  "tapNewPlanHint": "Tap \"New Plan\" to create your first one.",
+
+  "membershipRequestsTitle": "Membership Requests",
+  "noPendingRequests": "No pending requests",
+  "customersCanApplyHint": "Customers can apply for membership\nfrom their ledger screen.",
+
+  "membersTitle": "Members",
+  "noMembersYet": "No members yet",
+  "activeStat": "Active",
+  "mrrStat": "MRR",
+  "expiringStat": "Expiring",
+  "allPlansFilter": "All Plans",
+  "daysLeft": "{count}d left",
+  "@daysLeft": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "daysLeftFull": "{count} days",
+  "@daysLeftFull": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "planNameLabel": "Plan name",
+  "planNameHint": "e.g. Gold Membership",
+  "durationDaysLabel": "Duration (days)",
+  "priceRupeesLabel": "Price ₹",
+  "addBenefitButton": "Add benefit",
+  "customLabel": "Custom",
+  "customAdvanceLabel": "Custom advance ₹",
+  "benefitLabel": "Benefit",
+  "benefitHint": "e.g. 4 haircuts",
+  "planDetailsSection": "Plan details",
+  "benefitsSection": "Benefits",
+  "advanceRequiredSection": "Advance required",
+  "editPlanTitle": "Edit Plan",
+  "createPlanTitle": "Create Membership Plan",
+  "publishPlanButton": "Publish Plan",
+  "planUpdatedToast": "Plan updated",
+  "planPublishedToast": "Plan published",
+
+  "vendorPlansTitle": "{vendorName} · Plans",
+  "@vendorPlansTitle": {
+    "placeholders": {
+      "vendorName": { "type": "String" }
+    }
+  },
+  "noPlansAvailable": "No plans available yet",
+  "vendorNoPlansHint": "This vendor hasn't created any membership plans.",
+  "applyForPlan": "Apply for {planName}",
+  "@applyForPlan": {
+    "placeholders": {
+      "planName": { "type": "String" }
+    }
+  },
+  "messageToVendorOptional": "Message to vendor (optional)",
+  "messageToVendorHint": "e.g. Please enroll me for this month",
+  "sendRequestButton": "Send Request",
+  "activeLabel": "Active",
+  "noAdditionalBenefits": "No additional benefits",
+  "currentPlanLabel": "Current Plan",
+  "requestPendingLabel": "Request Pending",
+  "applyLabel": "Apply",
+  "requestSentToName": "Request sent to {name}",
+  "@requestSentToName": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+
+  "membershipDialogTitle": "Membership",
+  "pendingPlanPrefix": "Pending: {planName}",
+  "@pendingPlanPrefix": {
+    "placeholders": {
+      "planName": { "type": "String" }
+    }
+  },
+  "enrollCustomer": "Enroll {name}",
+  "@enrollCustomer": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "choosePlanHint": "Choose a plan to start their membership.",
+  "noActivePlansHint": "No active plans. Create one in Memberships → Plans first.",
+  "enrollLabel": "Enroll",
+  "changeLabel": "Change",
+  "usedLabel": "Used",
+  "useLabel": "Use",
+  "daysLeftLabel": "{count} days left",
+  "@daysLeftLabel": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "orderPlacedSuccess": "Order placed successfully!",
+  "orderFromVendor": "Order from {vendorName}",
+  "@orderFromVendor": {
+    "placeholders": {
+      "vendorName": { "type": "String" }
+    }
+  },
+  "addItemButton": "Add item",
+  "orderNoteOptional": "Order note (optional)",
+  "totalLabel": "Total",
+  "placeOrderButton": "Place Order",
+  "itemNameRequired": "Item name *",
+  "unitLabel": "Unit",
+  "unitHint": "kg, L…",
+  "unitPriceLabel": "Unit ₹",
+  "itemNumber": "Item {number}",
+  "@itemNumber": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "subtotalLabel": "Subtotal: ₹{amount}",
+  "@subtotalLabel": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
+
+  "orderDetailsTitle": "Order Details",
+  "proofPhotoLabel": "Proof photo",
+  "tapToViewFullScreen": "Tap to view full screen",
+  "rejectButton": "Reject",
+  "confirmButton": "Confirm",
+  "markAsDeliveredButton": "Mark as Delivered",
+  "confirmDeliveryTitle": "Confirm Delivery",
+  "deliveryNoteOptional": "Delivery note (optional)",
+  "retakeLabel": "Retake",
+  "photoUploadFailed": "Photo upload failed: {error}",
+  "@photoUploadFailed": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "orderNoteLabel": "Order note",
+  "customerLabel": "Customer",
+
+  "ordersTitle": "Orders",
+  "noOrdersYet": "No orders yet",
+  "markDeliveredButton": "Mark Delivered",
+
+  "myOrdersTitle": "My Orders",
+
+  "deliverButton": "Deliver",
+  "noPendingDeliveries": "No pending deliveries",
+
+  "deliveriesTitle": "Deliveries",
+  "monthlyStatementTitle": "Monthly Statement",
+
+  "deliveryProofLabel": "Delivery proof",
+  "replacePhotoButton": "Replace Photo",
+  "attachProofButton": "Attach Proof",
+  "uploadingLabel": "Uploading...",
+  "proofLockedHint": "This proof is locked and cannot be changed",
+  "proofAttachedToast": "Proof attached",
+  "itemLabel": "Item {number}",
+  "@itemLabel": {
+    "placeholders": {
+      "number": { "type": "int" }
+    }
+  },
+  "amountRequired": "Amount *",
+  "addItemLabel": "Add Item",
+  "totalAmountLabel": "Total",
+  "deactivate": "Deactivate",
+  "activate": "Activate",
+  "customersCanApplyHint": "Customers can apply for membership\nfrom their ledger screen.",
+  "decline": "Decline",
+  "approve": "Approve",
+  "activeStatLabel": "Active",
+  "mrrStatLabel": "MRR",
+  "expiringStatLabel": "Expiring",
+  "allPlansFilter": "All Plans",
+  "membershipLabel": "Membership",
+  "noMembership": "No membership",
+  "closeLabel": "Close",
+  "pendingPlanLabel": "Pending: {name}",
+  "@pendingPlanLabel": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "customerRequestedPlan": "{customer} requested {plan}",
+  "@customerRequestedPlan": {
+    "placeholders": {
+      "customer": { "type": "String" },
+      "plan": { "type": "String" }
+    }
+  },
+  "itemsCount": "Items ({count})",
+  "@itemsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "deliveryLabel": "Delivery",
+  "markedDeliveredBy": "Marked delivered by {role}",
+  "@markedDeliveredBy": {
+    "placeholders": {
+      "role": { "type": "String" }
+    }
+  },
+  "deliveriesHint": "Items delivered through orders. Tap an entry to see the items."
 }

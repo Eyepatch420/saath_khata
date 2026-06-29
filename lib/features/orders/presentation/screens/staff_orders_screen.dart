@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/order_model.dart';
 import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
@@ -25,7 +26,7 @@ class _StaffOrdersScreenState extends State<StaffOrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Deliveries'),
+        title: Text(AppLocalizations.of(context)!.deliveriesTitle),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -55,15 +56,15 @@ class _StaffOrdersScreenState extends State<StaffOrdersScreen> {
                 .where((o) => o.status == OrderStatus.confirmed)
                 .toList();
             if (orders.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle_outline,
+                    const Icon(Icons.check_circle_outline,
                         size: 56, color: AppColors.success),
-                    SizedBox(height: 12),
-                    Text('No pending deliveries',
-                        style: TextStyle(color: AppColors.textSecondary)),
+                    const SizedBox(height: 12),
+                    Text(AppLocalizations.of(context)!.noPendingDeliveries,
+                        style: const TextStyle(color: AppColors.textSecondary)),
                   ],
                 ),
               );
@@ -155,7 +156,7 @@ class _DeliveryCard extends StatelessWidget {
                 child: FilledButton.icon(
                   onPressed: () => _openDetail(context),
                   icon: const Icon(Icons.local_shipping_outlined),
-                  label: const Text('Deliver'),
+                  label: Builder(builder: (ctx) => Text(AppLocalizations.of(ctx)!.deliverButton)),
                   style:
                       FilledButton.styleFrom(backgroundColor: AppColors.primary),
                 ),

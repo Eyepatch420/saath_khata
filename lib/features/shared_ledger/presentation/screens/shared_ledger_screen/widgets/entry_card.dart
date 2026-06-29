@@ -156,7 +156,7 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Total',
+                    AppLocalizations.of(context)!.totalLabel,
                     style: AppTypography.labelLarge
                         .copyWith(color: AppColors.textSecondary),
                   ),
@@ -185,7 +185,7 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                     const Icon(Icons.photo_camera_rounded,
                         size: 14, color: AppColors.textSecondary),
                     const SizedBox(width: 6),
-                    Text('Delivery proof',
+                    Text(AppLocalizations.of(context)!.deliveryProofLabel,
                         style: AppTypography.bodySmall
                             .copyWith(color: AppColors.textSecondary)),
                   ],
@@ -496,7 +496,7 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
       );
       if (mounted) {
         Navigator.pop(context);
-        AppToast.show(context, 'Proof attached', type: ToastType.success);
+        AppToast.show(context, AppLocalizations.of(context)!.proofAttachedToast, type: ToastType.success);
       }
     } catch (e) {
       if (mounted) {
@@ -523,12 +523,12 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_rounded),
-              title: const Text('Camera'),
+              title: Text(AppLocalizations.of(ctx)!.camera),
               onTap: () => Navigator.pop(ctx, ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_rounded),
-              title: const Text('Gallery'),
+              title: Text(AppLocalizations.of(ctx)!.gallery),
               onTap: () => Navigator.pop(ctx, ImageSource.gallery),
             ),
           ],
@@ -598,7 +598,7 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
                       size: 12, color: AppColors.textHint),
                   const SizedBox(width: 4),
                   Text(
-                    'This proof is locked and cannot be changed',
+                    AppLocalizations.of(context)!.proofLockedHint,
                     style: AppTypography.bodySmall
                         .copyWith(color: AppColors.textHint, fontSize: 11),
                   ),
@@ -615,8 +615,8 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.refresh_rounded, size: 14),
-                label: const Text('Replace Photo',
-                    style: TextStyle(fontSize: 12)),
+                label: Text(AppLocalizations.of(context)!.replacePhotoButton,
+                    style: const TextStyle(fontSize: 12)),
               ),
             ],
           ],
@@ -633,7 +633,7 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.attach_file_rounded, size: 16),
-                label: Text(_uploadInProgress ? 'Uploading...' : 'Attach Proof'),
+                label: Text(_uploadInProgress ? AppLocalizations.of(context)!.uploadingLabel : AppLocalizations.of(context)!.attachProofButton),
               ),
             ),
           ],

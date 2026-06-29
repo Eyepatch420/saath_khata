@@ -201,4 +201,13 @@ class StaffRepositoryImpl implements StaffRepository {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
+
+  @override
+  Future<void> deleteStaff(String staffId) async {
+    try {
+      await _api.delete(ApiEndpoints.staffById(staffId));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
 }

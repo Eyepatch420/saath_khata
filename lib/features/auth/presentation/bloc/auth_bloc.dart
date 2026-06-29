@@ -76,7 +76,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       );
       final user = result.user;
-      if (user.role != event.role) {
+      final isStaffLoggingInAsVendor =
+          user.role == 'staff' && event.role == 'vendor';
+      if (!isStaffLoggingInAsVendor && user.role != event.role) {
         AppLogger.w(_m, 'Role mismatch: expected ${event.role}, got ${user.role}');
         emit(AuthError(
           'This email is registered as a ${user.role}. '
@@ -130,7 +132,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       if (result.existingUser) {
         final user = result.user!;
-        if (user.role != event.role) {
+        // Staff accounts log in via the vendor role-selection path since there
+        // is no dedicated staff option on the role screen. Skip the mismatch
+        // check for them; the router will send them to staffHome automatically.
+        final isStaffLoggingInAsVendor =
+            user.role == 'staff' && event.role == 'vendor';
+        if (!isStaffLoggingInAsVendor && user.role != event.role) {
           AppLogger.w(_m, 'Role mismatch: expected ${event.role}, got ${user.role}');
           emit(AuthError(
             'This number is registered as a ${user.role}. '
