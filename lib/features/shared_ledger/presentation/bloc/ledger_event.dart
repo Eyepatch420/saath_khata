@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../../shared/models/ledger_entry.dart';
+import '../../domain/models/ledger_filter.dart';
 
 abstract class LedgerEvent extends Equatable {
   const LedgerEvent();
@@ -114,4 +115,22 @@ class SocketLedgerEntryUpdated extends LedgerEvent {
   const SocketLedgerEntryUpdated(this.entry);
   @override
   List<Object?> get props => [entry];
+}
+
+class LoadMoreLedger extends LedgerEvent {
+  final String linkId;
+  const LoadMoreLedger(this.linkId);
+  @override
+  List<Object?> get props => [linkId];
+}
+
+class ApplyLedgerFilter extends LedgerEvent {
+  final LedgerFilter filter;
+  const ApplyLedgerFilter(this.filter);
+  @override
+  List<Object?> get props => [filter];
+}
+
+class ClearLedgerFilter extends LedgerEvent {
+  const ClearLedgerFilter();
 }

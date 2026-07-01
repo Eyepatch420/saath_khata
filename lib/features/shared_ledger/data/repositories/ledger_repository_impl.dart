@@ -4,6 +4,7 @@ import '../../../../core/di/injection.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../core/services/ledger_attachment_service.dart';
+import '../../domain/models/ledger_filter.dart';
 import '../../domain/repositories/ledger_repository.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/models/ledger_balance.dart';
@@ -19,20 +20,27 @@ class LedgerRepositoryImpl implements LedgerRepository {
   LedgerRepositoryImpl(this._api);
 
   @override
-  Future<List<LedgerEntry>> getEntries(String linkId) async {
+  Future<LedgerPageResult> getEntries(
+    String linkId, {
+    int page = 1,
+    int limit = 50,
+    LedgerFilter? filter,
+  }) async {
     _currentLinkId = linkId;
     try {
-      // Fetch up to 100 entries so the BLoC's client-side balance calc
-      // covers the full ledger without pagination complexity.
+      final params = <String, dynamic>{'page': page, 'limit': limit};
+      if (filter != null) params.addAll(filter.toQueryParams());
       final response = await _api.get(
         ApiEndpoints.linkEntries(linkId),
-        queryParameters: {'page': 1, 'limit': 100},
+        queryParameters: params,
       );
       final data = ApiClient.extractData(response);
       final list = (data['entries'] as List?) ?? [];
-      return list
+      final entries = list
           .map((e) => LedgerEntry.fromJson(e as Map<String, dynamic>))
           .toList();
+      final total = (data['total'] as num?)?.toInt() ?? entries.length;
+      return LedgerPageResult(entries: entries, total: total);
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
@@ -105,8 +113,8 @@ class LedgerRepositoryImpl implements LedgerRepository {
       );
       // The socket broadcasts ledger:entry_updated after the backend writes.
       // Return the current cached entry — the bloc replaces it on socket arrival.
-      final entries = await getEntries(linkId);
-      return entries.firstWhere(
+      final result = await getEntries(linkId);
+      return result.entries.firstWhere(
         (e) => e.id == entryId,
         orElse: () => throw Exception('Entry not found after attachment upload'),
       );

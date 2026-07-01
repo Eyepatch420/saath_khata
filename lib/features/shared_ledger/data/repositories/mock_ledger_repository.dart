@@ -1,4 +1,5 @@
 import 'dart:io';
+import '../../domain/models/ledger_filter.dart';
 import '../../domain/repositories/ledger_repository.dart';
 import '../../../../shared/models/ledger_entry.dart';
 import '../../../../shared/models/ledger_balance.dart';
@@ -80,10 +81,18 @@ class MockLedgerRepository implements LedgerRepository {
   ];
 
   @override
-  Future<List<LedgerEntry>> getEntries(String linkId) async {
+  Future<LedgerPageResult> getEntries(
+    String linkId, {
+    int page = 1,
+    int limit = 50,
+    LedgerFilter? filter,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 600));
-    return _entries.where((e) => e.linkId == linkId || linkId == e.linkId).toList()
+    final entries = _entries
+        .where((e) => e.linkId == linkId)
+        .toList()
       ..sort((a, b) => b.date.compareTo(a.date));
+    return LedgerPageResult(entries: entries, total: entries.length);
   }
 
   @override
@@ -136,7 +145,8 @@ class MockLedgerRepository implements LedgerRepository {
   @override
   Future<LedgerBalance> getBalance(String linkId) async {
     await Future.delayed(const Duration(milliseconds: 200));
-    final entries = await getEntries(linkId);
+    final result = await getEntries(linkId);
+    final entries = result.entries;
     double credit = 0;
     double paid = 0;
     for (final e in entries) {
