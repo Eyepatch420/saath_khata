@@ -29,6 +29,7 @@ class ApiEndpoints {
   static String linkById(String id) => '/links/$id';
   static String linkNickname(String id) => '/links/$id/nickname';
   static String linkDefaults(String id) => '/links/$id/defaults';
+  static String linkAutoConfirm(String id) => '/links/$id/auto-confirm';
 
   // Ledger (nested under link)
   static String linkEntries(String linkId) => '/links/$linkId/entries';

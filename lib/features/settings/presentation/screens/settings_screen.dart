@@ -123,6 +123,27 @@ class SettingsScreen extends StatelessWidget {
                   );
                 },
               ),
+              BlocBuilder<AuthBloc, AuthState>(
+                buildWhen: (_, s) => s is AuthAuthenticated,
+                builder: (context, authState) {
+                  final user = authState is AuthAuthenticated ? authState.user : null;
+                  if (user == null || user.isVendor) return const SizedBox.shrink();
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SizedBox(height: 12),
+                      const _SectionLabel(label: 'Ledger Preferences'),
+                      const SizedBox(height: 8),
+                      _SettingsTile(
+                        icon: Icons.auto_awesome_rounded,
+                        title: 'Auto-Confirm Entries',
+                        subtitle: 'Manage per-vendor auto-confirm settings',
+                        onTap: () => context.push(AppRouter.ledgerPreferences),
+                      ),
+                    ],
+                  );
+                },
+              ),
               const SizedBox(height: 12),
               _SectionLabel(label: l10n.legalInfo),
               const SizedBox(height: 8),

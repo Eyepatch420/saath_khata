@@ -79,6 +79,7 @@ import '../../features/orders/presentation/screens/staff_orders_screen.dart';
 import '../../features/orders/presentation/screens/place_order_screen.dart';
 import '../../features/orders/presentation/bloc/order_bloc.dart';
 import '../../features/orders/domain/repositories/order_repository.dart';
+import '../../features/settings/presentation/screens/ledger_preferences_screen.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
 
@@ -136,6 +137,7 @@ class AppRouter {
   static const String customerOrders = '/customer/orders';
   static const String staffOrders = '/staff-home/orders';
   static const String placeOrder = '/place-order';
+  static const String ledgerPreferences = '/settings/ledger-preferences';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -453,6 +455,10 @@ class AppRouter {
           final user = state.extra as UserModel;
           return UpiManagementScreen(user: user);
         },
+      ),
+      GoRoute(
+        path: ledgerPreferences,
+        builder: (context, state) => const LedgerPreferencesScreen(),
       ),
       GoRoute(
         path: vendorSearch,

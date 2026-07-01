@@ -42,4 +42,16 @@ class CustomerRepositoryImpl implements CustomerRepository {
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }
+
+  @override
+  Future<void> updateAutoConfirm(String linkId, {required bool enabled}) async {
+    try {
+      await _api.patch(
+        ApiEndpoints.linkAutoConfirm(linkId),
+        data: {'enabled': enabled},
+      );
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
 }

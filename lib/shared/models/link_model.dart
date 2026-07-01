@@ -195,6 +195,9 @@ class VendorLinkItem extends Equatable {
   /// True when the customer has sent a request that the vendor hasn't accepted yet.
   final bool isPending;
 
+  /// Customer's preference: when true, vendor credit entries on this link are auto-confirmed.
+  final bool customerAutoConfirm;
+
   const VendorLinkItem({
     required this.linkId,
     required this.balance,
@@ -202,6 +205,7 @@ class VendorLinkItem extends Equatable {
     required this.vendor,
     required this.createdAt,
     this.isPending = false,
+    this.customerAutoConfirm = true,
   });
 
   /// The display name: nickname if set, otherwise the business/login name.
@@ -212,6 +216,16 @@ class VendorLinkItem extends Equatable {
   String? get subName =>
       nickname?.isNotEmpty == true ? (vendor.businessName ?? vendor.name) : null;
 
+  VendorLinkItem copyWith({bool? customerAutoConfirm}) => VendorLinkItem(
+        linkId: linkId,
+        balance: balance,
+        nickname: nickname,
+        vendor: vendor,
+        createdAt: createdAt,
+        isPending: isPending,
+        customerAutoConfirm: customerAutoConfirm ?? this.customerAutoConfirm,
+      );
+
   factory VendorLinkItem.fromJson(Map<String, dynamic> json) => VendorLinkItem(
         linkId: json['linkId'] as String,
         balance: (json['balance'] as num? ?? 0).toDouble(),
@@ -219,8 +233,9 @@ class VendorLinkItem extends Equatable {
         vendor: VendorSummary.fromJson(json['vendor'] as Map<String, dynamic>),
         createdAt: json['createdAt'] as String,
         isPending: json['isPending'] as bool? ?? false,
+        customerAutoConfirm: json['customerAutoConfirm'] as bool? ?? true,
       );
 
   @override
-  List<Object?> get props => [linkId, balance, nickname, vendor, createdAt, isPending];
+  List<Object?> get props => [linkId, balance, nickname, vendor, createdAt, isPending, customerAutoConfirm];
 }
