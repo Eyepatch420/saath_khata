@@ -148,6 +148,9 @@ class LedgerEntry extends Equatable {
     return 'Delivered by $role';
   }
 
+  /// True only for entries awaiting confirmation by the other party.
+  bool get isPendingConfirmation => status == EntryStatus.pending && !isLocked;
+
   @override
   List<Object?> get props => [
         id,

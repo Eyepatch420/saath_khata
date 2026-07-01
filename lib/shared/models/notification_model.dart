@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 
 enum NotificationType {
   entryAdded,
+  entryAutoConfirmed,
   entryConfirmed,
   entryDisputed,
   paymentReceived,
@@ -24,6 +25,7 @@ enum NotificationType {
 NotificationType _notifTypeFromJson(String v) {
   const map = {
     'entry_added': NotificationType.entryAdded,
+    'entry_auto_confirmed': NotificationType.entryAutoConfirmed,
     'entry_confirmed': NotificationType.entryConfirmed,
     'entry_disputed': NotificationType.entryDisputed,
     'payment_received': NotificationType.paymentReceived,

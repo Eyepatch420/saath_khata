@@ -131,6 +131,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       case NotificationType.entryDisputed:
         getIt<VendorBloc>().add(LoadVendorDashboard());
         break;
+      case NotificationType.entryAutoConfirmed:
+        getIt<CustomerBloc>().add(LoadCustomerDashboard());
+        break;
       default:
         break;
     }

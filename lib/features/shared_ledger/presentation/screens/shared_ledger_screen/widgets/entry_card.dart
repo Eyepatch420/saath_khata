@@ -204,8 +204,7 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
             // createdBy == customerId  →  customer created it  →  vendor confirms
             // createdBy != customerId  →  vendor/staff created →  customer confirms
             if (!widget.isStaffView &&
-                entry.status == EntryStatus.pending &&
-                !entry.isLocked &&
+                entry.isPendingConfirmation &&
                 _shouldShowConfirmDispute(entry, widget.isVendorView)) ...[
               const Divider(height: 20),
               Row(

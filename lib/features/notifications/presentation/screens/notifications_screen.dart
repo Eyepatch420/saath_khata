@@ -233,6 +233,11 @@ class _NotificationCard extends StatelessWidget {
         }
       case NotificationType.linkRequestAccepted:
         getIt<CustomerBloc>().add(LoadCustomerDashboard());
+      case NotificationType.entryAutoConfirmed:
+        final linkId = data?['linkId'] as String?;
+        if (linkId != null) {
+          router.push(AppRouter.sharedLedger, extra: linkId);
+        }
       default:
         break;
     }
@@ -354,6 +359,8 @@ class _NotificationCard extends StatelessWidget {
         return Icons.add_circle_outline_rounded;
       case NotificationType.entryConfirmed:
         return Icons.check_circle_outline_rounded;
+      case NotificationType.entryAutoConfirmed:
+        return Icons.check_circle_outline_rounded;
       case NotificationType.entryDisputed:
         return Icons.warning_amber_rounded;
       case NotificationType.paymentReceived:
@@ -394,6 +401,8 @@ class _NotificationCard extends StatelessWidget {
       case NotificationType.entryAdded:
         return AppColors.primary;
       case NotificationType.entryConfirmed:
+        return AppColors.success;
+      case NotificationType.entryAutoConfirmed:
         return AppColors.success;
       case NotificationType.entryDisputed:
         return AppColors.error;
