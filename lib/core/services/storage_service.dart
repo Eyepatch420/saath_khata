@@ -147,10 +147,10 @@ class StorageService {
     }
 
     return UserModel(
-      id: id,
+      id: id!,
       name: await _secure.read(key: _userNameKey) ?? '',
-      email: nz(await _secure.read(key: _userEmailKey)),
-      role: role,
+      email: nz(await _secure.read(key: _userEmailKey)) ?? '',
+      role: role!,
       mobile: nz(await _secure.read(key: _userMobileKey)),
       upiId: nz(await _secure.read(key: _userUpiIdKey)),
       profilePhotoUrl: nz(await _secure.read(key: _userProfilePhotoKey)),

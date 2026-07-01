@@ -1,6 +1,33 @@
 import 'package:equatable/equatable.dart';
 import 'upi_id_model.dart';
 
+class StaffProfile extends Equatable {
+  final String staffId;
+  final String vendorId;
+  final String? businessName;
+  final String? businessCategory;
+  final String? qrCodeUrl;
+
+  const StaffProfile({
+    required this.staffId,
+    required this.vendorId,
+    this.businessName,
+    this.businessCategory,
+    this.qrCodeUrl,
+  });
+
+  factory StaffProfile.fromJson(Map<String, dynamic> json) => StaffProfile(
+        staffId: json['staffId'] as String,
+        vendorId: json['vendorId'] as String,
+        businessName: json['businessName'] as String?,
+        businessCategory: json['businessCategory'] as String?,
+        qrCodeUrl: json['qrCodeUrl'] as String?,
+      );
+
+  @override
+  List<Object?> get props => [staffId, vendorId, businessName, businessCategory, qrCodeUrl];
+}
+
 class UserModel extends Equatable {
   final String id;
   final String name;
@@ -21,6 +48,8 @@ class UserModel extends Equatable {
   final double? customerLatitude;
   final double? customerLongitude;
   final String? customerAddress;
+  // Staff-only fields (null for vendor/customer)
+  final StaffProfile? staffProfile;
 
   const UserModel({
     required this.id,
@@ -40,15 +69,17 @@ class UserModel extends Equatable {
     this.customerLatitude,
     this.customerLongitude,
     this.customerAddress,
+    this.staffProfile,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     final vendorProfile = json['vendorProfile'] as Map<String, dynamic>?;
+    final staffProfileRaw = json['staffProfile'] as Map<String, dynamic>?;
     final rawUpiIds = vendorProfile?['upiIds'] as List<dynamic>?;
     return UserModel(
       id: json['id'] as String,
       name: json['name'] as String,
-      email: json['email'] as String,
+      email: json['email'] as String? ?? '',
       role: json['role'] as String,
       mobile: json['mobile'] as String?,
       upiId: json['upiId'] as String?,
@@ -67,6 +98,7 @@ class UserModel extends Equatable {
       customerLatitude: (json['customerLocation']?['latitude'] as num?)?.toDouble(),
       customerLongitude: (json['customerLocation']?['longitude'] as num?)?.toDouble(),
       customerAddress: json['customerLocation']?['address'] as String?,
+      staffProfile: staffProfileRaw != null ? StaffProfile.fromJson(staffProfileRaw) : null,
     );
   }
 
@@ -85,6 +117,7 @@ class UserModel extends Equatable {
     double? customerLatitude,
     double? customerLongitude,
     String? customerAddress,
+    StaffProfile? staffProfile,
   }) =>
       UserModel(
         id: id,
@@ -104,9 +137,15 @@ class UserModel extends Equatable {
         customerLatitude: customerLatitude ?? this.customerLatitude,
         customerLongitude: customerLongitude ?? this.customerLongitude,
         customerAddress: customerAddress ?? this.customerAddress,
+        staffProfile: staffProfile ?? this.staffProfile,
       );
 
   bool get isVendor => role == 'vendor';
+  bool get isStaff => role == 'staff';
+
+  /// Business name for display — works for vendor (own) and staff (vendor they serve)
+  String get effectiveBusinessName =>
+      staffProfile?.businessName ?? businessName ?? name;
 
   UpiIdModel? get primaryUpiId =>
       upiIds?.firstWhere((u) => u.isPrimary, orElse: () => upiIds!.first);
@@ -117,5 +156,6 @@ class UserModel extends Equatable {
         businessName, businessCategory, businessCategories, businessAddress,
         businessLatitude, businessLongitude, upiIds,
         customerLatitude, customerLongitude, customerAddress,
+        staffProfile,
       ];
 }
