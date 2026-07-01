@@ -81,6 +81,10 @@ import '../../features/orders/presentation/screens/place_order_screen.dart';
 import '../../features/orders/presentation/bloc/order_bloc.dart';
 import '../../features/orders/domain/repositories/order_repository.dart';
 import '../../features/settings/presentation/screens/ledger_preferences_screen.dart';
+import '../../features/schedule/presentation/screens/vendor_services_screen.dart';
+import '../../features/schedule/presentation/screens/customer_subscriptions_screen.dart';
+import '../../features/schedule/presentation/cubit/schedule_cubit.dart';
+import '../../features/schedule/domain/repositories/schedule_repository.dart';
 import '../di/injection.dart';
 import 'auth_state_notifier.dart';
 
@@ -140,6 +144,8 @@ class AppRouter {
   static const String staffOrders = '/staff-home/orders';
   static const String placeOrder = '/place-order';
   static const String ledgerPreferences = '/settings/ledger-preferences';
+  static const String vendorSchedule = '/vendor/schedule';
+  static const String customerSchedule = '/customer/schedule';
 
   // Routes accessible without authentication
   static const _publicRoutes = {
@@ -260,6 +266,23 @@ class AppRouter {
             builder: (context, state) => const VendorBookingsScreen(),
           ),
           GoRoute(
+            path: vendorSchedule,
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                    create: (_) =>
+                        ServicesCubit(getIt<ScheduleRepository>())..load()),
+                BlocProvider(
+                    create: (_) =>
+                        SubscriptionsCubit(getIt<ScheduleRepository>())),
+                BlocProvider(
+                    create: (_) =>
+                        DeliveriesCubit(getIt<ScheduleRepository>())..load()),
+              ],
+              child: const VendorServicesScreen(),
+            ),
+          ),
+          GoRoute(
             path: settings,
             builder: (context, state) => const SettingsScreen(),
           ),
@@ -290,6 +313,23 @@ class AppRouter {
           GoRoute(
             path: customerBookings,
             builder: (context, state) => const CustomerBookingsScreen(),
+          ),
+          GoRoute(
+            path: customerSchedule,
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(
+                    create: (_) =>
+                        MySubscriptionsCubit(getIt<ScheduleRepository>())
+                          ..load()),
+                BlocProvider(
+                    create: (_) => DeliveriesCubit(
+                        getIt<ScheduleRepository>(),
+                        isCustomer: true)
+                      ..load()),
+              ],
+              child: const CustomerSubscriptionsScreen(),
+            ),
           ),
         ],
       ),
@@ -587,6 +627,7 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
               AppNavItem(riveIcon: AppRiveIcon.home,  label: 'Home'),
               AppNavItem(riveIcon: AppRiveIcon.user,  label: 'Staff'),
               AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Booking'),
+              AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Schedule'),
               AppNavItem(riveIcon: AppRiveIcon.stars, label: 'Reports'),
               AppNavItem(riveIcon: AppRiveIcon.gear,  label: 'Settings'),
             ],
@@ -618,8 +659,9 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
     if (location == AppRouter.vendorHome) return 0;
     if (location == AppRouter.staffManagement) return 1;
     if (location == AppRouter.vendorBookings) return 2;
-    if (location.startsWith(AppRouter.reports)) return 3;
-    if (location == AppRouter.settings) return 4;
+    if (location == AppRouter.vendorSchedule) return 3;
+    if (location.startsWith(AppRouter.reports)) return 4;
+    if (location == AppRouter.settings) return 5;
     return 0;
   }
 
@@ -635,9 +677,12 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
         context.go(AppRouter.vendorBookings);
         break;
       case 3:
-        context.go(AppRouter.reports);
+        context.go(AppRouter.vendorSchedule);
         break;
       case 4:
+        context.go(AppRouter.reports);
+        break;
+      case 5:
         context.go(AppRouter.settings);
         break;
     }
@@ -708,6 +753,7 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
           AppNavItem(riveIcon: AppRiveIcon.home,     label: 'Home'),
           AppNavItem(riveIcon: AppRiveIcon.message,  label: 'My Khatas'),
           AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Bookings'),
+          AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Schedule'),
           AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
         ],
       ),
@@ -736,7 +782,8 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
     if (location == AppRouter.customerHome) return 0;
     if (location == AppRouter.customerKhatas) return 1;
     if (location == AppRouter.customerBookings) return 2;
-    if (location == AppRouter.customerProfile) return 3;
+    if (location == AppRouter.customerSchedule) return 3;
+    if (location == AppRouter.customerProfile) return 4;
     return 0;
   }
 
@@ -752,6 +799,9 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
         context.go(AppRouter.customerBookings);
         break;
       case 3:
+        context.go(AppRouter.customerSchedule);
+        break;
+      case 4:
         context.go(AppRouter.customerProfile);
         break;
     }

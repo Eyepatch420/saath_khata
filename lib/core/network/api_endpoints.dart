@@ -131,4 +131,19 @@ class ApiEndpoints {
   static const String reportOutstanding = '/reports/outstanding';
   static const String reportCollectedToday = '/reports/collected-today';
   static const String reportMonthly = '/reports/monthly';
+
+  // Schedule (F005)
+  static const String scheduleServices = '/schedule/services';
+  static String scheduleServiceById(String id) => '/schedule/services/$id';
+  static String scheduleServiceSubscriptions(String serviceId) =>
+      '/schedule/services/$serviceId/subscriptions';
+  static const String scheduleSubscriptions = '/schedule/subscriptions';
+  static String scheduleSubscriptionById(String id) => '/schedule/subscriptions/$id';
+  static String scheduleSubscriptionPause(String id) => '/schedule/subscriptions/$id/pause';
+  static String scheduleSubscriptionResume(String id) => '/schedule/subscriptions/$id/resume';
+  static const String scheduleDeliveries = '/schedule/deliveries';
+  static String scheduleDeliveryDeliver(String id) => '/schedule/deliveries/$id/deliver';
+  static String scheduleDeliverySkip(String id) => '/schedule/deliveries/$id/skip';
+  static const String scheduleMySubscriptions = '/schedule/my/subscriptions';
+  static const String scheduleMyDeliveries = '/schedule/my/deliveries';
 }
