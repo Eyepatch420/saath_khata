@@ -74,6 +74,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final result = await _authRepository.emailLogin(
         email: event.email,
         password: event.password,
+        role: event.role,
       );
       final user = result.user;
       final isStaffLoggingInAsVendor =

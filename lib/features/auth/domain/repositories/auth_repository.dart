@@ -17,6 +17,7 @@ abstract class AuthRepository {
   Future<AuthResponseModel> emailLogin({
     required String email,
     required String password,
+    required String role,
   });
 
   // ─── Signup (OTP-based) ───────────────────────────────────────────────────

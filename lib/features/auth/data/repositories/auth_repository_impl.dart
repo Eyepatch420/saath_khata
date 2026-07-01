@@ -44,11 +44,12 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AuthResponseModel> emailLogin({
     required String email,
     required String password,
+    required String role,
   }) async {
     try {
       final response = await _api.post(
         ApiEndpoints.emailLogin,
-        data: {'email': email, 'password': password},
+        data: {'email': email, 'password': password, 'role': role},
       );
       return AuthResponseModel.fromJson(ApiClient.extractData(response));
     } on DioException catch (e) {
