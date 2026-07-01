@@ -43,6 +43,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
     l10n.businessCategorySalonParlour,
     l10n.businessCategoryConstructionLabour,
     l10n.businessCategoryTransportAuto,
+    'Gym / Fitness',
     l10n.businessCategoryOther,
   ];
 
@@ -56,7 +57,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   String _role = 'vendor';
 
   // Form state
-  String? _selectedCategory;
+  List<String> _selectedCategories = [];
   XFile? _pickedImage;
   bool _isUploadingPhoto = false;
   LocationData? _pickedLocation;
@@ -226,7 +227,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         businessName: _businessNameController.text.trim().isEmpty
             ? null
             : _businessNameController.text.trim(),
-        businessCategory: _selectedCategory,
+        businessCategory: _selectedCategories.isNotEmpty ? _selectedCategories.first : null,
+        businessCategories: _selectedCategories.isNotEmpty ? _selectedCategories : null,
         businessAddress: _businessAddressController.text.trim().isEmpty
             ? null
             : _businessAddressController.text.trim(),
@@ -484,33 +486,58 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                       controller: _businessNameController,
                     ),
                     const SizedBox(height: 20),
-                    Text(
-                      l10n.businessCategory,
-                      style: AppTypography.labelLarge,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(l10n.businessCategory, style: AppTypography.labelLarge),
+                        Text(
+                          '${_selectedCategories.length}/3',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: _selectedCategories.length >= 3
+                                ? AppColors.error
+                                : AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(
-                          Icons.category_rounded,
-                          color: AppColors.textSecondary,
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
                         ),
-                        contentPadding: EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
-                        ),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      hint: Text(l10n.selectCategory),
-                      initialValue: _selectedCategory,
-                      items: _vendorCategories(l10n)
-                          .map(
-                            (cat) =>
-                                DropdownMenuItem(value: cat, child: Text(cat)),
-                          )
-                          .toList(),
-                      onChanged: isLoading
-                          ? null
-                          : (val) => setState(() => _selectedCategory = val),
+                      child: Column(
+                        children: _vendorCategories(l10n).map((cat) {
+                          final isSelected = _selectedCategories.contains(cat);
+                          final isDisabled = !isSelected && _selectedCategories.length >= 3;
+                          return CheckboxListTile(
+                            value: isSelected,
+                            onChanged: isLoading || isDisabled
+                                ? null
+                                : (val) {
+                                    setState(() {
+                                      if (val == true) {
+                                        _selectedCategories.add(cat);
+                                      } else {
+                                        _selectedCategories.remove(cat);
+                                      }
+                                    });
+                                  },
+                            title: Text(
+                              cat,
+                              style: TextStyle(
+                                color: isDisabled ? AppColors.textHint : null,
+                              ),
+                            ),
+                            dense: true,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     LocationPickerTile(

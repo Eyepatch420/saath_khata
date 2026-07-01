@@ -68,6 +68,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String? upiId,
     String? businessName,
     String? businessCategory,
+    List<String>? businessCategories,
     String? businessAddress,
     double? customerLatitude,
     double? customerLongitude,
@@ -82,6 +83,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (upiId != null && upiId.isNotEmpty) body['upiId'] = upiId;
     if (businessName != null && businessName.isNotEmpty) body['businessName'] = businessName;
     if (businessCategory != null) body['businessCategory'] = businessCategory;
+    if (businessCategories != null) body['businessCategories'] = businessCategories;
     if (businessAddress != null && businessAddress.isNotEmpty) body['businessAddress'] = businessAddress;
     if (customerLatitude != null) body['customerLatitude'] = customerLatitude;
     if (customerLongitude != null) body['customerLongitude'] = customerLongitude;
@@ -122,6 +124,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String? upiId,
     String? businessName,
     String? businessCategory,
+    List<String>? businessCategories,
     String? businessAddress,
     double? businessLatitude,
     double? businessLongitude,
@@ -136,6 +139,7 @@ class AuthRepositoryImpl implements AuthRepository {
     if (upiId != null) body['upiId'] = upiId;
     if (businessName != null) body['businessName'] = businessName;
     if (businessCategory != null) body['businessCategory'] = businessCategory;
+    if (businessCategories != null) body['businessCategories'] = businessCategories;
     if (businessAddress != null) body['businessAddress'] = businessAddress;
     if (businessLatitude != null) body['businessLatitude'] = businessLatitude;
     if (businessLongitude != null) body['businessLongitude'] = businessLongitude;

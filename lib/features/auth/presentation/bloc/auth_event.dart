@@ -46,6 +46,7 @@ class AuthSignupRequested extends AuthEvent {
   final String? upiId;
   final String? businessName;
   final String? businessCategory;
+  final List<String>? businessCategories;
   final String? businessAddress;
   final double? customerLatitude;
   final double? customerLongitude;
@@ -59,6 +60,7 @@ class AuthSignupRequested extends AuthEvent {
     this.upiId,
     this.businessName,
     this.businessCategory,
+    this.businessCategories,
     this.businessAddress,
     this.customerLatitude,
     this.customerLongitude,
@@ -97,6 +99,7 @@ class AuthProfileUpdateRequested extends AuthEvent {
   final String? upiId;
   final String? businessName;
   final String? businessCategory;
+  final List<String>? businessCategories;
   final String? businessAddress;
   final double? customerLatitude;
   final double? customerLongitude;
@@ -108,6 +111,7 @@ class AuthProfileUpdateRequested extends AuthEvent {
     this.upiId,
     this.businessName,
     this.businessCategory,
+    this.businessCategories,
     this.businessAddress,
     this.customerLatitude,
     this.customerLongitude,

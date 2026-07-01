@@ -12,6 +12,7 @@ class UserModel extends Equatable {
   // Vendor-only fields (null for customers)
   final String? businessName;
   final String? businessCategory;
+  final List<String> businessCategories;
   final String? businessAddress;
   final double? businessLatitude;
   final double? businessLongitude;
@@ -31,6 +32,7 @@ class UserModel extends Equatable {
     this.profilePhotoUrl,
     this.businessName,
     this.businessCategory,
+    this.businessCategories = const [],
     this.businessAddress,
     this.businessLatitude,
     this.businessLongitude,
@@ -53,6 +55,9 @@ class UserModel extends Equatable {
       profilePhotoUrl: json['profilePhotoUrl'] as String?,
       businessName: vendorProfile?['businessName'] as String?,
       businessCategory: vendorProfile?['businessCategory'] as String?,
+      businessCategories: (vendorProfile?['businessCategories'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ?? const [],
       businessAddress: vendorProfile?['businessAddress'] as String?,
       businessLatitude: (vendorProfile?['businessLatitude'] as num?)?.toDouble(),
       businessLongitude: (vendorProfile?['businessLongitude'] as num?)?.toDouble(),
@@ -72,6 +77,7 @@ class UserModel extends Equatable {
     String? profilePhotoUrl,
     String? businessName,
     String? businessCategory,
+    List<String>? businessCategories,
     String? businessAddress,
     double? businessLatitude,
     double? businessLongitude,
@@ -90,6 +96,7 @@ class UserModel extends Equatable {
         profilePhotoUrl: profilePhotoUrl ?? this.profilePhotoUrl,
         businessName: businessName ?? this.businessName,
         businessCategory: businessCategory ?? this.businessCategory,
+        businessCategories: businessCategories ?? this.businessCategories,
         businessAddress: businessAddress ?? this.businessAddress,
         businessLatitude: businessLatitude ?? this.businessLatitude,
         businessLongitude: businessLongitude ?? this.businessLongitude,
@@ -107,7 +114,7 @@ class UserModel extends Equatable {
   @override
   List<Object?> get props => [
         id, name, email, role, mobile, upiId, profilePhotoUrl,
-        businessName, businessCategory, businessAddress,
+        businessName, businessCategory, businessCategories, businessAddress,
         businessLatitude, businessLongitude, upiIds,
         customerLatitude, customerLongitude, customerAddress,
       ];

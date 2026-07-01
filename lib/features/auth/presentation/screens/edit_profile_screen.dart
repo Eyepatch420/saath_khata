@@ -28,11 +28,29 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
+  // Matches VENDOR_CATEGORIES in backend constants/index.ts
+  static const List<String> _kVendorCategories = [
+    'Milk / Dairy',
+    'Press / Dhobi',
+    'Maid / Cook',
+    'Newspaper',
+    'Water Can',
+    'Tiffin / Food',
+    'Kirana / Grocery',
+    'Salon / Parlour',
+    'Construction Labour',
+    'Transport / Auto',
+    'Gym / Fitness',
+    'Other',
+  ];
+
   late final TextEditingController _nameCtrl;
   late final TextEditingController _mobileCtrl;
   late final TextEditingController _upiCtrl; // customers only
   late final TextEditingController _bizNameCtrl;
-  late final TextEditingController _bizCategoryCtrl;
+
+  // Vendor category multi-select
+  List<String> _selectedCategories = [];
 
   // Vendor location state
   LocationData? _pickedLocation;
@@ -47,8 +65,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _mobileCtrl = TextEditingController(text: widget.user.mobile ?? '');
     _upiCtrl = TextEditingController(text: widget.user.upiId ?? '');
     _bizNameCtrl = TextEditingController(text: widget.user.businessName ?? '');
-    _bizCategoryCtrl =
-        TextEditingController(text: widget.user.businessCategory ?? '');
 
     // Pre-populate location if vendor already has coordinates
     if (widget.user.isVendor &&
@@ -61,14 +77,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       );
     }
 
-    // Pre-populate location if customer already has coordinates
-    if (!widget.user.isVendor &&
-        widget.user.customerLatitude != null &&
-        widget.user.customerLongitude != null) {
-      _pickedLocation = LocationData(
-        lat: widget.user.customerLatitude!,
-        lng: widget.user.customerLongitude!,
-        displayName: widget.user.customerAddress ?? '',
+    // Pre-populate categories from stored profile
+    if (widget.user.isVendor) {
+      _selectedCategories = List<String>.from(
+        widget.user.businessCategories.isNotEmpty
+            ? widget.user.businessCategories
+            : (widget.user.businessCategory != null
+                ? [widget.user.businessCategory!]
+                : []),
       );
     }
   }
@@ -79,7 +95,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _mobileCtrl.dispose();
     _upiCtrl.dispose();
     _bizNameCtrl.dispose();
-    _bizCategoryCtrl.dispose();
     super.dispose();
   }
 
@@ -166,10 +181,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             widget.user.isVendor && _bizNameCtrl.text.trim().isNotEmpty
                 ? _bizNameCtrl.text.trim()
                 : null,
-        businessCategory:
-            widget.user.isVendor && _bizCategoryCtrl.text.trim().isNotEmpty
-                ? _bizCategoryCtrl.text.trim()
-                : null,
+        businessCategory: widget.user.isVendor && _selectedCategories.isNotEmpty
+            ? _selectedCategories.first
+            : null,
+        businessCategories: widget.user.isVendor && _selectedCategories.isNotEmpty
+            ? _selectedCategories
+            : null,
         businessAddress: widget.user.isVendor
             ? (_pickedLocation?.displayName ?? widget.user.businessAddress)
             : null,
@@ -177,9 +194,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             widget.user.isVendor ? _pickedLocation?.lat : null,
         businessLongitude:
             widget.user.isVendor ? _pickedLocation?.lng : null,
-        customerLatitude: !widget.user.isVendor ? _pickedLocation?.lat : null,
-        customerLongitude: !widget.user.isVendor ? _pickedLocation?.lng : null,
-        customerAddress: !widget.user.isVendor ? _pickedLocation?.displayName : null,
       );
 
       if (!mounted) return;
@@ -314,7 +328,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   keyboardType: TextInputType.phone,
                 ),
 
-                // ── Customer-only: single UPI field + location picker ──────────
+                // ── Customer-only: single UPI field ───────────────────────────
                 if (!widget.user.isVendor) ...[
                   const SizedBox(height: 16),
                   TextFormField(
@@ -325,19 +339,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       prefixIcon:
                           Icon(Icons.account_balance_wallet_outlined),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  LocationPickerTile(
-                    location: _pickedLocation,
-                    onTap: () async {
-                      final result = await context.push<LocationData>(
-                        AppRouter.locationPicker,
-                        extra: _pickedLocation,
-                      );
-                      if (result != null) {
-                        setState(() => _pickedLocation = result);
-                      }
-                    },
                   ),
                 ],
 
@@ -360,12 +361,90 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _bizCategoryCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Business Category',
-                      prefixIcon: Icon(Icons.category_outlined),
-                    ),
+                  // Category multi-select — min 1, max 3
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Business Category',
+                            style: AppTypography.labelLarge.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          Text(
+                            '${_selectedCategories.length}/3',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: _selectedCategories.length >= 3
+                                  ? AppColors.error
+                                  : AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.5),
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            ..._kVendorCategories.map((cat) {
+                              final isSelected = _selectedCategories.contains(cat);
+                              final isDisabled = !isSelected && _selectedCategories.length >= 3;
+                              return CheckboxListTile(
+                                value: isSelected,
+                                onChanged: _isSaving || isDisabled
+                                    ? null
+                                    : (val) {
+                                        setState(() {
+                                          if (val == true) {
+                                            _selectedCategories.add(cat);
+                                          } else {
+                                            _selectedCategories.remove(cat);
+                                          }
+                                        });
+                                      },
+                                title: Text(
+                                  cat,
+                                  style: TextStyle(
+                                    color: isDisabled ? AppColors.textHint : null,
+                                  ),
+                                ),
+                                dense: true,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: 'Custom category (optional)',
+                          hintText: 'e.g. Ayurvedic Medicine',
+                          helperText: 'Add your own if not listed above',
+                          prefixIcon: Icon(Icons.add_circle_outline_rounded),
+                        ),
+                        enabled: !_isSaving && _selectedCategories.length < 3,
+                        onFieldSubmitted: (val) {
+                          final trimmed = val.trim();
+                          if (trimmed.isNotEmpty &&
+                              !_selectedCategories.contains(trimmed) &&
+                              _selectedCategories.length < 3) {
+                            setState(() => _selectedCategories.add(trimmed));
+                          }
+                        },
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   // Location picker replaces the plain text address field
