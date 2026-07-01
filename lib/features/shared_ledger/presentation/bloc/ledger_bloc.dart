@@ -43,6 +43,15 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
 
   List<LedgerEntry> _applyFilter(List<LedgerEntry> all, EntryStatus? filter) {
     if (filter == null) return all;
+    // "Pending" in the dues context = only pending credits (what customer owes).
+    // Payment entries are what the customer paid — not dues, even if still pending.
+    if (filter == EntryStatus.pending) {
+      return all
+          .where((e) =>
+              e.status == EntryStatus.pending &&
+              e.type == EntryType.credit)
+          .toList();
+    }
     return all.where((e) => e.status == filter).toList();
   }
 
