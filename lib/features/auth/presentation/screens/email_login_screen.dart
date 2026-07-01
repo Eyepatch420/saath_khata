@@ -156,6 +156,34 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       onTap: isLoading
                           ? null
                           : () => context.pushReplacement(
+                              AppRouter.emailSignup,
+                              extra: widget.role,
+                            ),
+                      child: RichText(
+                        text: TextSpan(
+                          text: "Don't have an account? ",
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Sign up',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Center(
+                    child: GestureDetector(
+                      onTap: isLoading
+                          ? null
+                          : () => context.pushReplacement(
                               AppRouter.phoneEntry,
                               extra: widget.role,
                             ),

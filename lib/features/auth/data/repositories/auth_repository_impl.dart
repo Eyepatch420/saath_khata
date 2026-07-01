@@ -38,6 +38,46 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  // ─── Email signup ─────────────────────────────────────────────────────────
+
+  @override
+  Future<AuthResponseModel> emailSignup({
+    required String email,
+    required String password,
+    required String name,
+    required String role,
+    String? upiId,
+    String? businessName,
+    String? businessCategory,
+    List<String>? businessCategories,
+    String? businessAddress,
+    double? customerLatitude,
+    double? customerLongitude,
+    String? customerAddress,
+  }) async {
+    final body = <String, dynamic>{
+      'email': email,
+      'password': password,
+      'name': name,
+      'role': role,
+    };
+    if (upiId != null && upiId.isNotEmpty) body['upiId'] = upiId;
+    if (businessName != null && businessName.isNotEmpty) body['businessName'] = businessName;
+    if (businessCategory != null) body['businessCategory'] = businessCategory;
+    if (businessCategories != null) body['businessCategories'] = businessCategories;
+    if (businessAddress != null && businessAddress.isNotEmpty) body['businessAddress'] = businessAddress;
+    if (customerLatitude != null) body['customerLatitude'] = customerLatitude;
+    if (customerLongitude != null) body['customerLongitude'] = customerLongitude;
+    if (customerAddress != null) body['customerAddress'] = customerAddress;
+
+    try {
+      final response = await _api.post(ApiEndpoints.emailSignup, data: body);
+      return AuthResponseModel.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
   // ─── Email + password login ───────────────────────────────────────────────
 
   @override

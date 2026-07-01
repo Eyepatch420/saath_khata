@@ -12,6 +12,23 @@ abstract class AuthRepository {
     required String otp,
   });
 
+  // ─── Email signup (no OTP required) ──────────────────────────────────────
+
+  Future<AuthResponseModel> emailSignup({
+    required String email,
+    required String password,
+    required String name,
+    required String role,
+    String? upiId,
+    String? businessName,
+    String? businessCategory,
+    List<String>? businessCategories,
+    String? businessAddress,
+    double? customerLatitude,
+    double? customerLongitude,
+    String? customerAddress,
+  });
+
   // ─── Email + password login ───────────────────────────────────────────────
 
   Future<AuthResponseModel> emailLogin({

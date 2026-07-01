@@ -27,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthOtpSendRequested>(_onOtpSend);
     on<AuthOtpVerifyRequested>(_onOtpVerify);
     on<AuthEmailLoginRequested>(_onEmailLogin);
+    on<AuthEmailSignupRequested>(_onEmailSignup);
     on<AuthSignupRequested>(_onSignup);
     on<AuthLogoutRequested>(_onLogout);
     on<AuthProfileUpdateRequested>(_onUpdateProfile);
@@ -61,6 +62,44 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       AppLogger.e(_m, 'Session check failed', e);
       emit(const AuthUnauthenticated());
+    }
+  }
+
+  Future<void> _onEmailSignup(
+    AuthEmailSignupRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    AppLogger.i(_m, 'Email signup: ${event.email} as ${event.role}');
+    emit(const AuthLoading());
+    try {
+      final result = await _authRepository.emailSignup(
+        email: event.email,
+        password: event.password,
+        name: event.name,
+        role: event.role,
+        upiId: event.upiId,
+        businessName: event.businessName,
+        businessCategory: event.businessCategory,
+        businessCategories: event.businessCategories,
+        businessAddress: event.businessAddress,
+        customerLatitude: event.customerLatitude,
+        customerLongitude: event.customerLongitude,
+        customerAddress: event.customerAddress,
+      );
+      await _storage.saveTokens(
+        accessToken: result.tokens.accessToken,
+        refreshToken: result.tokens.refreshToken,
+        expiresIn: result.tokens.expiresIn,
+      );
+      await _storage.saveFullUser(result.user);
+      AppLogger.i(_m, 'Email signup success — ${result.user.email} (${result.user.role})');
+      getIt<LedgerSocketService>().connect(result.tokens.accessToken);
+      await getIt<PushNotificationService>().initialize();
+      getIt<NotificationBloc>().add(LoadUnreadCount());
+      emit(AuthAuthenticated(result.user));
+    } catch (e) {
+      AppLogger.e(_m, 'Email signup failed', e);
+      emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 

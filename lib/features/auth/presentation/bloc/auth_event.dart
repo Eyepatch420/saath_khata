@@ -71,6 +71,41 @@ class AuthSignupRequested extends AuthEvent {
   List<Object?> get props => [signupToken, name, role];
 }
 
+// ─── Email signup (no OTP required) ──────────────────────────────────────────
+
+class AuthEmailSignupRequested extends AuthEvent {
+  final String email;
+  final String password;
+  final String name;
+  final String role;
+  final String? upiId;
+  final String? businessName;
+  final String? businessCategory;
+  final List<String>? businessCategories;
+  final String? businessAddress;
+  final double? customerLatitude;
+  final double? customerLongitude;
+  final String? customerAddress;
+
+  const AuthEmailSignupRequested({
+    required this.email,
+    required this.password,
+    required this.name,
+    required this.role,
+    this.upiId,
+    this.businessName,
+    this.businessCategory,
+    this.businessCategories,
+    this.businessAddress,
+    this.customerLatitude,
+    this.customerLongitude,
+    this.customerAddress,
+  });
+
+  @override
+  List<Object?> get props => [email, name, role];
+}
+
 // ─── Email + password login ───────────────────────────────────────────────────
 
 class AuthEmailLoginRequested extends AuthEvent {

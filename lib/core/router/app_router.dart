@@ -8,6 +8,7 @@ import '../../features/auth/presentation/screens/role_selection_screen.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/phone_entry_screen.dart';
 import '../../features/auth/presentation/screens/email_login_screen.dart';
+import '../../features/auth/presentation/screens/email_signup_screen.dart';
 import '../../features/auth/presentation/screens/otp_verify_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../constants/app_colors.dart';
@@ -133,6 +134,7 @@ class AppRouter {
   static const String membershipRequests = '/membership-requests';
   static const String bulkCharge = '/bulk-charge';
   static const String emailLogin = '/email-login';
+  static const String emailSignup = '/email-signup';
   static const String vendorOrders = '/vendor/orders';
   static const String customerOrders = '/customer/orders';
   static const String staffOrders = '/staff-home/orders';
@@ -149,6 +151,7 @@ class AppRouter {
     otpVerify,
     login,
     emailLogin,
+    emailSignup,
     profileSetup,
     locationPicker,
   };
@@ -221,6 +224,13 @@ class AppRouter {
         builder: (context, state) {
           final role = state.extra as String? ?? 'vendor';
           return EmailLoginScreen(role: role);
+        },
+      ),
+      GoRoute(
+        path: emailSignup,
+        builder: (context, state) {
+          final role = state.extra as String? ?? 'vendor';
+          return EmailSignupScreen(role: role);
         },
       ),
       GoRoute(
