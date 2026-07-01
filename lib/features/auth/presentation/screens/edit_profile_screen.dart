@@ -13,7 +13,6 @@ import '../../../../core/router/app_router.dart';
 import '../../../../shared/models/location_model.dart';
 import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/location_picker_tile.dart';
-import '../../../../l10n/app_localizations.dart';
 import '../../data/models/user_model.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../bloc/auth_bloc.dart';
@@ -48,9 +47,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _mobileCtrl = TextEditingController(text: widget.user.mobile ?? '');
     _upiCtrl = TextEditingController(text: widget.user.upiId ?? '');
     _bizNameCtrl = TextEditingController(text: widget.user.businessName ?? '');
-    _bizCategoryCtrl = TextEditingController(
-      text: widget.user.businessCategory ?? '',
-    );
+    _bizCategoryCtrl =
+        TextEditingController(text: widget.user.businessCategory ?? '');
 
     // Pre-populate location if vendor already has coordinates
     if (widget.user.isVendor &&
@@ -60,6 +58,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         lat: widget.user.businessLatitude!,
         lng: widget.user.businessLongitude!,
         displayName: widget.user.businessAddress ?? '',
+      );
+    }
+
+    // Pre-populate location if customer already has coordinates
+    if (!widget.user.isVendor &&
+        widget.user.customerLatitude != null &&
+        widget.user.customerLongitude != null) {
+      _pickedLocation = LocationData(
+        lat: widget.user.customerLatitude!,
+        lng: widget.user.customerLongitude!,
+        displayName: widget.user.customerAddress ?? '',
       );
     }
   }
@@ -76,10 +85,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _pickImage(ImageSource source) async {
     Navigator.pop(context);
-    final picked = await ImagePicker().pickImage(
-      source: source,
-      imageQuality: 80,
-    );
+    final picked =
+        await ImagePicker().pickImage(source: source, imageQuality: 80);
     if (picked != null && mounted) {
       setState(() => _pickedImage = File(picked.path));
     }
@@ -95,24 +102,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.camera_alt_rounded),
-              title: Text(AppLocalizations.of(context)!.camera),
+              title: const Text('Camera'),
               onTap: () => _pickImage(ImageSource.camera),
             ),
             ListTile(
               leading: const Icon(Icons.photo_library_rounded),
-              title: Text(AppLocalizations.of(context)!.gallery),
+              title: const Text('Gallery'),
               onTap: () => _pickImage(ImageSource.gallery),
             ),
             if (_pickedImage != null || widget.user.profilePhotoUrl != null)
               ListTile(
-                leading: const Icon(
-                  Icons.delete_outline_rounded,
-                  color: AppColors.error,
-                ),
-                title: Text(
-                  AppLocalizations.of(context)!.removePhoto,
-                  style: const TextStyle(color: AppColors.error),
-                ),
+                leading: const Icon(Icons.delete_outline_rounded,
+                    color: AppColors.error),
+                title: const Text('Remove photo',
+                    style: TextStyle(color: AppColors.error)),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() => _pickedImage = null);
@@ -125,7 +128,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _save() async {
-    final l10n = AppLocalizations.of(context)!;
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isSaving = true);
 
@@ -141,10 +143,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               filename: 'profile.jpg',
             ),
           });
-          await getIt<ApiClient>().postFormData(
-            ApiEndpoints.uploadPhoto,
-            formData: formData,
-          );
+          await getIt<ApiClient>()
+              .postFormData(ApiEndpoints.uploadPhoto, formData: formData);
         } catch (_) {
           photoUploadFailed = true;
         }
@@ -164,17 +164,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             : null,
         businessName:
             widget.user.isVendor && _bizNameCtrl.text.trim().isNotEmpty
-            ? _bizNameCtrl.text.trim()
-            : null,
+                ? _bizNameCtrl.text.trim()
+                : null,
         businessCategory:
             widget.user.isVendor && _bizCategoryCtrl.text.trim().isNotEmpty
-            ? _bizCategoryCtrl.text.trim()
-            : null,
+                ? _bizCategoryCtrl.text.trim()
+                : null,
         businessAddress: widget.user.isVendor
             ? (_pickedLocation?.displayName ?? widget.user.businessAddress)
             : null,
-        businessLatitude: widget.user.isVendor ? _pickedLocation?.lat : null,
-        businessLongitude: widget.user.isVendor ? _pickedLocation?.lng : null,
+        businessLatitude:
+            widget.user.isVendor ? _pickedLocation?.lat : null,
+        businessLongitude:
+            widget.user.isVendor ? _pickedLocation?.lng : null,
+        customerLatitude: !widget.user.isVendor ? _pickedLocation?.lat : null,
+        customerLongitude: !widget.user.isVendor ? _pickedLocation?.lng : null,
+        customerAddress: !widget.user.isVendor ? _pickedLocation?.displayName : null,
       );
 
       if (!mounted) return;
@@ -184,15 +189,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (photoUploadFailed) {
         AppToast.show(
           context,
-          l10n.profileSavedPhotoFailed,
+          'Profile saved — photo could not be uploaded right now',
           type: ToastType.warning,
         );
       } else {
-        AppToast.show(
-          context,
-          l10n.profileUpdatedSuccess,
-          type: ToastType.success,
-        );
+        AppToast.show(context, 'Profile updated successfully',
+            type: ToastType.success);
       }
       context.pop();
     } on Exception catch (e) {
@@ -209,10 +211,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.editProfile),
+        title: const Text('Edit Profile'),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
@@ -226,9 +227,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   )
                 : TextButton(
                     onPressed: _save,
-                    child: Text(
-                      l10n.save,
-                      style: const TextStyle(
+                    child: const Text(
+                      'Save',
+                      style: TextStyle(
                         color: AppColors.primary,
                         fontWeight: FontWeight.w600,
                       ),
@@ -256,17 +257,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           backgroundImage: _pickedImage != null
                               ? FileImage(_pickedImage!) as ImageProvider
                               : widget.user.profilePhotoUrl != null
-                              ? NetworkImage(widget.user.profilePhotoUrl!)
-                              : null,
+                                  ? NetworkImage(widget.user.profilePhotoUrl!)
+                                  : null,
                           backgroundColor: AppColors.primary,
-                          child:
-                              (_pickedImage == null &&
+                          child: (_pickedImage == null &&
                                   widget.user.profilePhotoUrl == null)
-                              ? const Icon(
-                                  Icons.person_rounded,
-                                  size: 50,
-                                  color: Colors.white,
-                                )
+                              ? const Icon(Icons.person_rounded,
+                                  size: 50, color: Colors.white)
                               : null,
                         ),
                         Positioned(
@@ -278,11 +275,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               color: AppColors.primary,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
-                              Icons.camera_alt_rounded,
-                              size: 16,
-                              color: Colors.white,
-                            ),
+                            child: const Icon(Icons.camera_alt_rounded,
+                                size: 16, color: Colors.white),
                           ),
                         ),
                       ],
@@ -293,7 +287,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                 // ── Personal info ─────────────────────────────────────────────
                 Text(
-                  l10n.personalInfo,
+                  'Personal Info',
                   style: AppTypography.labelLarge.copyWith(
                     fontWeight: FontWeight.w600,
                     color: AppColors.textSecondary,
@@ -302,34 +296,48 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _nameCtrl,
-                  decoration: InputDecoration(
-                    labelText: l10n.fullName,
-                    prefixIcon: const Icon(Icons.person_outline_rounded),
+                  decoration: const InputDecoration(
+                    labelText: 'Full Name',
+                    prefixIcon: Icon(Icons.person_outline_rounded),
                   ),
                   validator: (v) => (v == null || v.trim().isEmpty)
-                      ? l10n.nameRequired
+                      ? 'Name is required'
                       : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _mobileCtrl,
-                  decoration: InputDecoration(
-                    labelText: l10n.mobileNumber,
-                    prefixIcon: const Icon(Icons.phone_outlined),
+                  decoration: const InputDecoration(
+                    labelText: 'Mobile Number',
+                    prefixIcon: Icon(Icons.phone_outlined),
                   ),
                   keyboardType: TextInputType.phone,
                 ),
 
-                // ── Customer-only: single UPI field ───────────────────────────
+                // ── Customer-only: single UPI field + location picker ──────────
                 if (!widget.user.isVendor) ...[
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _upiCtrl,
-                    decoration: InputDecoration(
-                      labelText: l10n.upiId,
-                      hintText: l10n.upiHint,
-                      prefixIcon: const Icon(Icons.account_balance_wallet_outlined),
+                    decoration: const InputDecoration(
+                      labelText: 'UPI ID',
+                      hintText: 'e.g. name@upi',
+                      prefixIcon:
+                          Icon(Icons.account_balance_wallet_outlined),
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  LocationPickerTile(
+                    location: _pickedLocation,
+                    onTap: () async {
+                      final result = await context.push<LocationData>(
+                        AppRouter.locationPicker,
+                        extra: _pickedLocation,
+                      );
+                      if (result != null) {
+                        setState(() => _pickedLocation = result);
+                      }
+                    },
                   ),
                 ],
 
@@ -337,7 +345,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 if (widget.user.isVendor) ...[
                   const SizedBox(height: 32),
                   Text(
-                    l10n.businessInfo,
+                    'Business Info',
                     style: AppTypography.labelLarge.copyWith(
                       fontWeight: FontWeight.w600,
                       color: AppColors.textSecondary,
@@ -346,17 +354,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _bizNameCtrl,
-                    decoration: InputDecoration(
-                      labelText: l10n.businessName,
-                      prefixIcon: const Icon(Icons.store_outlined),
+                    decoration: const InputDecoration(
+                      labelText: 'Business Name',
+                      prefixIcon: Icon(Icons.store_outlined),
                     ),
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     controller: _bizCategoryCtrl,
-                    decoration: InputDecoration(
-                      labelText: l10n.businessCategory,
-                      prefixIcon: const Icon(Icons.category_outlined),
+                    decoration: const InputDecoration(
+                      labelText: 'Business Category',
+                      prefixIcon: Icon(Icons.category_outlined),
                     ),
                   ),
                   const SizedBox(height: 16),

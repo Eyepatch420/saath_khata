@@ -26,7 +26,7 @@ class CustomerProfileScreen extends StatelessWidget {
       builder: (context, state) {
         final user = state is AuthAuthenticated ? state.user : null;
         return Scaffold(
-          appBar: AppBar(title: Text(l10n.profile)),
+          appBar: AppBar(title: const Text('Profile')),
           body: SafeArea(
             child: SingleChildScrollView(
               padding: EdgeInsets.fromLTRB(
@@ -36,7 +36,7 @@ class CustomerProfileScreen extends StatelessWidget {
                 children: [
                   _buildAvatarSection(context, user),
                   const SizedBox(height: 32),
-                  _SectionHeader(label: l10n.accountInformation),
+                  _SectionHeader(label: l10n.accountSettings),
                   const SizedBox(height: 8),
                   _ProfileItem(
                     icon: Icons.person_outline_rounded,
@@ -50,15 +50,6 @@ class CustomerProfileScreen extends StatelessWidget {
                     title: l10n.changePassword,
                     onTap: () => context.push(AppRouter.changePassword),
                   ),
-                  _ProfileItem(
-                    icon: Icons.delete_outline_rounded,
-                    title: l10n.deleteAccount,
-                    onTap: () => _confirmDeleteAccount(context),
-                    isDanger: true,
-                  ),
-                  const SizedBox(height: 20),
-                  _SectionHeader(label: l10n.accountSettings),
-                  const SizedBox(height: 8),
                   _ProfileItem(
                     icon: Icons.language_rounded,
                     title: l10n.appLanguage,
@@ -130,6 +121,27 @@ class CustomerProfileScreen extends StatelessWidget {
           user?.email ?? '',
           style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
         ),
+        if (user?.customerAddress != null && user!.customerAddress!.isNotEmpty) ...[
+          const SizedBox(height: 6),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.location_on_rounded,
+                  size: 14, color: AppColors.textHint),
+              const SizedBox(width: 4),
+              Flexible(
+                child: Text(
+                  user.customerAddress!,
+                  style: AppTypography.bodySmall
+                      .copyWith(color: AppColors.textHint),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }
@@ -258,8 +270,8 @@ class CustomerProfileScreen extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12)),
                       ),
-                      child: Text(l10n.done,
-                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text('Done',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ),
                 ],
@@ -282,14 +294,14 @@ class CustomerProfileScreen extends StatelessWidget {
           children: [
             const Icon(Icons.mail_outline_rounded, size: 48, color: AppColors.primary),
             const SizedBox(height: 12),
-            Text(
-              l10n.helpSupportContactPrefix,
+            const Text(
+              'For any assistance, reach out to us at:',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            Text(
-              l10n.supportEmail,
-              style: const TextStyle(
+            const Text(
+              'igurus@info.in',
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
               ),
@@ -299,34 +311,7 @@ class CustomerProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.ok),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmDeleteAccount(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteAccountConfirmation),
-        content: Text(l10n.deleteAccountConfirmationMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context
-                  .read<AuthBloc>()
-                  .add(const AuthDeleteAccountRequested());
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.deleteForever),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -338,11 +323,11 @@ class CustomerProfileScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.logout),
-        content: Text(l10n.confirmLogout),
+        content: const Text('Are you sure you want to log out?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
@@ -384,25 +369,20 @@ class _ProfileItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final VoidCallback? onTap;
-  final bool isDanger;
 
   const _ProfileItem({
     required this.icon,
     required this.title,
     this.onTap,
-    this.isDanger = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = isDanger ? AppColors.error : AppColors.primary;
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
       child: ListTile(
-        leading: Icon(icon, color: color),
-        title: Text(title,
-            style: AppTypography.bodyLarge.copyWith(
-                color: isDanger ? AppColors.error : null)),
+        leading: Icon(icon, color: AppColors.primary),
+        title: Text(title, style: AppTypography.bodyLarge),
         trailing: const Icon(Icons.chevron_right_rounded),
         onTap: onTap,
         tileColor: Theme.of(context).colorScheme.surface,

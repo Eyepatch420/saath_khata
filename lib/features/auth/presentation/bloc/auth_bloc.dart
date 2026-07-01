@@ -189,6 +189,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         businessName: event.businessName,
         businessCategory: event.businessCategory,
         businessAddress: event.businessAddress,
+        customerLatitude: event.customerLatitude,
+        customerLongitude: event.customerLongitude,
+        customerAddress: event.customerAddress,
       );
 
       await _storage.saveTokens(
@@ -270,6 +273,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         businessName: event.businessName,
         businessCategory: event.businessCategory,
         businessAddress: event.businessAddress,
+        customerLatitude: event.customerLatitude,
+        customerLongitude: event.customerLongitude,
+        customerAddress: event.customerAddress,
       );
       await _storage.saveFullUser(updated);
       AppLogger.i(_m, 'Profile updated — name:${updated.name}');

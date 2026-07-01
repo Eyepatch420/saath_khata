@@ -230,6 +230,9 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         businessAddress: _businessAddressController.text.trim().isEmpty
             ? null
             : _businessAddressController.text.trim(),
+        customerLatitude: _role == 'customer' ? _pickedLocation?.lat : null,
+        customerLongitude: _role == 'customer' ? _pickedLocation?.lng : null,
+        customerAddress: _role == 'customer' ? _pickedLocation?.displayName : null,
       ),
     );
   }
@@ -524,6 +527,24 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                             _businessAddressController.text =
                                 result.displayName;
                           });
+                        }
+                      },
+                    ),
+                  ],
+
+                  // ─── Customer-only: location picker ───────────────────
+                  if (!isVendor) ...[
+                    const SizedBox(height: 20),
+                    LocationPickerTile(
+                      location: _pickedLocation,
+                      enabled: !isLoading,
+                      onTap: () async {
+                        final result = await context.push<LocationData>(
+                          AppRouter.locationPicker,
+                          extra: _pickedLocation,
+                        );
+                        if (result != null) {
+                          setState(() => _pickedLocation = result);
                         }
                       },
                     ),

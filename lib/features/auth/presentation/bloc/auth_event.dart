@@ -47,6 +47,9 @@ class AuthSignupRequested extends AuthEvent {
   final String? businessName;
   final String? businessCategory;
   final String? businessAddress;
+  final double? customerLatitude;
+  final double? customerLongitude;
+  final String? customerAddress;
 
   const AuthSignupRequested({
     required this.signupToken,
@@ -57,6 +60,9 @@ class AuthSignupRequested extends AuthEvent {
     this.businessName,
     this.businessCategory,
     this.businessAddress,
+    this.customerLatitude,
+    this.customerLongitude,
+    this.customerAddress,
   });
 
   @override
@@ -92,6 +98,9 @@ class AuthProfileUpdateRequested extends AuthEvent {
   final String? businessName;
   final String? businessCategory;
   final String? businessAddress;
+  final double? customerLatitude;
+  final double? customerLongitude;
+  final String? customerAddress;
 
   const AuthProfileUpdateRequested({
     this.name,
@@ -100,11 +109,15 @@ class AuthProfileUpdateRequested extends AuthEvent {
     this.businessName,
     this.businessCategory,
     this.businessAddress,
+    this.customerLatitude,
+    this.customerLongitude,
+    this.customerAddress,
   });
 
   @override
   List<Object?> get props =>
-      [name, mobile, upiId, businessName, businessCategory, businessAddress];
+      [name, mobile, upiId, businessName, businessCategory, businessAddress,
+       customerLatitude, customerLongitude, customerAddress];
 }
 
 class AuthUserUpdated extends AuthEvent {

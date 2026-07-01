@@ -31,6 +31,9 @@ abstract class AuthRepository {
     String? businessName,
     String? businessCategory,
     String? businessAddress,
+    double? customerLatitude,
+    double? customerLongitude,
+    String? customerAddress,
   });
 
   // ─── Session ──────────────────────────────────────────────────────────────
@@ -49,5 +52,8 @@ abstract class AuthRepository {
     double? businessLatitude,
     double? businessLongitude,
     List<UpiIdModel>? upiIds,
+    double? customerLatitude,
+    double? customerLongitude,
+    String? customerAddress,
   });
 }

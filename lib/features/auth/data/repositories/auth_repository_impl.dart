@@ -69,6 +69,9 @@ class AuthRepositoryImpl implements AuthRepository {
     String? businessName,
     String? businessCategory,
     String? businessAddress,
+    double? customerLatitude,
+    double? customerLongitude,
+    String? customerAddress,
   }) async {
     final body = <String, dynamic>{
       'signupToken': signupToken,
@@ -80,6 +83,9 @@ class AuthRepositoryImpl implements AuthRepository {
     if (businessName != null && businessName.isNotEmpty) body['businessName'] = businessName;
     if (businessCategory != null) body['businessCategory'] = businessCategory;
     if (businessAddress != null && businessAddress.isNotEmpty) body['businessAddress'] = businessAddress;
+    if (customerLatitude != null) body['customerLatitude'] = customerLatitude;
+    if (customerLongitude != null) body['customerLongitude'] = customerLongitude;
+    if (customerAddress != null) body['customerAddress'] = customerAddress;
 
     try {
       final response = await _api.post(ApiEndpoints.signup, data: body);
@@ -120,6 +126,9 @@ class AuthRepositoryImpl implements AuthRepository {
     double? businessLatitude,
     double? businessLongitude,
     List<UpiIdModel>? upiIds,
+    double? customerLatitude,
+    double? customerLongitude,
+    String? customerAddress,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
@@ -131,6 +140,9 @@ class AuthRepositoryImpl implements AuthRepository {
     if (businessLatitude != null) body['businessLatitude'] = businessLatitude;
     if (businessLongitude != null) body['businessLongitude'] = businessLongitude;
     if (upiIds != null) body['upiIds'] = upiIds.map((u) => u.toJson()).toList();
+    if (customerLatitude != null) body['customerLatitude'] = customerLatitude;
+    if (customerLongitude != null) body['customerLongitude'] = customerLongitude;
+    if (customerAddress != null) body['customerAddress'] = customerAddress;
 
     try {
       final response = await _api.patch(ApiEndpoints.updateProfile, data: body);
