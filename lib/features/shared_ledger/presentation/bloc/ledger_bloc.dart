@@ -87,7 +87,7 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
         linkId: event.linkId,
         amount: event.amount,
         type: event.type,
-        date: DateTime.now(),
+        date: event.date ?? DateTime.now(),
         description: event.description,
         quantity: event.quantity,
         unit: event.unit,

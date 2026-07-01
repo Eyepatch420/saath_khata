@@ -32,6 +32,7 @@ class UserSummary extends Equatable {
 class VendorSummary extends UserSummary {
   final String? businessName;
   final String? businessCategory;
+  final List<String>? businessCategories;
 
   const VendorSummary({
     required super.id,
@@ -41,7 +42,11 @@ class VendorSummary extends UserSummary {
     super.upiId,
     this.businessName,
     this.businessCategory,
+    this.businessCategories,
   });
+
+  String? get primaryCategory =>
+      businessCategories?.isNotEmpty == true ? businessCategories!.first : businessCategory;
 
   factory VendorSummary.fromJson(Map<String, dynamic> json) => VendorSummary(
         id: json['id'] as String,
@@ -51,6 +56,9 @@ class VendorSummary extends UserSummary {
         upiId: json['upiId'] as String?,
         businessName: json['businessName'] as String?,
         businessCategory: json['businessCategory'] as String?,
+        businessCategories: (json['businessCategories'] as List<dynamic>?)
+            ?.map((e) => e as String)
+            .toList(),
       );
 
   @override
@@ -58,6 +66,7 @@ class VendorSummary extends UserSummary {
         ...super.props,
         businessName,
         businessCategory,
+        businessCategories,
       ];
 }
 

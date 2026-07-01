@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
 import '../../../../../../core/di/injection.dart';
@@ -140,6 +141,7 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
 
   String? _pendingUrl;
   bool _uploading = false;
+  DateTime? _selectedDate;
 
   bool get _isSubmitEnabled {
     if (_uploading) return false;
@@ -260,6 +262,20 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
               ),
             ),
             const SizedBox(height: 16),
+            _DatePickerRow(
+              selectedDate: _selectedDate,
+              onTap: () async {
+                final now = DateTime.now();
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: _selectedDate ?? now,
+                  firstDate: DateTime(now.year - 1, now.month, now.day),
+                  lastDate: now,
+                );
+                if (picked != null) setState(() => _selectedDate = picked);
+              },
+            ),
+            const SizedBox(height: 16),
             TextField(
               controller: _qtyCtrl,
               keyboardType:
@@ -325,6 +341,7 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                           description: _descCtrl.text.trim(),
                           quantity: double.tryParse(_qtyCtrl.text),
                           attachmentUrl: _pendingUrl,
+                          date: _selectedDate,
                         ));
                       }
                     : null,
@@ -343,6 +360,68 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                 ),
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DatePickerRow extends StatelessWidget {
+  final DateTime? selectedDate;
+  final VoidCallback onTap;
+
+  const _DatePickerRow({required this.selectedDate, required this.onTap});
+
+  String _label() {
+    if (selectedDate == null) return 'Today';
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final d = DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day);
+    if (d == today) return 'Today';
+    if (d == today.subtract(const Duration(days: 1))) return 'Yesterday';
+    if (d.year == now.year) return DateFormat('EEE, d MMM').format(d);
+    return DateFormat('d MMM yyyy').format(d);
+  }
+
+  bool get _isPast {
+    if (selectedDate == null) return false;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day)
+        .isBefore(today);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            const Icon(Icons.calendar_today_rounded,
+                size: 18, color: AppColors.textSecondary),
+            const SizedBox(width: 10),
+            Text(_label(),
+                style: TextStyle(
+                    color: _isPast ? AppColors.primary : AppColors.textSecondary)),
+            if (_isPast) ...[
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text('Past date',
+                    style: TextStyle(fontSize: 10, color: Colors.deepOrange)),
+              ),
+            ],
+            const Spacer(),
+            const Icon(Icons.chevron_right_rounded,
+                size: 16, color: AppColors.textHint),
           ],
         ),
       ),
