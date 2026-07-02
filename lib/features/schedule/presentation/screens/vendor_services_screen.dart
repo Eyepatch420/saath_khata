@@ -15,21 +15,53 @@ class VendorServicesScreen extends StatefulWidget {
 }
 
 class _VendorServicesScreenState extends State<VendorServicesScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late TabController _tabs;
+  int _tabIndex = 0;
+
+  late final AnimationController _fabAnim;
+  late final Animation<double> _fabScale;
+  late final Animation<double> _fabOpacity;
+  bool _fabVisible = true;
 
   @override
   void initState() {
     super.initState();
     _tabs = TabController(length: 2, vsync: this);
+    _tabs.addListener(() {
+      if (_tabs.index != _tabIndex) setState(() => _tabIndex = _tabs.index);
+    });
     context.read<ServicesCubit>().load();
     context.read<DeliveriesCubit>().load();
+
+    _fabAnim = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 220),
+      value: 1.0,
+    );
+    _fabScale = CurvedAnimation(parent: _fabAnim, curve: Curves.easeOut);
+    _fabOpacity = _fabAnim;
   }
 
   @override
   void dispose() {
     _tabs.dispose();
+    _fabAnim.dispose();
     super.dispose();
+  }
+
+  bool _onScroll(ScrollNotification notification) {
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.scrollDelta ?? 0;
+      if (delta > 0 && _fabVisible) {
+        _fabVisible = false;
+        _fabAnim.reverse();
+      } else if (delta < 0 && !_fabVisible) {
+        _fabVisible = true;
+        _fabAnim.forward();
+      }
+    }
+    return false;
   }
 
   @override
@@ -50,28 +82,40 @@ class _VendorServicesScreenState extends State<VendorServicesScreen>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabs,
-        children: const [
-          _ServicesTab(),
-          _DeliveriesTab(),
-        ],
-      ),
-      // Shell uses extendBody, so padding.bottom carries the pill nav height —
-      // lift the FAB above it like the dashboard FAB.
-      floatingActionButton: Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-        child: BlocBuilder<ServicesCubit, ServicesState>(
-          builder: (context, state) {
-            return FloatingActionButton.extended(
-              onPressed: () => _showCreateSheet(context),
-              backgroundColor: AppColors.primary,
-              icon: const Icon(Icons.add, color: Colors.white),
-              label: const Text('New Service', style: TextStyle(color: Colors.white)),
-            );
-          },
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: TabBarView(
+          controller: _tabs,
+          children: const [
+            _ServicesTab(),
+            _DeliveriesTab(),
+          ],
         ),
       ),
+      // "New Service" only makes sense on the Services tab. Shell uses
+      // extendBody, so padding.bottom carries the pill nav height — lift the
+      // FAB above it like the dashboard FAB, and fade/scale it out on scroll.
+      floatingActionButton: _tabIndex != 0
+          ? null
+          : Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+              child: FadeTransition(
+                opacity: _fabOpacity,
+                child: ScaleTransition(
+                  scale: _fabScale,
+                  child: BlocBuilder<ServicesCubit, ServicesState>(
+                    builder: (context, state) {
+                      return FloatingActionButton.extended(
+                        onPressed: () => _showCreateSheet(context),
+                        backgroundColor: AppColors.primary,
+                        icon: const Icon(Icons.add, color: Colors.white),
+                        label: const Text('New Service', style: TextStyle(color: Colors.white)),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
     );
   }
 
@@ -136,7 +180,7 @@ class _ServicesTab extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () => context.read<ServicesCubit>().load(),
           child: ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             itemCount: services.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (ctx, i) => _ServiceCard(service: services[i]),
@@ -293,7 +337,7 @@ class _DeliveriesTab extends StatelessWidget {
         return RefreshIndicator(
           onRefresh: () => context.read<DeliveriesCubit>().load(),
           child: ListView.separated(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
             itemCount: deliveries.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
             itemBuilder: (ctx, i) => DeliveryCard(delivery: deliveries[i]),

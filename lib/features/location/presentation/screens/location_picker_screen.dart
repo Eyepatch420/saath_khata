@@ -22,7 +22,10 @@ class LocationPickerScreen extends StatefulWidget {
 class _LocationPickerScreenState extends State<LocationPickerScreen> {
   // ── Map ──────────────────────────────────────────────────────────────────
   final _mapController = MapController();
-  LatLng _center = const LatLng(28.6139, 77.2090); // default: New Delhi
+  // Deliberately unusable fallback (middle of the Pacific Ocean) — this should
+  // never be seen by a user; if it shows up, location permission/GPS failed
+  // silently rather than actually resolving to a real place.
+  LatLng _center = const LatLng(0.0, -160.0);
 
   // ── Search ───────────────────────────────────────────────────────────────
   final _searchController = TextEditingController();
@@ -173,6 +176,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   @override
   Widget build(BuildContext context) {
     final safeTop = MediaQuery.of(context).padding.top;
+    final colorScheme = Theme.of(context).colorScheme;
+    final surfaceColor = colorScheme.surface;
+    final onSurfaceColor = colorScheme.onSurface;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -259,15 +265,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   children: [
                     // Back button
                     Material(
-                      color: Colors.white,
+                      color: surfaceColor,
                       shape: const CircleBorder(),
                       elevation: 3,
                       child: InkWell(
                         customBorder: const CircleBorder(),
                         onTap: () => Navigator.of(context).pop(),
-                        child: const Padding(
-                          padding: EdgeInsets.all(10),
-                          child: Icon(Icons.arrow_back_rounded, size: 22),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Icon(Icons.arrow_back_rounded,
+                              size: 22, color: onSurfaceColor),
                         ),
                       ),
                     ),
@@ -277,23 +284,24 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       child: Material(
                         elevation: 4,
                         borderRadius: BorderRadius.circular(14),
-                        color: Colors.white,
+                        color: surfaceColor,
                         child: TextField(
                           controller: _searchController,
                           focusNode: _searchFocus,
                           onChanged: _onSearchChanged,
                           style: AppTypography.bodyMedium
-                              .copyWith(color: Colors.black87),
+                              .copyWith(color: onSurfaceColor),
                           decoration: InputDecoration(
                             hintText: AppLocalizations.of(context)!.searchPlaceHint,
                             hintStyle: AppTypography.bodySmall
-                                .copyWith(color: Colors.black38),
-                            prefixIcon: const Icon(Icons.search_rounded,
-                                color: Colors.black45),
+                                .copyWith(color: onSurfaceColor.withValues(alpha: 0.4)),
+                            prefixIcon: Icon(Icons.search_rounded,
+                                color: onSurfaceColor.withValues(alpha: 0.6)),
                             suffixIcon: _searchController.text.isNotEmpty
                                 ? IconButton(
-                                    icon: const Icon(Icons.close_rounded,
-                                        color: Colors.black45, size: 20),
+                                    icon: Icon(Icons.close_rounded,
+                                        color: onSurfaceColor.withValues(alpha: 0.6),
+                                        size: 20),
                                     onPressed: _clearSearch,
                                   )
                                 : null,
@@ -302,7 +310,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                               borderSide: BorderSide.none,
                             ),
                             filled: true,
-                            fillColor: Colors.white,
+                            fillColor: surfaceColor,
                             contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 14),
                           ),
@@ -318,7 +326,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   Material(
                     elevation: 6,
                     borderRadius: BorderRadius.circular(14),
-                    color: Colors.white,
+                    color: surfaceColor,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(14),
                       child: ListView.separated(
@@ -338,7 +346,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: AppTypography.bodySmall
-                                  .copyWith(color: Colors.black87),
+                                  .copyWith(color: onSurfaceColor),
                             ),
                             dense: true,
                             onTap: () => _onSuggestionTap(s),
@@ -367,7 +375,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   child: FloatingActionButton(
                     heroTag: 'myLocation',
                     onPressed: _tryCurrentLocation,
-                    backgroundColor: Colors.white,
+                    backgroundColor: surfaceColor,
                     elevation: 4,
                     mini: false,
                     child: const Icon(Icons.my_location_rounded,
@@ -442,7 +450,7 @@ class _LocationCard extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
