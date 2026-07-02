@@ -176,6 +176,7 @@ class ServiceSubscription extends Equatable {
   final DateTime? pausedUntil;
   final String linkId;
   final String customerId;
+  final String customerName;
   final String vendorId;
 
   const ServiceSubscription({
@@ -195,6 +196,7 @@ class ServiceSubscription extends Equatable {
     this.pausedUntil,
     required this.linkId,
     required this.customerId,
+    required this.customerName,
     required this.vendorId,
   });
 
@@ -221,6 +223,7 @@ class ServiceSubscription extends Equatable {
             : null,
         linkId: json['linkId'] as String,
         customerId: json['customerId'] as String,
+        customerName: json['customerName'] as String? ?? '',
         vendorId: json['vendorId'] as String,
       );
 
@@ -242,6 +245,7 @@ class ServiceSubscription extends Equatable {
         pausedUntil,
         linkId,
         customerId,
+        customerName,
         vendorId,
       ];
 }

@@ -95,15 +95,20 @@ class _StaffViewState extends State<_StaffView>
           ),
         ),
       ),
-      floatingActionButton: FadeTransition(
-        opacity: _fabAnim,
-        child: ScaleTransition(
-          scale: _fabScale,
-          child: FloatingActionButton.extended(
-            onPressed: () => _showAddStaffSheet(context),
-            label: Text(l10n.addStaff),
-            icon: const Icon(Icons.person_add_rounded),
-            backgroundColor: AppColors.primary,
+      // Shell uses extendBody, so padding.bottom carries the pill nav height —
+      // lift the FAB above it like the dashboard FAB.
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+        child: FadeTransition(
+          opacity: _fabAnim,
+          child: ScaleTransition(
+            scale: _fabScale,
+            child: FloatingActionButton.extended(
+              onPressed: () => _showAddStaffSheet(context),
+              label: Text(l10n.addStaff),
+              icon: const Icon(Icons.person_add_rounded),
+              backgroundColor: AppColors.primary,
+            ),
           ),
         ),
       ),

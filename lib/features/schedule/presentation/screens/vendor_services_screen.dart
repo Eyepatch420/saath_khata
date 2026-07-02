@@ -56,26 +56,33 @@ class _VendorServicesScreenState extends State<VendorServicesScreen>
           _DeliveriesTab(),
         ],
       ),
-      floatingActionButton: BlocBuilder<ServicesCubit, ServicesState>(
-        builder: (context, state) {
-          return FloatingActionButton.extended(
-            onPressed: () => _showCreateSheet(context),
-            backgroundColor: AppColors.primary,
-            icon: const Icon(Icons.add, color: Colors.white),
-            label: const Text('New Service', style: TextStyle(color: Colors.white)),
-          );
-        },
+      // Shell uses extendBody, so padding.bottom carries the pill nav height —
+      // lift the FAB above it like the dashboard FAB.
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+        child: BlocBuilder<ServicesCubit, ServicesState>(
+          builder: (context, state) {
+            return FloatingActionButton.extended(
+              onPressed: () => _showCreateSheet(context),
+              backgroundColor: AppColors.primary,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('New Service', style: TextStyle(color: Colors.white)),
+            );
+          },
+        ),
       ),
     );
   }
 
   void _showCreateSheet(BuildContext context) {
+    final cubit = context.read<ServicesCubit>();
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       useSafeArea: true,
       builder: (_) => BlocProvider.value(
-        value: context.read<ServicesCubit>(),
+        value: cubit,
         child: const CreateServiceSheet(),
       ),
     );

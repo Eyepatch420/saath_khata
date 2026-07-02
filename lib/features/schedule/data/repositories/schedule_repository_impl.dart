@@ -144,9 +144,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   }) async {
     try {
       final r = await _api.post(
-        ApiEndpoints.scheduleSubscriptions,
+        ApiEndpoints.scheduleServiceSubscriptions(serviceId),
         data: {
-          'serviceId': serviceId,
           'linkId': linkId,
           'quantityPerDelivery': quantityPerDelivery,
           'customPricePerUnit': ?customPricePerUnit,

@@ -99,12 +99,14 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
   }
 
   void _showSubscribeSheet(BuildContext context) {
+    final cubit = context.read<SubscriptionsCubit>();
     showModalBottomSheet(
       context: context,
+      useRootNavigator: true,
       isScrollControlled: true,
       useSafeArea: true,
       builder: (_) => BlocProvider.value(
-        value: context.read<SubscriptionsCubit>(),
+        value: cubit,
         child: SubscribeSheet(serviceId: widget.service.id),
       ),
     );
@@ -208,7 +210,7 @@ class _SubscriberTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(sub.customerId,
+                  Text(sub.customerName,
                       style: const TextStyle(fontWeight: FontWeight.w600)),
                   Text(
                     '${sub.quantityPerDelivery} ${sub.unit ?? ''} · starts ${fmt.format(sub.startDate)}',
