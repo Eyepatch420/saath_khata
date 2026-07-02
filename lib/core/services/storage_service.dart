@@ -90,7 +90,7 @@ class StorageService {
     await Future.wait([
       _secure.write(key: _userIdKey, value: user.id),
       _secure.write(key: _userNameKey, value: user.name),
-      _secure.write(key: _userEmailKey, value: user.email ?? ''),
+      _secure.write(key: _userEmailKey, value: user.email),
       _secure.write(key: _userRoleKey, value: user.role),
       _secure.write(key: _userMobileKey, value: user.mobile ?? ''),
       _secure.write(key: _userUpiIdKey, value: user.upiId ?? ''),
@@ -147,10 +147,10 @@ class StorageService {
     }
 
     return UserModel(
-      id: id!,
+      id: id,
       name: await _secure.read(key: _userNameKey) ?? '',
       email: nz(await _secure.read(key: _userEmailKey)) ?? '',
-      role: role!,
+      role: role,
       mobile: nz(await _secure.read(key: _userMobileKey)),
       upiId: nz(await _secure.read(key: _userUpiIdKey)),
       profilePhotoUrl: nz(await _secure.read(key: _userProfilePhotoKey)),

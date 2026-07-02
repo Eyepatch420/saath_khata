@@ -624,26 +624,34 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
             currentIndex: _calculateSelectedIndex(ctx),
             onTap: (index) => _onTap(ctx, index),
             items: const [
-              AppNavItem(riveIcon: AppRiveIcon.home,  label: 'Home'),
-              AppNavItem(riveIcon: AppRiveIcon.user,  label: 'Staff'),
-              AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Booking'),
-              AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Schedule'),
-              AppNavItem(riveIcon: AppRiveIcon.stars, label: 'Reports'),
-              AppNavItem(riveIcon: AppRiveIcon.gear,  label: 'Settings'),
+              AppNavItem(riveIcon: AppRiveIcon.home,    label: 'Home'),
+              AppNavItem(riveIcon: AppRiveIcon.user,    label: 'Staff'),
+              AppNavItem(riveIcon: AppRiveIcon.zap,     label: 'Booking'),
+              AppNavItem(riveIcon: AppRiveIcon.clock,   label: 'Schedule'),
+              AppNavItem(riveIcon: AppRiveIcon.stars,   label: 'Reports'),
+              AppNavItem(riveIcon: AppRiveIcon.gear,    label: 'Settings'),
             ],
           ),
+          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
           floatingActionButton: isHome
-              ? FadeTransition(
-                  opacity: _fabOpacity,
-                  child: ScaleTransition(
-                    scale: _fabScale,
-                    child: FloatingActionButton.extended(
-                      onPressed: () => showVendorAddCustomerSheet(ctx),
-                      backgroundColor: AppColors.primary,
-                      icon: const Icon(Icons.person_add_rounded, color: Colors.white),
-                      label: const Text(
-                        'ADD CUSTOMER',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ? Padding(
+                  // Lift FAB above the custom pill nav bar:
+                  // pill height 64 + bottom padding 16 + gap 8 = 88
+                  padding: EdgeInsets.only(
+                    bottom: 88 + MediaQuery.of(ctx).padding.bottom,
+                  ),
+                  child: FadeTransition(
+                    opacity: _fabOpacity,
+                    child: ScaleTransition(
+                      scale: _fabScale,
+                      child: FloatingActionButton.extended(
+                        onPressed: () => showVendorAddCustomerSheet(ctx),
+                        backgroundColor: AppColors.primary,
+                        icon: const Icon(Icons.person_add_rounded, color: Colors.white),
+                        label: const Text(
+                          'ADD CUSTOMER',
+                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
@@ -752,23 +760,29 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
         items: const [
           AppNavItem(riveIcon: AppRiveIcon.home,     label: 'Home'),
           AppNavItem(riveIcon: AppRiveIcon.message,  label: 'My Khatas'),
-          AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Bookings'),
+          AppNavItem(riveIcon: AppRiveIcon.zap,      label: 'Bookings'),
           AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Schedule'),
           AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: isHome
-          ? FadeTransition(
-              opacity: _fabOpacity,
-              child: ScaleTransition(
-                scale: _fabScale,
-                child: FloatingActionButton.extended(
-                  onPressed: () => showCustomerAddVendorSheet(context),
-                  backgroundColor: AppColors.customerAccent,
-                  icon: const Icon(Icons.storefront_rounded, color: Colors.white),
-                  label: const Text(
-                    'ADD VENDOR',
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ? Padding(
+              padding: EdgeInsets.only(
+                bottom: 88 + MediaQuery.of(context).padding.bottom,
+              ),
+              child: FadeTransition(
+                opacity: _fabOpacity,
+                child: ScaleTransition(
+                  scale: _fabScale,
+                  child: FloatingActionButton.extended(
+                    onPressed: () => showCustomerAddVendorSheet(context),
+                    backgroundColor: AppColors.customerAccent,
+                    icon: const Icon(Icons.storefront_rounded, color: Colors.white),
+                    label: const Text(
+                      'ADD VENDOR',
+                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),

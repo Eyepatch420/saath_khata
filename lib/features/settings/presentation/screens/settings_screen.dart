@@ -428,10 +428,9 @@ class _ProfileHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(user?.name ?? '...', style: AppTypography.h3),
-                    if (user?.email != null && user!.email!.isNotEmpty)
-                      Text(user.email!, style: AppTypography.bodySmall),
-                    if (user?.businessCategory != null &&
-                        user!.businessCategory!.isNotEmpty) ...[
+                    if (user?.email.isNotEmpty == true)
+                      Text(user!.email, style: AppTypography.bodySmall),
+                    if (user?.businessCategory?.isNotEmpty == true) ...[
                       const SizedBox(height: 6),
                       Container(
                         padding: const EdgeInsets.symmetric(
@@ -441,7 +440,7 @@ class _ProfileHeader extends StatelessWidget {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
-                          user.businessCategory!,
+                          user!.businessCategory!,
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
