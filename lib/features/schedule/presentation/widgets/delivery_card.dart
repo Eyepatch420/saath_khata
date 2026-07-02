@@ -1,0 +1,194 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/models/schedule_model.dart';
+import '../cubit/schedule_cubit.dart';
+
+/// Delivery card shared by the vendor and staff "today's deliveries" views.
+/// Shows the customer's contact details so whoever is delivering can call or
+/// navigate to the address without leaving the app.
+class DeliveryCard extends StatelessWidget {
+  final ScheduledDelivery delivery;
+  const DeliveryCard({super.key, required this.delivery});
+
+  @override
+  Widget build(BuildContext context) {
+    final isScheduled = delivery.status == DeliveryStatus.scheduled;
+    final statusColor = switch (delivery.status) {
+      DeliveryStatus.scheduled => AppColors.warning,
+      DeliveryStatus.delivered => AppColors.success,
+      DeliveryStatus.skipped => AppColors.textSecondary,
+      DeliveryStatus.failed => AppColors.error,
+    };
+
+    return Card(
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    delivery.serviceName,
+                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: statusColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    delivery.status.label,
+                    style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              delivery.customerName,
+              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              '${delivery.quantityPerDelivery} ${delivery.unit ?? ''}',
+              style: const TextStyle(color: AppColors.textHint, fontSize: 12),
+            ),
+            if (delivery.customerAddress != null || delivery.customerPhone != null) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  if (delivery.customerPhone != null)
+                    _ContactChip(
+                      icon: Icons.call_outlined,
+                      label: 'Call',
+                      onTap: () => _launch(Uri(scheme: 'tel', path: delivery.customerPhone)),
+                    ),
+                  if (delivery.customerPhone != null && delivery.customerAddress != null)
+                    const SizedBox(width: 8),
+                  if (delivery.customerAddress != null)
+                    Expanded(
+                      child: _ContactChip(
+                        icon: Icons.location_on_outlined,
+                        label: delivery.customerAddress!,
+                        onTap: () => _launch(Uri.https(
+                          'www.google.com',
+                          '/maps/search/',
+                          {'api': '1', 'query': delivery.customerAddress!},
+                        )),
+                      ),
+                    ),
+                ],
+              ),
+            ],
+            if (isScheduled) ...[
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _skip(context),
+                      icon: const Icon(Icons.skip_next, size: 16),
+                      label: const Text('Skip'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _deliver(context),
+                      icon: const Icon(Icons.check, size: 16),
+                      label: const Text('Delivered'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.success,
+                        foregroundColor: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _launch(Uri uri) async {
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _deliver(BuildContext context) {
+    context.read<DeliveriesCubit>().markDelivered(delivery.id);
+  }
+
+  void _skip(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Skip Delivery'),
+        content: const Text('Mark this delivery as skipped today?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              context.read<DeliveriesCubit>().skip(delivery.id);
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: const Text('Skip', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ContactChip extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _ContactChip({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: AppColors.primary),
+            const SizedBox(width: 4),
+            Flexible(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

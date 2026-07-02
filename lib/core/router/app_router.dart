@@ -21,6 +21,7 @@ import '../../features/staff_portal/presentation/screens/staff_home_screen.dart'
 import '../../features/staff_portal/presentation/screens/staff_customers_screen.dart';
 import '../../features/staff_portal/presentation/screens/staff_pay_screen.dart';
 import '../../features/staff_portal/presentation/screens/staff_quick_delivery_screen.dart';
+import '../../features/staff_portal/presentation/screens/staff_deliveries_screen.dart';
 
 import '../../features/shared_ledger/presentation/screens/shared_ledger_screen.dart';
 
@@ -103,6 +104,7 @@ class AppRouter {
   static const String staffCustomers = '/staff-home/customers';
   static const String staffPay = '/staff-home/pay';
   static const String staffQuickDelivery = '/staff-home/quick-delivery';
+  static const String staffDeliveries = '/staff-home/deliveries';
   static const String customerKhatas = '/customer/khatas';
   static const String customerPayments = '/customer/payments';
   static const String customerProfile = '/customer/profile';
@@ -352,6 +354,13 @@ class AppRouter {
           GoRoute(
             path: staffQuickDelivery,
             builder: (context, state) => const StaffQuickDeliveryScreen(),
+          ),
+          GoRoute(
+            path: staffDeliveries,
+            builder: (context, state) => BlocProvider(
+              create: (_) => DeliveriesCubit(getIt<ScheduleRepository>())..load(),
+              child: const StaffDeliveriesScreen(),
+            ),
           ),
         ],
       ),

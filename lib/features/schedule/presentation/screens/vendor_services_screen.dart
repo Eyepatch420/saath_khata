@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/schedule_model.dart';
 import '../cubit/schedule_cubit.dart';
+import '../widgets/delivery_card.dart';
 import 'create_service_sheet.dart';
 import 'service_detail_screen.dart';
 
@@ -295,7 +296,7 @@ class _DeliveriesTab extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             itemCount: deliveries.length,
             separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (ctx, i) => _DeliveryCard(delivery: deliveries[i]),
+            itemBuilder: (ctx, i) => DeliveryCard(delivery: deliveries[i]),
           ),
         );
       },
@@ -303,118 +304,3 @@ class _DeliveriesTab extends StatelessWidget {
   }
 }
 
-class _DeliveryCard extends StatelessWidget {
-  final ScheduledDelivery delivery;
-  const _DeliveryCard({required this.delivery});
-
-  @override
-  Widget build(BuildContext context) {
-    final isScheduled = delivery.status == DeliveryStatus.scheduled;
-    final statusColor = switch (delivery.status) {
-      DeliveryStatus.scheduled => AppColors.warning,
-      DeliveryStatus.delivered => AppColors.success,
-      DeliveryStatus.skipped => AppColors.textSecondary,
-      DeliveryStatus.failed => AppColors.error,
-    };
-
-    return Card(
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    delivery.serviceName,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(
-                    delivery.status.label,
-                    style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 4),
-            Text(
-              delivery.customerName,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
-            ),
-            Text(
-              '${delivery.quantityPerDelivery} ${delivery.unit ?? ''}',
-              style: const TextStyle(color: AppColors.textHint, fontSize: 12),
-            ),
-            if (isScheduled) ...[
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => _skip(context),
-                      icon: const Icon(Icons.skip_next, size: 16),
-                      label: const Text('Skip'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => _deliver(context),
-                      icon: const Icon(Icons.check, size: 16),
-                      label: const Text('Delivered'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.success,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _deliver(BuildContext context) {
-    context.read<DeliveriesCubit>().markDelivered(delivery.id);
-  }
-
-  void _skip(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Skip Delivery'),
-        content: const Text('Mark this delivery as skipped today?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.read<DeliveriesCubit>().skip(delivery.id);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Skip', style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -263,6 +263,8 @@ class ScheduledDelivery extends Equatable {
   final String vendorId;
   final String customerId;
   final String customerName;
+  final String? customerAddress;
+  final String? customerPhone;
   final DateTime scheduledDate;
   final DeliveryStatus status;
   final String? ledgerEntryId;
@@ -280,6 +282,8 @@ class ScheduledDelivery extends Equatable {
     required this.vendorId,
     required this.customerId,
     required this.customerName,
+    this.customerAddress,
+    this.customerPhone,
     required this.scheduledDate,
     required this.status,
     this.ledgerEntryId,
@@ -298,6 +302,8 @@ class ScheduledDelivery extends Equatable {
         vendorId: json['vendorId'] as String,
         customerId: json['customerId'] as String,
         customerName: json['customerName'] as String,
+        customerAddress: json['customerAddress'] as String?,
+        customerPhone: json['customerPhone'] as String?,
         scheduledDate: DateTime.parse(json['scheduledDate'] as String),
         status: _deliveryStatusFromJson(json['status'] as String),
         ledgerEntryId: json['ledgerEntryId'] as String?,
@@ -319,6 +325,8 @@ class ScheduledDelivery extends Equatable {
         vendorId,
         customerId,
         customerName,
+        customerAddress,
+        customerPhone,
         scheduledDate,
         status,
         ledgerEntryId,

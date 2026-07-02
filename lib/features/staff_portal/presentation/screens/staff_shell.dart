@@ -9,8 +9,9 @@ import '../../../../core/router/app_router.dart';
 import '../cubit/staff_portal_cubit.dart';
 
 /// Bottom-nav shell for the staff (labour) experience.
-/// Only three tabs — Home, Customers, My Pay. No staff management, reports,
-/// settings, or add-customer affordances. Provides a shared [StaffPortalCubit].
+/// Four tabs — Home, Customers, Deliveries, My Pay. No staff management,
+/// reports, settings, or add-customer affordances. Provides a shared
+/// [StaffPortalCubit].
 class StaffMainWrapper extends StatelessWidget {
   final Widget child;
   const StaffMainWrapper({super.key, required this.child});
@@ -32,6 +33,7 @@ class StaffMainWrapper extends StatelessWidget {
               items: [
                 AppNavItem(riveIcon: AppRiveIcon.home, label: l10n.navHome),
                 AppNavItem(riveIcon: AppRiveIcon.message, label: l10n.customersTitle),
+                const AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Deliveries'),
                 AppNavItem(riveIcon: AppRiveIcon.zap, label: l10n.myPay),
               ],
             );
@@ -44,7 +46,8 @@ class StaffMainWrapper extends StatelessWidget {
   int _selectedIndex(BuildContext context) {
     final loc = GoRouterState.of(context).uri.path;
     if (loc == AppRouter.staffCustomers) return 1;
-    if (loc == AppRouter.staffPay) return 2;
+    if (loc == AppRouter.staffDeliveries) return 2;
+    if (loc == AppRouter.staffPay) return 3;
     return 0;
   }
 
@@ -57,6 +60,9 @@ class StaffMainWrapper extends StatelessWidget {
         context.go(AppRouter.staffCustomers);
         break;
       case 2:
+        context.go(AppRouter.staffDeliveries);
+        break;
+      case 3:
         context.go(AppRouter.staffPay);
         break;
     }
