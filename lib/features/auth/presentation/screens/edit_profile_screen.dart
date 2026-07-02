@@ -52,7 +52,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   // Vendor category multi-select
   List<String> _selectedCategories = [];
 
-  // Vendor location state
+  // Location state — vendor business address or customer delivery address
   LocationData? _pickedLocation;
 
   File? _pickedImage;
@@ -66,7 +66,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _upiCtrl = TextEditingController(text: widget.user.upiId ?? '');
     _bizNameCtrl = TextEditingController(text: widget.user.businessName ?? '');
 
-    // Pre-populate location if vendor already has coordinates
+    // Pre-populate location if the user already has coordinates saved
     if (widget.user.isVendor &&
         widget.user.businessLatitude != null &&
         widget.user.businessLongitude != null) {
@@ -74,6 +74,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         lat: widget.user.businessLatitude!,
         lng: widget.user.businessLongitude!,
         displayName: widget.user.businessAddress ?? '',
+      );
+    } else if (!widget.user.isVendor &&
+        widget.user.customerLatitude != null &&
+        widget.user.customerLongitude != null) {
+      _pickedLocation = LocationData(
+        lat: widget.user.customerLatitude!,
+        lng: widget.user.customerLongitude!,
+        displayName: widget.user.customerAddress ?? '',
       );
     }
 
@@ -194,6 +202,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             widget.user.isVendor ? _pickedLocation?.lat : null,
         businessLongitude:
             widget.user.isVendor ? _pickedLocation?.lng : null,
+        customerAddress: !widget.user.isVendor
+            ? (_pickedLocation?.displayName ?? widget.user.customerAddress)
+            : null,
+        customerLatitude:
+            !widget.user.isVendor ? _pickedLocation?.lat : null,
+        customerLongitude:
+            !widget.user.isVendor ? _pickedLocation?.lng : null,
       );
 
       if (!mounted) return;
@@ -328,7 +343,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   keyboardType: TextInputType.phone,
                 ),
 
-                // ── Customer-only: single UPI field ───────────────────────────
+                // ── Customer-only: UPI + delivery address ─────────────────────
                 if (!widget.user.isVendor) ...[
                   const SizedBox(height: 16),
                   TextFormField(
@@ -339,6 +354,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       prefixIcon:
                           Icon(Icons.account_balance_wallet_outlined),
                     ),
+                  ),
+                  const SizedBox(height: 16),
+                  LocationPickerTile(
+                    label: 'Delivery Address',
+                    location: _pickedLocation,
+                    onTap: () async {
+                      final result = await context.push<LocationData>(
+                        AppRouter.locationPicker,
+                        extra: _pickedLocation,
+                      );
+                      if (result != null) {
+                        setState(() => _pickedLocation = result);
+                      }
+                    },
                   ),
                 ],
 

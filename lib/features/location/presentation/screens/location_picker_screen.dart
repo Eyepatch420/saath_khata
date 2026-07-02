@@ -33,6 +33,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   // ── Location details ─────────────────────────────────────────────────────
   LocationData? _location;
   bool _geocoding = false;
+  final _addressCtrl = TextEditingController();
 
   // ── Timers ───────────────────────────────────────────────────────────────
   Timer? _mapDebounce;
@@ -47,6 +48,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       final il = widget.initialLocation!;
       _center = LatLng(il.lat, il.lng);
       _location = il;
+      _addressCtrl.text = il.displayName;
     } else {
       _tryCurrentLocation();
     }
@@ -57,6 +59,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     _mapController.dispose();
     _searchController.dispose();
     _searchFocus.dispose();
+    _addressCtrl.dispose();
     _mapDebounce?.cancel();
     _searchDebounce?.cancel();
     super.dispose();
@@ -112,6 +115,15 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       _location = result;
       _geocoding = false;
     });
+    // Pre-fill the editable field with the freshly geocoded address; the user
+    // can still type over it before confirming.
+    _addressCtrl.text = result?.displayName ?? '';
+  }
+
+  void _onAddressEdited(String value) {
+    final loc = _location;
+    if (loc == null) return;
+    _location = loc.copyWith(displayName: value);
   }
 
   // ── Search ───────────────────────────────────────────────────────────────
@@ -369,6 +381,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   geocoding: _geocoding,
                   lat: _center.latitude,
                   lng: _center.longitude,
+                  addressController: _addressCtrl,
+                  onAddressChanged: _onAddressEdited,
                   onConfirm: _location == null
                       ? null
                       : () => Navigator.of(context).pop(_location),
@@ -389,6 +403,8 @@ class _LocationCard extends StatelessWidget {
   final bool geocoding;
   final double lat;
   final double lng;
+  final TextEditingController addressController;
+  final ValueChanged<String> onAddressChanged;
   final VoidCallback? onConfirm;
 
   const _LocationCard({
@@ -396,6 +412,8 @@ class _LocationCard extends StatelessWidget {
     required this.geocoding,
     required this.lat,
     required this.lng,
+    required this.addressController,
+    required this.onAddressChanged,
     required this.onConfirm,
   });
 
@@ -453,15 +471,22 @@ class _LocationCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            // Full address
+            // Full address — editable; pre-filled from reverse-geocoding but
+            // the user can rename/correct it before confirming.
             Padding(
               padding: const EdgeInsets.only(left: 28),
-              child: Text(
-                location!.displayName,
+              child: TextField(
+                controller: addressController,
+                onChanged: onAddressChanged,
+                minLines: 1,
+                maxLines: 3,
                 style: AppTypography.bodySmall
                     .copyWith(color: AppColors.textSecondary),
-                maxLines: 3,
-                overflow: TextOverflow.ellipsis,
+                decoration: const InputDecoration(
+                  isDense: true,
+                  contentPadding: EdgeInsets.symmetric(vertical: 6),
+                  border: UnderlineInputBorder(),
+                ),
               ),
             ),
             const SizedBox(height: 14),
