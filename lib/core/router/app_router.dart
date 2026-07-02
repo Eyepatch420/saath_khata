@@ -614,32 +614,23 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
       child: Builder(builder: (ctx) {
         final location = GoRouterState.of(ctx).uri.path;
         final isHome = location == AppRouter.vendorHome;
+        final bottomInset = MediaQuery.of(ctx).padding.bottom;
+        // Pill nav: 64 height + 16 bottom padding + 8 top padding = 88
+        const navHeight = 88.0;
+
         return Scaffold(
           extendBody: true,
-          body: NotificationListener<ScrollNotification>(
-            onNotification: _onScroll,
-            child: widget.child,
-          ),
-          bottomNavigationBar: AppBottomNavBar(
-            currentIndex: _calculateSelectedIndex(ctx),
-            onTap: (index) => _onTap(ctx, index),
-            items: const [
-              AppNavItem(riveIcon: AppRiveIcon.home,    label: 'Home'),
-              AppNavItem(riveIcon: AppRiveIcon.user,    label: 'Staff'),
-              AppNavItem(riveIcon: AppRiveIcon.zap,     label: 'Booking'),
-              AppNavItem(riveIcon: AppRiveIcon.clock,   label: 'Schedule'),
-              AppNavItem(riveIcon: AppRiveIcon.stars,   label: 'Reports'),
-              AppNavItem(riveIcon: AppRiveIcon.gear,    label: 'Settings'),
-            ],
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-          floatingActionButton: isHome
-              ? Padding(
-                  // Lift FAB above the custom pill nav bar:
-                  // pill height 64 + bottom padding 16 + gap 8 = 88
-                  padding: EdgeInsets.only(
-                    bottom: 88 + MediaQuery.of(ctx).padding.bottom,
-                  ),
+          body: Stack(
+            children: [
+              NotificationListener<ScrollNotification>(
+                onNotification: _onScroll,
+                child: widget.child,
+              ),
+              // FAB positioned above the floating pill nav bar
+              if (isHome)
+                Positioned(
+                  right: 16,
+                  bottom: navHeight + bottomInset + 12,
                   child: FadeTransition(
                     opacity: _fabOpacity,
                     child: ScaleTransition(
@@ -655,8 +646,21 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
                       ),
                     ),
                   ),
-                )
-              : null,
+                ),
+            ],
+          ),
+          bottomNavigationBar: AppBottomNavBar(
+            currentIndex: _calculateSelectedIndex(ctx),
+            onTap: (index) => _onTap(ctx, index),
+            items: const [
+              AppNavItem(riveIcon: AppRiveIcon.home,    label: 'Home'),
+              AppNavItem(riveIcon: AppRiveIcon.user,    label: 'Staff'),
+              AppNavItem(riveIcon: AppRiveIcon.zap,     label: 'Booking'),
+              AppNavItem(riveIcon: AppRiveIcon.clock,   label: 'Schedule'),
+              AppNavItem(riveIcon: AppRiveIcon.stars,   label: 'Reports'),
+              AppNavItem(riveIcon: AppRiveIcon.gear,    label: 'Settings'),
+            ],
+          ),
         );
       }),
     );
@@ -748,29 +752,21 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
   Widget build(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     final isHome = location == AppRouter.customerHome;
+    final bottomInset = MediaQuery.of(context).padding.bottom;
+    const navHeight = 88.0;
+
     return Scaffold(
       extendBody: true,
-      body: NotificationListener<ScrollNotification>(
-        onNotification: _onScroll,
-        child: widget.child,
-      ),
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: _calculateSelectedIndex(context),
-        onTap: (index) => _onTap(context, index),
-        items: const [
-          AppNavItem(riveIcon: AppRiveIcon.home,     label: 'Home'),
-          AppNavItem(riveIcon: AppRiveIcon.message,  label: 'My Khatas'),
-          AppNavItem(riveIcon: AppRiveIcon.zap,      label: 'Bookings'),
-          AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Schedule'),
-          AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: isHome
-          ? Padding(
-              padding: EdgeInsets.only(
-                bottom: 88 + MediaQuery.of(context).padding.bottom,
-              ),
+      body: Stack(
+        children: [
+          NotificationListener<ScrollNotification>(
+            onNotification: _onScroll,
+            child: widget.child,
+          ),
+          if (isHome)
+            Positioned(
+              right: 16,
+              bottom: navHeight + bottomInset + 12,
               child: FadeTransition(
                 opacity: _fabOpacity,
                 child: ScaleTransition(
@@ -786,8 +782,20 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
                   ),
                 ),
               ),
-            )
-          : null,
+            ),
+        ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: _calculateSelectedIndex(context),
+        onTap: (index) => _onTap(context, index),
+        items: const [
+          AppNavItem(riveIcon: AppRiveIcon.home,     label: 'Home'),
+          AppNavItem(riveIcon: AppRiveIcon.message,  label: 'My Khatas'),
+          AppNavItem(riveIcon: AppRiveIcon.zap,      label: 'Bookings'),
+          AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Schedule'),
+          AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
+        ],
+      ),
     );
   }
 
