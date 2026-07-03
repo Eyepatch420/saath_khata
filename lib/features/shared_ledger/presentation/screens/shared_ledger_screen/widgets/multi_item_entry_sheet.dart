@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
+import '../../../../../../core/utils/app_logger.dart';
 import '../../../../../../l10n/app_localizations.dart';
 import '../../../bloc/ledger_bloc.dart';
 import '../../../bloc/ledger_event.dart';
@@ -21,6 +22,7 @@ class MultiItemEntrySheet extends StatefulWidget {
 }
 
 class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
+  static const _m = 'MultiItemEntrySheet';
   final List<_ItemRowState> _rows = [];
 
   @override
@@ -30,15 +32,17 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
   }
 
   double get _total => _rows.fold(0.0, (sum, r) {
-        final amt = double.tryParse(r.amountCtrl.text) ?? 0;
-        return sum + amt;
-      });
+    final amt = double.tryParse(r.amountCtrl.text) ?? 0;
+    return sum + amt;
+  });
 
   bool get _isValid =>
       _rows.isNotEmpty &&
-      _rows.every((r) =>
-          r.descCtrl.text.trim().isNotEmpty &&
-          (double.tryParse(r.amountCtrl.text) ?? 0) > 0);
+      _rows.every(
+        (r) =>
+            r.descCtrl.text.trim().isNotEmpty &&
+            (double.tryParse(r.amountCtrl.text) ?? 0) > 0,
+      );
 
   void _addRow() => setState(() => _rows.add(_ItemRowState()));
 
@@ -51,16 +55,30 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
   }
 
   void _submit() {
-    if (!_isValid) return;
+    if (!_isValid) {
+      AppLogger.w(
+        _m,
+        'Submit blocked — validation failed (rows: ${_rows.length})',
+      );
+      return;
+    }
     final bloc = context.read<LedgerBloc>();
     final items = _rows
-        .map((r) => ItemRow(
-              description: r.descCtrl.text.trim(),
-              amount: double.parse(r.amountCtrl.text),
-              quantity: double.tryParse(r.qtyCtrl.text),
-              unit: r.unitCtrl.text.trim().isEmpty ? null : r.unitCtrl.text.trim(),
-            ))
+        .map(
+          (r) => ItemRow(
+            description: r.descCtrl.text.trim(),
+            amount: double.parse(r.amountCtrl.text),
+            quantity: double.tryParse(r.qtyCtrl.text),
+            unit: r.unitCtrl.text.trim().isEmpty
+                ? null
+                : r.unitCtrl.text.trim(),
+          ),
+        )
         .toList();
+    AppLogger.i(
+      _m,
+      'Submitting ${items.length} item(s), total ₹${_total.toStringAsFixed(2)}',
+    );
     Navigator.pop(context);
     bloc.add(AddMultiItemLedgerEntry(linkId: widget.linkId, items: items));
   }
@@ -84,93 +102,93 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
         top: 20,
         bottom: MediaQuery.of(context).viewInsets.bottom + 24,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.error.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.arrow_upward_rounded,
+                    color: AppColors.error,
+                  ),
                 ),
-                child: const Icon(Icons.arrow_upward_rounded,
-                    color: AppColors.error),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.giveCreditSheet, style: AppTypography.h3),
-                    Text(
-                      l10n.entryFor(widget.customerName),
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textSecondary),
-                    ),
-                  ],
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.giveCreditSheet, style: AppTypography.h3),
+                      Text(
+                        l10n.entryFor(widget.customerName),
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Column(
+              children: [
+                for (int i = 0; i < _rows.length; i++)
+                  _ItemRowWidget(
+                    key: ValueKey(i),
+                    row: _rows[i],
+                    index: i,
+                    canRemove: _rows.length > 1,
+                    onRemove: () => _removeRow(i),
+                    onChanged: () => setState(() {}),
+                  ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: _addRow,
+              icon: const Icon(Icons.add_circle_outline_rounded, size: 16),
+              label: Text(l10n.addItemLabel),
+              style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+            ),
+            const Divider(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(l10n.totalAmountLabel, style: AppTypography.labelLarge),
+                Text(
+                  '₹${_total.toStringAsFixed(2)}',
+                  style: AppTypography.h3.copyWith(color: AppColors.error),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: _isValid ? _submit : null,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                ),
+                child: Text(
+                  l10n.addCreditEntry,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ConstrainedBox(
-            constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.45,
             ),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  for (int i = 0; i < _rows.length; i++)
-                    _ItemRowWidget(
-                      key: ValueKey(i),
-                      row: _rows[i],
-                      index: i,
-                      canRemove: _rows.length > 1,
-                      onRemove: () => _removeRow(i),
-                      onChanged: () => setState(() {}),
-                    ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 8),
-          TextButton.icon(
-            onPressed: _addRow,
-            icon: const Icon(Icons.add_circle_outline_rounded, size: 16),
-            label: Text(l10n.addItemLabel),
-            style: TextButton.styleFrom(foregroundColor: AppColors.primary),
-          ),
-          const Divider(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(l10n.totalAmountLabel, style: AppTypography.labelLarge),
-              Text(
-                '₹${_total.toStringAsFixed(2)}',
-                style: AppTypography.h3.copyWith(color: AppColors.error),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: _isValid ? _submit : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.error,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              child: Text(
-                l10n.addCreditEntry,
-                style:
-                    const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -213,7 +231,9 @@ class _ItemRowWidget extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+        color: Theme.of(
+          context,
+        ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -223,15 +243,19 @@ class _ItemRowWidget extends StatelessWidget {
             children: [
               Text(
                 l10n.itemLabel(index + 1),
-                style: AppTypography.labelLarge
-                    .copyWith(color: AppColors.textSecondary),
+                style: AppTypography.labelLarge.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const Spacer(),
               if (canRemove)
                 GestureDetector(
                   onTap: onRemove,
-                  child: const Icon(Icons.remove_circle_outline_rounded,
-                      size: 18, color: AppColors.error),
+                  child: const Icon(
+                    Icons.remove_circle_outline_rounded,
+                    size: 18,
+                    color: AppColors.error,
+                  ),
                 ),
             ],
           ),
@@ -242,8 +266,10 @@ class _ItemRowWidget extends StatelessWidget {
             decoration: InputDecoration(
               labelText: l10n.itemNameRequired,
               isDense: true,
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 10,
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -253,15 +279,18 @@ class _ItemRowWidget extends StatelessWidget {
                 flex: 2,
                 child: TextField(
                   controller: row.amountCtrl,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   onChanged: (_) => onChanged(),
                   decoration: InputDecoration(
                     labelText: l10n.amountRequired,
                     prefixText: '₹ ',
                     isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                   ),
                 ),
               ),
@@ -269,14 +298,17 @@ class _ItemRowWidget extends StatelessWidget {
               Expanded(
                 child: TextField(
                   controller: row.qtyCtrl,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   onChanged: (_) => onChanged(),
                   decoration: InputDecoration(
                     labelText: l10n.qty,
                     isDense: true,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                   ),
                 ),
               ),
@@ -289,8 +321,10 @@ class _ItemRowWidget extends StatelessWidget {
                     labelText: l10n.unitLabel,
                     isDense: true,
                     hintText: l10n.unitHint,
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                   ),
                 ),
               ),

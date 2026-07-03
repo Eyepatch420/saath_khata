@@ -99,15 +99,20 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                             const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color: AppColors.textHint.withValues(alpha: 0.1),
+                                color: AppColors.textHint.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
                                 '${entry.childCount} items',
-                                style: AppTypography.bodySmall
-                                    .copyWith(fontSize: 10),
+                                style: AppTypography.bodySmall.copyWith(
+                                  fontSize: 10,
+                                ),
                               ),
                             ),
                           ],
@@ -157,8 +162,9 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                 children: [
                   Text(
                     AppLocalizations.of(context)!.totalLabel,
-                    style: AppTypography.labelLarge
-                        .copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.labelLarge.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                   Text(
                     '₹${entry.amount.toStringAsFixed(2)}',
@@ -182,12 +188,18 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Icon(Icons.photo_camera_rounded,
-                        size: 14, color: AppColors.textSecondary),
+                    const Icon(
+                      Icons.photo_camera_rounded,
+                      size: 14,
+                      color: AppColors.textSecondary,
+                    ),
                     const SizedBox(width: 6),
-                    Text(AppLocalizations.of(context)!.deliveryProofLabel,
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      AppLocalizations.of(context)!.deliveryProofLabel,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -218,8 +230,10 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         minimumSize: const Size(0, 36),
                       ),
-                      child:
-                          Text(l10n.dispute, style: const TextStyle(fontSize: 13)),
+                      child: Text(
+                        l10n.dispute,
+                        style: const TextStyle(fontSize: 13),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -231,9 +245,13 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         minimumSize: const Size(0, 36),
                       ),
-                      child: Text(l10n.confirm,
-                          style: const TextStyle(
-                              fontSize: 13, color: Colors.white)),
+                      child: Text(
+                        l10n.confirm,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -244,14 +262,18 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
               const Divider(height: 20),
               Row(
                 children: [
-                  const Icon(Icons.warning_amber_rounded,
-                      size: 14, color: AppColors.error),
+                  const Icon(
+                    Icons.warning_amber_rounded,
+                    size: 14,
+                    color: AppColors.error,
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
                       entry.disputeReason!,
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.error),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.error,
+                      ),
                     ),
                   ),
                 ],
@@ -274,11 +296,11 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(l10n.confirmEntryTitle),
-        content:
-            Text(l10n.confirmEntryMessage(entry.amount.toStringAsFixed(0))),
+        content: Text(
+          l10n.confirmEntryMessage(entry.amount.toStringAsFixed(0)),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -287,14 +309,13 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
-              context
-                  .read<LedgerBloc>()
-                  .add(ConfirmLedgerEntry(entry.id));
+              context.read<LedgerBloc>().add(ConfirmLedgerEntry(entry.id));
             },
-            style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.success),
-            child: Text(l10n.confirm,
-                style: const TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.success),
+            child: Text(
+              l10n.confirm,
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -319,49 +340,57 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
           top: 24,
           bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(l10n.raiseDisputeTitle, style: AppTypography.h3),
-            const SizedBox(height: 4),
-            Text(
-              l10n.raiseDisputeSubtitle,
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 20),
-            TextField(
-              controller: controller,
-              maxLines: 3,
-              decoration: InputDecoration(
-                hintText: l10n.raiseDisputeHint,
-                hintStyle: AppTypography.bodyMedium
-                    .copyWith(color: AppColors.textHint),
-              ),
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (controller.text.trim().isNotEmpty) {
-                    Navigator.pop(ctx);
-                    bloc.add(DisputeLedgerEntry(
-                      entryId: entry.id,
-                      reason: controller.text.trim(),
-                    ));
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.error,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l10n.raiseDisputeTitle, style: AppTypography.h3),
+              const SizedBox(height: 4),
+              Text(
+                l10n.raiseDisputeSubtitle,
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
                 ),
-                child: Text(l10n.submitDispute,
-                    style: const TextStyle(color: Colors.white)),
               ),
-            ),
-          ],
+              const SizedBox(height: 20),
+              TextField(
+                controller: controller,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  hintText: l10n.raiseDisputeHint,
+                  hintStyle: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textHint,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (controller.text.trim().isNotEmpty) {
+                      Navigator.pop(ctx);
+                      bloc.add(
+                        DisputeLedgerEntry(
+                          entryId: entry.id,
+                          reason: controller.text.trim(),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.error,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text(
+                    l10n.submitDispute,
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -396,8 +425,11 @@ class _ChildEntryRow extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 4),
-          const Icon(Icons.subdirectory_arrow_right_rounded,
-              size: 14, color: AppColors.textHint),
+          const Icon(
+            Icons.subdirectory_arrow_right_rounded,
+            size: 14,
+            color: AppColors.textHint,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(
@@ -408,8 +440,9 @@ class _ChildEntryRow extends StatelessWidget {
           if (child.quantity != null)
             Text(
               '${child.quantity!.toStringAsFixed(child.quantity! % 1 == 0 ? 0 : 2)} ${child.unit ?? ''}',
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           const SizedBox(width: 12),
           Text(
@@ -439,8 +472,11 @@ class _DeliveryChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.local_shipping_rounded,
-              size: 12, color: AppColors.success),
+          const Icon(
+            Icons.local_shipping_rounded,
+            size: 12,
+            color: AppColors.success,
+          ),
           const SizedBox(width: 4),
           Text(
             entry.deliveryLabel,
@@ -482,8 +518,10 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
     final source = await _showSourcePicker();
     if (source == null) return;
 
-    final picked =
-        await ImagePicker().pickImage(source: source, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 85,
+    );
     if (picked == null || !mounted) return;
 
     setState(() => _uploadInProgress = true);
@@ -495,7 +533,11 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
       );
       if (mounted) {
         Navigator.pop(context);
-        AppToast.show(context, AppLocalizations.of(context)!.proofAttachedToast, type: ToastType.success);
+        AppToast.show(
+          context,
+          AppLocalizations.of(context)!.proofAttachedToast,
+          type: ToastType.success,
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -547,97 +589,123 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
     );
 
     return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(l10n.entryDetails, style: AppTypography.h3),
-              entry.isDelivery
-                  ? _DeliveryChip(entry: entry)
-                  : LedgerStatusChip(status: entry.status),
-            ],
-          ),
-          const SizedBox(height: 20),
-          LedgerDetailRow(
-              l10n.entryAmount, '₹${entry.amount.toStringAsFixed(2)}'),
-          LedgerDetailRow(
-            l10n.entryType,
-            entry.type == EntryType.credit
-                ? l10n.entryTypeCreditGiven
-                : l10n.entryTypePaymentReceived,
-          ),
-          LedgerDetailRow(l10n.entryDate,
-              DateFormat('dd MMM yyyy, hh:mm a').format(entry.date)),
-          if (entry.description != null)
-            LedgerDetailRow(l10n.entryDescription, entry.description!),
-          if (entry.quantity != null)
-            LedgerDetailRow(l10n.entryQuantity,
-                '${entry.quantity} ${entry.unit ?? ''}'),
-          if (entry.confirmedAt != null)
-            LedgerDetailRow(l10n.entryConfirmedAt,
-                DateFormat('dd MMM yyyy').format(entry.confirmedAt!)),
-          if (entry.disputeReason != null)
-            LedgerDetailRow(l10n.entryDisputeReason, entry.disputeReason!),
-          if (entry.attachmentUrl != null) ...[
-            const Divider(height: 24),
-            LedgerAttachmentSection(
-              attachmentUrl: entry.attachmentUrl,
-              isLocked: entry.isLocked,
-              heroTag: 'detail_attachment_${entry.id}',
+      padding: EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(l10n.entryDetails, style: AppTypography.h3),
+                entry.isDelivery
+                    ? _DeliveryChip(entry: entry)
+                    : LedgerStatusChip(status: entry.status),
+              ],
             ),
-            const SizedBox(height: 8),
-            if (entry.isLocked)
-              Row(
-                children: [
-                  const Icon(Icons.lock_rounded,
-                      size: 12, color: AppColors.textHint),
-                  const SizedBox(width: 4),
-                  Text(
-                    AppLocalizations.of(context)!.proofLockedHint,
-                    style: AppTypography.bodySmall
-                        .copyWith(color: AppColors.textHint, fontSize: 11),
+            const SizedBox(height: 20),
+            LedgerDetailRow(
+              l10n.entryAmount,
+              '₹${entry.amount.toStringAsFixed(2)}',
+            ),
+            LedgerDetailRow(
+              l10n.entryType,
+              entry.type == EntryType.credit
+                  ? l10n.entryTypeCreditGiven
+                  : l10n.entryTypePaymentReceived,
+            ),
+            LedgerDetailRow(
+              l10n.entryDate,
+              DateFormat('dd MMM yyyy, hh:mm a').format(entry.date),
+            ),
+            if (entry.description != null)
+              LedgerDetailRow(l10n.entryDescription, entry.description!),
+            if (entry.quantity != null)
+              LedgerDetailRow(
+                l10n.entryQuantity,
+                '${entry.quantity} ${entry.unit ?? ''}',
+              ),
+            if (entry.confirmedAt != null)
+              LedgerDetailRow(
+                l10n.entryConfirmedAt,
+                DateFormat('dd MMM yyyy').format(entry.confirmedAt!),
+              ),
+            if (entry.disputeReason != null)
+              LedgerDetailRow(l10n.entryDisputeReason, entry.disputeReason!),
+            if (entry.attachmentUrl != null) ...[
+              const Divider(height: 24),
+              LedgerAttachmentSection(
+                attachmentUrl: entry.attachmentUrl,
+                isLocked: entry.isLocked,
+                heroTag: 'detail_attachment_${entry.id}',
+              ),
+              const SizedBox(height: 8),
+              if (entry.isLocked)
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.lock_rounded,
+                      size: 12,
+                      color: AppColors.textHint,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      AppLocalizations.of(context)!.proofLockedHint,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textHint,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              if (canEdit) ...[
+                const SizedBox(height: 6),
+                TextButton.icon(
+                  onPressed: _uploadInProgress ? null : _attachProof,
+                  icon: _uploadInProgress
+                      ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.refresh_rounded, size: 14),
+                  label: Text(
+                    AppLocalizations.of(context)!.replacePhotoButton,
+                    style: const TextStyle(fontSize: 12),
                   ),
-                ],
-              ),
-            if (canEdit) ...[
-              const SizedBox(height: 6),
-              TextButton.icon(
-                onPressed: _uploadInProgress ? null : _attachProof,
-                icon: _uploadInProgress
-                    ? const SizedBox(
-                        width: 14,
-                        height: 14,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.refresh_rounded, size: 14),
-                label: Text(AppLocalizations.of(context)!.replacePhotoButton,
-                    style: const TextStyle(fontSize: 12)),
+                ),
+              ],
+            ],
+            if (entry.attachmentUrl == null && canEdit) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: _uploadInProgress ? null : _attachProof,
+                  icon: _uploadInProgress
+                      ? const SizedBox(
+                          width: 14,
+                          height: 14,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.attach_file_rounded, size: 16),
+                  label: Text(
+                    _uploadInProgress
+                        ? AppLocalizations.of(context)!.uploadingLabel
+                        : AppLocalizations.of(context)!.attachProofButton,
+                  ),
+                ),
               ),
             ],
+            const SizedBox(height: 8),
           ],
-          if (entry.attachmentUrl == null && canEdit) ...[
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton.icon(
-                onPressed: _uploadInProgress ? null : _attachProof,
-                icon: _uploadInProgress
-                    ? const SizedBox(
-                        width: 14,
-                        height: 14,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.attach_file_rounded, size: 16),
-                label: Text(_uploadInProgress ? AppLocalizations.of(context)!.uploadingLabel : AppLocalizations.of(context)!.attachProofButton),
-              ),
-            ),
-          ],
-          const SizedBox(height: 8),
-        ],
+        ),
       ),
     );
   }

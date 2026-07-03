@@ -67,10 +67,15 @@ class LedgerActions extends StatelessWidget {
                   backgroundColor: AppColors.error,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
-                icon: const Icon(Icons.arrow_upward_rounded,
-                    size: 18, color: Colors.white),
-                label: Text(l10n.giveCredit,
-                    style: const TextStyle(color: Colors.white)),
+                icon: const Icon(
+                  Icons.arrow_upward_rounded,
+                  size: 18,
+                  color: Colors.white,
+                ),
+                label: Text(
+                  l10n.giveCredit,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             ),
           ],
@@ -80,6 +85,7 @@ class LedgerActions extends StatelessWidget {
   }
 
   void _showMultiItemEntrySheet(BuildContext context) {
+    final bloc = context.read<LedgerBloc>();
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
@@ -87,15 +93,18 @@ class LedgerActions extends StatelessWidget {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => MultiItemEntrySheet(
-        linkId: linkId,
-        customerName: customerName,
+      builder: (_) => BlocProvider.value(
+        value: bloc,
+        child: MultiItemEntrySheet(linkId: linkId, customerName: customerName),
       ),
     );
   }
 
   void _showAddEntrySheet(
-      BuildContext context, AppLocalizations l10n, EntryType type) {
+    BuildContext context,
+    AppLocalizations l10n,
+    EntryType type,
+  ) {
     final bloc = context.read<LedgerBloc>();
     showModalBottomSheet(
       context: context,
@@ -167,8 +176,10 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
   }
 
   Future<void> _pickAndUpload(ImageSource source) async {
-    final picked =
-        await ImagePicker().pickImage(source: source, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 85,
+    );
     if (picked == null || !mounted) return;
 
     setState(() => _uploading = true);
@@ -178,7 +189,11 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
         linkId: widget.linkId,
         entryId: null,
       );
-      if (mounted) setState(() { _pendingUrl = url; _uploading = false; });
+      if (mounted)
+        setState(() {
+          _pendingUrl = url;
+          _uploading = false;
+        });
     } catch (e) {
       if (mounted) {
         setState(() => _uploading = false);
@@ -213,10 +228,11 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: (type == EntryType.credit
-                            ? AppColors.error
-                            : AppColors.success)
-                        .withValues(alpha: 0.1),
+                    color:
+                        (type == EntryType.credit
+                                ? AppColors.error
+                                : AppColors.success)
+                            .withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -239,14 +255,16 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
             ),
             Text(
               l10n.entryFor(widget.customerName),
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 20),
             TextField(
               controller: _amountCtrl,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: InputDecoration(
                 labelText: l10n.amountRupees,
                 prefixIcon: const Icon(Icons.currency_rupee_rounded),
@@ -278,8 +296,9 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
             const SizedBox(height: 16),
             TextField(
               controller: _qtyCtrl,
-              keyboardType:
-                  const TextInputType.numberWithOptions(decimal: true),
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
               decoration: InputDecoration(
                 labelText: l10n.quantityOptional,
                 prefixIcon: const Icon(Icons.numbers_rounded),
@@ -297,7 +316,8 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                   icon: const Icon(Icons.camera_alt_rounded, size: 16),
                   label: const Text('Camera'),
                   style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 36)),
+                    minimumSize: const Size(0, 36),
+                  ),
                 ),
                 const SizedBox(width: 10),
                 OutlinedButton.icon(
@@ -307,7 +327,8 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                   icon: const Icon(Icons.photo_library_rounded, size: 16),
                   label: const Text('Gallery'),
                   style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 36)),
+                    minimumSize: const Size(0, 36),
+                  ),
                 ),
                 if (_uploading) ...[
                   const SizedBox(width: 10),
@@ -334,15 +355,17 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                 onPressed: _isSubmitEnabled
                     ? () {
                         Navigator.pop(context);
-                        widget.bloc.add(AddLedgerEntry(
-                          amount: double.parse(_amountCtrl.text),
-                          type: type,
-                          linkId: widget.linkId,
-                          description: _descCtrl.text.trim(),
-                          quantity: double.tryParse(_qtyCtrl.text),
-                          attachmentUrl: _pendingUrl,
-                          date: _selectedDate,
-                        ));
+                        widget.bloc.add(
+                          AddLedgerEntry(
+                            amount: double.parse(_amountCtrl.text),
+                            type: type,
+                            linkId: widget.linkId,
+                            description: _descCtrl.text.trim(),
+                            quantity: double.tryParse(_qtyCtrl.text),
+                            attachmentUrl: _pendingUrl,
+                            date: _selectedDate,
+                          ),
+                        );
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
@@ -356,7 +379,9 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                       ? l10n.addCreditEntry
                       : l10n.recordPayment,
                   style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -377,7 +402,11 @@ class _DatePickerRow extends StatelessWidget {
     if (selectedDate == null) return 'Today';
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final d = DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day);
+    final d = DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+    );
     if (d == today) return 'Today';
     if (d == today.subtract(const Duration(days: 1))) return 'Yesterday';
     if (d.year == now.year) return DateFormat('EEE, d MMM').format(d);
@@ -388,8 +417,11 @@ class _DatePickerRow extends StatelessWidget {
     if (selectedDate == null) return false;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    return DateTime(selectedDate!.year, selectedDate!.month, selectedDate!.day)
-        .isBefore(today);
+    return DateTime(
+      selectedDate!.year,
+      selectedDate!.month,
+      selectedDate!.day,
+    ).isBefore(today);
   }
 
   @override
@@ -401,12 +433,18 @@ class _DatePickerRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_rounded,
-                size: 18, color: AppColors.textSecondary),
+            const Icon(
+              Icons.calendar_today_rounded,
+              size: 18,
+              color: AppColors.textSecondary,
+            ),
             const SizedBox(width: 10),
-            Text(_label(),
-                style: TextStyle(
-                    color: _isPast ? AppColors.primary : AppColors.textSecondary)),
+            Text(
+              _label(),
+              style: TextStyle(
+                color: _isPast ? AppColors.primary : AppColors.textSecondary,
+              ),
+            ),
             if (_isPast) ...[
               const SizedBox(width: 8),
               Container(
@@ -415,13 +453,18 @@ class _DatePickerRow extends StatelessWidget {
                   color: Colors.orange.shade100,
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: const Text('Past date',
-                    style: TextStyle(fontSize: 10, color: Colors.deepOrange)),
+                child: const Text(
+                  'Past date',
+                  style: TextStyle(fontSize: 10, color: Colors.deepOrange),
+                ),
               ),
             ],
             const Spacer(),
-            const Icon(Icons.chevron_right_rounded,
-                size: 16, color: AppColors.textHint),
+            const Icon(
+              Icons.chevron_right_rounded,
+              size: 16,
+              color: AppColors.textHint,
+            ),
           ],
         ),
       ),
