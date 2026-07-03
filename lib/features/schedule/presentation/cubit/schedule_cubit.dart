@@ -120,12 +120,13 @@ class SubscriptionsLoaded extends SubscriptionsState {
   final List<ServiceSubscription> subscriptions;
   final bool saving;
   const SubscriptionsLoaded(this.subscriptions, {this.saving = false});
-  SubscriptionsLoaded copyWith(
-          {List<ServiceSubscription>? subscriptions, bool? saving}) =>
-      SubscriptionsLoaded(
-        subscriptions ?? this.subscriptions,
-        saving: saving ?? this.saving,
-      );
+  SubscriptionsLoaded copyWith({
+    List<ServiceSubscription>? subscriptions,
+    bool? saving,
+  }) => SubscriptionsLoaded(
+    subscriptions ?? this.subscriptions,
+    saving: saving ?? this.saving,
+  );
 }
 
 class SubscriptionsError extends SubscriptionsState {
@@ -152,7 +153,9 @@ class SubscriptionsCubit extends Cubit<SubscriptionsState> {
   Future<void> loadForService(String serviceId) async {
     emit(const SubscriptionsLoading());
     try {
-      emit(SubscriptionsLoaded(await _repo.getSubscriptionsForService(serviceId)));
+      emit(
+        SubscriptionsLoaded(await _repo.getSubscriptionsForService(serviceId)),
+      );
     } catch (e) {
       AppLogger.e(_m, 'Load service subs failed', e);
       emit(SubscriptionsError(_clean(e)));
@@ -281,24 +284,29 @@ class DeliveriesLoaded extends DeliveriesState {
   final int total;
   final int page;
   final bool saving;
+  // Transient — set when an action (mark delivered/skip) fails, so the UI
+  // can show a toast without losing the list. Cleared on the next action.
+  final String? actionError;
   const DeliveriesLoaded({
     required this.deliveries,
     required this.total,
     required this.page,
     this.saving = false,
+    this.actionError,
   });
   DeliveriesLoaded copyWith({
     List<ScheduledDelivery>? deliveries,
     int? total,
     int? page,
     bool? saving,
-  }) =>
-      DeliveriesLoaded(
-        deliveries: deliveries ?? this.deliveries,
-        total: total ?? this.total,
-        page: page ?? this.page,
-        saving: saving ?? this.saving,
-      );
+    String? actionError,
+  }) => DeliveriesLoaded(
+    deliveries: deliveries ?? this.deliveries,
+    total: total ?? this.total,
+    page: page ?? this.page,
+    saving: saving ?? this.saving,
+    actionError: actionError,
+  );
 }
 
 class DeliveriesError extends DeliveriesState {
@@ -312,10 +320,15 @@ class DeliveriesCubit extends Cubit<DeliveriesState> {
   static const _m = 'Deliveries';
 
   DeliveriesCubit(this._repo, {bool isCustomer = false})
-      : _isCustomer = isCustomer,
-        super(const DeliveriesLoading());
+    : _isCustomer = isCustomer,
+      super(const DeliveriesLoading());
 
-  Future<void> load({String? date, String? serviceId, String? status, String? linkId}) async {
+  Future<void> load({
+    String? date,
+    String? serviceId,
+    String? status,
+    String? linkId,
+  }) async {
     emit(const DeliveriesLoading());
     try {
       final result = _isCustomer
@@ -326,11 +339,13 @@ class DeliveriesCubit extends Cubit<DeliveriesState> {
               status: status,
               linkId: linkId,
             );
-      emit(DeliveriesLoaded(
-        deliveries: result.deliveries,
-        total: result.total,
-        page: result.page,
-      ));
+      emit(
+        DeliveriesLoaded(
+          deliveries: result.deliveries,
+          total: result.total,
+          page: result.page,
+        ),
+      );
     } catch (e) {
       AppLogger.e(_m, 'Load failed', e);
       emit(DeliveriesError(_clean(e)));
@@ -349,7 +364,10 @@ class DeliveriesCubit extends Cubit<DeliveriesState> {
       return true;
     } catch (e) {
       AppLogger.e(_m, 'Mark delivered failed', e);
-      emit(DeliveriesError(_clean(e)));
+      final s = state;
+      if (s is DeliveriesLoaded) {
+        emit(s.copyWith(saving: false, actionError: _clean(e)));
+      }
       return false;
     }
   }
@@ -366,7 +384,10 @@ class DeliveriesCubit extends Cubit<DeliveriesState> {
       return true;
     } catch (e) {
       AppLogger.e(_m, 'Skip failed', e);
-      emit(DeliveriesError(_clean(e)));
+      final s = state;
+      if (s is DeliveriesLoaded) {
+        emit(s.copyWith(saving: false, actionError: _clean(e)));
+      }
       return false;
     }
   }

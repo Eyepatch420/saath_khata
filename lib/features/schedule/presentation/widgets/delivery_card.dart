@@ -15,12 +15,18 @@ class DeliveryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isScheduled = delivery.status == DeliveryStatus.scheduled;
+    // "Upcoming" = scheduled but not due yet per the service's delivery_time
+    // (e.g. a 6pm delivery seen at 9am) — shown as pending, not actionable,
+    // so it's never confused with a delivery that's actually due right now.
+    final isUpcoming = isScheduled && !delivery.isDue;
     final statusColor = switch (delivery.status) {
-      DeliveryStatus.scheduled => AppColors.warning,
+      DeliveryStatus.scheduled =>
+        isUpcoming ? AppColors.textHint : AppColors.warning,
       DeliveryStatus.delivered => AppColors.success,
       DeliveryStatus.skipped => AppColors.textSecondary,
       DeliveryStatus.failed => AppColors.error,
     };
+    final statusLabel = isUpcoming ? 'Upcoming' : delivery.status.label;
 
     return Card(
       elevation: 1,
@@ -35,18 +41,28 @@ class DeliveryCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     delivery.serviceName,
-                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
                   decoration: BoxDecoration(
                     color: statusColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    delivery.status.label,
-                    style: TextStyle(color: statusColor, fontSize: 12, fontWeight: FontWeight.w600),
+                    statusLabel,
+                    style: TextStyle(
+                      color: statusColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],
@@ -54,13 +70,18 @@ class DeliveryCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               delivery.customerName,
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13, fontWeight: FontWeight.w600),
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
             ),
             Text(
               '${delivery.quantityPerDelivery} ${delivery.unit ?? ''}',
               style: const TextStyle(color: AppColors.textHint, fontSize: 12),
             ),
-            if (delivery.customerAddress != null || delivery.customerPhone != null) ...[
+            if (delivery.customerAddress != null ||
+                delivery.customerPhone != null) ...[
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -68,26 +89,50 @@ class DeliveryCard extends StatelessWidget {
                     _ContactChip(
                       icon: Icons.call_outlined,
                       label: 'Call',
-                      onTap: () => _launch(Uri(scheme: 'tel', path: delivery.customerPhone)),
+                      onTap: () => _launch(
+                        Uri(scheme: 'tel', path: delivery.customerPhone),
+                      ),
                     ),
-                  if (delivery.customerPhone != null && delivery.customerAddress != null)
+                  if (delivery.customerPhone != null &&
+                      delivery.customerAddress != null)
                     const SizedBox(width: 8),
                   if (delivery.customerAddress != null)
                     Expanded(
                       child: _ContactChip(
                         icon: Icons.location_on_outlined,
                         label: delivery.customerAddress!,
-                        onTap: () => _launch(Uri.https(
-                          'www.google.com',
-                          '/maps/search/',
-                          {'api': '1', 'query': delivery.customerAddress!},
-                        )),
+                        onTap: () => _launch(
+                          Uri.https('www.google.com', '/maps/search/', {
+                            'api': '1',
+                            'query': delivery.customerAddress!,
+                          }),
+                        ),
                       ),
                     ),
                 ],
               ),
             ],
-            if (isScheduled) ...[
+            if (isScheduled && isUpcoming) ...[
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  const Icon(
+                    Icons.schedule_rounded,
+                    size: 14,
+                    color: AppColors.textHint,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Due at ${delivery.deliveryTime}',
+                    style: const TextStyle(
+                      color: AppColors.textHint,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            if (isScheduled && !isUpcoming) ...[
               const SizedBox(height: 10),
               Row(
                 children: [
@@ -161,7 +206,11 @@ class _ContactChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _ContactChip({required this.icon, required this.label, required this.onTap});
+  const _ContactChip({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +232,11 @@ class _ContactChip extends StatelessWidget {
               child: Text(
                 label,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppColors.primary, fontSize: 12, fontWeight: FontWeight.w600),
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
           ],

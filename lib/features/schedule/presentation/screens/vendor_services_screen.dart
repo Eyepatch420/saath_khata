@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/schedule_model.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../cubit/schedule_cubit.dart';
 import '../widgets/delivery_card.dart';
 import 'create_service_sheet.dart';
@@ -86,10 +87,7 @@ class _VendorServicesScreenState extends State<VendorServicesScreen>
         onNotification: _onScroll,
         child: TabBarView(
           controller: _tabs,
-          children: const [
-            _ServicesTab(),
-            _DeliveriesTab(),
-          ],
+          children: const [_ServicesTab(), _DeliveriesTab()],
         ),
       ),
       // "New Service" only makes sense on the Services tab. Shell uses
@@ -98,7 +96,9 @@ class _VendorServicesScreenState extends State<VendorServicesScreen>
       floatingActionButton: _tabIndex != 0
           ? null
           : Padding(
-              padding: EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).padding.bottom,
+              ),
               child: FadeTransition(
                 opacity: _fabOpacity,
                 child: ScaleTransition(
@@ -109,7 +109,10 @@ class _VendorServicesScreenState extends State<VendorServicesScreen>
                         onPressed: () => _showCreateSheet(context),
                         backgroundColor: AppColors.primary,
                         icon: const Icon(Icons.add, color: Colors.white),
-                        label: const Text('New Service', style: TextStyle(color: Colors.white)),
+                        label: const Text(
+                          'New Service',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       );
                     },
                   ),
@@ -126,10 +129,8 @@ class _VendorServicesScreenState extends State<VendorServicesScreen>
       useRootNavigator: true,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (_) => BlocProvider.value(
-        value: cubit,
-        child: const CreateServiceSheet(),
-      ),
+      builder: (_) =>
+          BlocProvider.value(value: cubit, child: const CreateServiceSheet()),
     );
   }
 }
@@ -149,7 +150,10 @@ class _ServicesTab extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(state.message, style: const TextStyle(color: AppColors.error)),
+                Text(
+                  state.message,
+                  style: const TextStyle(color: AppColors.error),
+                ),
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => context.read<ServicesCubit>().load(),
@@ -165,9 +169,16 @@ class _ServicesTab extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.calendar_today_outlined, size: 64, color: AppColors.textHint),
+                Icon(
+                  Icons.calendar_today_outlined,
+                  size: 64,
+                  color: AppColors.textHint,
+                ),
                 SizedBox(height: 12),
-                Text('No services yet', style: TextStyle(color: AppColors.textSecondary)),
+                Text(
+                  'No services yet',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
                 SizedBox(height: 4),
                 Text(
                   'Tap + to create a scheduled service',
@@ -202,15 +213,17 @@ class _ServiceCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => MultiBlocProvider(
-            providers: [
-              BlocProvider.value(value: context.read<ServicesCubit>()),
-              BlocProvider.value(value: context.read<SubscriptionsCubit>()),
-            ],
-            child: ServiceDetailScreen(service: service),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => MultiBlocProvider(
+              providers: [
+                BlocProvider.value(value: context.read<ServicesCubit>()),
+                BlocProvider.value(value: context.read<SubscriptionsCubit>()),
+              ],
+              child: ServiceDetailScreen(service: service),
+            ),
           ),
-        )),
+        ),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Row(
@@ -223,18 +236,27 @@ class _ServiceCard extends StatelessWidget {
                   children: [
                     Text(
                       service.name,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       service.scheduleLabel,
-                      style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                      style: const TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 13,
+                      ),
                     ),
                     if (service.defaultPricePerUnit != null) ...[
                       const SizedBox(height: 2),
                       Text(
                         '₹${service.defaultPricePerUnit!.toStringAsFixed(0)} / ${service.unit ?? 'unit'}',
-                        style: const TextStyle(color: AppColors.primary, fontSize: 13),
+                        style: const TextStyle(
+                          color: AppColors.primary,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ],
@@ -244,7 +266,10 @@ class _ServiceCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -263,7 +288,10 @@ class _ServiceCard extends StatelessWidget {
                       padding: EdgeInsets.only(top: 4),
                       child: Text(
                         'Inactive',
-                        style: TextStyle(color: AppColors.textHint, fontSize: 11),
+                        style: TextStyle(
+                          color: AppColors.textHint,
+                          fontSize: 11,
+                        ),
                       ),
                     ),
                 ],
@@ -282,8 +310,9 @@ class _TypeIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final icon =
-        type == ServiceType.product ? Icons.inventory_2_outlined : Icons.event_available_outlined;
+    final icon = type == ServiceType.product
+        ? Icons.inventory_2_outlined
+        : Icons.event_available_outlined;
     return Container(
       width: 44,
       height: 44,
@@ -301,7 +330,14 @@ class _DeliveriesTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DeliveriesCubit, DeliveriesState>(
+    return BlocConsumer<DeliveriesCubit, DeliveriesState>(
+      listenWhen: (prev, curr) =>
+          curr is DeliveriesLoaded && curr.actionError != null,
+      listener: (context, state) {
+        if (state is DeliveriesLoaded && state.actionError != null) {
+          AppToast.show(context, state.actionError!, type: ToastType.error);
+        }
+      },
       builder: (context, state) {
         if (state is DeliveriesLoading) {
           return const Center(child: CircularProgressIndicator());
@@ -311,7 +347,10 @@ class _DeliveriesTab extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(state.message, style: const TextStyle(color: AppColors.error)),
+                Text(
+                  state.message,
+                  style: const TextStyle(color: AppColors.error),
+                ),
                 const SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () => context.read<DeliveriesCubit>().load(),
@@ -327,9 +366,16 @@ class _DeliveriesTab extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.check_circle_outline, size: 64, color: AppColors.textHint),
+                Icon(
+                  Icons.check_circle_outline,
+                  size: 64,
+                  color: AppColors.textHint,
+                ),
                 SizedBox(height: 12),
-                Text("No deliveries today", style: TextStyle(color: AppColors.textSecondary)),
+                Text(
+                  "No deliveries today",
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
               ],
             ),
           );
@@ -347,4 +393,3 @@ class _DeliveriesTab extends StatelessWidget {
     );
   }
 }
-

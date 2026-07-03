@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../schedule/presentation/cubit/schedule_cubit.dart';
 import '../../../schedule/presentation/widgets/delivery_card.dart';
 
@@ -15,7 +16,14 @@ class StaffDeliveriesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text("Today's Deliveries")),
       body: SafeArea(
-        child: BlocBuilder<DeliveriesCubit, DeliveriesState>(
+        child: BlocConsumer<DeliveriesCubit, DeliveriesState>(
+          listenWhen: (prev, curr) =>
+              curr is DeliveriesLoaded && curr.actionError != null,
+          listener: (context, state) {
+            if (state is DeliveriesLoaded && state.actionError != null) {
+              AppToast.show(context, state.actionError!, type: ToastType.error);
+            }
+          },
           builder: (context, state) {
             if (state is DeliveriesLoading) {
               return const Center(child: CircularProgressIndicator());
@@ -25,7 +33,10 @@ class StaffDeliveriesScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(state.message, style: const TextStyle(color: AppColors.error)),
+                    Text(
+                      state.message,
+                      style: const TextStyle(color: AppColors.error),
+                    ),
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () => context.read<DeliveriesCubit>().load(),
@@ -41,9 +52,16 @@ class StaffDeliveriesScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.check_circle_outline, size: 64, color: AppColors.textHint),
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 64,
+                      color: AppColors.textHint,
+                    ),
                     SizedBox(height: 12),
-                    Text('No deliveries today', style: TextStyle(color: AppColors.textSecondary)),
+                    Text(
+                      'No deliveries today',
+                      style: TextStyle(color: AppColors.textSecondary),
+                    ),
                   ],
                 ),
               );

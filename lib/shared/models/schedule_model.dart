@@ -10,35 +10,37 @@ extension ServiceTypeX on ServiceType {
   String toJson() => name; // 'product' | 'session'
 
   String get label => switch (this) {
-        ServiceType.product => 'Product',
-        ServiceType.session => 'Session',
-      };
+    ServiceType.product => 'Product',
+    ServiceType.session => 'Session',
+  };
 }
 
-ServiceType _serviceTypeFromJson(String v) =>
-    ServiceType.values.firstWhere((e) => e.name == v, orElse: () => ServiceType.product);
+ServiceType _serviceTypeFromJson(String v) => ServiceType.values.firstWhere(
+  (e) => e.name == v,
+  orElse: () => ServiceType.product,
+);
 
 enum ScheduleType { daily, weekly, customDays }
 
 extension ScheduleTypeX on ScheduleType {
   String toJson() => switch (this) {
-        ScheduleType.daily => 'daily',
-        ScheduleType.weekly => 'weekly',
-        ScheduleType.customDays => 'custom_days',
-      };
+    ScheduleType.daily => 'daily',
+    ScheduleType.weekly => 'weekly',
+    ScheduleType.customDays => 'custom_days',
+  };
 
   String get label => switch (this) {
-        ScheduleType.daily => 'Daily',
-        ScheduleType.weekly => 'Weekly',
-        ScheduleType.customDays => 'Custom Days',
-      };
+    ScheduleType.daily => 'Daily',
+    ScheduleType.weekly => 'Weekly',
+    ScheduleType.customDays => 'Custom Days',
+  };
 }
 
 ScheduleType _scheduleTypeFromJson(String v) => switch (v) {
-      'weekly' => ScheduleType.weekly,
-      'custom_days' => ScheduleType.customDays,
-      _ => ScheduleType.daily,
-    };
+  'weekly' => ScheduleType.weekly,
+  'custom_days' => ScheduleType.customDays,
+  _ => ScheduleType.daily,
+};
 
 enum DeliveryStatus { scheduled, delivered, skipped, failed }
 
@@ -46,15 +48,15 @@ extension DeliveryStatusX on DeliveryStatus {
   String toJson() => name; // 'scheduled' | 'delivered' | 'skipped' | 'failed'
 
   String get label => switch (this) {
-        DeliveryStatus.scheduled => 'Scheduled',
-        DeliveryStatus.delivered => 'Delivered',
-        DeliveryStatus.skipped => 'Skipped',
-        DeliveryStatus.failed => 'Failed',
-      };
+    DeliveryStatus.scheduled => 'Scheduled',
+    DeliveryStatus.delivered => 'Delivered',
+    DeliveryStatus.skipped => 'Skipped',
+    DeliveryStatus.failed => 'Failed',
+  };
 }
 
-DeliveryStatus _deliveryStatusFromJson(String v) =>
-    DeliveryStatus.values.firstWhere((e) => e.name == v, orElse: () => DeliveryStatus.scheduled);
+DeliveryStatus _deliveryStatusFromJson(String v) => DeliveryStatus.values
+    .firstWhere((e) => e.name == v, orElse: () => DeliveryStatus.scheduled);
 
 // ---------------------------------------------------------------------------
 // Day-of-week names (0 = Sun … 6 = Sat)
@@ -121,7 +123,8 @@ class ScheduledService extends Equatable {
     }
   }
 
-  factory ScheduledService.fromJson(Map<String, dynamic> json) => ScheduledService(
+  factory ScheduledService.fromJson(Map<String, dynamic> json) =>
+      ScheduledService(
         id: json['id'] as String,
         name: json['name'] as String,
         description: json['description'] as String?,
@@ -129,7 +132,9 @@ class ScheduledService extends Equatable {
         unit: json['unit'] as String?,
         defaultPricePerUnit: (json['defaultPricePerUnit'] as num?)?.toDouble(),
         scheduleType: _scheduleTypeFromJson(json['scheduleType'] as String),
-        deliveryDays: (json['deliveryDays'] as List<dynamic>?)?.map((e) => e as int).toList(),
+        deliveryDays: (json['deliveryDays'] as List<dynamic>?)
+            ?.map((e) => e as int)
+            .toList(),
         deliveryTime: json['deliveryTime'] as String?,
         autoCreateLedgerEntry: json['autoCreateLedgerEntry'] as bool? ?? true,
         isActive: json['isActive'] as bool? ?? true,
@@ -139,20 +144,20 @@ class ScheduledService extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        name,
-        description,
-        serviceType,
-        unit,
-        defaultPricePerUnit,
-        scheduleType,
-        deliveryDays,
-        deliveryTime,
-        autoCreateLedgerEntry,
-        isActive,
-        subscriberCount,
-        createdAt,
-      ];
+    id,
+    name,
+    description,
+    serviceType,
+    unit,
+    defaultPricePerUnit,
+    scheduleType,
+    deliveryDays,
+    deliveryTime,
+    autoCreateLedgerEntry,
+    isActive,
+    subscriberCount,
+    createdAt,
+  ];
 }
 
 // ---------------------------------------------------------------------------
@@ -200,7 +205,8 @@ class ServiceSubscription extends Equatable {
     required this.vendorId,
   });
 
-  factory ServiceSubscription.fromJson(Map<String, dynamic> json) => ServiceSubscription(
+  factory ServiceSubscription.fromJson(Map<String, dynamic> json) =>
+      ServiceSubscription(
         id: json['id'] as String,
         serviceId: json['serviceId'] as String,
         serviceName: json['serviceName'] as String,
@@ -229,25 +235,25 @@ class ServiceSubscription extends Equatable {
 
   @override
   List<Object?> get props => [
-        id,
-        serviceId,
-        serviceName,
-        serviceType,
-        vendorName,
-        quantityPerDelivery,
-        unit,
-        effectivePrice,
-        nextDeliveryDate,
-        startDate,
-        endDate,
-        isActive,
-        isPaused,
-        pausedUntil,
-        linkId,
-        customerId,
-        customerName,
-        vendorId,
-      ];
+    id,
+    serviceId,
+    serviceName,
+    serviceType,
+    vendorName,
+    quantityPerDelivery,
+    unit,
+    effectivePrice,
+    nextDeliveryDate,
+    startDate,
+    endDate,
+    isActive,
+    isPaused,
+    pausedUntil,
+    linkId,
+    customerId,
+    customerName,
+    vendorId,
+  ];
 }
 
 // ---------------------------------------------------------------------------
@@ -272,6 +278,7 @@ class ScheduledDelivery extends Equatable {
   final String? notes;
   final double quantityPerDelivery;
   final String? unit;
+  final String? deliveryTime;
 
   const ScheduledDelivery({
     required this.id,
@@ -291,9 +298,30 @@ class ScheduledDelivery extends Equatable {
     this.notes,
     required this.quantityPerDelivery,
     this.unit,
+    this.deliveryTime,
   });
 
-  factory ScheduledDelivery.fromJson(Map<String, dynamic> json) => ScheduledDelivery(
+  /// Whether it's time to act on this delivery yet. A `scheduled` delivery
+  /// with no [deliveryTime] set is due immediately (today's default); one
+  /// with a delivery_time (e.g. "09:00") is only due once the current time
+  /// passes that, so staff/vendor see it as "Upcoming" beforehand instead of
+  /// an actionable item indistinguishable from ones that are actually due.
+  bool get isDue {
+    if (status != DeliveryStatus.scheduled) return true;
+    final time = deliveryTime;
+    if (time == null || time.isEmpty) return true;
+    final parts = time.split(':');
+    if (parts.length < 2) return true;
+    final hour = int.tryParse(parts[0]);
+    final minute = int.tryParse(parts[1]);
+    if (hour == null || minute == null) return true;
+    final now = DateTime.now();
+    final due = DateTime(now.year, now.month, now.day, hour, minute);
+    return !now.isBefore(due);
+  }
+
+  factory ScheduledDelivery.fromJson(Map<String, dynamic> json) =>
+      ScheduledDelivery(
         id: json['id'] as String,
         subscriptionId: json['subscriptionId'] as String,
         serviceId: json['serviceId'] as String,
@@ -313,26 +341,28 @@ class ScheduledDelivery extends Equatable {
         notes: json['notes'] as String?,
         quantityPerDelivery: (json['quantityPerDelivery'] as num).toDouble(),
         unit: json['unit'] as String?,
+        deliveryTime: json['deliveryTime'] as String?,
       );
 
   @override
   List<Object?> get props => [
-        id,
-        subscriptionId,
-        serviceId,
-        serviceName,
-        linkId,
-        vendorId,
-        customerId,
-        customerName,
-        customerAddress,
-        customerPhone,
-        scheduledDate,
-        status,
-        ledgerEntryId,
-        deliveredAt,
-        notes,
-        quantityPerDelivery,
-        unit,
-      ];
+    id,
+    subscriptionId,
+    serviceId,
+    serviceName,
+    linkId,
+    vendorId,
+    customerId,
+    customerName,
+    customerAddress,
+    customerPhone,
+    scheduledDate,
+    status,
+    ledgerEntryId,
+    deliveredAt,
+    notes,
+    quantityPerDelivery,
+    unit,
+    deliveryTime,
+  ];
 }
