@@ -27,12 +27,12 @@ class OrderDetailScreen extends StatelessWidget {
   bool get _canManage => role == 'vendor' || role == 'staff';
 
   Color _statusColor(OrderStatus s) => switch (s) {
-        OrderStatus.pending => AppColors.warning,
-        OrderStatus.confirmed => Colors.blue,
-        OrderStatus.delivered => AppColors.success,
-        OrderStatus.rejected => AppColors.error,
-        OrderStatus.cancelled => AppColors.textSecondary,
-      };
+    OrderStatus.pending => AppColors.warning,
+    OrderStatus.confirmed => Colors.blue,
+    OrderStatus.delivered => AppColors.success,
+    OrderStatus.rejected => AppColors.error,
+    OrderStatus.cancelled => AppColors.textSecondary,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -41,14 +41,20 @@ class OrderDetailScreen extends StatelessWidget {
       listener: (context, state) {
         if (state is OrderError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: AppColors.error),
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: AppColors.error,
+            ),
           );
         }
       },
       builder: (context, state) {
         // Use the freshest copy of this order from the bloc if present.
         final current = state is OrderLoaded
-            ? state.orders.firstWhere((o) => o.id == order.id, orElse: () => order)
+            ? state.orders.firstWhere(
+                (o) => o.id == order.id,
+                orElse: () => order,
+              )
             : order;
         final busy = state is OrderActionLoading;
 
@@ -70,11 +76,16 @@ class OrderDetailScreen extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 18,
-                        backgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                        child: Text(current.customerName![0].toUpperCase(),
-                            style: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold)),
+                        backgroundColor: AppColors.primary.withValues(
+                          alpha: 0.12,
+                        ),
+                        child: Text(
+                          current.customerName![0].toUpperCase(),
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(child: Text(current.customerName!)),
@@ -84,7 +95,9 @@ class OrderDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
               ],
               _SectionCard(
-                title: AppLocalizations.of(context)!.itemsCount(current.items.length),
+                title: AppLocalizations.of(
+                  context,
+                )!.itemsCount(current.items.length),
                 child: Column(
                   children: [
                     ...current.items.map((it) => _ItemRow(item: it)),
@@ -92,13 +105,18 @@ class OrderDetailScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(AppLocalizations.of(context)!.totalLabel,
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
-                        Text('₹${current.total.toStringAsFixed(2)}',
-                            style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.primary,
-                                fontSize: 16)),
+                        Text(
+                          AppLocalizations.of(context)!.totalLabel,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '₹${current.total.toStringAsFixed(2)}',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.primary,
+                            fontSize: 16,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -108,8 +126,10 @@ class OrderDetailScreen extends StatelessWidget {
                 const SizedBox(height: 12),
                 _SectionCard(
                   title: AppLocalizations.of(context)!.orderNoteOptional,
-                  child: Text(current.note!,
-                      style: const TextStyle(color: AppColors.textSecondary)),
+                  child: Text(
+                    current.note!,
+                    style: const TextStyle(color: AppColors.textSecondary),
+                  ),
                 ),
               ],
               if (current.status == OrderStatus.delivered) ...[
@@ -144,14 +164,21 @@ class OrderDetailScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(order.status.label,
-                    style: TextStyle(
-                        color: color,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
-                Text('Placed ${_fmt(order.createdAt)}',
-                    style: const TextStyle(
-                        color: AppColors.textSecondary, fontSize: 12)),
+                Text(
+                  order.status.label,
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Placed ${_fmt(order.createdAt)}',
+                  style: const TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
               ],
             ),
           ),
@@ -168,25 +195,37 @@ class OrderDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (order.deliveredByRole != null)
-            Text(l10n.markedDeliveredBy(order.deliveredByRole!),
-                style: const TextStyle(fontWeight: FontWeight.w600)),
+            Text(
+              l10n.markedDeliveredBy(order.deliveredByRole!),
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
           if (order.deliveredAt != null)
             Padding(
               padding: const EdgeInsets.only(top: 2),
-              child: Text(_fmt(order.deliveredAt!),
-                  style: const TextStyle(
-                      color: AppColors.textSecondary, fontSize: 12)),
+              child: Text(
+                _fmt(order.deliveredAt!),
+                style: const TextStyle(
+                  color: AppColors.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
             ),
           if (order.deliveryNote != null && order.deliveryNote!.isNotEmpty) ...[
             const SizedBox(height: 8),
-            Text('Note: ${order.deliveryNote}',
-                style: const TextStyle(color: AppColors.textSecondary)),
+            Text(
+              'Note: ${order.deliveryNote}',
+              style: const TextStyle(color: AppColors.textSecondary),
+            ),
           ],
           if (order.proofUrl != null && order.proofUrl!.isNotEmpty) ...[
             const SizedBox(height: 10),
-            Text(l10n.proofPhotoLabel,
-                style: const TextStyle(
-                    color: AppColors.textSecondary, fontSize: 12)),
+            Text(
+              l10n.proofPhotoLabel,
+              style: const TextStyle(
+                color: AppColors.textSecondary,
+                fontSize: 12,
+              ),
+            ),
             const SizedBox(height: 6),
             GestureDetector(
               onTap: () => Navigator.of(context).push(
@@ -211,22 +250,28 @@ class OrderDetailScreen extends StatelessWidget {
                       height: 180,
                       color: AppColors.textHint.withValues(alpha: 0.1),
                       child: const Center(
-                          child: CircularProgressIndicator(strokeWidth: 2)),
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
                     ),
                     errorWidget: (ctx, url, err) => Container(
                       height: 180,
                       color: AppColors.textHint.withValues(alpha: 0.1),
                       child: const Center(
-                          child: Icon(Icons.broken_image_outlined,
-                              color: AppColors.textHint)),
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          color: AppColors.textHint,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
             const SizedBox(height: 4),
-            Text(l10n.tapToViewFullScreen,
-                style: const TextStyle(color: AppColors.textHint, fontSize: 11)),
+            Text(
+              l10n.tapToViewFullScreen,
+              style: const TextStyle(color: AppColors.textHint, fontSize: 11),
+            ),
           ],
         ],
       ),
@@ -244,8 +289,12 @@ class OrderDetailScreen extends StatelessWidget {
             child: OutlinedButton(
               onPressed: busy
                   ? null
-                  : () => bloc.add(UpdateOrderStatus(
-                      orderId: order.id, status: OrderStatus.rejected)),
+                  : () => bloc.add(
+                      UpdateOrderStatus(
+                        orderId: order.id,
+                        status: OrderStatus.rejected,
+                      ),
+                    ),
               style: OutlinedButton.styleFrom(foregroundColor: AppColors.error),
               child: Text(l10n.rejectButton),
             ),
@@ -255,8 +304,12 @@ class OrderDetailScreen extends StatelessWidget {
             child: FilledButton(
               onPressed: busy
                   ? null
-                  : () => bloc.add(UpdateOrderStatus(
-                      orderId: order.id, status: OrderStatus.confirmed)),
+                  : () => bloc.add(
+                      UpdateOrderStatus(
+                        orderId: order.id,
+                        status: OrderStatus.confirmed,
+                      ),
+                    ),
               style: FilledButton.styleFrom(backgroundColor: AppColors.primary),
               child: Text(l10n.confirmButton),
             ),
@@ -320,8 +373,10 @@ class _ItemRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item.name,
-                    style: const TextStyle(fontWeight: FontWeight.w500)),
+                Text(
+                  item.name,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
                 if (qtyUnit.isNotEmpty || item.pricePerUnit != null)
                   Text(
                     [
@@ -330,7 +385,9 @@ class _ItemRow extends StatelessWidget {
                         '@ ₹${item.pricePerUnit!.toStringAsFixed(0)}',
                     ].join('  '),
                     style: const TextStyle(
-                        color: AppColors.textSecondary, fontSize: 12),
+                      color: AppColors.textSecondary,
+                      fontSize: 12,
+                    ),
                   ),
               ],
             ),
@@ -366,12 +423,15 @@ class _SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title.toUpperCase(),
-              style: const TextStyle(
-                  color: AppColors.textHint,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.6)),
+          Text(
+            title.toUpperCase(),
+            style: const TextStyle(
+              color: AppColors.textHint,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.6,
+            ),
+          ),
           const SizedBox(height: 10),
           child,
         ],
@@ -402,15 +462,18 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
 
   Future<void> _pickPhoto(ImageSource source) async {
     try {
-      final picked =
-          await ImagePicker().pickImage(source: source, imageQuality: 85);
+      final picked = await ImagePicker().pickImage(
+        source: source,
+        imageQuality: 85,
+      );
       if (picked != null && mounted) setState(() => _photo = File(picked.path));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-              'Could not access ${source == ImageSource.camera ? 'camera' : 'gallery'}. Check app permissions.'),
+            'Could not access ${source == ImageSource.camera ? 'camera' : 'gallery'}. Check app permissions.',
+          ),
           backgroundColor: AppColors.error,
         ),
       );
@@ -432,19 +495,24 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
       setState(() => _uploading = false);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(AppLocalizations.of(context)!.photoUploadFailed(e.toString())),
-            backgroundColor: AppColors.error),
+          content: Text(
+            AppLocalizations.of(context)!.photoUploadFailed(e.toString()),
+          ),
+          backgroundColor: AppColors.error,
+        ),
       );
       return;
     }
 
     if (!mounted) return;
-    context.read<OrderBloc>().add(UpdateOrderStatus(
-          orderId: widget.order.id,
-          status: OrderStatus.delivered,
-          deliveryNote: _noteCtrl.text.trim(),
-          proofUrl: proofUrl,
-        ));
+    context.read<OrderBloc>().add(
+      UpdateOrderStatus(
+        orderId: widget.order.id,
+        status: OrderStatus.delivered,
+        deliveryNote: _noteCtrl.text.trim(),
+        proofUrl: proofUrl,
+      ),
+    );
     Navigator.pop(context);
   }
 
@@ -456,17 +524,29 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
         left: 20,
         right: 20,
         top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed.
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
+            MediaQuery.of(context).viewPadding.bottom +
+            24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(l10n.confirmDeliveryTitle,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Text(
+            l10n.confirmDeliveryTitle,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 4),
-          Text('₹${widget.order.total.toStringAsFixed(2)} will be added to the customer\'s due.',
-              style: const TextStyle(color: AppColors.textSecondary, fontSize: 13)),
+          Text(
+            '₹${widget.order.total.toStringAsFixed(2)} will be added to the customer\'s due.',
+            style: const TextStyle(
+              color: AppColors.textSecondary,
+              fontSize: 13,
+            ),
+          ),
           const SizedBox(height: 16),
           TextField(
             controller: _noteCtrl,
@@ -482,8 +562,12 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.file(_photo!,
-                      height: 140, width: double.infinity, fit: BoxFit.cover),
+                  child: Image.file(
+                    _photo!,
+                    height: 140,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
                 Positioned(
                   top: 6,
@@ -498,8 +582,11 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
                         color: Colors.black54,
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.close,
-                          color: Colors.white, size: 18),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ),
                   ),
                 ),
@@ -542,7 +629,10 @@ class _DeliveryProofSheetState extends State<_DeliveryProofSheet> {
                     width: 22,
                     height: 22,
                     child: CircularProgressIndicator(
-                        color: Colors.white, strokeWidth: 2))
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
                 : Text(l10n.markAsDeliveredButton),
           ),
         ],

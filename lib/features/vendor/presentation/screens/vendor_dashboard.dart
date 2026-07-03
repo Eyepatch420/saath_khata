@@ -40,16 +40,17 @@ class VendorDashboardView extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(l10n.appTitle, style: AppTypography.h3),
-            Text(l10n.vendorDashboard,
-                style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
+            Text(
+              l10n.vendorDashboard,
+              style: AppTypography.bodySmall.copyWith(color: AppColors.primary),
+            ),
           ],
         ),
         actions: [
           BlocBuilder<NotificationBloc, NotificationState>(
             bloc: getIt<NotificationBloc>(),
             builder: (context, state) {
-              final count =
-                  state is NotificationLoaded ? state.unreadCount : 0;
+              final count = state is NotificationLoaded ? state.unreadCount : 0;
               return Stack(
                 alignment: Alignment.center,
                 children: [
@@ -70,198 +71,208 @@ class VendorDashboardView extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: SafeArea(child: BlocConsumer<VendorBloc, VendorState>(
-        listenWhen: (prev, curr) {
-          if (prev is VendorLoaded && curr is VendorLoaded) {
-            return prev.remindAllStatus != curr.remindAllStatus &&
-                curr.remindAllStatus != RemindAllStatus.loading;
-          }
-          return false;
-        },
-        listener: (context, state) {
-          if (state is VendorLoaded) {
-            if (state.remindAllStatus == RemindAllStatus.success) {
-              final count = state.remindAllQueued;
-              AppToast.show(
-                context,
-                count == 0
-                    ? 'No customers with outstanding balance'
-                    : 'Reminders sent to $count customer${count == 1 ? '' : 's'}',
-                type: ToastType.success,
-              );
-            } else if (state.remindAllStatus == RemindAllStatus.failure) {
-              AppToast.show(
-                context,
-                'Failed to send reminders. Please try again.',
-                type: ToastType.error,
-              );
+      body: SafeArea(
+        child: BlocConsumer<VendorBloc, VendorState>(
+          listenWhen: (prev, curr) {
+            if (prev is VendorLoaded && curr is VendorLoaded) {
+              return prev.remindAllStatus != curr.remindAllStatus &&
+                  curr.remindAllStatus != RemindAllStatus.loading;
             }
-          }
-        },
-        builder: (context, state) {
-          if (state is VendorLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is VendorLoaded) {
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<VendorBloc>().add(LoadVendorDashboard());
-              },
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.fromLTRB(
-                    20, 20, 20, MediaQuery.of(context).padding.bottom + 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SearchBarPill(viewAs: SearchViewAs.vendor),
-                    const SizedBox(height: 24),
-                    Text(l10n.collectionSummary, style: AppTypography.h3),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: StatCard(
-                            title: l10n.outstanding,
-                            value:
-                                '₹${state.totalOutstanding.toStringAsFixed(0)}',
-                            color: AppColors.error,
-                            icon: Icons.account_balance_wallet_rounded,
-                            onTap: () => context.push(AppRouter.outstandingList),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: StatCard(
-                            title: l10n.collectedToday,
-                            value:
-                                '₹${state.todayCollection.toStringAsFixed(0)}',
-                            color: AppColors.success,
-                            icon: Icons.payments_rounded,
-                            onTap: () => context.push(AppRouter.collectedToday),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Text(l10n.quickActions, style: AppTypography.h3),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _ActionCard(
-                            icon: Icons.notifications_active_rounded,
-                            label: l10n.remindAll,
-                            subtitle: l10n.notifyCustomersWithDues,
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF00C896), Color(0xFF00A878)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+            return false;
+          },
+          listener: (context, state) {
+            if (state is VendorLoaded) {
+              if (state.remindAllStatus == RemindAllStatus.success) {
+                final count = state.remindAllQueued;
+                AppToast.show(
+                  context,
+                  count == 0
+                      ? 'No customers with outstanding balance'
+                      : 'Reminders sent to $count customer${count == 1 ? '' : 's'}',
+                  type: ToastType.success,
+                );
+              } else if (state.remindAllStatus == RemindAllStatus.failure) {
+                AppToast.show(
+                  context,
+                  'Failed to send reminders. Please try again.',
+                  type: ToastType.error,
+                );
+              }
+            }
+          },
+          builder: (context, state) {
+            if (state is VendorLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is VendorLoaded) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<VendorBloc>().add(LoadVendorDashboard());
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    20,
+                    20,
+                    MediaQuery.of(context).padding.bottom + 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SearchBarPill(viewAs: SearchViewAs.vendor),
+                      const SizedBox(height: 24),
+                      Text(l10n.collectionSummary, style: AppTypography.h3),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: StatCard(
+                              title: l10n.outstanding,
+                              value:
+                                  '₹${state.totalOutstanding.toStringAsFixed(0)}',
+                              color: AppColors.error,
+                              icon: Icons.account_balance_wallet_rounded,
+                              onTap: () =>
+                                  context.push(AppRouter.outstandingList),
                             ),
-                            isLoading:
-                                state.remindAllStatus == RemindAllStatus.loading,
-                            onTap: () => context
-                                .read<VendorBloc>()
-                                .add(RemindAllRequested()),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _ActionCard(
-                            icon: Icons.person_add_rounded,
-                            label: l10n.addNew,
-                            subtitle: l10n.linkANewCustomer,
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFF1A3A4A), Color(0xFF0F2027)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: StatCard(
+                              title: l10n.collectedToday,
+                              value:
+                                  '₹${state.todayCollection.toStringAsFixed(0)}',
+                              color: AppColors.success,
+                              icon: Icons.payments_rounded,
+                              onTap: () =>
+                                  context.push(AppRouter.collectedToday),
                             ),
-                            isLoading: false,
-                            onTap: () => showVendorAddCustomerSheet(context),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    _ActionCard(
-                      icon: Icons.bolt_rounded,
-                      label: l10n.dailyCharge,
-                      subtitle: l10n.dailyChargeSubtitle,
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFF7B2FF7), Color(0xFF4A00E0)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                        ],
                       ),
-                      isLoading: false,
-                      onTap: () => context.push(AppRouter.bulkCharge),
-                    ),
-                    const SizedBox(height: 12),
-                    _ActionCard(
-                      icon: Icons.shopping_bag_outlined,
-                      label: 'Orders',
-                      subtitle: 'View and manage customer orders',
-                      gradient: const LinearGradient(
-                        colors: [Color(0xFFFF6B35), Color(0xFFE84A1A)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
+                      const SizedBox(height: 24),
+                      Text(l10n.quickActions, style: AppTypography.h3),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _ActionCard(
+                              icon: Icons.notifications_active_rounded,
+                              label: l10n.remindAll,
+                              subtitle: l10n.notifyCustomersWithDues,
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF00C896), Color(0xFF00A878)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              isLoading:
+                                  state.remindAllStatus ==
+                                  RemindAllStatus.loading,
+                              onTap: () => context.read<VendorBloc>().add(
+                                RemindAllRequested(),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _ActionCard(
+                              icon: Icons.person_add_rounded,
+                              label: l10n.addNew,
+                              subtitle: l10n.linkANewCustomer,
+                              gradient: const LinearGradient(
+                                colors: [Color(0xFF1A3A4A), Color(0xFF0F2027)],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              isLoading: false,
+                              onTap: () => showVendorAddCustomerSheet(context),
+                            ),
+                          ),
+                        ],
                       ),
-                      isLoading: false,
-                      onTap: () => context.push(AppRouter.vendorOrders),
-                    ),
-                    const SizedBox(height: 24),
-                    _PendingRequestsSection(),
-                    const SizedBox(height: 32),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(l10n.recentCustomers, style: AppTypography.h3),
-                        TextButton(
-                          onPressed: () => context.push(AppRouter.allCustomers),
-                          child: Text(l10n.viewAll),
+                      const SizedBox(height: 12),
+                      _ActionCard(
+                        icon: Icons.bolt_rounded,
+                        label: l10n.dailyCharge,
+                        subtitle: l10n.dailyChargeSubtitle,
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF7B2FF7), Color(0xFF4A00E0)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.customers.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final customer = state.customers[index];
-                        return _CustomerTile(customer: customer);
-                      },
-                    ),
-                    if (state.myVendors.isNotEmpty) ...[
+                        isLoading: false,
+                        onTap: () => context.push(AppRouter.bulkCharge),
+                      ),
+                      const SizedBox(height: 12),
+                      _ActionCard(
+                        icon: Icons.shopping_bag_outlined,
+                        label: 'Orders',
+                        subtitle: 'View and manage customer orders',
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFFFF6B35), Color(0xFFE84A1A)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        isLoading: false,
+                        onTap: () => context.push(AppRouter.vendorOrders),
+                      ),
+                      const SizedBox(height: 24),
+                      _PendingRequestsSection(),
                       const SizedBox(height: 32),
-                      Text(l10n.myVendorsSection, style: AppTypography.h3),
-                      const SizedBox(height: 4),
-                      Text(
-                        l10n.shopsYouBuyFrom,
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textSecondary),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(l10n.recentCustomers, style: AppTypography.h3),
+                          TextButton(
+                            onPressed: () =>
+                                context.push(AppRouter.allCustomers),
+                            child: Text(l10n.viewAll),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
                       ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: state.myVendors.length,
-                        separatorBuilder: (context, i) =>
+                        itemCount: state.customers.length,
+                        separatorBuilder: (context, index) =>
                             const SizedBox(height: 12),
-                        itemBuilder: (context, index) =>
-                            _VendorTile(item: state.myVendors[index]),
+                        itemBuilder: (context, index) {
+                          final customer = state.customers[index];
+                          return _CustomerTile(customer: customer);
+                        },
                       ),
+                      if (state.myVendors.isNotEmpty) ...[
+                        const SizedBox(height: 32),
+                        Text(l10n.myVendorsSection, style: AppTypography.h3),
+                        const SizedBox(height: 4),
+                        Text(
+                          l10n.shopsYouBuyFrom,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: state.myVendors.length,
+                          separatorBuilder: (context, i) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) =>
+                              _VendorTile(item: state.myVendors[index]),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            );
-          } else if (state is VendorError) {
-            return Center(child: Text(state.message));
-          }
-          return const SizedBox();
-        },
-      ),
+              );
+            } else if (state is VendorError) {
+              return Center(child: Text(state.message));
+            }
+            return const SizedBox();
+          },
+        ),
       ),
       bottomNavigationBar: null,
     );
@@ -289,7 +300,12 @@ void showVendorAddCustomerSheet(BuildContext context) {
           left: 24,
           right: 24,
           top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          // viewInsets clears the keyboard; viewPadding clears the gesture
+          // bar / 3-button nav when the keyboard is closed.
+          bottom:
+              MediaQuery.of(ctx).viewInsets.bottom +
+              MediaQuery.of(ctx).viewPadding.bottom +
+              24,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -299,7 +315,9 @@ void showVendorAddCustomerSheet(BuildContext context) {
             const SizedBox(height: 4),
             Text(
               l10n.findByPhoneOrEmailHint,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -334,10 +352,11 @@ void showVendorAddCustomerSheet(BuildContext context) {
                         final nickname = nicknameCtrl.text.trim();
                         setSheetState(() => isLoading = true);
                         try {
-                          await getIt<LinkRequestRepository>().vendorSendRequest(
-                            customerIdentifier: identifier,
-                            nickname: nickname.isEmpty ? null : nickname,
-                          );
+                          await getIt<LinkRequestRepository>()
+                              .vendorSendRequest(
+                                customerIdentifier: identifier,
+                                nickname: nickname.isEmpty ? null : nickname,
+                              );
                           if (context.mounted) {
                             Navigator.pop(ctx);
                             AppToast.show(
@@ -349,7 +368,11 @@ void showVendorAddCustomerSheet(BuildContext context) {
                         } catch (e) {
                           setSheetState(() => isLoading = false);
                           if (context.mounted) {
-                            AppToast.show(context, e.toString().replaceFirst('Exception: ', ''), type: ToastType.error);
+                            AppToast.show(
+                              context,
+                              e.toString().replaceFirst('Exception: ', ''),
+                              type: ToastType.error,
+                            );
                           }
                         }
                       },
@@ -362,10 +385,14 @@ void showVendorAddCustomerSheet(BuildContext context) {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
-                    : Text(l10n.addCustomer,
-                        style: const TextStyle(color: Colors.white)),
+                    : Text(
+                        l10n.addCustomer,
+                        style: const TextStyle(color: Colors.white),
+                      ),
               ),
             ),
           ],
@@ -497,7 +524,9 @@ class _CustomerTile extends StatelessWidget {
               child: Text(
                 displayName[0].toUpperCase(),
                 style: const TextStyle(
-                    color: AppColors.primary, fontWeight: FontWeight.bold),
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -508,9 +537,11 @@ class _CustomerTile extends StatelessWidget {
                   Row(
                     children: [
                       Flexible(
-                        child: Text(displayName,
-                            style: AppTypography.labelLarge,
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          displayName,
+                          style: AppTypography.labelLarge,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       if (customer.tierName != null) ...[
                         const SizedBox(width: 8),
@@ -519,21 +550,30 @@ class _CustomerTile extends StatelessWidget {
                     ],
                   ),
                   if (subName != null)
-                    Text(subName,
-                        style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary),
-                        overflow: TextOverflow.ellipsis),
+                    Text(
+                      subName,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                 ],
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Text('₹${customer.balance.toStringAsFixed(0)}',
-                    style: AppTypography.labelLarge
-                        .copyWith(color: AppColors.error)),
-                const Icon(Icons.chevron_right_rounded,
-                    color: AppColors.textHint, size: 16),
+                Text(
+                  '₹${customer.balance.toStringAsFixed(0)}',
+                  style: AppTypography.labelLarge.copyWith(
+                    color: AppColors.error,
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.textHint,
+                  size: 16,
+                ),
               ],
             ),
           ],
@@ -578,8 +618,9 @@ class _VendorTile extends StatelessWidget {
               child: Text(
                 displayName[0].toUpperCase(),
                 style: const TextStyle(
-                    color: AppColors.customerAccent,
-                    fontWeight: FontWeight.bold),
+                  color: AppColors.customerAccent,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 16),
@@ -587,18 +628,26 @@ class _VendorTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(displayName,
-                      style: AppTypography.labelLarge,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    displayName,
+                    style: AppTypography.labelLarge,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (subName != null)
-                    Text(subName,
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textSecondary),
-                        overflow: TextOverflow.ellipsis)
+                    Text(
+                      subName,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    )
                   else if (item.vendor.businessCategory != null)
-                    Text(item.vendor.businessCategory!,
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textSecondary)),
+                    Text(
+                      item.vendor.businessCategory!,
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -607,11 +656,15 @@ class _VendorTile extends StatelessWidget {
               children: [
                 Text(
                   '₹${item.balance.toStringAsFixed(0)}',
-                  style: AppTypography.labelLarge
-                      .copyWith(color: AppColors.error),
+                  style: AppTypography.labelLarge.copyWith(
+                    color: AppColors.error,
+                  ),
                 ),
-                const Icon(Icons.chevron_right_rounded,
-                    color: AppColors.textHint, size: 16),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.textHint,
+                  size: 16,
+                ),
               ],
             ),
           ],
@@ -627,7 +680,8 @@ class _PendingRequestsSection extends StatefulWidget {
   const _PendingRequestsSection();
 
   @override
-  State<_PendingRequestsSection> createState() => _PendingRequestsSectionState();
+  State<_PendingRequestsSection> createState() =>
+      _PendingRequestsSectionState();
 }
 
 class _PendingRequestsSectionState extends State<_PendingRequestsSection> {
@@ -656,18 +710,21 @@ class _PendingRequestsSectionState extends State<_PendingRequestsSection> {
           children: [
             Row(
               children: [
-                const Icon(Icons.hourglass_top_rounded,
-                    size: 16, color: AppColors.textSecondary),
+                const Icon(
+                  Icons.hourglass_top_rounded,
+                  size: 16,
+                  color: AppColors.textSecondary,
+                ),
                 const SizedBox(width: 6),
-                Text(l10n.awaitingAcceptanceTitle,
-                    style: AppTypography.h3),
+                Text(l10n.awaitingAcceptanceTitle, style: AppTypography.h3),
               ],
             ),
             const SizedBox(height: 4),
             Text(
               l10n.customersHaventConfirmed,
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 12),
             ...pending.map((req) => _PendingRequestTile(request: req)),
@@ -693,9 +750,7 @@ class _PendingRequestTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: surface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.18),
-        ),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.18)),
       ),
       child: Row(
         children: [
@@ -705,8 +760,11 @@ class _PendingRequestTile extends StatelessWidget {
               color: AppColors.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.person_outline_rounded,
-                color: AppColors.primary, size: 20),
+            child: const Icon(
+              Icons.person_outline_rounded,
+              color: AppColors.primary,
+              size: 20,
+            ),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -716,16 +774,16 @@ class _PendingRequestTile extends StatelessWidget {
                 Text(name, style: AppTypography.labelLarge),
                 Text(
                   contact,
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.textSecondary),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
           Container(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: const Color(0xFFFFF3CD),
               borderRadius: BorderRadius.circular(20),
@@ -733,8 +791,11 @@ class _PendingRequestTile extends StatelessWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.schedule_rounded,
-                    size: 12, color: Color(0xFF856404)),
+                const Icon(
+                  Icons.schedule_rounded,
+                  size: 12,
+                  color: Color(0xFF856404),
+                ),
                 const SizedBox(width: 4),
                 Text(
                   AppLocalizations.of(context)!.pendingBadge,

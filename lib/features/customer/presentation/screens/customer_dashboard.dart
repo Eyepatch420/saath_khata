@@ -50,8 +50,7 @@ class CustomerDashboardView extends StatelessWidget {
             Text(l10n.appTitle, style: AppTypography.h3),
             Text(
               l10n.customerMode,
-              style:
-                  AppTypography.bodySmall.copyWith(color: AppColors.primary),
+              style: AppTypography.bodySmall.copyWith(color: AppColors.primary),
             ),
           ],
         ),
@@ -59,8 +58,7 @@ class CustomerDashboardView extends StatelessWidget {
           BlocBuilder<NotificationBloc, NotificationState>(
             bloc: getIt<NotificationBloc>(),
             builder: (context, state) {
-              final count =
-                  state is NotificationLoaded ? state.unreadCount : 0;
+              final count = state is NotificationLoaded ? state.unreadCount : 0;
               return Stack(
                 alignment: Alignment.center,
                 children: [
@@ -80,64 +78,73 @@ class CustomerDashboardView extends StatelessWidget {
           ),
         ],
       ),
-      body: SafeArea(child: BlocBuilder<CustomerBloc, CustomerState>(
-        builder: (context, state) {
-          if (state is CustomerLoading) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is CustomerLoaded) {
-            return RefreshIndicator(
-              onRefresh: () async =>
-                  context.read<CustomerBloc>().add(LoadCustomerDashboard()),
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(),
-                padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).padding.bottom + 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SearchBarPill(viewAs: SearchViewAs.customer),
-                    const SizedBox(height: 16),
-                    const _PendingVendorRequestsBanner(),
-                    TotalDueCard(
-                      amount: state.totalDue,
-                      onPayAllDues: state.totalDue > 0
-                          ? () => _showPayAllDuesSheet(context, state.vendors)
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    const _UpcomingAppointmentsCard(),
-                    const SizedBox(height: 12),
-                    OutlinedButton.icon(
-                      onPressed: () => context.push(AppRouter.customerOrders),
-                      icon: const Icon(Icons.shopping_bag_outlined),
-                      label: const Text('My Orders'),
-                    ),
-                    const SizedBox(height: 24),
-                    Text(l10n.myVendors, style: AppTypography.h3),
-                    const SizedBox(height: 12),
-                    ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.vendors.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        final vendor = state.vendors[index];
-                        return VendorTile(vendor: vendor);
-                      },
-                    ),
-                  ],
+      body: SafeArea(
+        child: BlocBuilder<CustomerBloc, CustomerState>(
+          builder: (context, state) {
+            if (state is CustomerLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is CustomerLoaded) {
+              return RefreshIndicator(
+                onRefresh: () async =>
+                    context.read<CustomerBloc>().add(LoadCustomerDashboard()),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    20,
+                    20,
+                    MediaQuery.of(context).padding.bottom + 16,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const SearchBarPill(viewAs: SearchViewAs.customer),
+                      const SizedBox(height: 16),
+                      const _PendingVendorRequestsBanner(),
+                      TotalDueCard(
+                        amount: state.totalDue,
+                        onPayAllDues: state.totalDue > 0
+                            ? () => _showPayAllDuesSheet(context, state.vendors)
+                            : null,
+                      ),
+                      const SizedBox(height: 16),
+                      const _UpcomingAppointmentsCard(),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        onPressed: () => context.push(AppRouter.customerOrders),
+                        icon: const Icon(Icons.shopping_bag_outlined),
+                        label: const Text('My Orders'),
+                      ),
+                      const SizedBox(height: 24),
+                      Text(l10n.myVendors, style: AppTypography.h3),
+                      const SizedBox(height: 12),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: state.vendors.length,
+                        separatorBuilder: (context, index) =>
+                            const SizedBox(height: 12),
+                        itemBuilder: (context, index) {
+                          final vendor = state.vendors[index];
+                          return VendorTile(vendor: vendor);
+                        },
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }
-          return const SizedBox();
-        },
-      ),
+              );
+            }
+            return const SizedBox();
+          },
+        ),
       ),
     );
   }
 
-  void _showPayAllDuesSheet(BuildContext context, List<VendorLinkItem> vendors) {
+  void _showPayAllDuesSheet(
+    BuildContext context,
+    List<VendorLinkItem> vendors,
+  ) {
     final pending = vendors.where((v) => v.balance > 0).toList();
     if (pending.isEmpty) return;
     showModalBottomSheet(
@@ -167,12 +174,15 @@ class _UpcomingAppointmentsCard extends StatelessWidget {
           final BookingModel? next;
 
           if (state is BookingLoaded) {
-            final active = state.bookings
-                .where((b) =>
-                    b.status == BookingStatus.pending ||
-                    b.status == BookingStatus.confirmed)
-                .toList()
-              ..sort((a, b) => a.date.compareTo(b.date));
+            final active =
+                state.bookings
+                    .where(
+                      (b) =>
+                          b.status == BookingStatus.pending ||
+                          b.status == BookingStatus.confirmed,
+                    )
+                    .toList()
+                  ..sort((a, b) => a.date.compareTo(b.date));
             upcoming = active.length;
             next = active.isNotEmpty ? active.first : null;
           } else {
@@ -199,35 +209,61 @@ class _UpcomingAppointmentsCard extends StatelessWidget {
                       color: AppColors.primary.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.calendar_month_rounded,
-                        color: AppColors.primary, size: 22),
+                    child: const Icon(
+                      Icons.calendar_month_rounded,
+                      color: AppColors.primary,
+                      size: 22,
+                    ),
                   ),
                   const SizedBox(width: 14),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(AppLocalizations.of(context)!.myAppointments, style: AppTypography.labelLarge),
+                        Text(
+                          AppLocalizations.of(context)!.myAppointments,
+                          style: AppTypography.labelLarge,
+                        ),
                         const SizedBox(height: 2),
                         if (state is BookingLoading)
-                          Text(AppLocalizations.of(context)!.loadingContent, style: AppTypography.bodySmall.copyWith(color: AppColors.textHint))
+                          Text(
+                            AppLocalizations.of(context)!.loadingContent,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.textHint,
+                            ),
+                          )
                         else if (next != null)
                           Text(
-                            AppLocalizations.of(context)!.appointmentNext(next.vendorName, _fmtDate(next.date), next.startTime),
-                            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                            AppLocalizations.of(context)!.appointmentNext(
+                              next.vendorName,
+                              _fmtDate(next.date),
+                              next.startTime,
+                            ),
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           )
                         else
-                          Text(AppLocalizations.of(context)!.noUpcomingAppointments,
-                              style: AppTypography.bodySmall.copyWith(color: AppColors.textHint)),
+                          Text(
+                            AppLocalizations.of(
+                              context,
+                            )!.noUpcomingAppointments,
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.textHint,
+                            ),
+                          ),
                       ],
                     ),
                   ),
                   if (upcoming > 0)
                     Container(
                       margin: const EdgeInsets.only(right: 8),
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.primary.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
@@ -235,12 +271,16 @@ class _UpcomingAppointmentsCard extends StatelessWidget {
                       child: Text(
                         '$upcoming',
                         style: const TextStyle(
-                            color: AppColors.primary,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold),
+                          color: AppColors.primary,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
+                  const Icon(
+                    Icons.chevron_right_rounded,
+                    color: AppColors.textHint,
+                  ),
                 ],
               ),
             ),
@@ -252,7 +292,20 @@ class _UpcomingAppointmentsCard extends StatelessWidget {
 
   String _fmtDate(String dateStr) {
     final dt = DateTime.parse(dateStr);
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return '${dt.day} ${months[dt.month - 1]}';
   }
 }
@@ -283,7 +336,12 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
         left: 24,
         right: 24,
         top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed.
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
+            MediaQuery.of(context).viewPadding.bottom +
+            24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -292,10 +350,15 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(AppLocalizations.of(context)!.payDues, style: AppTypography.h3),
+              Text(
+                AppLocalizations.of(context)!.payDues,
+                style: AppTypography.h3,
+              ),
               Text(
                 '${_currentIndex + 1} of ${widget.vendors.length}',
-                style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textHint,
+                ),
               ),
             ],
           ),
@@ -339,8 +402,9 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
                       if (info.businessName != null)
                         Text(
                           info.businessName!,
-                          style: AppTypography.bodySmall
-                              .copyWith(color: AppColors.textHint),
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textHint,
+                          ),
                         ),
                     ],
                   ),
@@ -354,8 +418,10 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
                     ),
                     Text(
                       AppLocalizations.of(context)!.outstandingShortLabel,
-                      style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textHint, fontSize: 10),
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textHint,
+                        fontSize: 10,
+                      ),
                     ),
                   ],
                 ),
@@ -371,10 +437,19 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              icon: const Icon(Icons.payment_rounded, color: Colors.white, size: 20),
+              icon: const Icon(
+                Icons.payment_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
               label: Text(
-                AppLocalizations.of(context)!.payViaUpiAmount(vendor.balance.toStringAsFixed(0)),
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                AppLocalizations.of(
+                  context,
+                )!.payViaUpiAmount(vendor.balance.toStringAsFixed(0)),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
@@ -385,7 +460,9 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
               onPressed: _skip,
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.textHint,
-                side: BorderSide(color: AppColors.textHint.withValues(alpha: 0.4)),
+                side: BorderSide(
+                  color: AppColors.textHint.withValues(alpha: 0.4),
+                ),
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: Text(AppLocalizations.of(context)!.skipForNow),
@@ -411,26 +488,36 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
               color: AppColors.success,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.check_rounded, color: Colors.white, size: 40),
+            child: const Icon(
+              Icons.check_rounded,
+              color: Colors.white,
+              size: 40,
+            ),
           ),
           const SizedBox(height: 16),
           Text(AppLocalizations.of(context)!.allDone, style: AppTypography.h3),
           const SizedBox(height: 8),
-          Builder(builder: (context) {
-            final l10n = AppLocalizations.of(context)!;
-            final String summary;
-            if (skipped > 0) {
-              summary = _paidCount == 1
-                  ? l10n.paymentSummarySkippedSingular(_paidCount, skipped)
-                  : l10n.paymentSummarySkipped(_paidCount, skipped);
-            } else {
-              summary = _paidCount == 1
-                  ? l10n.paymentSummaryCompleteSingular(_paidCount)
-                  : l10n.paymentSummaryComplete(_paidCount);
-            }
-            return Text(summary,
-                style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary));
-          }),
+          Builder(
+            builder: (context) {
+              final l10n = AppLocalizations.of(context)!;
+              final String summary;
+              if (skipped > 0) {
+                summary = _paidCount == 1
+                    ? l10n.paymentSummarySkippedSingular(_paidCount, skipped)
+                    : l10n.paymentSummarySkipped(_paidCount, skipped);
+              } else {
+                summary = _paidCount == 1
+                    ? l10n.paymentSummaryCompleteSingular(_paidCount)
+                    : l10n.paymentSummaryComplete(_paidCount);
+              }
+              return Text(
+                summary,
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              );
+            },
+          ),
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
@@ -440,7 +527,10 @@ class _PayAllDuesSheetState extends State<_PayAllDuesSheet> {
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(vertical: 14),
               ),
-              child: Text(AppLocalizations.of(context)!.done, style: const TextStyle(color: Colors.white)),
+              child: Text(
+                AppLocalizations.of(context)!.done,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(height: 8),
@@ -501,11 +591,15 @@ class _PendingVendorRequestsBannerState
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ...pending.map((req) => _VendorRequestBannerTile(request: req,
+            ...pending.map(
+              (req) => _VendorRequestBannerTile(
+                request: req,
                 onResponded: () => setState(() {
-                      _future = getIt<LinkRequestRepository>()
-                          .getPendingForCustomer();
-                    }))),
+                  _future = getIt<LinkRequestRepository>()
+                      .getPendingForCustomer();
+                }),
+              ),
+            ),
             const SizedBox(height: 16),
           ],
         );
@@ -540,7 +634,8 @@ class _VendorRequestBannerTile extends StatelessWidget {
           color: AppColors.customerAccent.withValues(alpha: 0.07),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-              color: AppColors.customerAccent.withValues(alpha: 0.25)),
+            color: AppColors.customerAccent.withValues(alpha: 0.25),
+          ),
         ),
         child: Row(
           children: [
@@ -550,8 +645,11 @@ class _VendorRequestBannerTile extends StatelessWidget {
                 color: AppColors.customerAccent.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.storefront_rounded,
-                  color: AppColors.customerAccent, size: 20),
+              child: const Icon(
+                Icons.storefront_rounded,
+                color: AppColors.customerAccent,
+                size: 20,
+              ),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -566,14 +664,18 @@ class _VendorRequestBannerTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     AppLocalizations.of(context)!.tapToAcceptOrDecline,
-                    style: AppTypography.bodySmall
-                        .copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.chevron_right_rounded,
-                color: AppColors.textHint, size: 20),
+            const Icon(
+              Icons.chevron_right_rounded,
+              color: AppColors.textHint,
+              size: 20,
+            ),
           ],
         ),
       ),

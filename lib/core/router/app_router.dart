@@ -25,7 +25,6 @@ import '../../features/staff_portal/presentation/screens/staff_deliveries_screen
 
 import '../../features/shared_ledger/presentation/screens/shared_ledger_screen.dart';
 
-
 import '../../features/staff/presentation/screens/staff_management_screen.dart';
 
 import '../../features/reports/presentation/screens/reports_screen.dart';
@@ -170,8 +169,8 @@ class AppRouter {
     redirect: (context, state) {
       final authState = getIt<AuthStateNotifier>().authState;
       final location = state.uri.path;
-      final isPublic = _publicRoutes.contains(location) ||
-          location.startsWith(profileSetup);
+      final isPublic =
+          _publicRoutes.contains(location) || location.startsWith(profileSetup);
 
       if (authState is AuthAuthenticated) {
         // Redirect authenticated users off any public/auth screen
@@ -190,10 +189,7 @@ class AppRouter {
       return null; // no redirect
     },
     routes: [
-      GoRoute(
-        path: splash,
-        builder: (context, state) => const SplashScreen(),
-      ),
+      GoRoute(path: splash, builder: (context, state) => const SplashScreen()),
       GoRoute(
         path: languageSelection,
         builder: (context, state) => const LanguageSelectionScreen(),
@@ -223,10 +219,7 @@ class AppRouter {
           );
         },
       ),
-      GoRoute(
-        path: login,
-        builder: (context, state) => const LoginScreen(),
-      ),
+      GoRoute(path: login, builder: (context, state) => const LoginScreen()),
       GoRoute(
         path: emailLogin,
         builder: (context, state) {
@@ -272,14 +265,17 @@ class AppRouter {
             builder: (context, state) => MultiBlocProvider(
               providers: [
                 BlocProvider(
-                    create: (_) =>
-                        ServicesCubit(getIt<ScheduleRepository>())..load()),
+                  create: (_) =>
+                      ServicesCubit(getIt<ScheduleRepository>())..load(),
+                ),
                 BlocProvider(
-                    create: (_) =>
-                        SubscriptionsCubit(getIt<ScheduleRepository>())),
+                  create: (_) =>
+                      SubscriptionsCubit(getIt<ScheduleRepository>()),
+                ),
                 BlocProvider(
-                    create: (_) =>
-                        DeliveriesCubit(getIt<ScheduleRepository>())..load()),
+                  create: (_) =>
+                      DeliveriesCubit(getIt<ScheduleRepository>())..load(),
+                ),
               ],
               child: const VendorServicesScreen(),
             ),
@@ -321,14 +317,15 @@ class AppRouter {
             builder: (context, state) => MultiBlocProvider(
               providers: [
                 BlocProvider(
-                    create: (_) =>
-                        MySubscriptionsCubit(getIt<ScheduleRepository>())
-                          ..load()),
+                  create: (_) =>
+                      MySubscriptionsCubit(getIt<ScheduleRepository>())..load(),
+                ),
                 BlocProvider(
-                    create: (_) => DeliveriesCubit(
-                        getIt<ScheduleRepository>(),
-                        isCustomer: true)
-                      ..load()),
+                  create: (_) => DeliveriesCubit(
+                    getIt<ScheduleRepository>(),
+                    isCustomer: true,
+                  )..load(),
+                ),
               ],
               child: const CustomerSubscriptionsScreen(),
             ),
@@ -358,7 +355,8 @@ class AppRouter {
           GoRoute(
             path: staffDeliveries,
             builder: (context, state) => BlocProvider(
-              create: (_) => DeliveriesCubit(getIt<ScheduleRepository>())..load(),
+              create: (_) =>
+                  DeliveriesCubit(getIt<ScheduleRepository>())..load(),
               child: const StaffDeliveriesScreen(),
             ),
           ),
@@ -504,9 +502,8 @@ class AppRouter {
       ),
       GoRoute(
         path: locationPicker,
-        builder: (context, state) => LocationPickerScreen(
-          initialLocation: state.extra as LocationData?,
-        ),
+        builder: (context, state) =>
+            LocationPickerScreen(initialLocation: state.extra as LocationData?),
       ),
       GoRoute(
         path: upiManagement,
@@ -620,58 +617,66 @@ class _VendorMainWrapperState extends State<VendorMainWrapper>
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: getIt<VendorBloc>(),
-      child: Builder(builder: (ctx) {
-        final location = GoRouterState.of(ctx).uri.path;
-        final isHome = location == AppRouter.vendorHome;
-        final bottomInset = MediaQuery.of(ctx).padding.bottom;
-        // Pill nav: 64 height + 16 bottom padding + 8 top padding = 88
-        const navHeight = 88.0;
+      child: Builder(
+        builder: (ctx) {
+          final location = GoRouterState.of(ctx).uri.path;
+          final isHome = location == AppRouter.vendorHome;
+          final bottomInset = MediaQuery.of(ctx).padding.bottom;
+          // Pill nav: 64 height + 16 bottom padding + 8 top padding = 88
+          const navHeight = 88.0;
 
-        return Scaffold(
-          extendBody: true,
-          body: Stack(
-            children: [
-              NotificationListener<ScrollNotification>(
-                onNotification: _onScroll,
-                child: widget.child,
-              ),
-              // FAB positioned above the floating pill nav bar
-              if (isHome)
-                Positioned(
-                  right: 16,
-                  bottom: navHeight + bottomInset + 12,
-                  child: FadeTransition(
-                    opacity: _fabOpacity,
-                    child: ScaleTransition(
-                      scale: _fabScale,
-                      child: FloatingActionButton.extended(
-                        onPressed: () => showVendorAddCustomerSheet(ctx),
-                        backgroundColor: AppColors.primary,
-                        icon: const Icon(Icons.person_add_rounded, color: Colors.white),
-                        label: const Text(
-                          'ADD CUSTOMER',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          return Scaffold(
+            extendBody: true,
+            body: Stack(
+              children: [
+                NotificationListener<ScrollNotification>(
+                  onNotification: _onScroll,
+                  child: widget.child,
+                ),
+                // FAB positioned above the floating pill nav bar
+                if (isHome)
+                  Positioned(
+                    right: 16,
+                    bottom: navHeight + bottomInset + 12,
+                    child: FadeTransition(
+                      opacity: _fabOpacity,
+                      child: ScaleTransition(
+                        scale: _fabScale,
+                        child: FloatingActionButton.extended(
+                          onPressed: () => showVendorAddCustomerSheet(ctx),
+                          backgroundColor: AppColors.primary,
+                          icon: const Icon(
+                            Icons.person_add_rounded,
+                            color: Colors.white,
+                          ),
+                          label: const Text(
+                            'ADD CUSTOMER',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-            ],
-          ),
-          bottomNavigationBar: AppBottomNavBar(
-            currentIndex: _calculateSelectedIndex(ctx),
-            onTap: (index) => _onTap(ctx, index),
-            items: const [
-              AppNavItem(riveIcon: AppRiveIcon.home,    label: 'Home'),
-              AppNavItem(riveIcon: AppRiveIcon.user,    label: 'Staff'),
-              AppNavItem(riveIcon: AppRiveIcon.zap,     label: 'Booking'),
-              AppNavItem(riveIcon: AppRiveIcon.clock,   label: 'Schedule'),
-              AppNavItem(riveIcon: AppRiveIcon.stars,   label: 'Reports'),
-              AppNavItem(riveIcon: AppRiveIcon.gear,    label: 'Settings'),
-            ],
-          ),
-        );
-      }),
+              ],
+            ),
+            bottomNavigationBar: AppBottomNavBar(
+              currentIndex: _calculateSelectedIndex(ctx),
+              onTap: (index) => _onTap(ctx, index),
+              items: const [
+                AppNavItem(riveIcon: AppRiveIcon.home, label: 'Home'),
+                AppNavItem(riveIcon: AppRiveIcon.user, label: 'Staff'),
+                AppNavItem(riveIcon: AppRiveIcon.zap, label: 'Booking'),
+                AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Schedule'),
+                AppNavItem(riveIcon: AppRiveIcon.stars, label: 'Reports'),
+                AppNavItem(riveIcon: AppRiveIcon.gear, label: 'Settings'),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -783,10 +788,16 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
                   child: FloatingActionButton.extended(
                     onPressed: () => showCustomerAddVendorSheet(context),
                     backgroundColor: AppColors.customerAccent,
-                    icon: const Icon(Icons.storefront_rounded, color: Colors.white),
+                    icon: const Icon(
+                      Icons.storefront_rounded,
+                      color: Colors.white,
+                    ),
                     label: const Text(
                       'ADD VENDOR',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -798,11 +809,11 @@ class _CustomerMainWrapperState extends State<CustomerMainWrapper>
         currentIndex: _calculateSelectedIndex(context),
         onTap: (index) => _onTap(context, index),
         items: const [
-          AppNavItem(riveIcon: AppRiveIcon.home,     label: 'Home'),
-          AppNavItem(riveIcon: AppRiveIcon.message,  label: 'My Khatas'),
-          AppNavItem(riveIcon: AppRiveIcon.zap,      label: 'Bookings'),
-          AppNavItem(riveIcon: AppRiveIcon.clock,    label: 'Schedule'),
-          AppNavItem(riveIcon: AppRiveIcon.user,     label: 'Profile'),
+          AppNavItem(riveIcon: AppRiveIcon.home, label: 'Home'),
+          AppNavItem(riveIcon: AppRiveIcon.message, label: 'My Khatas'),
+          AppNavItem(riveIcon: AppRiveIcon.zap, label: 'Bookings'),
+          AppNavItem(riveIcon: AppRiveIcon.clock, label: 'Schedule'),
+          AppNavItem(riveIcon: AppRiveIcon.user, label: 'Profile'),
         ],
       ),
     );
@@ -857,7 +868,12 @@ void showCustomerAddVendorSheet(BuildContext context) {
           left: 24,
           right: 24,
           top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          // viewInsets clears the keyboard; viewPadding clears the gesture
+          // bar / 3-button nav when the keyboard is closed.
+          bottom:
+              MediaQuery.of(ctx).viewInsets.bottom +
+              MediaQuery.of(ctx).viewPadding.bottom +
+              24,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -867,8 +883,9 @@ void showCustomerAddVendorSheet(BuildContext context) {
             const SizedBox(height: 4),
             Text(
               'Find by phone number or email',
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 20),
             TextField(
@@ -905,9 +922,9 @@ void showCustomerAddVendorSheet(BuildContext context) {
                         try {
                           await getIt<LinkRequestRepository>()
                               .customerSendByIdentifier(
-                            vendorIdentifier: identifier,
-                            nickname: nickname.isEmpty ? null : nickname,
-                          );
+                                vendorIdentifier: identifier,
+                                nickname: nickname.isEmpty ? null : nickname,
+                              );
                           if (context.mounted) {
                             Navigator.pop(ctx);
                             AppToast.show(
@@ -936,12 +953,16 @@ void showCustomerAddVendorSheet(BuildContext context) {
                         width: 20,
                         height: 20,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : const Text(
                         'Send Request',
                         style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
               ),
             ),

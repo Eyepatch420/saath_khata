@@ -33,10 +33,13 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      // viewInsets clears the keyboard; viewPadding clears the gesture bar /
+      // 3-button nav when the keyboard is closed.
+      padding: EdgeInsets.only(bottom: mq.viewInsets.bottom),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, mq.viewPadding.bottom + 32),
         child: Form(
           key: _formKey,
           child: Column(
@@ -46,31 +49,49 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
               Row(
                 children: [
                   const Expanded(
-                    child: Text('Add Subscriber',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    child: Text(
+                      'Add Subscriber',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close)),
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.close),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
-              const Text('Customer', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Customer',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 6),
               BlocBuilder<VendorBloc, VendorState>(
                 bloc: getIt<VendorBloc>(),
                 builder: (context, state) {
-                  final customers = state is VendorLoaded ? state.customers : <CustomerLinkItem>[];
+                  final customers = state is VendorLoaded
+                      ? state.customers
+                      : <CustomerLinkItem>[];
                   return DropdownButtonFormField<CustomerLinkItem>(
                     value: _selectedCustomer,
                     hint: const Text('Select customer'),
-                    decoration: const InputDecoration(border: OutlineInputBorder()),
-                    items: customers.map((c) => DropdownMenuItem(
-                          value: c,
-                          child: Text(c.nickname ?? c.customer.name),
-                        )).toList(),
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                    ),
+                    items: customers
+                        .map(
+                          (c) => DropdownMenuItem(
+                            value: c,
+                            child: Text(c.nickname ?? c.customer.name),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (v) => setState(() => _selectedCustomer = v),
-                    validator: (_) => _selectedCustomer == null ? 'Select a customer' : null,
+                    validator: (_) =>
+                        _selectedCustomer == null ? 'Select a customer' : null,
                   );
                 },
               ),
@@ -80,11 +101,16 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
                   Expanded(
                     child: TextFormField(
                       controller: _qtyCtrl,
-                      decoration: const InputDecoration(labelText: 'Qty per Delivery *'),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Qty per Delivery *',
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Required';
-                        if (double.tryParse(v) == null || double.parse(v) <= 0) {
+                        if (double.tryParse(v) == null ||
+                            double.parse(v) <= 0) {
                           return 'Invalid qty';
                         }
                         return null;
@@ -95,29 +121,41 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
                   Expanded(
                     child: TextFormField(
                       controller: _priceCtrl,
-                      decoration:
-                          const InputDecoration(labelText: 'Custom Price (₹, optional)'),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Custom Price (₹, optional)',
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 14),
-              const Text('Start Date', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Start Date',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 6),
               InkWell(
                 onTap: () => _pickDate(context),
                 borderRadius: BorderRadius.circular(8),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey.shade400),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.calendar_today_outlined, size: 18,
-                          color: AppColors.textSecondary),
+                      const Icon(
+                        Icons.calendar_today_outlined,
+                        size: 18,
+                        color: AppColors.textSecondary,
+                      ),
                       const SizedBox(width: 8),
                       Text(DateFormat('d MMM yyyy').format(_startDate)),
                     ],
@@ -137,16 +175,22 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
                       child: saving
                           ? const SizedBox(
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white))
-                          : const Text('Subscribe',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                          : const Text(
+                              'Subscribe',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                     ),
                   );
                 },
@@ -174,12 +218,12 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
         ? null
         : double.tryParse(_priceCtrl.text.trim());
     final ok = await context.read<SubscriptionsCubit>().subscribe(
-          serviceId: widget.serviceId,
-          linkId: _selectedCustomer!.linkId,
-          quantityPerDelivery: double.parse(_qtyCtrl.text.trim()),
-          customPricePerUnit: price,
-          startDate: DateFormat('yyyy-MM-dd').format(_startDate),
-        );
+      serviceId: widget.serviceId,
+      linkId: _selectedCustomer!.linkId,
+      quantityPerDelivery: double.parse(_qtyCtrl.text.trim()),
+      customPricePerUnit: price,
+      startDate: DateFormat('yyyy-MM-dd').format(_startDate),
+    );
     if (ok && context.mounted) Navigator.pop(context);
   }
 }

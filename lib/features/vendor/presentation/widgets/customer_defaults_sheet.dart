@@ -15,7 +15,8 @@ class CustomerDefaultsSheet extends StatefulWidget {
     required String? unit,
     required double? qty,
     required double? price,
-  })? onSaved;
+  })?
+  onSaved;
 
   const CustomerDefaultsSheet({
     super.key,
@@ -42,13 +43,15 @@ class _CustomerDefaultsSheetState extends State<CustomerDefaultsSheet> {
     _productCtrl = TextEditingController(text: c.defaultProduct ?? '');
     _unitCtrl = TextEditingController(text: c.defaultUnit ?? '');
     _qtyCtrl = TextEditingController(
-        text: c.defaultQty != null
-            ? c.defaultQty!.toStringAsFixed(c.defaultQty! % 1 == 0 ? 0 : 2)
-            : '');
+      text: c.defaultQty != null
+          ? c.defaultQty!.toStringAsFixed(c.defaultQty! % 1 == 0 ? 0 : 2)
+          : '',
+    );
     _priceCtrl = TextEditingController(
-        text: c.defaultPricePerUnit != null
-            ? c.defaultPricePerUnit!.toStringAsFixed(2)
-            : '');
+      text: c.defaultPricePerUnit != null
+          ? c.defaultPricePerUnit!.toStringAsFixed(2)
+          : '',
+    );
   }
 
   @override
@@ -77,7 +80,11 @@ class _CustomerDefaultsSheetState extends State<CustomerDefaultsSheet> {
       );
       if (mounted) {
         Navigator.pop(context);
-        AppToast.show(context, 'Default delivery saved', type: ToastType.success);
+        AppToast.show(
+          context,
+          'Default delivery saved',
+          type: ToastType.success,
+        );
         widget.onSaved?.call(
           product: product.isEmpty ? null : product,
           unit: unit.isEmpty ? null : unit,
@@ -106,7 +113,12 @@ class _CustomerDefaultsSheetState extends State<CustomerDefaultsSheet> {
         left: 24,
         right: 24,
         top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed.
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
+            MediaQuery.of(context).viewPadding.bottom +
+            24,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -116,8 +128,9 @@ class _CustomerDefaultsSheetState extends State<CustomerDefaultsSheet> {
           const SizedBox(height: 4),
           Text(
             'Pre-fills staff Quick Delivery screen for $name',
-            style:
-                AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 20),
           TextField(
@@ -135,8 +148,9 @@ class _CustomerDefaultsSheetState extends State<CustomerDefaultsSheet> {
                 flex: 2,
                 child: TextField(
                   controller: _qtyCtrl,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: const InputDecoration(
                     labelText: 'Default qty',
                     prefixIcon: Icon(Icons.numbers_rounded),
@@ -178,10 +192,14 @@ class _CustomerDefaultsSheetState extends State<CustomerDefaultsSheet> {
                       width: 18,
                       height: 18,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Colors.white),
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
                     )
-                  : const Text('Save Defaults',
-                      style: TextStyle(color: Colors.white)),
+                  : const Text(
+                      'Save Defaults',
+                      style: TextStyle(color: Colors.white),
+                    ),
             ),
           ),
         ],

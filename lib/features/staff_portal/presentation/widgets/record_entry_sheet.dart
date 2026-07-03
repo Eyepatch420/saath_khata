@@ -106,8 +106,10 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
   void _recompute() => setState(() {});
 
   Future<void> _pickAndUpload(ImageSource source) async {
-    final picked =
-        await ImagePicker().pickImage(source: source, imageQuality: 85);
+    final picked = await ImagePicker().pickImage(
+      source: source,
+      imageQuality: 85,
+    );
     if (picked == null || !mounted) return;
     setState(() => _uploadingPhoto = true);
     try {
@@ -116,7 +118,11 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
         linkId: _customer!.linkId,
         entryId: null,
       );
-      if (mounted) setState(() { _pendingAttachmentUrl = url; _uploadingPhoto = false; });
+      if (mounted)
+        setState(() {
+          _pendingAttachmentUrl = url;
+          _uploadingPhoto = false;
+        });
     } catch (e) {
       if (mounted) {
         setState(() => _uploadingPhoto = false);
@@ -176,8 +182,11 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _submitting = false);
-      AppToast.show(context, e.toString().replaceFirst('Exception: ', ''),
-          type: ToastType.error);
+      AppToast.show(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+        type: ToastType.error,
+      );
     }
   }
 
@@ -190,7 +199,12 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
         left: 24,
         right: 24,
         top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed.
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
+            MediaQuery.of(context).viewPadding.bottom +
+            24,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -213,15 +227,18 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(_isDelivery ? l10n.recordDelivery : l10n.collectPayment,
-                    style: AppTypography.h3),
+                Text(
+                  _isDelivery ? l10n.recordDelivery : l10n.collectPayment,
+                  style: AppTypography.h3,
+                ),
               ],
             ),
             const SizedBox(height: 4),
             Text(
               _isDelivery ? l10n.addsCredit : l10n.recordsCash,
-              style:
-                  AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 20),
 
@@ -249,8 +266,9 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                   Expanded(
                     child: TextField(
                       controller: _qtyCtrl,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       decoration: InputDecoration(
                         labelText: l10n.qty,
                         prefixIcon: const Icon(Icons.numbers_rounded),
@@ -261,8 +279,9 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                   Expanded(
                     child: TextField(
                       controller: _priceCtrl,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       decoration: InputDecoration(
                         labelText: AppLocalizations.of(context)!.unitPrice,
                         prefixIcon: const Icon(Icons.currency_rupee_rounded),
@@ -282,8 +301,9 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
             ] else ...[
               TextField(
                 controller: _amountCtrl,
-                keyboardType:
-                    const TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
                 decoration: InputDecoration(
                   labelText: l10n.amountRupees,
                   prefixIcon: const Icon(Icons.currency_rupee_rounded),
@@ -309,7 +329,8 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                   icon: const Icon(Icons.camera_alt_rounded, size: 16),
                   label: const Text('Camera'),
                   style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 36)),
+                    minimumSize: const Size(0, 36),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 OutlinedButton.icon(
@@ -319,7 +340,8 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                   icon: const Icon(Icons.photo_library_rounded, size: 16),
                   label: const Text('Gallery'),
                   style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 36)),
+                    minimumSize: const Size(0, 36),
+                  ),
                 ),
                 if (_uploadingPhoto)
                   const Padding(
@@ -354,18 +376,23 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
                     : Icon(
                         _isDelivery
                             ? Icons.local_shipping_rounded
                             : Icons.check_rounded,
                         color: Colors.white,
-                        size: 20),
+                        size: 20,
+                      ),
                 label: Text(
                   _isDelivery ? 'Deliver & Charge' : 'Record Payment',
                   style: const TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -397,10 +424,12 @@ class _CustomerDropdown extends StatelessWidget {
         prefixIcon: const Icon(Icons.person_search_rounded),
       ),
       items: customers
-          .map((c) => DropdownMenuItem(
-                value: c,
-                child: Text(c.displayName, overflow: TextOverflow.ellipsis),
-              ))
+          .map(
+            (c) => DropdownMenuItem(
+              value: c,
+              child: Text(c.displayName, overflow: TextOverflow.ellipsis),
+            ),
+          )
           .toList(),
       onChanged: onChanged,
     );

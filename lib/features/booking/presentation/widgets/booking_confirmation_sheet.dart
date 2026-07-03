@@ -48,25 +48,25 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
   void _confirm(BuildContext context) {
     setState(() => _isLoading = true);
     context.read<BookingBloc>().add(
-          CreateBooking(
-            BookingModel(
-              id: '',
-              vendorId: widget.vendorId,
-              vendorName: widget.vendorName,
-              customerId: widget.customerId,
-              customerName: widget.customerName,
-              slotId: widget.slot.id,
-              date: _fmtDate(widget.date),
-              startTime: widget.slot.startTime,
-              endTime: widget.slot.endTime,
-              status: BookingStatus.pending,
-              notes: _notesController.text.trim().isEmpty
-                  ? null
-                  : _notesController.text.trim(),
-              createdAt: '',
-            ),
-          ),
-        );
+      CreateBooking(
+        BookingModel(
+          id: '',
+          vendorId: widget.vendorId,
+          vendorName: widget.vendorName,
+          customerId: widget.customerId,
+          customerName: widget.customerName,
+          slotId: widget.slot.id,
+          date: _fmtDate(widget.date),
+          startTime: widget.slot.startTime,
+          endTime: widget.slot.endTime,
+          status: BookingStatus.pending,
+          notes: _notesController.text.trim().isEmpty
+              ? null
+              : _notesController.text.trim(),
+          createdAt: '',
+        ),
+      ),
+    );
   }
 
   @override
@@ -83,7 +83,11 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
           24,
           16,
           24,
-          MediaQuery.of(context).viewInsets.bottom + 24,
+          // viewInsets clears the keyboard; viewPadding clears the gesture
+          // bar / 3-button nav when the keyboard is closed.
+          MediaQuery.of(context).viewInsets.bottom +
+              MediaQuery.of(context).viewPadding.bottom +
+              24,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -100,7 +104,10 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
               ),
             ),
             const SizedBox(height: 20),
-            Text(AppLocalizations.of(context)!.confirmBooking, style: AppTypography.h3),
+            Text(
+              AppLocalizations.of(context)!.confirmBooking,
+              style: AppTypography.h3,
+            ),
             const SizedBox(height: 20),
             _InfoRow(
               icon: Icons.storefront_rounded,
@@ -122,8 +129,9 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
             const SizedBox(height: 24),
             Text(
               AppLocalizations.of(context)!.notesOptional,
-              style: AppTypography.labelLarge
-                  .copyWith(color: AppColors.textSecondary),
+              style: AppTypography.labelLarge.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -132,8 +140,9 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
               textCapitalization: TextCapitalization.sentences,
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.bookingNoteExample,
-                hintStyle: AppTypography.bodyMedium
-                    .copyWith(color: AppColors.textHint),
+                hintStyle: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textHint,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: AppColors.divider),
@@ -144,8 +153,10 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: AppColors.primary, width: 1.5),
+                  borderSide: const BorderSide(
+                    color: AppColors.primary,
+                    width: 1.5,
+                  ),
                 ),
                 contentPadding: const EdgeInsets.all(12),
               ),
@@ -158,8 +169,9 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
                 onPressed: _isLoading ? null : () => _confirm(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  disabledBackgroundColor:
-                      AppColors.primary.withValues(alpha: 0.5),
+                  disabledBackgroundColor: AppColors.primary.withValues(
+                    alpha: 0.5,
+                  ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
@@ -173,7 +185,10 @@ class _BookingConfirmationSheetState extends State<BookingConfirmationSheet> {
                           strokeWidth: 2.5,
                         ),
                       )
-                    : Text(AppLocalizations.of(context)!.confirmBooking, style: AppTypography.button),
+                    : Text(
+                        AppLocalizations.of(context)!.confirmBooking,
+                        style: AppTypography.button,
+                      ),
               ),
             ),
           ],
@@ -212,8 +227,9 @@ class _InfoRow extends StatelessWidget {
           children: [
             Text(
               label,
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             Text(value, style: AppTypography.labelLarge),
           ],

@@ -18,10 +18,12 @@ class BrowsePlansScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Builder(builder: (ctx) => Text(
-          AppLocalizations.of(ctx)!.vendorPlansTitle(vendorName),
-          overflow: TextOverflow.ellipsis,
-        )),
+        title: Builder(
+          builder: (ctx) => Text(
+            AppLocalizations.of(ctx)!.vendorPlansTitle(vendorName),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         backgroundColor: MembershipTheme.purple,
         foregroundColor: Colors.white,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -48,17 +50,24 @@ class BrowsePlansScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.workspace_premium_outlined,
-                      size: 56,
-                      color: MembershipTheme.purple.withValues(alpha: 0.35)),
+                  Icon(
+                    Icons.workspace_premium_outlined,
+                    size: 56,
+                    color: MembershipTheme.purple.withValues(alpha: 0.35),
+                  ),
                   const SizedBox(height: 12),
-                  Text(l10n.noPlansAvailable,
-                      style: const TextStyle(fontSize: 16)),
+                  Text(
+                    l10n.noPlansAvailable,
+                    style: const TextStyle(fontSize: 16),
+                  ),
                   const SizedBox(height: 6),
-                  Text(l10n.vendorNoPlansHint,
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                          fontSize: 13)),
+                  Text(
+                    l10n.vendorNoPlansHint,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      fontSize: 13,
+                    ),
+                  ),
                 ],
               ),
             );
@@ -102,7 +111,12 @@ class BrowsePlansScreen extends StatelessWidget {
             left: 20,
             right: 20,
             top: 24,
-            bottom: MediaQuery.of(sheetCtx).viewInsets.bottom + 28,
+            // viewInsets clears the keyboard; viewPadding clears the gesture
+            // bar / 3-button nav when the keyboard is closed.
+            bottom:
+                MediaQuery.of(sheetCtx).viewInsets.bottom +
+                MediaQuery.of(sheetCtx).viewPadding.bottom +
+                28,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -121,15 +135,20 @@ class BrowsePlansScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              Text(sl10n.applyForPlan(plan.name),
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                sl10n.applyForPlan(plan.name),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 4),
               Text(
                 '₹${plan.price.toStringAsFixed(0)} / ${plan.durationDays} days'
                 '${plan.advanceRequired > 0 ? ' · advance ₹${plan.advanceRequired.toStringAsFixed(0)}' : ''}',
                 style: TextStyle(
-                    color: Theme.of(sheetCtx).colorScheme.onSurfaceVariant),
+                  color: Theme.of(sheetCtx).colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 20),
               TextField(
@@ -150,10 +169,13 @@ class BrowsePlansScreen extends StatelessWidget {
                   foregroundColor: Colors.white,
                   minimumSize: const Size.fromHeight(52),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                 ),
-                child: Text(sl10n.sendRequestButton,
-                    style: const TextStyle(fontSize: 16)),
+                child: Text(
+                  sl10n.sendRequestButton,
+                  style: const TextStyle(fontSize: 16),
+                ),
               ),
             ],
           ),
@@ -194,15 +216,14 @@ class _PlanCard extends StatelessWidget {
     final borderColor = isCurrent
         ? MembershipTheme.purple
         : isDark
-            ? Colors.white.withValues(alpha: 0.08)
-            : Colors.black.withValues(alpha: 0.07);
+        ? Colors.white.withValues(alpha: 0.08)
+        : Colors.black.withValues(alpha: 0.07);
 
     return Container(
       decoration: BoxDecoration(
         color: cs.surface,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-            color: borderColor, width: isCurrent ? 1.8 : 1),
+        border: Border.all(color: borderColor, width: isCurrent ? 1.8 : 1),
         boxShadow: isDark
             ? null
             : [
@@ -221,42 +242,56 @@ class _PlanCard extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.fromLTRB(18, 18, 18, 16),
-            decoration:
-                const BoxDecoration(gradient: MembershipTheme.headerGradient),
+            decoration: const BoxDecoration(
+              gradient: MembershipTheme.headerGradient,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Expanded(
-                      child: Text(plan.name,
-                          style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold)),
+                      child: Text(
+                        plan.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     if (isCurrent)
-                      Builder(builder: (ctx) => Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const Icon(Icons.check_circle_rounded,
-                                size: 13, color: Colors.white),
-                            const SizedBox(width: 4),
-                            Text(AppLocalizations.of(ctx)!.activeLabel,
+                      Builder(
+                        builder: (ctx) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.check_circle_rounded,
+                                size: 13,
+                                color: Colors.white,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                AppLocalizations.of(ctx)!.activeLabel,
                                 style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600)),
-                          ],
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      )),
+                      ),
                   ],
                 ),
                 const SizedBox(height: 6),
@@ -264,14 +299,21 @@ class _PlanCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    Text('₹${plan.price.toStringAsFixed(0)}',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold)),
-                    Text(' / ${plan.durationDays} days',
-                        style: const TextStyle(
-                            color: Colors.white70, fontSize: 14)),
+                    Text(
+                      '₹${plan.price.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      ' / ${plan.durationDays} days',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 14,
+                      ),
+                    ),
                   ],
                 ),
               ],
@@ -285,59 +327,79 @@ class _PlanCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (plan.benefits.isEmpty)
-                  Text(AppLocalizations.of(context)!.noAdditionalBenefits,
-                      style: TextStyle(
-                          color: cs.onSurfaceVariant, fontSize: 13))
+                  Text(
+                    AppLocalizations.of(context)!.noAdditionalBenefits,
+                    style: TextStyle(color: cs.onSurfaceVariant, fontSize: 13),
+                  )
                 else
-                  ...plan.benefits.map((b) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: Row(
-                          children: [
-                            const Icon(Icons.check_circle_rounded,
-                                size: 18, color: AppColors.success),
-                            const SizedBox(width: 10),
-                            Expanded(
-                                child: Text(b.label,
-                                    style: TextStyle(
-                                        color: cs.onSurface, fontSize: 14))),
-                            if (b.hasQuota)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: MembershipTheme.purple
-                                      .withValues(alpha: 0.12),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Text('×${b.quota}',
-                                    style: const TextStyle(
-                                        color: MembershipTheme.purple,
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 12)),
+                  ...plan.benefits.map(
+                    (b) => Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.check_circle_rounded,
+                            size: 18,
+                            color: AppColors.success,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              b.label,
+                              style: TextStyle(
+                                color: cs.onSurface,
+                                fontSize: 14,
                               ),
-                          ],
-                        ),
-                      )),
+                            ),
+                          ),
+                          if (b.hasQuota)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: MembershipTheme.purple.withValues(
+                                  alpha: 0.12,
+                                ),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                '×${b.quota}',
+                                style: const TextStyle(
+                                  color: MembershipTheme.purple,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
                 if (plan.advanceRequired > 0)
                   Padding(
                     padding: const EdgeInsets.only(top: 2, bottom: 4),
                     child: Row(
                       children: [
-                        Icon(Icons.account_balance_wallet_outlined,
-                            size: 14, color: cs.onSurfaceVariant),
+                        Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 14,
+                          color: cs.onSurfaceVariant,
+                        ),
                         const SizedBox(width: 6),
                         Text(
-                            'Advance: ₹${plan.advanceRequired.toStringAsFixed(0)}',
-                            style: TextStyle(
-                                color: cs.onSurfaceVariant, fontSize: 13)),
+                          'Advance: ₹${plan.advanceRequired.toStringAsFixed(0)}',
+                          style: TextStyle(
+                            color: cs.onSurfaceVariant,
+                            fontSize: 13,
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 const SizedBox(height: 14),
-                SizedBox(
-                  width: double.infinity,
-                  child: _actionButton(context),
-                ),
+                SizedBox(width: double.infinity, child: _actionButton(context)),
               ],
             ),
           ),
@@ -357,7 +419,8 @@ class _PlanCard extends StatelessWidget {
           foregroundColor: MembershipTheme.purple,
           side: const BorderSide(color: MembershipTheme.purple),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
+            borderRadius: BorderRadius.circular(12),
+          ),
           minimumSize: const Size.fromHeight(44),
         ),
       );
@@ -371,7 +434,8 @@ class _PlanCard extends StatelessWidget {
           foregroundColor: AppColors.warning,
           side: const BorderSide(color: AppColors.warning),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12)),
+            borderRadius: BorderRadius.circular(12),
+          ),
           minimumSize: const Size.fromHeight(44),
         ),
       );

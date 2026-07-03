@@ -36,10 +36,13 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      // viewInsets clears the keyboard; viewPadding clears the gesture bar /
+      // 3-button nav when the keyboard is closed.
+      padding: EdgeInsets.only(bottom: mq.viewInsets.bottom),
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, mq.viewPadding.bottom + 32),
         child: Form(
           key: _formKey,
           child: Column(
@@ -51,7 +54,10 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
                   const Expanded(
                     child: Text(
                       'New Service',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -64,7 +70,8 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
               TextFormField(
                 controller: _nameCtrl,
                 decoration: const InputDecoration(labelText: 'Service Name *'),
-                validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
+                validator: (v) =>
+                    v == null || v.trim().isEmpty ? 'Required' : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -73,28 +80,39 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
                 maxLines: 2,
               ),
               const SizedBox(height: 16),
-              const Text('Service Type', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Service Type',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 6),
               SegmentedButton<ServiceType>(
                 segments: ServiceType.values
                     .map((t) => ButtonSegment(value: t, label: Text(t.label)))
                     .toList(),
                 selected: {_serviceType},
-                onSelectionChanged: (s) => setState(() => _serviceType = s.first),
+                onSelectionChanged: (s) =>
+                    setState(() => _serviceType = s.first),
               ),
               const SizedBox(height: 16),
-              const Text('Schedule', style: TextStyle(fontWeight: FontWeight.w600)),
+              const Text(
+                'Schedule',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
               const SizedBox(height: 6),
               SegmentedButton<ScheduleType>(
                 segments: ScheduleType.values
                     .map((t) => ButtonSegment(value: t, label: Text(t.label)))
                     .toList(),
                 selected: {_scheduleType},
-                onSelectionChanged: (s) => setState(() => _scheduleType = s.first),
+                onSelectionChanged: (s) =>
+                    setState(() => _scheduleType = s.first),
               ),
               if (_scheduleType != ScheduleType.daily) ...[
                 const SizedBox(height: 12),
-                const Text('Delivery Days', style: TextStyle(fontWeight: FontWeight.w600)),
+                const Text(
+                  'Delivery Days',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
                 const SizedBox(height: 6),
                 Wrap(
                   spacing: 6,
@@ -124,15 +142,21 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
                   Expanded(
                     child: TextFormField(
                       controller: _unitCtrl,
-                      decoration: const InputDecoration(labelText: 'Unit (e.g. litre, kg)'),
+                      decoration: const InputDecoration(
+                        labelText: 'Unit (e.g. litre, kg)',
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextFormField(
                       controller: _priceCtrl,
-                      decoration: const InputDecoration(labelText: 'Default Price/Unit (₹)'),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Default Price/Unit (₹)',
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                     ),
                   ),
                 ],
@@ -152,8 +176,7 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
               const SizedBox(height: 20),
               BlocBuilder<ServicesCubit, ServicesState>(
                 builder: (context, state) {
-                  final saving =
-                      state is ServicesLoaded && state.saving;
+                  final saving = state is ServicesLoaded && state.saving;
                   return SizedBox(
                     width: double.infinity,
                     height: 50,
@@ -171,10 +194,14 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
-                                  strokeWidth: 2, color: Colors.white),
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
                             )
-                          : const Text('Create Service',
-                              style: TextStyle(fontWeight: FontWeight.bold)),
+                          : const Text(
+                              'Create Service',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
                     ),
                   );
                 },
@@ -196,18 +223,17 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
     }
     final price = double.tryParse(_priceCtrl.text.trim());
     final ok = await context.read<ServicesCubit>().create(
-          name: _nameCtrl.text.trim(),
-          description:
-              _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
-          serviceType: _serviceType,
-          scheduleType: _scheduleType,
-          unit: _unitCtrl.text.trim().isEmpty ? null : _unitCtrl.text.trim(),
-          defaultPricePerUnit: price,
-          deliveryDays: _scheduleType != ScheduleType.daily
-              ? (_deliveryDays.toList()..sort())
-              : null,
-          autoCreateLedgerEntry: _autoLedger,
-        );
+      name: _nameCtrl.text.trim(),
+      description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
+      serviceType: _serviceType,
+      scheduleType: _scheduleType,
+      unit: _unitCtrl.text.trim().isEmpty ? null : _unitCtrl.text.trim(),
+      defaultPricePerUnit: price,
+      deliveryDays: _scheduleType != ScheduleType.daily
+          ? (_deliveryDays.toList()..sort())
+          : null,
+      autoCreateLedgerEntry: _autoLedger,
+    );
     if (ok && context.mounted) Navigator.pop(context);
   }
 }
