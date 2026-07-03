@@ -13,11 +13,17 @@ class OrderRepositoryImpl implements OrderRepository {
       (r.data as Map<String, dynamic>)['data'] as Map<String, dynamic>;
 
   @override
-  Future<OrderListResult> getVendorOrders({String? status}) async {
+  Future<OrderListResult> getVendorOrders({
+    String? status,
+    String? linkId,
+  }) async {
     try {
+      final query = <String, dynamic>{};
+      if (status != null && status != 'all') query['status'] = status;
+      if (linkId != null) query['linkId'] = linkId;
       final response = await _api.get(
         ApiEndpoints.vendorOrders,
-        queryParameters: status != null && status != 'all' ? {'status': status} : null,
+        queryParameters: query.isEmpty ? null : query,
       );
       return OrderListResult.fromJson(_data(response));
     } on DioException catch (e) {

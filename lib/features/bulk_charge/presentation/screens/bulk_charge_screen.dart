@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../../shared/models/link_model.dart';
 import '../../../../shared/models/product_template.dart';
 import '../../../../shared/widgets/app_toast.dart';
+import '../../../schedule/domain/repositories/schedule_repository.dart';
 import '../../../vendor/presentation/bloc/vendor_bloc.dart';
 import '../../../vendor/presentation/bloc/vendor_state.dart';
 import '../../data/repositories/template_repository.dart';
@@ -20,8 +21,10 @@ class BulkChargeScreen extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (_) =>
-              BulkChargeCubit(getIt<TemplateRepository>())..loadTemplates(),
+          create: (_) => BulkChargeCubit(
+            getIt<TemplateRepository>(),
+            getIt<ScheduleRepository>(),
+          )..loadTemplates(),
         ),
         BlocProvider.value(value: getIt<VendorBloc>()),
       ],
@@ -36,8 +39,9 @@ class _BulkChargeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final vendorState = context.watch<VendorBloc>().state;
-    final customers =
-        vendorState is VendorLoaded ? vendorState.customers : <CustomerLinkItem>[];
+    final customers = vendorState is VendorLoaded
+        ? vendorState.customers
+        : <CustomerLinkItem>[];
 
     return Scaffold(
       appBar: AppBar(
@@ -109,17 +113,16 @@ class _BulkChargeView extends StatelessWidget {
   void _showCreateTemplateSheet(BuildContext context) =>
       _showTemplateSheet(context, existing: null);
 
-  void _showTemplateSheet(BuildContext context,
-      {required ProductTemplate? existing}) {
+  void _showTemplateSheet(
+    BuildContext context, {
+    required ProductTemplate? existing,
+  }) {
     final cubit = context.read<BulkChargeCubit>();
-    final nameCtrl =
-        TextEditingController(text: existing?.name ?? '');
-    final unitCtrl =
-        TextEditingController(text: existing?.unit ?? '');
+    final nameCtrl = TextEditingController(text: existing?.name ?? '');
+    final unitCtrl = TextEditingController(text: existing?.unit ?? '');
     final priceCtrl = TextEditingController(
-        text: existing != null
-            ? existing.pricePerUnit.toStringAsFixed(2)
-            : '');
+      text: existing != null ? existing.pricePerUnit.toStringAsFixed(2) : '',
+    );
     final isEdit = existing != null;
 
     showModalBottomSheet(
@@ -136,19 +139,27 @@ class _BulkChargeView extends StatelessWidget {
             left: 24,
             right: 24,
             top: 24,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 32,
+            // viewInsets clears the keyboard; viewPadding clears the gesture
+            // bar / 3-button nav when the keyboard is closed.
+            bottom:
+                MediaQuery.of(ctx).viewInsets.bottom +
+                MediaQuery.of(ctx).viewPadding.bottom +
+                32,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(isEdit ? l10n.editProduct : l10n.newProductService,
-                  style: AppTypography.h3),
+              Text(
+                isEdit ? l10n.editProduct : l10n.newProductService,
+                style: AppTypography.h3,
+              ),
               const SizedBox(height: 4),
               Text(
                 isEdit ? l10n.updateProductDetails : l10n.defineProduct,
-                style: AppTypography.bodySmall
-                    .copyWith(color: AppColors.textSecondary),
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
               ),
               const SizedBox(height: 20),
               TextField(
@@ -179,7 +190,8 @@ class _BulkChargeView extends StatelessWidget {
                     child: TextField(
                       controller: priceCtrl,
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
+                        decimal: true,
+                      ),
                       decoration: InputDecoration(
                         labelText: l10n.pricePerUnit,
                         prefixIcon: const Icon(Icons.currency_rupee_rounded),
@@ -225,7 +237,9 @@ class _BulkChargeView extends StatelessWidget {
                   child: Text(
                     isEdit ? l10n.saveChanges : l10n.saveProduct,
                     style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
@@ -267,8 +281,16 @@ class _TemplatePicker extends StatelessWidget {
           final t = templates[i];
           final isSelected = t.id == selected?.id;
           return GestureDetector(
-            onLongPress: () => _showActions(context, t),
+            // Schedule-service-backed items are edited/deleted from the
+            // Schedule screen, not here — long-press only applies to real
+            // bulk-charge templates.
+            onLongPress: t.isScheduleService
+                ? null
+                : () => _showActions(context, t),
             child: ChoiceChip(
+              avatar: t.isScheduleService
+                  ? const Icon(Icons.event_repeat_rounded, size: 16)
+                  : null,
               label: Text(t.name),
               selected: isSelected,
               onSelected: (_) => onSelect(t),
@@ -309,8 +331,11 @@ class _TemplatePicker extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
                 children: [
-                  const Icon(Icons.inventory_2_outlined,
-                      size: 16, color: AppColors.primary),
+                  const Icon(
+                    Icons.inventory_2_outlined,
+                    size: 16,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -321,8 +346,9 @@ class _TemplatePicker extends StatelessWidget {
                   ),
                   Text(
                     '₹${t.pricePerUnit.toStringAsFixed(2)} / ${t.unit}',
-                    style: AppTypography.bodySmall
-                        .copyWith(color: AppColors.textSecondary),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -337,10 +363,14 @@ class _TemplatePicker extends StatelessWidget {
               },
             ),
             ListTile(
-              leading:
-                  const Icon(Icons.delete_outline_rounded, color: AppColors.error),
-              title: Text(AppLocalizations.of(context)!.deleteProductMenuItem,
-                  style: const TextStyle(color: AppColors.error)),
+              leading: const Icon(
+                Icons.delete_outline_rounded,
+                color: AppColors.error,
+              ),
+              title: Text(
+                AppLocalizations.of(context)!.deleteProductMenuItem,
+                style: const TextStyle(color: AppColors.error),
+              ),
               onTap: () {
                 Navigator.pop(ctx);
                 _confirmDelete(context, t);
@@ -394,19 +424,24 @@ class _TemplateInfoBar extends StatelessWidget {
       color: AppColors.primary.withValues(alpha: 0.06),
       child: Row(
         children: [
-          const Icon(Icons.inventory_2_outlined,
-              size: 16, color: AppColors.primary),
+          const Icon(
+            Icons.inventory_2_outlined,
+            size: 16,
+            color: AppColors.primary,
+          ),
           const SizedBox(width: 8),
-          Text(template.name,
-              style: AppTypography.labelLarge
-                  .copyWith(color: AppColors.primary)),
+          Text(
+            template.name,
+            style: AppTypography.labelLarge.copyWith(color: AppColors.primary),
+          ),
           const SizedBox(width: 8),
           Text('•', style: AppTypography.bodySmall),
           const SizedBox(width: 8),
           Text(
             '₹${template.pricePerUnit.toStringAsFixed(2)} / ${template.unit}',
-            style: AppTypography.bodySmall
-                .copyWith(color: AppColors.textSecondary),
+            style: AppTypography.bodySmall.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
         ],
       ),
@@ -433,7 +468,11 @@ class _CustomerGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.separated(
       padding: EdgeInsets.fromLTRB(
-          16, 12, 16, MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 12),
+        16,
+        12,
+        16,
+        MediaQuery.of(context).padding.bottom + kBottomNavigationBarHeight + 12,
+      ),
       itemCount: customers.length,
       separatorBuilder: (_, _) => const SizedBox(height: 8),
       itemBuilder: (ctx, i) {
@@ -504,13 +543,17 @@ class _CustomerQtyRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(customer.displayName,
-                    style: AppTypography.labelLarge
-                        .copyWith(color: hasQty ? null : AppColors.textHint)),
+                Text(
+                  customer.displayName,
+                  style: AppTypography.labelLarge.copyWith(
+                    color: hasQty ? null : AppColors.textHint,
+                  ),
+                ),
                 Text(
                   '${quantity.toStringAsFixed(quantity % 1 == 0 ? 0 : 1)} $unit',
-                  style: AppTypography.bodySmall
-                      .copyWith(color: AppColors.textSecondary),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -568,11 +611,7 @@ class _Stepper extends StatelessWidget {
             style: AppTypography.labelLarge,
           ),
         ),
-        _StepBtn(
-          icon: Icons.add,
-          onTap: onIncrement,
-          filled: true,
-        ),
+        _StepBtn(icon: Icons.add, onTap: onIncrement, filled: true),
       ],
     );
   }
@@ -583,7 +622,11 @@ class _StepBtn extends StatelessWidget {
   final VoidCallback? onTap;
   final bool filled;
 
-  const _StepBtn({required this.icon, required this.onTap, required this.filled});
+  const _StepBtn({
+    required this.icon,
+    required this.onTap,
+    required this.filled,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -607,8 +650,8 @@ class _StepBtn extends StatelessWidget {
           color: filled && onTap != null
               ? Colors.white
               : onTap != null
-                  ? AppColors.primary
-                  : AppColors.textHint,
+              ? AppColors.primary
+              : AppColors.textHint,
         ),
       ),
     );
@@ -634,7 +677,11 @@ class _BottomBar extends StatelessWidget {
 
         return Container(
           padding: EdgeInsets.fromLTRB(
-              20, 12, 20, MediaQuery.of(context).viewPadding.bottom + 12),
+            20,
+            12,
+            20,
+            MediaQuery.of(context).viewPadding.bottom + 12,
+          ),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
             boxShadow: [
@@ -652,19 +699,30 @@ class _BottomBar extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Builder(builder: (context) {
-                      final l10n = AppLocalizations.of(context)!;
-                      final qty = state.quantities.values.fold(0.0, (s, q) => s + q).toStringAsFixed(1);
-                      return Text(
-                        count == 1
-                            ? l10n.bulkSummaryLine(count, qty, template.unit)
-                            : l10n.bulkSummaryLinePlural(count, qty, template.unit),
-                        style: AppTypography.bodySmall
-                            .copyWith(color: AppColors.textSecondary),
-                      );
-                    }),
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        final qty = state.quantities.values
+                            .fold(0.0, (s, q) => s + q)
+                            .toStringAsFixed(1);
+                        return Text(
+                          count == 1
+                              ? l10n.bulkSummaryLine(count, qty, template.unit)
+                              : l10n.bulkSummaryLinePlural(
+                                  count,
+                                  qty,
+                                  template.unit,
+                                ),
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        );
+                      },
+                    ),
                     Text(
-                      AppLocalizations.of(context)!.totalAmount(total.toStringAsFixed(0)),
+                      AppLocalizations.of(
+                        context,
+                      )!.totalAmount(total.toStringAsFixed(0)),
                       style: AppTypography.labelLarge,
                     ),
                   ],
@@ -678,17 +736,24 @@ class _BottomBar extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 24, vertical: 14),
+                    horizontal: 24,
+                    vertical: 14,
+                  ),
                 ),
                 icon: state.isSubmitting
                     ? const SizedBox(
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
                       )
-                    : const Icon(Icons.bolt_rounded,
-                        color: Colors.white, size: 20),
+                    : const Icon(
+                        Icons.bolt_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
                 label: Text(
                   AppLocalizations.of(context)!.chargeAll,
                   style: TextStyle(
@@ -706,7 +771,9 @@ class _BottomBar extends StatelessWidget {
   }
 
   Future<void> _submit(
-      BuildContext context, List<CustomerLinkItem> customers) async {
+    BuildContext context,
+    List<CustomerLinkItem> customers,
+  ) async {
     final cubit = context.read<BulkChargeCubit>();
     final result = await cubit.submitCharge(customers);
     if (!context.mounted || result == null) return;
@@ -718,7 +785,9 @@ class _BottomBar extends StatelessWidget {
     if (fail == 0) {
       AppToast.show(
         context,
-        ok == 1 ? l10n.chargedSuccessfully(ok) : l10n.chargedSuccessfullyPlural(ok),
+        ok == 1
+            ? l10n.chargedSuccessfully(ok)
+            : l10n.chargedSuccessfullyPlural(ok),
         type: ToastType.success,
       );
     } else {
@@ -745,16 +814,23 @@ class _EmptyTemplates extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.inventory_2_outlined,
-                size: 56, color: AppColors.textHint),
+            const Icon(
+              Icons.inventory_2_outlined,
+              size: 56,
+              color: AppColors.textHint,
+            ),
             const SizedBox(height: 16),
-            Text(AppLocalizations.of(context)!.noProductsYet, style: AppTypography.h3),
+            Text(
+              AppLocalizations.of(context)!.noProductsYet,
+              style: AppTypography.h3,
+            ),
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.noProductsYetDescription,
               textAlign: TextAlign.center,
-              style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
@@ -762,11 +838,15 @@ class _EmptyTemplates extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 24, vertical: 12),
+                  horizontal: 24,
+                  vertical: 12,
+                ),
               ),
               icon: const Icon(Icons.add_rounded, color: Colors.white),
-              label: Text(AppLocalizations.of(context)!.addFirstProduct,
-                  style: const TextStyle(color: Colors.white)),
+              label: Text(
+                AppLocalizations.of(context)!.addFirstProduct,
+                style: const TextStyle(color: Colors.white),
+              ),
             ),
           ],
         ),

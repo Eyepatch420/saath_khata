@@ -9,9 +9,10 @@ abstract class OrderEvent extends Equatable {
 
 class LoadVendorOrders extends OrderEvent {
   final String? statusFilter;
-  const LoadVendorOrders({this.statusFilter});
+  final String? linkId;
+  const LoadVendorOrders({this.statusFilter, this.linkId});
   @override
-  List<Object?> get props => [statusFilter];
+  List<Object?> get props => [statusFilter, linkId];
 }
 
 class LoadCustomerOrders extends OrderEvent {

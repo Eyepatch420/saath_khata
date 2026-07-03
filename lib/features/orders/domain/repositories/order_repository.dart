@@ -1,7 +1,7 @@
 import '../../../../shared/models/order_model.dart';
 
 abstract class OrderRepository {
-  Future<OrderListResult> getVendorOrders({String? status});
+  Future<OrderListResult> getVendorOrders({String? status, String? linkId});
   Future<OrderListResult> getCustomerOrders();
   Future<OrderListResult> getStaffOrders();
   Future<Order> placeOrder({

@@ -1,5 +1,9 @@
 import 'package:equatable/equatable.dart';
 
+/// A chargeable item shown in the Bulk Charge picker. Backed either by a
+/// saved bulk-charge template (`product_templates`) or a Schedule (F005)
+/// service reused for a one-off bulk charge — [isScheduleService] tells the
+/// submit call which id field the backend expects.
 class ProductTemplate extends Equatable {
   final String id;
   final String vendorId;
@@ -8,6 +12,7 @@ class ProductTemplate extends Equatable {
   final double pricePerUnit;
   final bool isActive;
   final DateTime createdAt;
+  final bool isScheduleService;
 
   const ProductTemplate({
     required this.id,
@@ -17,9 +22,11 @@ class ProductTemplate extends Equatable {
     required this.pricePerUnit,
     required this.isActive,
     required this.createdAt,
+    this.isScheduleService = false,
   });
 
-  factory ProductTemplate.fromJson(Map<String, dynamic> json) => ProductTemplate(
+  factory ProductTemplate.fromJson(Map<String, dynamic> json) =>
+      ProductTemplate(
         id: json['id'] as String,
         vendorId: json['vendorId'] as String,
         name: json['name'] as String,
@@ -30,7 +37,16 @@ class ProductTemplate extends Equatable {
       );
 
   @override
-  List<Object?> get props => [id, vendorId, name, unit, pricePerUnit, isActive, createdAt];
+  List<Object?> get props => [
+    id,
+    vendorId,
+    name,
+    unit,
+    pricePerUnit,
+    isActive,
+    createdAt,
+    isScheduleService,
+  ];
 }
 
 class BulkChargeItem extends Equatable {
@@ -78,7 +94,8 @@ class BulkChargeSuccess extends Equatable {
     required this.amount,
   });
 
-  factory BulkChargeSuccess.fromJson(Map<String, dynamic> json) => BulkChargeSuccess(
+  factory BulkChargeSuccess.fromJson(Map<String, dynamic> json) =>
+      BulkChargeSuccess(
         linkId: json['linkId'] as String,
         entryId: json['entryId'] as String,
         amount: (json['amount'] as num).toDouble(),
@@ -94,7 +111,8 @@ class BulkChargeFailure extends Equatable {
 
   const BulkChargeFailure({required this.linkId, required this.reason});
 
-  factory BulkChargeFailure.fromJson(Map<String, dynamic> json) => BulkChargeFailure(
+  factory BulkChargeFailure.fromJson(Map<String, dynamic> json) =>
+      BulkChargeFailure(
         linkId: json['linkId'] as String,
         reason: json['reason'] as String,
       );

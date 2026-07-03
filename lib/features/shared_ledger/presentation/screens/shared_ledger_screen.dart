@@ -25,6 +25,7 @@ import '../bloc/ledger_event.dart';
 import '../bloc/ledger_state.dart';
 import 'monthly_settlement_screen.dart';
 import 'deliveries_screen.dart';
+import 'link_orders_screen.dart';
 import 'shared_ledger_screen/widgets/balance_header.dart';
 import 'shared_ledger_screen/widgets/filter_bar.dart';
 import 'shared_ledger_screen/widgets/info_row.dart';
@@ -182,6 +183,18 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
     );
   }
 
+  void _showOrders(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LinkOrdersScreen(
+          linkId: widget.linkId,
+          customerName: widget.customerName,
+        ),
+      ),
+    );
+  }
+
   void _showDeliveries(BuildContext context, String currentUserId) {
     Navigator.push(
       context,
@@ -269,6 +282,13 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
             tooltip: 'Deliveries',
             visualDensity: VisualDensity.compact,
           ),
+          if (widget.isVendorView)
+            IconButton(
+              onPressed: () => _showOrders(context),
+              icon: const Icon(Icons.shopping_bag_outlined),
+              tooltip: AppLocalizations.of(context)!.ordersTitle,
+              visualDensity: VisualDensity.compact,
+            ),
           if (!widget.isStaffView)
             IconButton(
               onPressed: () => _showMonthlySettlement(context),
@@ -362,10 +382,26 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           ),
         ),
       ),
-      bottomNavigationBar: LedgerActions(
-        linkId: widget.linkId,
-        customerName: widget.customerName,
-        isVendorView: widget.isVendorView,
+      // "Dues" is just the pending-status filter chip on this same screen —
+      // it's meant to be a read-only filtered view, so hide the add-entry
+      // actions while it's active instead of letting them add more entries.
+      bottomNavigationBar: BlocBuilder<LedgerBloc, LedgerState>(
+        buildWhen: (prev, curr) =>
+            prev is LedgerLoaded &&
+                curr is LedgerLoaded &&
+                prev.filter.status != curr.filter.status ||
+            curr is! LedgerLoaded,
+        builder: (context, state) {
+          final isDuesFilter =
+              state is LedgerLoaded &&
+              state.filter.status == EntryStatus.pending;
+          if (isDuesFilter) return const SizedBox.shrink();
+          return LedgerActions(
+            linkId: widget.linkId,
+            customerName: widget.customerName,
+            isVendorView: widget.isVendorView,
+          );
+        },
       ),
     );
   }
