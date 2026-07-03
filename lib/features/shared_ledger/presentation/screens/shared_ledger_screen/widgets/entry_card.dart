@@ -333,66 +333,71 @@ class _LedgerEntryCardState extends State<LedgerEntryCard> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10n.raiseDisputeTitle, style: AppTypography.h3),
-              const SizedBox(height: 4),
-              Text(
-                l10n.raiseDisputeSubtitle,
-                style: AppTypography.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(height: 20),
-              TextField(
-                controller: controller,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: l10n.raiseDisputeHint,
-                  hintStyle: AppTypography.bodyMedium.copyWith(
-                    color: AppColors.textHint,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    if (controller.text.trim().isNotEmpty) {
-                      Navigator.pop(ctx);
-                      bloc.add(
-                        DisputeLedgerEntry(
-                          entryId: entry.id,
-                          reason: controller.text.trim(),
-                        ),
-                      );
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.error,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                  ),
-                  child: Text(
-                    l10n.submitDispute,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-            ],
+      builder: (ctx) {
+        final mq = MediaQuery.of(ctx);
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            // viewInsets clears the keyboard; viewPadding clears the gesture
+            // bar / 3-button nav when the keyboard is closed.
+            bottom: mq.viewInsets.bottom + mq.viewPadding.bottom + 24,
           ),
-        ),
-      ),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.raiseDisputeTitle, style: AppTypography.h3),
+                const SizedBox(height: 4),
+                Text(
+                  l10n.raiseDisputeSubtitle,
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: controller,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    hintText: l10n.raiseDisputeHint,
+                    hintStyle: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.textHint,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (controller.text.trim().isNotEmpty) {
+                        Navigator.pop(ctx);
+                        bloc.add(
+                          DisputeLedgerEntry(
+                            entryId: entry.id,
+                            reason: controller.text.trim(),
+                          ),
+                        );
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: Text(
+                      l10n.submitDispute,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -588,12 +593,15 @@ class _EntryDetailSheetState extends State<_EntryDetailSheet> {
       isVendorView: widget.isVendorView,
     );
 
+    final mq = MediaQuery.of(context);
     return Padding(
       padding: EdgeInsets.fromLTRB(
         24,
         24,
         24,
-        MediaQuery.of(context).viewInsets.bottom + 24,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed.
+        mq.viewInsets.bottom + mq.viewPadding.bottom + 24,
       ),
       child: SingleChildScrollView(
         child: Column(

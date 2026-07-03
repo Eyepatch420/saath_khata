@@ -59,8 +59,10 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
   void initState() {
     super.initState();
     _bloc = LedgerBloc(getIt())..add(LoadLedger(widget.linkId));
-    _membershipCubit =
-        MembershipCubit(getIt<MembershipRepository>(), widget.linkId)..load();
+    _membershipCubit = MembershipCubit(
+      getIt<MembershipRepository>(),
+      widget.linkId,
+    )..load();
     _socket = getIt<LedgerSocketService>();
     _socket.joinLedger(widget.linkId);
 
@@ -71,8 +73,9 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
 
     _socket.onEntryAdded((data) {
       try {
-        final entry =
-            LedgerEntry.fromJson(data['entry'] as Map<String, dynamic>);
+        final entry = LedgerEntry.fromJson(
+          data['entry'] as Map<String, dynamic>,
+        );
         AppLogger.v(_m, 'Socket entry_added received id:${entry.id}');
         _bloc.add(SocketLedgerEntryAdded(entry));
       } catch (e) {
@@ -82,8 +85,9 @@ class _SharedLedgerScreenState extends State<SharedLedgerScreen> {
 
     _socket.onEntryUpdated((data) {
       try {
-        final entry =
-            LedgerEntry.fromJson(data['entry'] as Map<String, dynamic>);
+        final entry = LedgerEntry.fromJson(
+          data['entry'] as Map<String, dynamic>,
+        );
         AppLogger.v(_m, 'Socket entry_updated received id:${entry.id}');
         _bloc.add(SocketLedgerEntryUpdated(entry));
       } catch (e) {
@@ -214,8 +218,9 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final authState = context.read<AuthBloc>().state;
-    final currentUserId =
-        authState is AuthAuthenticated ? authState.user.id : '';
+    final currentUserId = authState is AuthAuthenticated
+        ? authState.user.id
+        : '';
 
     return Scaffold(
       appBar: AppBar(
@@ -236,8 +241,9 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
                 Flexible(
                   child: Text(
                     l10n.sharedLedger,
-                    style: AppTypography.bodySmall
-                        .copyWith(color: AppColors.primary),
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.primary,
+                    ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -253,8 +259,8 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
             role: widget.isStaffView
                 ? 'staff'
                 : widget.isVendorView
-                    ? 'vendor'
-                    : 'customer',
+                ? 'vendor'
+                : 'customer',
             vendorName: widget.customerName,
           ),
           IconButton(
@@ -299,38 +305,38 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
           }
         },
         child: Column(
-        children: [
-          // Balance + membership header (fixed)
-          LedgerBalanceHeader(
-            linkId: widget.linkId,
-            customerName: widget.customerName,
-            isVendorView: widget.isVendorView,
-          ),
-          // Vendor keeps the body banner (their assign/approve surface).
-          // Customer & staff see membership only via the AppBar chip.
-          if (widget.isVendorView && !widget.isStaffView)
-            MembershipBanner(
+          children: [
+            // Balance + membership header (fixed)
+            LedgerBalanceHeader(
+              linkId: widget.linkId,
               customerName: widget.customerName,
               isVendorView: widget.isVendorView,
-              isStaffView: widget.isStaffView,
             ),
-          // Filter bar (fixed)
-          const LedgerFilterBar(),
-          // Scrollable entry list — drives the FAB hide/show animation
-          Expanded(
-            child: NotificationListener<ScrollNotification>(
-              onNotification: _onScroll,
-              child: LedgerList(
-                linkId: widget.linkId,
+            // Vendor keeps the body banner (their assign/approve surface).
+            // Customer & staff see membership only via the AppBar chip.
+            if (widget.isVendorView && !widget.isStaffView)
+              MembershipBanner(
                 customerName: widget.customerName,
-                currentUserId: currentUserId,
                 isVendorView: widget.isVendorView,
                 isStaffView: widget.isStaffView,
               ),
+            // Filter bar (fixed)
+            const LedgerFilterBar(),
+            // Scrollable entry list — drives the FAB hide/show animation
+            Expanded(
+              child: NotificationListener<ScrollNotification>(
+                onNotification: _onScroll,
+                child: LedgerList(
+                  linkId: widget.linkId,
+                  customerName: widget.customerName,
+                  currentUserId: currentUserId,
+                  isVendorView: widget.isVendorView,
+                  isStaffView: widget.isStaffView,
+                ),
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
       floatingActionButton: FadeTransition(
         opacity: _fabAnim,
@@ -345,8 +351,10 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
                 innerContext,
                 linkId: widget.linkId,
                 isVendorView: widget.isVendorView,
-                language:
-                    innerContext.read<LocaleProvider>().locale.languageCode,
+                language: innerContext
+                    .read<LocaleProvider>()
+                    .locale
+                    .languageCode,
                 ledgerBloc: innerContext.read<LedgerBloc>(),
               ),
               child: const Icon(Icons.mic_rounded, color: Colors.white),
@@ -386,7 +394,9 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
                 if (widget.isVendorView) {
                   await getIt<VendorRepository>().deactivateLink(widget.linkId);
                 } else {
-                  await getIt<CustomerRepository>().deactivateLink(widget.linkId);
+                  await getIt<CustomerRepository>().deactivateLink(
+                    widget.linkId,
+                  );
                 }
                 if (context.mounted) context.pop();
               } catch (e) {
@@ -414,8 +424,13 @@ class _SharedLedgerViewState extends State<SharedLedgerView>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (_) => Padding(
-        padding: const EdgeInsets.all(24),
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          24,
+          24,
+          MediaQuery.of(ctx).viewPadding.bottom + 24,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -475,9 +490,10 @@ class _LiveDotState extends State<_LiveDot>
       duration: const Duration(milliseconds: 900),
     )..repeat(reverse: true);
 
-    _scale = Tween<double>(begin: 0.7, end: 1.0).animate(
-      CurvedAnimation(parent: _pulse, curve: Curves.easeInOut),
-    );
+    _scale = Tween<double>(
+      begin: 0.7,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _pulse, curve: Curves.easeInOut));
 
     _sub = widget.socket.connectionStream.listen((connected) {
       if (mounted) setState(() => _isLive = connected);

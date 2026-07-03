@@ -210,13 +210,16 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
   Widget build(BuildContext context) {
     final l10n = widget.l10n;
     final type = widget.type;
+    final mq = MediaQuery.of(context);
 
     return Padding(
       padding: EdgeInsets.only(
         left: 24,
         right: 24,
         top: 24,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed.
+        bottom: mq.viewInsets.bottom + mq.viewPadding.bottom + 24,
       ),
       child: SingleChildScrollView(
         child: Column(

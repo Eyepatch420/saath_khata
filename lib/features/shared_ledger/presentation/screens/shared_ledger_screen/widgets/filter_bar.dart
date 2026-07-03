@@ -17,7 +17,9 @@ class LedgerFilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<LedgerBloc, LedgerState>(
       builder: (context, state) {
-        final filter = state is LedgerLoaded ? state.filter : const LedgerFilter();
+        final filter = state is LedgerLoaded
+            ? state.filter
+            : const LedgerFilter();
         final hasActiveFilters = !filter.isEmpty;
 
         return Container(
@@ -86,36 +88,40 @@ class LedgerFilterBar extends StatelessWidget {
                           label: AppLocalizations.of(context)!.statusPending,
                           color: AppColors.warning,
                           onTap: () => context.read<LedgerBloc>().add(
-                                ApplyLedgerFilter(
-                                    LedgerFilter(status: EntryStatus.pending)),
-                              ),
+                            ApplyLedgerFilter(
+                              LedgerFilter(status: EntryStatus.pending),
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 6),
                         _StatusChip(
                           label: AppLocalizations.of(context)!.statusConfirmed,
                           color: AppColors.success,
                           onTap: () => context.read<LedgerBloc>().add(
-                                ApplyLedgerFilter(LedgerFilter(
-                                    status: EntryStatus.confirmed)),
-                              ),
+                            ApplyLedgerFilter(
+                              LedgerFilter(status: EntryStatus.confirmed),
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 6),
                         _StatusChip(
                           label: AppLocalizations.of(context)!.statusDisputed,
                           color: AppColors.error,
                           onTap: () => context.read<LedgerBloc>().add(
-                                ApplyLedgerFilter(LedgerFilter(
-                                    status: EntryStatus.disputed)),
-                              ),
+                            ApplyLedgerFilter(
+                              LedgerFilter(status: EntryStatus.disputed),
+                            ),
+                          ),
                         ),
                       ] else ...[
                         if (filter.status != null)
                           _ActiveChip(
                             label: 'Status: ${filter.status!.name}',
                             onRemove: () => context.read<LedgerBloc>().add(
-                                  ApplyLedgerFilter(
-                                      filter.copyWith(clearStatus: true)),
-                                ),
+                              ApplyLedgerFilter(
+                                filter.copyWith(clearStatus: true),
+                              ),
+                            ),
                           ),
                         if (filter.type != null || filter.deliveriesOnly) ...[
                           if (filter.status != null) const SizedBox(width: 6),
@@ -124,36 +130,41 @@ class LedgerFilterBar extends StatelessWidget {
                                 ? 'Deliveries only'
                                 : 'Type: ${filter.type!.name}',
                             onRemove: () => context.read<LedgerBloc>().add(
-                                  ApplyLedgerFilter(
-                                      filter.copyWith(clearType: true)),
-                                ),
+                              ApplyLedgerFilter(
+                                filter.copyWith(clearType: true),
+                              ),
+                            ),
                           ),
                         ],
-                        if (filter.dateFrom != null || filter.dateTo != null) ...[
+                        if (filter.dateFrom != null ||
+                            filter.dateTo != null) ...[
                           const SizedBox(width: 6),
                           _ActiveChip(
                             label: _dateRangeLabel(filter),
                             onRemove: () => context.read<LedgerBloc>().add(
-                                  ApplyLedgerFilter(
-                                      filter.copyWith(clearDates: true)),
-                                ),
+                              ApplyLedgerFilter(
+                                filter.copyWith(clearDates: true),
+                              ),
+                            ),
                           ),
                         ],
-                        if (filter.amountMin != null || filter.amountMax != null) ...[
+                        if (filter.amountMin != null ||
+                            filter.amountMax != null) ...[
                           const SizedBox(width: 6),
                           _ActiveChip(
                             label: _amountLabel(filter),
                             onRemove: () => context.read<LedgerBloc>().add(
-                                  ApplyLedgerFilter(
-                                      filter.copyWith(clearAmount: true)),
-                                ),
+                              ApplyLedgerFilter(
+                                filter.copyWith(clearAmount: true),
+                              ),
+                            ),
                           ),
                         ],
                         const SizedBox(width: 6),
                         GestureDetector(
-                          onTap: () => context
-                              .read<LedgerBloc>()
-                              .add(const ClearLedgerFilter()),
+                          onTap: () => context.read<LedgerBloc>().add(
+                            const ClearLedgerFilter(),
+                          ),
                           child: Text(
                             'Clear all',
                             style: AppTypography.bodySmall.copyWith(
@@ -202,7 +213,8 @@ class LedgerFilterBar extends StatelessWidget {
       builder: (ctx) => _FilterSheet(
         current: current,
         onApply: (f) => context.read<LedgerBloc>().add(ApplyLedgerFilter(f)),
-        onReset: () => context.read<LedgerBloc>().add(const ClearLedgerFilter()),
+        onReset: () =>
+            context.read<LedgerBloc>().add(const ClearLedgerFilter()),
       ),
     );
   }
@@ -227,12 +239,18 @@ class _ActiveChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(label,
-              style: AppTypography.bodySmall.copyWith(color: AppColors.primary)),
+          Text(
+            label,
+            style: AppTypography.bodySmall.copyWith(color: AppColors.primary),
+          ),
           const SizedBox(width: 4),
           GestureDetector(
             onTap: onRemove,
-            child: const Icon(Icons.close_rounded, size: 12, color: AppColors.primary),
+            child: const Icon(
+              Icons.close_rounded,
+              size: 12,
+              color: AppColors.primary,
+            ),
           ),
         ],
       ),
@@ -314,9 +332,11 @@ class _FilterSheetState extends State<_FilterSheet> {
     _dateFrom = widget.current.dateFrom;
     _dateTo = widget.current.dateTo;
     _minCtrl = TextEditingController(
-        text: widget.current.amountMin?.toStringAsFixed(0) ?? '');
+      text: widget.current.amountMin?.toStringAsFixed(0) ?? '',
+    );
     _maxCtrl = TextEditingController(
-        text: widget.current.amountMax?.toStringAsFixed(0) ?? '');
+      text: widget.current.amountMax?.toStringAsFixed(0) ?? '',
+    );
   }
 
   @override
@@ -332,7 +352,11 @@ class _FilterSheetState extends State<_FilterSheet> {
 
     return Padding(
       padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed.
+        bottom:
+            MediaQuery.of(context).viewInsets.bottom +
+            MediaQuery.of(context).viewPadding.bottom,
       ),
       child: SingleChildScrollView(
         child: Padding(
@@ -371,28 +395,31 @@ class _FilterSheetState extends State<_FilterSheet> {
                     label: l10n.statusPending,
                     selected: _status == EntryStatus.pending,
                     color: AppColors.warning,
-                    onTap: () => setState(() =>
-                        _status = _status == EntryStatus.pending
-                            ? null
-                            : EntryStatus.pending),
+                    onTap: () => setState(
+                      () => _status = _status == EntryStatus.pending
+                          ? null
+                          : EntryStatus.pending,
+                    ),
                   ),
                   _OptionChip(
                     label: l10n.statusConfirmed,
                     selected: _status == EntryStatus.confirmed,
                     color: AppColors.success,
-                    onTap: () => setState(() =>
-                        _status = _status == EntryStatus.confirmed
-                            ? null
-                            : EntryStatus.confirmed),
+                    onTap: () => setState(
+                      () => _status = _status == EntryStatus.confirmed
+                          ? null
+                          : EntryStatus.confirmed,
+                    ),
                   ),
                   _OptionChip(
                     label: l10n.statusDisputed,
                     selected: _status == EntryStatus.disputed,
                     color: AppColors.error,
-                    onTap: () => setState(() =>
-                        _status = _status == EntryStatus.disputed
-                            ? null
-                            : EntryStatus.disputed),
+                    onTap: () => setState(
+                      () => _status = _status == EntryStatus.disputed
+                          ? null
+                          : EntryStatus.disputed,
+                    ),
                   ),
                 ],
               ),
@@ -416,7 +443,9 @@ class _FilterSheetState extends State<_FilterSheet> {
                     label: 'Credit',
                     selected: _type == EntryType.credit,
                     onTap: () => setState(() {
-                      _type = _type == EntryType.credit ? null : EntryType.credit;
+                      _type = _type == EntryType.credit
+                          ? null
+                          : EntryType.credit;
                       _deliveriesOnly = false;
                     }),
                   ),
@@ -424,7 +453,9 @@ class _FilterSheetState extends State<_FilterSheet> {
                     label: 'Payment',
                     selected: _type == EntryType.payment,
                     onTap: () => setState(() {
-                      _type = _type == EntryType.payment ? null : EntryType.payment;
+                      _type = _type == EntryType.payment
+                          ? null
+                          : EntryType.payment;
                       _deliveriesOnly = false;
                     }),
                   ),
@@ -432,7 +463,9 @@ class _FilterSheetState extends State<_FilterSheet> {
                     label: 'Advance',
                     selected: _type == EntryType.advance,
                     onTap: () => setState(() {
-                      _type = _type == EntryType.advance ? null : EntryType.advance;
+                      _type = _type == EntryType.advance
+                          ? null
+                          : EntryType.advance;
                       _deliveriesOnly = false;
                     }),
                   ),
@@ -538,22 +571,29 @@ class _FilterSheetState extends State<_FilterSheet> {
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context);
-                    widget.onApply(LedgerFilter(
-                      status: _status,
-                      type: _type,
-                      deliveriesOnly: _deliveriesOnly,
-                      dateFrom: _dateFrom,
-                      dateTo: _dateTo,
-                      amountMin: double.tryParse(_minCtrl.text),
-                      amountMax: double.tryParse(_maxCtrl.text),
-                    ));
+                    widget.onApply(
+                      LedgerFilter(
+                        status: _status,
+                        type: _type,
+                        deliveriesOnly: _deliveriesOnly,
+                        dateFrom: _dateFrom,
+                        dateTo: _dateTo,
+                        amountMin: double.tryParse(_minCtrl.text),
+                        amountMax: double.tryParse(_maxCtrl.text),
+                      ),
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                   ),
-                  child: const Text('Apply Filter',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Apply Filter',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -626,7 +666,11 @@ class _DateButton extends StatelessWidget {
         ),
         child: Row(
           children: [
-            const Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.textSecondary),
+            const Icon(
+              Icons.calendar_today_rounded,
+              size: 14,
+              color: AppColors.textSecondary,
+            ),
             const SizedBox(width: 6),
             Text(label, style: AppTypography.bodySmall),
           ],

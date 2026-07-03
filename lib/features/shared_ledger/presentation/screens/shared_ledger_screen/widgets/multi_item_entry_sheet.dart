@@ -31,10 +31,7 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
     _rows.add(_ItemRowState());
   }
 
-  double get _total => _rows.fold(0.0, (sum, r) {
-    final amt = double.tryParse(r.amountCtrl.text) ?? 0;
-    return sum + amt;
-  });
+  double get _total => _rows.fold(0.0, (sum, r) => sum + r.subtotal);
 
   bool get _isValid =>
       _rows.isNotEmpty &&
@@ -67,7 +64,9 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
         .map(
           (r) => ItemRow(
             description: r.descCtrl.text.trim(),
-            amount: double.parse(r.amountCtrl.text),
+            // amount is the line's total (price/unit × qty), not the raw
+            // price-per-unit the user typed — see _ItemRowState.subtotal.
+            amount: r.subtotal,
             quantity: double.tryParse(r.qtyCtrl.text),
             unit: r.unitCtrl.text.trim().isEmpty
                 ? null
@@ -95,12 +94,16 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final mq = MediaQuery.of(context);
     return Padding(
       padding: EdgeInsets.only(
         left: 20,
         right: 20,
         top: 20,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+        // viewInsets clears the keyboard; viewPadding clears the gesture bar
+        // / 3-button nav when the keyboard is closed — both are needed so the
+        // sheet never sits under either.
+        bottom: mq.viewInsets.bottom + mq.viewPadding.bottom + 24,
       ),
       child: SingleChildScrollView(
         child: Column(
@@ -200,6 +203,14 @@ class _ItemRowState {
   final qtyCtrl = TextEditingController();
   final unitCtrl = TextEditingController();
 
+  /// Amount is price-per-unit; quantity defaults to 1 when left blank so a
+  /// single flat-amount item (no quantity) still totals correctly.
+  double get subtotal {
+    final amount = double.tryParse(amountCtrl.text) ?? 0;
+    final qty = double.tryParse(qtyCtrl.text);
+    return amount * (qty ?? 1);
+  }
+
   void dispose() {
     descCtrl.dispose();
     amountCtrl.dispose();
@@ -285,6 +296,7 @@ class _ItemRowWidget extends StatelessWidget {
                   onChanged: (_) => onChanged(),
                   decoration: InputDecoration(
                     labelText: l10n.amountRequired,
+                    hintText: 'per unit',
                     prefixText: '₹ ',
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(
@@ -329,6 +341,17 @@ class _ItemRowWidget extends StatelessWidget {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 6),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'Subtotal: ₹${row.subtotal.toStringAsFixed(2)}',
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
