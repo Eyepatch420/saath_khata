@@ -166,7 +166,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                       return EmptyStateWidget(
                         icon: Icons.event_busy_rounded,
                         title: l10n.noSlotsAvailable,
-                        subtitle: l10n.trySelectingDifferentDate,
+                        subtitle: l10n.noSlotsVendorMayBeClosed,
                       );
                     }
                     final bookedTime = _lastAttemptedSlotTime;
@@ -185,7 +185,7 @@ class _BookAppointmentBodyState extends State<_BookAppointmentBody> {
                       return EmptyStateWidget(
                         icon: Icons.event_busy_rounded,
                         title: l10n.noSlotsAvailable,
-                        subtitle: l10n.trySelectingDifferentDate,
+                        subtitle: l10n.noSlotsVendorMayBeClosed,
                       );
                     }
                     return _SlotGrid(
@@ -329,9 +329,11 @@ class _SlotChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isFull = slot.isFull;
+    final atCapacity = slot.maxCapacity > 0 && slot.bookingCount >= slot.maxCapacity;
+    final isFull = slot.isFull || atCapacity;
     final isBooked = slot.isAlreadyBooked;
     final isDisabled = isFull || isBooked;
+    final overCapacity = slot.overCapacityBy > 0;
 
     final borderColor = isBooked
         ? AppColors.primary.withValues(alpha: 0.3)
@@ -404,10 +406,35 @@ class _SlotChip extends StatelessWidget {
                   ),
                 ),
               )
+            else if (slot.maxCapacity > 1)
+              Text(
+                AppLocalizations.of(context)!
+                    .bookedOfCapacity(slot.bookingCount, slot.maxCapacity),
+                style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+              )
             else if (slot.durationMinutes > 0)
               Text(
                 AppLocalizations.of(context)!.durationMinutes(slot.durationMinutes),
                 style: AppTypography.bodySmall.copyWith(color: AppColors.textHint),
+              ),
+            if (overCapacity)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.warning_amber_rounded, size: 12, color: AppColors.error),
+                    const SizedBox(width: 2),
+                    Text(
+                      AppLocalizations.of(context)!.overCapacityWarning(slot.overCapacityBy),
+                      style: AppTypography.bodySmall.copyWith(
+                        fontSize: 9,
+                        color: AppColors.error,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
           ],
         ),

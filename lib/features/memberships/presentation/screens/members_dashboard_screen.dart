@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/di/injection.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
+import '../../../vendor/domain/repositories/vendor_repository.dart';
 import '../../domain/models/members_dashboard.dart';
 import '../bloc/members_dashboard_cubit.dart';
 import '../membership_theme.dart';
@@ -80,25 +84,34 @@ class _DashboardViewState extends State<_DashboardView> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.people_outline_rounded,
-                        size: 48,
-                        color: MembershipTheme.purple.withValues(alpha: 0.35)),
+                    Icon(
+                      Icons.people_outline_rounded,
+                      size: 48,
+                      color: MembershipTheme.purple.withValues(alpha: 0.35),
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       AppLocalizations.of(context)!.noMembersYet,
                       style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant),
+                        fontSize: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
               ),
             )
           else
-            ...members.map((m) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: _MemberCard(member: m, isDark: isDark),
-                )),
+            ...members.map(
+              (m) => Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: _MemberCard(
+                  member: m,
+                  isDark: isDark,
+                  onTap: () => _openMemberDetail(context, m),
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -108,11 +121,19 @@ class _DashboardViewState extends State<_DashboardView> {
     final l10n = AppLocalizations.of(context)!;
     return Row(
       children: [
-        _stat('${data.activeCount}', l10n.activeStatLabel, MembershipTheme.purple),
+        _stat(
+          '${data.activeCount}',
+          l10n.activeStatLabel,
+          MembershipTheme.purple,
+        ),
         const SizedBox(width: 10),
         _stat('₹${data.mrr}', l10n.mrrStatLabel, AppColors.success),
         const SizedBox(width: 10),
-        _stat('${data.expiringSoon}', l10n.expiringStatLabel, AppColors.warning),
+        _stat(
+          '${data.expiringSoon}',
+          l10n.expiringStatLabel,
+          AppColors.warning,
+        ),
       ],
     );
   }
@@ -128,18 +149,50 @@ class _DashboardViewState extends State<_DashboardView> {
         ),
         child: Column(
           children: [
-            Text(value,
-                style: TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold, color: color)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
             const SizedBox(height: 3),
-            Text(label,
-                style: TextStyle(
-                    fontSize: 12,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _openMemberDetail(BuildContext context, MemberRow member) async {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+    try {
+      final customer = await getIt<VendorRepository>().getCustomerByLinkId(
+        member.linkId,
+      );
+      if (!context.mounted) return;
+      Navigator.of(context).pop(); // close loading dialog
+      context.push(AppRouter.customerDetail, extra: customer);
+    } catch (e) {
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+      AppToast.show(
+        context,
+        e.toString().replaceFirst('Exception: ', ''),
+        type: ToastType.error,
+      );
+    }
   }
 
   Widget _planFilterChips(MembersDashboard data) {
@@ -179,7 +232,12 @@ class _DashboardViewState extends State<_DashboardView> {
 class _MemberCard extends StatelessWidget {
   final MemberRow member;
   final bool isDark;
-  const _MemberCard({required this.member, required this.isDark});
+  final VoidCallback onTap;
+  const _MemberCard({
+    required this.member,
+    required this.isDark,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -202,103 +260,131 @@ class _MemberCard extends StatelessWidget {
       usageColor = AppColors.success;
     }
 
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: cs.surface,
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: borderColor),
-        boxShadow: isDark
-            ? null
-            : [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 6,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor:
-                MembershipTheme.purple.withValues(alpha: 0.15),
-            backgroundImage: member.customerPhotoUrl != null
-                ? NetworkImage(member.customerPhotoUrl!)
-                : null,
-            child: member.customerPhotoUrl == null
-                ? Text(
-                    member.customerName.isNotEmpty
-                        ? member.customerName[0].toUpperCase()
-                        : '?',
-                    style: const TextStyle(
-                        color: MembershipTheme.purple,
-                        fontWeight: FontWeight.bold))
-                : null,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: cs.surface,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: borderColor),
+            boxShadow: isDark
+                ? null
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(member.customerName,
-                    style: TextStyle(
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: MembershipTheme.purple.withValues(alpha: 0.15),
+                backgroundImage: member.customerPhotoUrl != null
+                    ? NetworkImage(member.customerPhotoUrl!)
+                    : null,
+                child: member.customerPhotoUrl == null
+                    ? Text(
+                        member.customerName.isNotEmpty
+                            ? member.customerName[0].toUpperCase()
+                            : '?',
+                        style: const TextStyle(
+                          color: MembershipTheme.purple,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      member.customerName,
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
-                        color: cs.onSurface),
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 3),
-                Text(
-                  '${member.planName} · ${_fmt(member.expiresAt)}',
-                  style:
-                      TextStyle(color: cs.onSurfaceVariant, fontSize: 12),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              if (member.hasQuota)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: usageColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text('${member.totalUsed}/${member.totalQuota}',
+                        color: cs.onSurface,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      '${member.planName} · ${_fmt(member.expiresAt)}',
                       style: TextStyle(
+                        color: cs.onSurfaceVariant,
+                        fontSize: 12,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  if (member.hasQuota)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
+                      decoration: BoxDecoration(
+                        color: usageColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${member.totalUsed}/${member.totalQuota}',
+                        style: TextStyle(
                           color: usageColor,
                           fontWeight: FontWeight.w700,
-                          fontSize: 12)),
-                ),
-              const SizedBox(height: 4),
-              Text(
-                expSoon
-                    ? '${member.daysLeft}d left ⚠'
-                    : '${member.daysLeft} days',
-                style: TextStyle(
-                  color: expSoon ? AppColors.warning : cs.onSurfaceVariant,
-                  fontSize: 11,
-                  fontWeight:
-                      expSoon ? FontWeight.w700 : FontWeight.normal,
-                ),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    expSoon
+                        ? '${member.daysLeft}d left ⚠'
+                        : '${member.daysLeft} days',
+                    style: TextStyle(
+                      color: expSoon ? AppColors.warning : cs.onSurfaceVariant,
+                      fontSize: 11,
+                      fontWeight: expSoon ? FontWeight.w700 : FontWeight.normal,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
   String _fmt(DateTime d) {
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${d.day} ${months[d.month - 1]}';
   }

@@ -70,12 +70,14 @@ Future<void> configureDependencies() async {
   getIt.registerSingleton<StorageService>(storage);
   AppLogger.i(module, 'StorageService ready');
 
+  AppLogger.i(module, 'Registering Auth services');
+  final authStateNotifier = AuthStateNotifier();
+  getIt.registerSingleton<AuthStateNotifier>(authStateNotifier);
+
   AppLogger.i(module, 'Registering ApiClient (base: ${ApiEndpoints.baseUrl})');
-  final apiClient = ApiClient(storage);
+  final apiClient = ApiClient(storage, authStateNotifier);
   getIt.registerSingleton<ApiClient>(apiClient);
 
-  AppLogger.i(module, 'Registering Auth services');
-  getIt.registerSingleton<AuthStateNotifier>(AuthStateNotifier());
   getIt.registerSingleton<AuthRepository>(AuthRepositoryImpl(apiClient));
   getIt.registerFactory<AuthBloc>(
     () => AuthBloc(

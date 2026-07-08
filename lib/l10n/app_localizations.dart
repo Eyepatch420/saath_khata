@@ -517,25 +517,25 @@ abstract class AppLocalizations {
   /// No description provided for @giveCredit.
   ///
   /// In en, this message translates to:
-  /// **'UDHAAR DIYA'**
+  /// **'AMOUNT PENDING'**
   String get giveCredit;
 
   /// No description provided for @recordPayment.
   ///
   /// In en, this message translates to:
-  /// **'PAISA MILA'**
+  /// **'AMOUNT RECEIVED'**
   String get recordPayment;
 
   /// No description provided for @giveCreditSheet.
   ///
   /// In en, this message translates to:
-  /// **'Udhaar Diya'**
+  /// **'Amount Pending'**
   String get giveCreditSheet;
 
   /// No description provided for @recordPaymentSheet.
   ///
   /// In en, this message translates to:
-  /// **'Paisa Mila'**
+  /// **'Amount Received'**
   String get recordPaymentSheet;
 
   /// No description provided for @filterAll.
@@ -699,6 +699,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'for {name}'**
   String entryFor(String name);
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
 
   /// No description provided for @descriptionOptional.
   ///
@@ -1930,12 +1936,6 @@ abstract class AppLocalizations {
   /// **'Enter your phone number to continue'**
   String get enterPhoneNumberToContinue;
 
-  /// No description provided for @otpDemoHint.
-  ///
-  /// In en, this message translates to:
-  /// **'OTP is for demo only · enter 123456 to continue'**
-  String get otpDemoHint;
-
   /// No description provided for @havingTrouble.
   ///
   /// In en, this message translates to:
@@ -2470,6 +2470,24 @@ abstract class AppLocalizations {
   /// **'Add First Product'**
   String get addFirstProduct;
 
+  /// No description provided for @setPriceToChargeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a price for {name}'**
+  String setPriceToChargeTitle(String name);
+
+  /// No description provided for @setPriceToChargeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This service has no unit or price set yet. Add them to charge customers for it.'**
+  String get setPriceToChargeSubtitle;
+
+  /// No description provided for @setPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Price'**
+  String get setPrice;
+
   /// No description provided for @renameTier.
   ///
   /// In en, this message translates to:
@@ -2659,7 +2677,7 @@ abstract class AppLocalizations {
   /// No description provided for @phonePlaceholder.
   ///
   /// In en, this message translates to:
-  /// **'98765 43210'**
+  /// **'XXXXX XXXXX'**
   String get phonePlaceholder;
 
   /// No description provided for @enterPassword.
@@ -3733,7 +3751,7 @@ abstract class AppLocalizations {
   /// No description provided for @recordDelivery.
   ///
   /// In en, this message translates to:
-  /// **'Udhaar Diya'**
+  /// **'Amount Pending'**
   String get recordDelivery;
 
   /// No description provided for @recordDeliverySubtitle.
@@ -3745,7 +3763,7 @@ abstract class AppLocalizations {
   /// No description provided for @collectPayment.
   ///
   /// In en, this message translates to:
-  /// **'Paisa Mila'**
+  /// **'Amount Received'**
   String get collectPayment;
 
   /// No description provided for @collectPaymentSubtitle.
@@ -4246,6 +4264,192 @@ abstract class AppLocalizations {
   /// **'Delete'**
   String get deleteButton;
 
+  /// No description provided for @weeklyTemplateTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Template'**
+  String get weeklyTemplateTab;
+
+  /// No description provided for @calendarTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendarTab;
+
+  /// No description provided for @usingWeeklyTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Using weekly template'**
+  String get usingWeeklyTemplate;
+
+  /// No description provided for @customForThisDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom for this date'**
+  String get customForThisDate;
+
+  /// No description provided for @closedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get closedBadge;
+
+  /// No description provided for @markAsClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as closed'**
+  String get markAsClosed;
+
+  /// No description provided for @revertToTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Revert to template'**
+  String get revertToTemplate;
+
+  /// No description provided for @replicateToButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Replicate to…'**
+  String get replicateToButton;
+
+  /// No description provided for @replicateTargetWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get replicateTargetWeek;
+
+  /// No description provided for @replicateTargetMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Month'**
+  String get replicateTargetMonth;
+
+  /// No description provided for @replicateTargetMultipleMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple Months'**
+  String get replicateTargetMultipleMonths;
+
+  /// No description provided for @replicateMonthsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of months'**
+  String get replicateMonthsCount;
+
+  /// No description provided for @replicateStartDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get replicateStartDateLabel;
+
+  /// No description provided for @applyReplicateButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyReplicateButton;
+
+  /// No description provided for @replicateResultToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Applied to {applied} dates, skipped {skipped} already customized, {failed} failed'**
+  String replicateResultToast(int applied, int skipped, int failed);
+
+  /// No description provided for @selectModeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get selectModeButton;
+
+  /// No description provided for @cancelSelectButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancelSelectButton;
+
+  /// No description provided for @mergeSlotsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge'**
+  String get mergeSlotsButton;
+
+  /// No description provided for @mergeNotContiguousHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected slots must be contiguous (touching or overlapping) to merge'**
+  String get mergeNotContiguousHint;
+
+  /// No description provided for @mergedCapacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Merged capacity'**
+  String get mergedCapacityLabel;
+
+  /// No description provided for @confirmMergeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Merge slots?'**
+  String get confirmMergeTitle;
+
+  /// No description provided for @confirmMergeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This will merge the selected slots into {start} – {end}.'**
+  String confirmMergeMessage(String start, String end);
+
+  /// No description provided for @capacityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Capacity'**
+  String get capacityLabel;
+
+  /// No description provided for @duplicateSlotExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A slot with the exact same start and end time already exists'**
+  String get duplicateSlotExists;
+
+  /// No description provided for @bookedOfCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/{capacity} booked'**
+  String bookedOfCapacity(int count, int capacity);
+
+  /// No description provided for @overCapacityWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Over capacity by {count}'**
+  String overCapacityWarning(int count);
+
+  /// No description provided for @noSlotsVendorMayBeClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'No slots available — vendor may be closed on this date'**
+  String get noSlotsVendorMayBeClosed;
+
+  /// No description provided for @revertedToTemplateToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Reverted to weekly template'**
+  String get revertedToTemplateToast;
+
+  /// No description provided for @dateSavedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved custom slots for this date'**
+  String get dateSavedToast;
+
+  /// No description provided for @dateClosedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Date marked as closed'**
+  String get dateClosedToast;
+
+  /// No description provided for @mergeSucceededToast.
+  ///
+  /// In en, this message translates to:
+  /// **'Slots merged'**
+  String get mergeSucceededToast;
+
   /// No description provided for @membershipPlansTitle.
   ///
   /// In en, this message translates to:
@@ -4593,6 +4797,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use'**
   String get useLabel;
+
+  /// No description provided for @decreaseLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Decrease usage count'**
+  String get decreaseLabel;
 
   /// No description provided for @daysLeftLabel.
   ///

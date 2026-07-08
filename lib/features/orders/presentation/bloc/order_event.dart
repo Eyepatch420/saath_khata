@@ -32,6 +32,16 @@ class PlaceOrder extends OrderEvent {
   List<Object?> get props => [linkId, items, note];
 }
 
+/// Vendor or staff places an order on behalf of a customer.
+class PlaceOrderForCustomer extends OrderEvent {
+  final String linkId;
+  final List<Map<String, dynamic>> items;
+  final String? note;
+  const PlaceOrderForCustomer({required this.linkId, required this.items, this.note});
+  @override
+  List<Object?> get props => [linkId, items, note];
+}
+
 class UpdateOrderStatus extends OrderEvent {
   final String orderId;
   final OrderStatus status;

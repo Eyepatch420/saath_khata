@@ -108,3 +108,56 @@ class BookingConfigError extends BookingState {
   @override
   List<Object?> get props => [message, config];
 }
+
+// ─── Per-date override states ─────────────────────────────────────────────────
+
+class DateSlotsLoading extends BookingState {}
+
+class DateSlotsLoaded extends BookingState {
+  final DateSlotOverride dateSlots;
+  const DateSlotsLoaded(this.dateSlots);
+  @override
+  List<Object?> get props => [dateSlots];
+}
+
+class DateSlotsSaved extends BookingState {
+  final DateSlotOverride dateSlots;
+  const DateSlotsSaved(this.dateSlots);
+  @override
+  List<Object?> get props => [dateSlots];
+}
+
+class DateSlotsError extends BookingState {
+  final String message;
+  const DateSlotsError(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
+class ReplicateCompleted extends BookingState {
+  final ReplicateResult result;
+  const ReplicateCompleted(this.result);
+  @override
+  List<Object?> get props => [result];
+}
+
+class ReplicateError extends BookingState {
+  final String message;
+  const ReplicateError(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
+class SlotsMerged extends BookingState {
+  final DateSlotOverride dateSlots;
+  const SlotsMerged(this.dateSlots);
+  @override
+  List<Object?> get props => [dateSlots];
+}
+
+class MergeError extends BookingState {
+  final String message;
+  const MergeError(this.message);
+  @override
+  List<Object?> get props => [message];
+}

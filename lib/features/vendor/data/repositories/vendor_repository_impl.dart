@@ -73,6 +73,16 @@ class VendorRepositoryImpl implements VendorRepository {
   }
 
   @override
+  Future<CustomerLinkItem> getCustomerByLinkId(String linkId) async {
+    try {
+      final response = await _api.get(ApiEndpoints.vendorCustomerByLinkId(linkId));
+      return CustomerLinkItem.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<void> deactivateLink(String linkId) async {
     try {
       await _api.delete(ApiEndpoints.linkById(linkId));

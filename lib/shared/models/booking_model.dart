@@ -17,12 +17,14 @@ class DaySlot extends Equatable {
   final String endTime;
   final bool isEnabled;
   final bool isFull;
+  final int maxCapacity;
 
   const DaySlot({
     required this.startTime,
     required this.endTime,
     this.isEnabled = true,
     this.isFull = false,
+    this.maxCapacity = 1,
   });
 
   factory DaySlot.fromJson(Map<String, dynamic> json) => DaySlot(
@@ -30,6 +32,7 @@ class DaySlot extends Equatable {
         endTime: json['endTime'] as String,
         isEnabled: json['isEnabled'] as bool? ?? true,
         isFull: json['isFull'] as bool? ?? false,
+        maxCapacity: json['maxCapacity'] as int? ?? 1,
       );
 
   Map<String, dynamic> toJson() => {
@@ -37,18 +40,97 @@ class DaySlot extends Equatable {
         'endTime': endTime,
         'isEnabled': isEnabled,
         'isFull': isFull,
+        'maxCapacity': maxCapacity,
       };
 
-  DaySlot copyWith({String? startTime, String? endTime, bool? isEnabled, bool? isFull}) =>
+  DaySlot copyWith({
+    String? startTime,
+    String? endTime,
+    bool? isEnabled,
+    bool? isFull,
+    int? maxCapacity,
+  }) =>
       DaySlot(
         startTime: startTime ?? this.startTime,
         endTime: endTime ?? this.endTime,
         isEnabled: isEnabled ?? this.isEnabled,
         isFull: isFull ?? this.isFull,
+        maxCapacity: maxCapacity ?? this.maxCapacity,
       );
 
   @override
-  List<Object?> get props => [startTime, endTime, isEnabled, isFull];
+  List<Object?> get props => [startTime, endTime, isEnabled, isFull, maxCapacity];
+}
+
+// ─── Date override (per-date slot exception, mirrors backend EffectiveDateSlots) ─
+
+class DateSlotOverride extends Equatable {
+  final String date; // 'YYYY-MM-DD'
+  final List<DaySlot> slots;
+  final bool isOverride;
+  final bool closed;
+
+  const DateSlotOverride({
+    required this.date,
+    required this.slots,
+    required this.isOverride,
+    required this.closed,
+  });
+
+  factory DateSlotOverride.fromJson(Map<String, dynamic> json) => DateSlotOverride(
+        date: json['date'] as String,
+        slots: (json['slots'] as List? ?? [])
+            .map((e) => DaySlot.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        isOverride: json['isOverride'] as bool? ?? false,
+        closed: json['closed'] as bool? ?? false,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'date': date,
+        'slots': slots.map((s) => s.toJson()).toList(),
+        'isOverride': isOverride,
+        'closed': closed,
+      };
+
+  DateSlotOverride copyWith({
+    String? date,
+    List<DaySlot>? slots,
+    bool? isOverride,
+    bool? closed,
+  }) =>
+      DateSlotOverride(
+        date: date ?? this.date,
+        slots: slots ?? this.slots,
+        isOverride: isOverride ?? this.isOverride,
+        closed: closed ?? this.closed,
+      );
+
+  @override
+  List<Object?> get props => [date, slots, isOverride, closed];
+}
+
+// ─── Replicate result ────────────────────────────────────────────────────────
+
+class ReplicateResult extends Equatable {
+  final List<String> appliedDates;
+  final List<String> skippedDates;
+  final List<String> failedDates;
+
+  const ReplicateResult({
+    required this.appliedDates,
+    required this.skippedDates,
+    required this.failedDates,
+  });
+
+  factory ReplicateResult.fromJson(Map<String, dynamic> json) => ReplicateResult(
+        appliedDates: (json['appliedDates'] as List? ?? []).map((e) => e as String).toList(),
+        skippedDates: (json['skippedDates'] as List? ?? []).map((e) => e as String).toList(),
+        failedDates: (json['failedDates'] as List? ?? []).map((e) => e as String).toList(),
+      );
+
+  @override
+  List<Object?> get props => [appliedDates, skippedDates, failedDates];
 }
 
 // ─── Booking config (per-day slot map) ───────────────────────────────────────
@@ -98,6 +180,8 @@ class AppointmentSlot extends Equatable {
   final bool isFull;          // vendor marked full — show "Slots Full" badge
   final int bookingCount;     // how many bookings exist for this slot
   final bool isAlreadyBooked; // customer already has a booking for this slot
+  final int maxCapacity;
+  final int overCapacityBy;
 
   const AppointmentSlot({
     required this.id,
@@ -109,9 +193,17 @@ class AppointmentSlot extends Equatable {
     this.isFull = false,
     this.bookingCount = 0,
     this.isAlreadyBooked = false,
+    this.maxCapacity = 1,
+    this.overCapacityBy = 0,
   });
 
-  AppointmentSlot copyWith({bool? isAlreadyBooked, bool? isFull}) => AppointmentSlot(
+  AppointmentSlot copyWith({
+    bool? isAlreadyBooked,
+    bool? isFull,
+    int? maxCapacity,
+    int? overCapacityBy,
+  }) =>
+      AppointmentSlot(
         id: id,
         vendorId: vendorId,
         startTime: startTime,
@@ -121,6 +213,8 @@ class AppointmentSlot extends Equatable {
         isFull: isFull ?? this.isFull,
         bookingCount: bookingCount,
         isAlreadyBooked: isAlreadyBooked ?? this.isAlreadyBooked,
+        maxCapacity: maxCapacity ?? this.maxCapacity,
+        overCapacityBy: overCapacityBy ?? this.overCapacityBy,
       );
 
   factory AppointmentSlot.fromJson(Map<String, dynamic> json) => AppointmentSlot(
@@ -132,11 +226,24 @@ class AppointmentSlot extends Equatable {
         isAvailable: json['isAvailable'] as bool? ?? true,
         isFull: json['isFull'] as bool? ?? false,
         bookingCount: json['bookingCount'] as int? ?? 0,
+        maxCapacity: json['maxCapacity'] as int? ?? 1,
+        overCapacityBy: json['overCapacityBy'] as int? ?? 0,
       );
 
   @override
-  List<Object?> get props =>
-      [id, vendorId, startTime, endTime, durationMinutes, isAvailable, isFull, bookingCount, isAlreadyBooked];
+  List<Object?> get props => [
+        id,
+        vendorId,
+        startTime,
+        endTime,
+        durationMinutes,
+        isAvailable,
+        isFull,
+        bookingCount,
+        isAlreadyBooked,
+        maxCapacity,
+        overCapacityBy,
+      ];
 }
 
 // ─── BookingModel ─────────────────────────────────────────────────────────────

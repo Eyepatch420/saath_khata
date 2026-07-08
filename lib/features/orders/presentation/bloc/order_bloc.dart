@@ -12,6 +12,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<LoadCustomerOrders>(_onLoadCustomerOrders);
     on<LoadStaffOrders>(_onLoadStaffOrders);
     on<PlaceOrder>(_onPlaceOrder);
+    on<PlaceOrderForCustomer>(_onPlaceOrderForCustomer);
     on<UpdateOrderStatus>(_onUpdateOrderStatus);
   }
 
@@ -65,6 +66,30 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     emit(OrderActionLoading(orders: currentOrders, pending: currentPending));
     try {
       final order = await _repo.placeOrder(
+        linkId: event.linkId,
+        items: event.items,
+        note: event.note,
+      );
+      final updated = [order, ...currentOrders];
+      emit(
+        OrderPlaced(order: order, orders: updated, pending: currentPending + 1),
+      );
+    } catch (e) {
+      emit(OrderError(e.toString().replaceFirst('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onPlaceOrderForCustomer(
+    PlaceOrderForCustomer event,
+    Emitter<OrderState> emit,
+  ) async {
+    final current = state;
+    final currentOrders = current is OrderLoaded ? current.orders : <Order>[];
+    final currentPending = current is OrderLoaded ? current.pending : 0;
+
+    emit(OrderActionLoading(orders: currentOrders, pending: currentPending));
+    try {
+      final order = await _repo.placeOrderForCustomer(
         linkId: event.linkId,
         items: event.items,
         note: event.note,

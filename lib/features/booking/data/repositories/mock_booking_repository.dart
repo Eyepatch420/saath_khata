@@ -157,4 +157,80 @@ class MockBookingRepository implements BookingRepository {
     _config = _config.withUpdatedDay(dayOfWeek, daySlots);
     return _config;
   }
+
+  // ─── Per-date overrides / capacity / replicate / merge (mock stubs) ────────
+
+  final Map<String, DateSlotOverride> _dateOverrides = {};
+
+  @override
+  Future<DateSlotOverride> getDateSlots(String date) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final existing = _dateOverrides[date];
+    if (existing != null) return existing;
+    final parts = date.split('-').map(int.parse).toList();
+    final dayOfWeek = DateTime(parts[0], parts[1], parts[2]).weekday % 7;
+    return DateSlotOverride(
+      date: date,
+      slots: _config.slotsForDay(dayOfWeek),
+      isOverride: false,
+      closed: false,
+    );
+  }
+
+  @override
+  Future<DateSlotOverride> saveDateSlots(String date, List<DaySlot> slots) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final override = DateSlotOverride(date: date, slots: slots, isOverride: true, closed: false);
+    _dateOverrides[date] = override;
+    return override;
+  }
+
+  @override
+  Future<DateSlotOverride> setDateClosed(String date, bool closed) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (closed) {
+      final override = DateSlotOverride(date: date, slots: const [], isOverride: true, closed: true);
+      _dateOverrides[date] = override;
+      return override;
+    }
+    return deleteDateSlots(date);
+  }
+
+  @override
+  Future<DateSlotOverride> deleteDateSlots(String date) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    _dateOverrides.remove(date);
+    return getDateSlots(date);
+  }
+
+  @override
+  Future<ReplicateResult> replicateSlots({
+    String? sourceDate,
+    int? sourceDayOfWeek,
+    required String targetType,
+    required String startDate,
+    int? monthsCount,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return const ReplicateResult(appliedDates: [], skippedDates: [], failedDates: []);
+  }
+
+  @override
+  Future<DateSlotOverride> mergeSlots({
+    String? date,
+    int? dayOfWeek,
+    required List<int> slotIndexes,
+    int? mergedCapacity,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    if (date != null) {
+      return getDateSlots(date);
+    }
+    return DateSlotOverride(
+      date: '',
+      slots: dayOfWeek != null ? _config.slotsForDay(dayOfWeek) : const [],
+      isOverride: false,
+      closed: false,
+    );
+  }
 }

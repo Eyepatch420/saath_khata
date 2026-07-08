@@ -216,16 +216,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statement => 'Statement';
 
   @override
-  String get giveCredit => 'UDHAAR DIYA';
+  String get giveCredit => 'AMOUNT PENDING';
 
   @override
-  String get recordPayment => 'PAISA MILA';
+  String get recordPayment => 'AMOUNT RECEIVED';
 
   @override
-  String get giveCreditSheet => 'Udhaar Diya';
+  String get giveCreditSheet => 'Amount Pending';
 
   @override
-  String get recordPaymentSheet => 'Paisa Mila';
+  String get recordPaymentSheet => 'Amount Received';
 
   @override
   String get filterAll => 'All';
@@ -312,6 +312,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String entryFor(String name) {
     return 'for $name';
   }
+
+  @override
+  String get description => 'Description';
 
   @override
   String get descriptionOptional => 'Description (optional)';
@@ -980,9 +983,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Enter your phone number to continue';
 
   @override
-  String get otpDemoHint => 'OTP is for demo only · enter 123456 to continue';
-
-  @override
   String get havingTrouble => 'Having trouble?';
 
   @override
@@ -1254,6 +1254,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFirstProduct => 'Add First Product';
 
   @override
+  String setPriceToChargeTitle(String name) {
+    return 'Set a price for $name';
+  }
+
+  @override
+  String get setPriceToChargeSubtitle =>
+      'This service has no unit or price set yet. Add them to charge customers for it.';
+
+  @override
+  String get setPrice => 'Set Price';
+
+  @override
   String get renameTier => 'Rename tier';
 
   @override
@@ -1352,7 +1364,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createAccountButton => 'Create Account';
 
   @override
-  String get phonePlaceholder => '98765 43210';
+  String get phonePlaceholder => 'XXXXX XXXXX';
 
   @override
   String get enterPassword => 'Enter your password';
@@ -1983,14 +1995,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get recordDelivery => 'Udhaar Diya';
+  String get recordDelivery => 'Amount Pending';
 
   @override
   String get recordDeliverySubtitle =>
       'Customer took goods — add to their khata';
 
   @override
-  String get collectPayment => 'Paisa Mila';
+  String get collectPayment => 'Amount Received';
 
   @override
   String get collectPaymentSubtitle => 'Customer paid — reduce their khata';
@@ -2280,6 +2292,110 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteButton => 'Delete';
 
   @override
+  String get weeklyTemplateTab => 'Weekly Template';
+
+  @override
+  String get calendarTab => 'Calendar';
+
+  @override
+  String get usingWeeklyTemplate => 'Using weekly template';
+
+  @override
+  String get customForThisDate => 'Custom for this date';
+
+  @override
+  String get closedBadge => 'Closed';
+
+  @override
+  String get markAsClosed => 'Mark as closed';
+
+  @override
+  String get revertToTemplate => 'Revert to template';
+
+  @override
+  String get replicateToButton => 'Replicate to…';
+
+  @override
+  String get replicateTargetWeek => 'Week';
+
+  @override
+  String get replicateTargetMonth => 'Month';
+
+  @override
+  String get replicateTargetMultipleMonths => 'Multiple Months';
+
+  @override
+  String get replicateMonthsCount => 'Number of months';
+
+  @override
+  String get replicateStartDateLabel => 'Start date';
+
+  @override
+  String get applyReplicateButton => 'Apply';
+
+  @override
+  String replicateResultToast(int applied, int skipped, int failed) {
+    return 'Applied to $applied dates, skipped $skipped already customized, $failed failed';
+  }
+
+  @override
+  String get selectModeButton => 'Select';
+
+  @override
+  String get cancelSelectButton => 'Cancel';
+
+  @override
+  String get mergeSlotsButton => 'Merge';
+
+  @override
+  String get mergeNotContiguousHint =>
+      'Selected slots must be contiguous (touching or overlapping) to merge';
+
+  @override
+  String get mergedCapacityLabel => 'Merged capacity';
+
+  @override
+  String get confirmMergeTitle => 'Merge slots?';
+
+  @override
+  String confirmMergeMessage(String start, String end) {
+    return 'This will merge the selected slots into $start – $end.';
+  }
+
+  @override
+  String get capacityLabel => 'Capacity';
+
+  @override
+  String get duplicateSlotExists =>
+      'A slot with the exact same start and end time already exists';
+
+  @override
+  String bookedOfCapacity(int count, int capacity) {
+    return '$count/$capacity booked';
+  }
+
+  @override
+  String overCapacityWarning(int count) {
+    return 'Over capacity by $count';
+  }
+
+  @override
+  String get noSlotsVendorMayBeClosed =>
+      'No slots available — vendor may be closed on this date';
+
+  @override
+  String get revertedToTemplateToast => 'Reverted to weekly template';
+
+  @override
+  String get dateSavedToast => 'Saved custom slots for this date';
+
+  @override
+  String get dateClosedToast => 'Date marked as closed';
+
+  @override
+  String get mergeSucceededToast => 'Slots merged';
+
+  @override
   String get membershipPlansTitle => 'Membership Plans';
 
   @override
@@ -2471,6 +2587,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useLabel => 'Use';
+
+  @override
+  String get decreaseLabel => 'Decrease usage count';
 
   @override
   String daysLeftLabel(int count) {

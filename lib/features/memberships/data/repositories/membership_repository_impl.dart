@@ -118,6 +118,20 @@ class MembershipRepositoryImpl implements MembershipRepository {
     }
   }
 
+  @override
+  Future<CustomerMembership> decrementBenefit(
+      String membershipId, String benefitId) async {
+    try {
+      final response = await _api.post(
+        ApiEndpoints.decrementBenefit(membershipId),
+        data: {'benefitId': benefitId},
+      );
+      return CustomerMembership.fromJson(ApiClient.extractData(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
   // ─── Per-link status ────────────────────────────────────────────────────────
 
   @override

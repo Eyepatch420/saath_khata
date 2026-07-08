@@ -28,6 +28,7 @@ class ApiEndpoints {
   static const String myVendors = '/links/vendors';
   static const String remindAll = '/links/remind-all';
   static String linkById(String id) => '/links/$id';
+  static String vendorCustomerByLinkId(String linkId) => '/links/$linkId/customer-item';
   static String linkNickname(String id) => '/links/$id/nickname';
   static String linkDefaults(String id) => '/links/$id/defaults';
   static String linkAutoConfirm(String id) => '/links/$id/auto-confirm';
@@ -77,6 +78,11 @@ class ApiEndpoints {
   static const String vendorBookings = '/bookings/vendor';
   static const String customerBookings = '/bookings/customer';
   static String bookingById(String id) => '/bookings/$id';
+  // Per-date slot overrides / capacity / replicate / merge
+  static String dateSlots(String date) => '/bookings/date-slots/$date';
+  static String dateSlotsClosed(String date) => '/bookings/date-slots/$date/closed';
+  static const String replicateDateSlots = '/bookings/date-slots/replicate';
+  static const String mergeDateSlots = '/bookings/date-slots/merge';
 
   // Device tokens (push notifications)
   static const String registerDevice = '/devices/token';
@@ -99,6 +105,8 @@ class ApiEndpoints {
   static const String membersDashboard = '/memberships/members';
   static String useBenefit(String membershipId) =>
       '/memberships/members/$membershipId/use-benefit';
+  static String decrementBenefit(String membershipId) =>
+      '/memberships/members/$membershipId/decrement-benefit';
   static String membershipStatus(String linkId) => '/memberships/links/$linkId';
   static String enrollMember(String linkId) => '/memberships/links/$linkId/enroll';
   static String requestMembership(String linkId) => '/memberships/links/$linkId/request';
@@ -119,6 +127,7 @@ class ApiEndpoints {
 
   // Orders
   static const String placeOrder = '/orders';
+  static const String placeOrderForCustomer = '/orders/vendor';
   static const String vendorOrders = '/orders/vendor';
   static const String customerOrders = '/orders/customer';
   static const String staffOrders = '/orders/staff';

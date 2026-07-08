@@ -3,6 +3,9 @@ import '../../../../shared/models/report_models.dart';
 
 abstract class VendorRepository {
   Future<List<CustomerLinkItem>> getLinkedCustomers();
+  /// Fetches a single linked customer by linkId (e.g. from the members
+  /// dashboard, which only carries a linkId, not the full customer summary).
+  Future<CustomerLinkItem> getCustomerByLinkId(String linkId);
   /// Links where this vendor user is the customer (vendor-to-vendor connections).
   Future<List<VendorLinkItem>> getLinkedVendors();
   Future<void> deactivateLink(String linkId);

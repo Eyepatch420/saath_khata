@@ -20,6 +20,9 @@ import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/ledger_actions.dart';
 import '../../../shared_ledger/presentation/screens/shared_ledger_screen/widgets/ledger_list.dart';
 import '../../../shared_ledger/presentation/screens/monthly_settlement_screen.dart';
+import '../../../orders/presentation/bloc/order_bloc.dart';
+import '../../../orders/presentation/screens/place_order_screen.dart';
+import '../../../orders/domain/repositories/order_repository.dart';
 import '../bloc/vendor_bloc.dart';
 import '../bloc/vendor_event.dart';
 import '../widgets/customer_defaults_sheet.dart';
@@ -193,6 +196,23 @@ class _CustomerDetailView extends StatelessWidget {
             ],
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_shopping_cart_outlined),
+            tooltip: 'New order for customer',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => BlocProvider(
+                  create: (_) => OrderBloc(getIt<OrderRepository>()),
+                  child: PlaceOrderForCustomerScreen(
+                    linkId: customer.linkId,
+                    customerName: customer.displayName,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
         bottom: TabBar(
           controller: tabController,
           tabs: tabs,
@@ -293,7 +313,12 @@ class _DuesTab extends StatelessWidget {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+          padding: EdgeInsets.fromLTRB(
+            16,
+            8,
+            16,
+            16 + MediaQuery.of(context).viewPadding.bottom,
+          ),
           child: SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(

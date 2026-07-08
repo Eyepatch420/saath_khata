@@ -8,13 +8,44 @@ import '../bloc/order_bloc.dart';
 import '../bloc/order_event.dart';
 import '../bloc/order_state.dart';
 
-class PlaceOrderScreen extends StatefulWidget {
+class PlaceOrderScreen extends StatelessWidget {
   final VendorLinkItem vendor;
 
   const PlaceOrderScreen({super.key, required this.vendor});
 
   @override
-  State<PlaceOrderScreen> createState() => _PlaceOrderScreenState();
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return _OrderFormScreen(
+      title: l10n.orderFromVendor(vendor.displayName),
+      onSubmit: (context, items, note) => context.read<OrderBloc>().add(
+            PlaceOrder(linkId: vendor.linkId, items: items, note: note),
+          ),
+    );
+  }
+}
+
+/// Vendor/staff variant — places an order on behalf of a customer they
+/// already have a link with (e.g. the customer can't use the app).
+class PlaceOrderForCustomerScreen extends StatelessWidget {
+  final String linkId;
+  final String customerName;
+
+  const PlaceOrderForCustomerScreen({
+    super.key,
+    required this.linkId,
+    required this.customerName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return _OrderFormScreen(
+      title: customerName,
+      onSubmit: (context, items, note) => context.read<OrderBloc>().add(
+            PlaceOrderForCustomer(linkId: linkId, items: items, note: note),
+          ),
+    );
+  }
 }
 
 class _ItemRow {
@@ -38,7 +69,19 @@ class _ItemRow {
   }
 }
 
-class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
+/// Shared item-list/note/total form used by both [PlaceOrderScreen] and
+/// [PlaceOrderForCustomerScreen] — only the title and submit action differ.
+class _OrderFormScreen extends StatefulWidget {
+  final String title;
+  final void Function(BuildContext context, List<Map<String, dynamic>> items, String? note) onSubmit;
+
+  const _OrderFormScreen({required this.title, required this.onSubmit});
+
+  @override
+  State<_OrderFormScreen> createState() => _OrderFormScreenState();
+}
+
+class _OrderFormScreenState extends State<_OrderFormScreen> {
   final List<_ItemRow> _rows = [_ItemRow()];
   final _noteCtrl = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -77,11 +120,11 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       };
     }).toList();
 
-    context.read<OrderBloc>().add(PlaceOrder(
-          linkId: widget.vendor.linkId,
-          items: items,
-          note: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
-        ));
+    widget.onSubmit(
+      context,
+      items,
+      _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
+    );
   }
 
   @override
@@ -101,8 +144,7 @@ class _PlaceOrderScreenState extends State<PlaceOrderScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(AppLocalizations.of(context)!.orderFromVendor(widget.vendor.displayName),
-              overflow: TextOverflow.ellipsis),
+          title: Text(widget.title, overflow: TextOverflow.ellipsis),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
         ),

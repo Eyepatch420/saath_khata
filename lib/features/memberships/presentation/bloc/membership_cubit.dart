@@ -54,6 +54,12 @@ class MembershipCubit extends Cubit<MembershipState> {
         await reload();
       });
 
+  /// Vendor-only correction: decrement a benefit's used count by 1 (floors at 0).
+  Future<void> decrementBenefit(String membershipId, String benefitId) => _mutate(() async {
+        await _repo.decrementBenefit(membershipId, benefitId);
+        await reload();
+      });
+
   /// Vendor: approve the pending request.
   Future<void> approve(String requestId) => _mutate(() async {
         await _repo.approveRequest(requestId);

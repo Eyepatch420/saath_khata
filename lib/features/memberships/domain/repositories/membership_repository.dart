@@ -27,6 +27,8 @@ abstract class MembershipRepository {
   // ── Members dashboard (vendor) ──
   Future<MembersDashboard> getMembersDashboard();
   Future<CustomerMembership> useBenefit(String membershipId, String benefitId);
+  /// Vendor-only correction — decrements usage by 1 (floors at 0).
+  Future<CustomerMembership> decrementBenefit(String membershipId, String benefitId);
 
   // ── Per-link status (all roles) ──
   Future<MembershipStatus> getStatus(String linkId);

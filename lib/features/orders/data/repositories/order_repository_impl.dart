@@ -74,6 +74,28 @@ class OrderRepositoryImpl implements OrderRepository {
   }
 
   @override
+  Future<Order> placeOrderForCustomer({
+    required String linkId,
+    required List<Map<String, dynamic>> items,
+    String? note,
+  }) async {
+    try {
+      final response = await _api.post(
+        ApiEndpoints.placeOrderForCustomer,
+        data: {
+          'linkId': linkId,
+          'items': items,
+          // ignore: use_null_aware_elements
+          if (note != null) 'note': note,
+        },
+      );
+      return Order.fromJson(_data(response));
+    } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
   Future<Order> updateOrderStatus(
     String orderId,
     OrderStatus status, {

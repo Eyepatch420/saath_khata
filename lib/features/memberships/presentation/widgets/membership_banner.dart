@@ -126,6 +126,24 @@ class MembershipBanner extends StatelessWidget {
                         Expanded(
                             child: Text(b.label,
                                 style: TextStyle(color: cs.onSurface))),
+                        // Vendor-only correction: decrement a mistaken redemption.
+                        if (isVendorView) ...[
+                          IconButton(
+                            onPressed: (busy || b.used <= 0)
+                                ? null
+                                : () => cubit.decrementBenefit(
+                                    current.id, b.benefitId),
+                            icon: const Icon(Icons.remove_circle_outline,
+                                size: 18),
+                            color: AppColors.error,
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(
+                                minWidth: 28, minHeight: 28),
+                            tooltip: AppLocalizations.of(context)!.decreaseLabel,
+                          ),
+                          const SizedBox(width: 2),
+                        ],
                         Text('${b.used}/${b.quota}',
                             style: TextStyle(
                                 color: done

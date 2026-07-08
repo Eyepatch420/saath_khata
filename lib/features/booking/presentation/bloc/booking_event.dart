@@ -72,3 +72,67 @@ class ToggleSlotFull extends BookingEvent {
   @override
   List<Object?> get props => [dayOfWeek, startTime, isFull];
 }
+
+// ─── Per-date override events ─────────────────────────────────────────────────
+
+class LoadDateSlots extends BookingEvent {
+  final String date;
+  const LoadDateSlots(this.date);
+  @override
+  List<Object?> get props => [date];
+}
+
+class SaveDateSlots extends BookingEvent {
+  final String date;
+  final List<DaySlot> slots;
+  const SaveDateSlots(this.date, this.slots);
+  @override
+  List<Object?> get props => [date, slots];
+}
+
+class SetDateClosed extends BookingEvent {
+  final String date;
+  final bool closed;
+  const SetDateClosed(this.date, this.closed);
+  @override
+  List<Object?> get props => [date, closed];
+}
+
+class DeleteDateSlots extends BookingEvent {
+  final String date;
+  const DeleteDateSlots(this.date);
+  @override
+  List<Object?> get props => [date];
+}
+
+class ReplicateSlots extends BookingEvent {
+  final String? sourceDate;
+  final int? sourceDayOfWeek;
+  final String targetType;
+  final String startDate;
+  final int? monthsCount;
+  const ReplicateSlots({
+    this.sourceDate,
+    this.sourceDayOfWeek,
+    required this.targetType,
+    required this.startDate,
+    this.monthsCount,
+  });
+  @override
+  List<Object?> get props => [sourceDate, sourceDayOfWeek, targetType, startDate, monthsCount];
+}
+
+class MergeSlots extends BookingEvent {
+  final String? date;
+  final int? dayOfWeek;
+  final List<int> slotIndexes;
+  final int? mergedCapacity;
+  const MergeSlots({
+    this.date,
+    this.dayOfWeek,
+    required this.slotIndexes,
+    this.mergedCapacity,
+  });
+  @override
+  List<Object?> get props => [date, dayOfWeek, slotIndexes, mergedCapacity];
+}
