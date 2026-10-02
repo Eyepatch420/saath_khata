@@ -10,6 +10,8 @@ import 'package:saath_khata/core/di/injection.dart';
 import 'package:saath_khata/core/localization/locale_provider.dart';
 import 'package:saath_khata/core/services/storage_service.dart';
 import 'package:saath_khata/features/auth/data/models/user_model.dart';
+import 'package:saath_khata/features/auth/domain/delete_account_blocked_exception.dart';
+import 'package:saath_khata/features/auth/domain/repositories/auth_repository.dart';
 import 'package:saath_khata/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:saath_khata/features/auth/presentation/bloc/auth_event.dart';
 import 'package:saath_khata/features/auth/presentation/bloc/auth_state.dart';
@@ -19,15 +21,18 @@ import 'package:saath_khata/l10n/app_localizations.dart';
 
 class MockAuthBloc extends Mock implements AuthBloc {}
 
+class MockAuthRepository extends Mock implements AuthRepository {}
+
 class MockStorageService extends Mock implements StorageService {}
 
 class MockMembershipRepository extends Mock implements MembershipRepository {}
 
-UserModel _user(String role) => UserModel(
+UserModel _user(String role, {String? mobile}) => UserModel(
       id: 'u1',
       name: 'Test User',
       email: 'test@example.com',
       role: role,
+      mobile: mobile,
       businessCategories: const [],
     );
 
@@ -60,6 +65,7 @@ void main() {
   late MockStorageService storage;
   late LocaleProvider localeProvider;
   late MockMembershipRepository membershipRepository;
+  late MockAuthRepository authRepository;
 
   setUpAll(() {
     registerFallbackValue(const AuthDeleteAccountRequested());
@@ -77,22 +83,31 @@ void main() {
       getIt.unregister<MembershipRepository>();
     }
     getIt.registerSingleton<MembershipRepository>(membershipRepository);
+
+    authRepository = MockAuthRepository();
+    if (getIt.isRegistered<AuthRepository>()) {
+      getIt.unregister<AuthRepository>();
+    }
+    getIt.registerSingleton<AuthRepository>(authRepository);
   });
 
   tearDown(() {
     if (getIt.isRegistered<MembershipRepository>()) {
       getIt.unregister<MembershipRepository>();
     }
+    if (getIt.isRegistered<AuthRepository>()) {
+      getIt.unregister<AuthRepository>();
+    }
   });
 
   for (final role in ['vendor', 'customer', 'staff']) {
     group('Settings screen delete-account flow — $role', () {
-      testWidgets('shows a confirmation dialog before dispatching delete', (tester) async {
+      testWidgets('shows a strong warning dialog before anything is dispatched', (tester) async {
         final authBloc = MockAuthBloc();
         whenListen(
           authBloc,
           Stream<AuthState>.empty(),
-          initialState: AuthAuthenticated(_user(role)),
+          initialState: AuthAuthenticated(_user(role, mobile: '9876543210')),
         );
 
         await tester.pumpWidget(_wrap(authBloc: authBloc, localeProvider: localeProvider));
@@ -101,17 +116,18 @@ void main() {
         await tester.tap(find.text('Delete Account'));
         await tester.pumpAndSettle();
 
-        // Confirmation dialog is shown; delete has NOT been dispatched yet.
         expect(find.text('Delete Account?'), findsOneWidget);
+        expect(find.text('I Understand, Continue'), findsOneWidget);
         verifyNever(() => authBloc.add(const AuthDeleteAccountRequested()));
+        verifyNever(() => authRepository.sendDeleteAccountOtp());
       });
 
-      testWidgets('Cancel dismisses the dialog without dispatching delete', (tester) async {
+      testWidgets('Cancel on the warning dialog dismisses without dispatching', (tester) async {
         final authBloc = MockAuthBloc();
         whenListen(
           authBloc,
           Stream<AuthState>.empty(),
-          initialState: AuthAuthenticated(_user(role)),
+          initialState: AuthAuthenticated(_user(role, mobile: '9876543210')),
         );
 
         await tester.pumpWidget(_wrap(authBloc: authBloc, localeProvider: localeProvider));
@@ -127,26 +143,114 @@ void main() {
         verifyNever(() => authBloc.add(const AuthDeleteAccountRequested()));
       });
 
-      testWidgets('Delete Forever dispatches AuthDeleteAccountRequested exactly once', (tester) async {
+      testWidgets(
+          'full flow: warning -> type DELETE -> OTP -> dispatches AuthDeleteAccountRequested on success',
+          (tester) async {
         final authBloc = MockAuthBloc();
         whenListen(
           authBloc,
           Stream<AuthState>.empty(),
-          initialState: AuthAuthenticated(_user(role)),
+          initialState: AuthAuthenticated(_user(role, mobile: '9876543210')),
         );
+        when(() => authRepository.sendDeleteAccountOtp()).thenAnswer((_) async {});
+        when(() => authRepository.deleteAccount(confirmation: any(named: 'confirmation')))
+            .thenAnswer((_) async {});
 
         await tester.pumpWidget(_wrap(authBloc: authBloc, localeProvider: localeProvider));
         await tester.pumpAndSettle();
 
         await tester.tap(find.text('Delete Account'));
         await tester.pumpAndSettle();
+        await tester.tap(find.text('I Understand, Continue'));
+        await tester.pumpAndSettle();
 
+        // Type-DELETE gate: "Delete Forever" starts disabled until typed correctly.
+        expect(find.text('Type DELETE to confirm'), findsOneWidget);
+        await tester.enterText(find.byType(TextField).first, 'DELETE');
+        await tester.pumpAndSettle();
         await tester.tap(find.text('Delete Forever'));
         await tester.pumpAndSettle();
 
-        expect(find.text('Delete Account?'), findsNothing);
+        verify(() => authRepository.sendDeleteAccountOtp()).called(1);
+        expect(find.text('Enter OTP'), findsOneWidget);
+
+        await tester.enterText(find.byType(TextField).first, '123456');
+        await tester.tap(find.text('Delete Forever'));
+        await tester.pumpAndSettle();
+
+        verify(() => authRepository.deleteAccount(confirmation: '123456')).called(1);
         verify(() => authBloc.add(const AuthDeleteAccountRequested())).called(1);
+      });
+
+      testWidgets('shows blockers and does not dispatch when the server refuses to delete',
+          (tester) async {
+        final authBloc = MockAuthBloc();
+        whenListen(
+          authBloc,
+          Stream<AuthState>.empty(),
+          initialState: AuthAuthenticated(_user(role, mobile: '9876543210')),
+        );
+        when(() => authRepository.sendDeleteAccountOtp()).thenAnswer((_) async {});
+        when(() => authRepository.deleteAccount(confirmation: any(named: 'confirmation')))
+            .thenThrow(const DeleteAccountBlockedException([
+          DeleteAccountBlocker(
+              code: 'OUTSTANDING_BALANCE', message: 'Settle your outstanding balance first.'),
+        ]));
+
+        await tester.pumpWidget(_wrap(authBloc: authBloc, localeProvider: localeProvider));
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.text('Delete Account'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('I Understand, Continue'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField).first, 'DELETE');
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Delete Forever'));
+        await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField).first, '123456');
+        await tester.tap(find.text('Delete Forever'));
+        await tester.pumpAndSettle();
+
+        expect(find.text("Can't Delete Account Yet"), findsOneWidget);
+        expect(find.text('Settle your outstanding balance first.'), findsOneWidget);
+        verifyNever(() => authBloc.add(const AuthDeleteAccountRequested()));
       });
     });
   }
+
+  group('Settings screen delete-account flow — email-only account (no phone)', () {
+    testWidgets('skips OTP and asks for password instead', (tester) async {
+      final authBloc = MockAuthBloc();
+      whenListen(
+        authBloc,
+        Stream<AuthState>.empty(),
+        initialState: AuthAuthenticated(_user('vendor', mobile: null)),
+      );
+      when(() => authRepository.deleteAccount(confirmation: any(named: 'confirmation')))
+          .thenAnswer((_) async {});
+
+      await tester.pumpWidget(_wrap(authBloc: authBloc, localeProvider: localeProvider));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Delete Account'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('I Understand, Continue'));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField).first, 'DELETE');
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete Forever'));
+      await tester.pumpAndSettle();
+
+      verifyNever(() => authRepository.sendDeleteAccountOtp());
+      expect(find.text('Enter your password'), findsOneWidget);
+
+      await tester.enterText(find.byType(TextField).first, 'MyPassword123!');
+      await tester.tap(find.text('Delete Forever'));
+      await tester.pumpAndSettle();
+
+      verify(() => authRepository.deleteAccount(confirmation: 'MyPassword123!')).called(1);
+      verify(() => authBloc.add(const AuthDeleteAccountRequested())).called(1);
+    });
+  });
 }

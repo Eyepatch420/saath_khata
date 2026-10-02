@@ -121,6 +121,7 @@
       }
     }
   },
+  "description": "ವಿವರಣೆ",
   "descriptionOptional": "ವಿವರಣೆ (ಐಚ್ಛಿಕ)",
   "quantityOptional": "ಪ್ರಮಾಣ (ಐಚ್ಛಿಕ)",
   "descriptionHint": "ಉದಾ. 2L ಹಾಲು, ತಿಂಗಳ ದಿನಸಿ",
@@ -480,7 +481,6 @@
   "membershipTiersDescription": "Rename tiers and set member discounts",
   "logIn": "Log in",
   "enterPhoneNumberToContinue": "Enter your phone number to continue",
-  "otpDemoHint": "OTP is for demo only · enter 123456 to continue",
   "havingTrouble": "Having trouble?",
   "useEmailInstead": "Use email instead →",
   "logInWithEmail": "Log in with email",
@@ -577,6 +577,16 @@
   },
   "noProductsYet": "No products yet",
   "addFirstProduct": "Add First Product",
+  "setPriceToChargeTitle": "Set a price for {name}",
+  "@setPriceToChargeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "setPriceToChargeSubtitle": "This service has no unit or price set yet. Add them to charge customers for it.",
+  "setPrice": "Set Price",
   "renameTier": "Rename tier",
   "tierName": "Tier name",
   "tierLevel": "Level {level}",
@@ -622,7 +632,7 @@
   "upiIdAlreadyAdded": "This UPI ID is already added",
   "verifyButton": "Verify",
   "createAccountButton": "Create Account",
-  "phonePlaceholder": "98765 43210",
+  "phonePlaceholder": "XXXXX XXXXX",
   "enterPassword": "Enter your password",
   "mobileNumberLabel": "Mobile Number",
   "personalInfo": "Personal Info",

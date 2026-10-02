@@ -57,7 +57,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   String _role = 'vendor';
 
   // Form state
-  List<String> _selectedCategories = [];
+  final List<String> _selectedCategories = [];
   XFile? _pickedImage;
   bool _isUploadingPhoto = false;
   LocationData? _pickedLocation;

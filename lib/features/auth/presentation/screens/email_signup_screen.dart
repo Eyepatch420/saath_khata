@@ -48,7 +48,7 @@ class _EmailSignupScreenState extends State<EmailSignupScreen> {
 
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-  List<String> _selectedCategories = [];
+  final List<String> _selectedCategories = [];
   LocationData? _pickedLocation;
 
   @override
@@ -413,7 +413,7 @@ class _InputField extends StatelessWidget {
               ),
             ),
           ),
-          if (suffixIcon != null) suffixIcon!,
+          ?suffixIcon,
           const SizedBox(width: 4),
         ],
       ),

@@ -42,71 +42,19 @@ void main() {
 
   AuthBloc buildBloc() => AuthBloc(authRepository: authRepository, storage: storage);
 
-  group('AuthDeleteAccountRequested — vendor', () {
+  // The actual server-side deletion (OTP/password re-auth, blocker errors)
+  // now happens in DeleteAccountFlow, which calls AuthRepository.deleteAccount
+  // directly and only dispatches this event once the server has confirmed
+  // deletion. The bloc's job here is just to clear the local session —
+  // it must never fail, since the server call already succeeded.
+  group('AuthDeleteAccountRequested', () {
     blocTest<AuthBloc, AuthState>(
-      'clears local session and emits Unauthenticated when server delete succeeds',
-      setUp: () {
-        when(() => authRepository.deleteAccount()).thenAnswer((_) async {});
-      },
+      'clears local session and emits Unauthenticated without touching AuthRepository',
       build: buildBloc,
       act: (bloc) => bloc.add(const AuthDeleteAccountRequested()),
-      expect: () => [const AuthLoading(), const AuthUnauthenticated()],
+      expect: () => [const AuthUnauthenticated()],
       verify: (_) {
-        verify(() => authRepository.deleteAccount()).called(1);
-        verify(() => storage.clearAll()).called(1);
-        verify(() => ledgerSocket.disconnect()).called(1);
-      },
-    );
-  });
-
-  group('AuthDeleteAccountRequested — customer', () {
-    blocTest<AuthBloc, AuthState>(
-      'clears local session and emits Unauthenticated when server delete succeeds',
-      setUp: () {
-        when(() => authRepository.deleteAccount()).thenAnswer((_) async {});
-      },
-      build: buildBloc,
-      act: (bloc) => bloc.add(const AuthDeleteAccountRequested()),
-      expect: () => [const AuthLoading(), const AuthUnauthenticated()],
-      verify: (_) {
-        verify(() => authRepository.deleteAccount()).called(1);
-        verify(() => storage.clearAll()).called(1);
-      },
-    );
-  });
-
-  group('AuthDeleteAccountRequested — staff', () {
-    blocTest<AuthBloc, AuthState>(
-      'clears local session and emits Unauthenticated when server delete succeeds',
-      setUp: () {
-        when(() => authRepository.deleteAccount()).thenAnswer((_) async {});
-      },
-      build: buildBloc,
-      act: (bloc) => bloc.add(const AuthDeleteAccountRequested()),
-      expect: () => [const AuthLoading(), const AuthUnauthenticated()],
-      verify: (_) {
-        verify(() => authRepository.deleteAccount()).called(1);
-        verify(() => storage.clearAll()).called(1);
-      },
-    );
-  });
-
-  group('AuthDeleteAccountRequested — server failure', () {
-    blocTest<AuthBloc, AuthState>(
-      'still clears local session and emits Unauthenticated even when the server call throws '
-      '(documents the current client/server desync: local state is cleared unconditionally)',
-      setUp: () {
-        when(() => authRepository.deleteAccount()).thenThrow(Exception('network error'));
-      },
-      build: buildBloc,
-      act: (bloc) => bloc.add(const AuthDeleteAccountRequested()),
-      expect: () => [const AuthLoading(), const AuthUnauthenticated()],
-      verify: (_) {
-        verify(() => authRepository.deleteAccount()).called(1);
-        // Local session is still cleared despite the server failure — this is
-        // deliberate current behavior (see auth_bloc.dart _onDeleteAccount's
-        // try/finally), asserted here so a future change to that contract is
-        // a visible, intentional test update rather than a silent regression.
+        verifyNever(() => authRepository.deleteAccount(confirmation: any(named: 'confirmation')));
         verify(() => storage.clearAll()).called(1);
         verify(() => ledgerSocket.disconnect()).called(1);
       },

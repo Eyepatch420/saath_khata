@@ -1,6 +1,7 @@
 import '../../data/models/auth_response_model.dart';
 import '../../data/models/upi_id_model.dart';
 import '../../data/models/user_model.dart';
+import '../delete_account_blocked_exception.dart';
 
 abstract class AuthRepository {
   // ─── OTP ──────────────────────────────────────────────────────────────────
@@ -58,7 +59,16 @@ abstract class AuthRepository {
 
   Future<void> logout({required String refreshToken});
 
-  Future<void> deleteAccount();
+  /// Sends the delete-confirmation OTP to the account's own phone.
+  /// Throws if the account has no phone on file (email-only accounts should
+  /// prompt for their password instead and call [deleteAccount] directly).
+  Future<void> sendDeleteAccountOtp();
+
+  /// Permanently requests self-deletion. [confirmation] is the 6-digit OTP
+  /// from [sendDeleteAccountOtp], or the account password for accounts with
+  /// no phone on file. Throws [DeleteAccountBlockedException] if the account
+  /// has unresolved obligations (outstanding balance, active staff, etc).
+  Future<void> deleteAccount({required String confirmation});
 
   Future<UserModel> updateProfile({
     String? name,

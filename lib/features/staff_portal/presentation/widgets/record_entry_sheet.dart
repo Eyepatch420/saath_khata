@@ -118,11 +118,12 @@ class _RecordEntrySheetState extends State<_RecordEntrySheet> {
         linkId: _customer!.linkId,
         entryId: null,
       );
-      if (mounted)
+      if (mounted) {
         setState(() {
           _pendingAttachmentUrl = url;
           _uploadingPhoto = false;
         });
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _uploadingPhoto = false);

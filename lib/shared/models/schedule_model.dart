@@ -64,6 +64,38 @@ DeliveryStatus _deliveryStatusFromJson(String v) => DeliveryStatus.values
 const _dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 // ---------------------------------------------------------------------------
+// ScheduledServiceItem — one line item within a bundled service
+// ---------------------------------------------------------------------------
+
+class ScheduledServiceItem extends Equatable {
+  final String id;
+  final String name;
+  final String unit;
+  final double defaultPricePerUnit;
+  final bool isActive;
+
+  const ScheduledServiceItem({
+    required this.id,
+    required this.name,
+    required this.unit,
+    required this.defaultPricePerUnit,
+    required this.isActive,
+  });
+
+  factory ScheduledServiceItem.fromJson(Map<String, dynamic> json) =>
+      ScheduledServiceItem(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        unit: json['unit'] as String,
+        defaultPricePerUnit: (json['defaultPricePerUnit'] as num).toDouble(),
+        isActive: json['isActive'] as bool? ?? true,
+      );
+
+  @override
+  List<Object?> get props => [id, name, unit, defaultPricePerUnit, isActive];
+}
+
+// ---------------------------------------------------------------------------
 // ScheduledService
 // ---------------------------------------------------------------------------
 
@@ -72,14 +104,13 @@ class ScheduledService extends Equatable {
   final String name;
   final String? description;
   final ServiceType serviceType;
-  final String? unit;
-  final double? defaultPricePerUnit;
   final ScheduleType scheduleType;
   final List<int>? deliveryDays;
   final String? deliveryTime;
   final bool autoCreateLedgerEntry;
   final bool isActive;
   final int subscriberCount;
+  final List<ScheduledServiceItem> items;
   final DateTime createdAt;
 
   const ScheduledService({
@@ -87,14 +118,13 @@ class ScheduledService extends Equatable {
     required this.name,
     this.description,
     required this.serviceType,
-    this.unit,
-    this.defaultPricePerUnit,
     required this.scheduleType,
     this.deliveryDays,
     this.deliveryTime,
     required this.autoCreateLedgerEntry,
     required this.isActive,
     required this.subscriberCount,
+    required this.items,
     required this.createdAt,
   });
 
@@ -123,14 +153,15 @@ class ScheduledService extends Equatable {
     }
   }
 
+  /// Comma-joined item names, e.g. "Milk, Curd, Eggs" — for compact display.
+  String get itemsSummary => items.map((i) => i.name).join(', ');
+
   factory ScheduledService.fromJson(Map<String, dynamic> json) =>
       ScheduledService(
         id: json['id'] as String,
         name: json['name'] as String,
         description: json['description'] as String?,
         serviceType: _serviceTypeFromJson(json['serviceType'] as String),
-        unit: json['unit'] as String?,
-        defaultPricePerUnit: (json['defaultPricePerUnit'] as num?)?.toDouble(),
         scheduleType: _scheduleTypeFromJson(json['scheduleType'] as String),
         deliveryDays: (json['deliveryDays'] as List<dynamic>?)
             ?.map((e) => e as int)
@@ -139,6 +170,9 @@ class ScheduledService extends Equatable {
         autoCreateLedgerEntry: json['autoCreateLedgerEntry'] as bool? ?? true,
         isActive: json['isActive'] as bool? ?? true,
         subscriberCount: json['subscriberCount'] as int? ?? 0,
+        items: (json['items'] as List<dynamic>? ?? [])
+            .map((e) => ScheduledServiceItem.fromJson(e as Map<String, dynamic>))
+            .toList(),
         createdAt: DateTime.parse(json['createdAt'] as String),
       );
 
@@ -148,16 +182,67 @@ class ScheduledService extends Equatable {
     name,
     description,
     serviceType,
-    unit,
-    defaultPricePerUnit,
     scheduleType,
     deliveryDays,
     deliveryTime,
     autoCreateLedgerEntry,
     isActive,
     subscriberCount,
+    items,
     createdAt,
   ];
+}
+
+// ---------------------------------------------------------------------------
+// SubscriptionItemQuantity — a subscriber's quantity for one service item
+// ---------------------------------------------------------------------------
+
+class SubscriptionItemQuantity extends Equatable {
+  final String serviceItemId;
+  final String name;
+  final String unit;
+  final double quantity;
+  final double effectivePrice;
+  final double lineAmount;
+
+  const SubscriptionItemQuantity({
+    required this.serviceItemId,
+    required this.name,
+    required this.unit,
+    required this.quantity,
+    required this.effectivePrice,
+    required this.lineAmount,
+  });
+
+  factory SubscriptionItemQuantity.fromJson(Map<String, dynamic> json) =>
+      SubscriptionItemQuantity(
+        serviceItemId: json['serviceItemId'] as String,
+        name: json['name'] as String,
+        unit: json['unit'] as String,
+        quantity: (json['quantity'] as num).toDouble(),
+        effectivePrice: (json['effectivePrice'] as num).toDouble(),
+        lineAmount: (json['lineAmount'] as num).toDouble(),
+      );
+
+  @override
+  List<Object?> get props => [
+    serviceItemId,
+    name,
+    unit,
+    quantity,
+    effectivePrice,
+    lineAmount,
+  ];
+}
+
+/// Builds a compact "Milk 2litre, Curd 1pack" style summary from a list of
+/// item quantities, skipping items with quantity 0 (opted out).
+String itemQuantitiesSummary(List<SubscriptionItemQuantity> items) {
+  final active = items.where((i) => i.quantity > 0);
+  if (active.isEmpty) return 'No items';
+  return active
+      .map((i) => '${i.quantity.toStringAsFixed(i.quantity % 1 == 0 ? 0 : 1)} ${i.unit} ${i.name}')
+      .join(', ');
 }
 
 // ---------------------------------------------------------------------------
@@ -170,9 +255,8 @@ class ServiceSubscription extends Equatable {
   final String serviceName;
   final ServiceType serviceType;
   final String vendorName;
-  final double quantityPerDelivery;
-  final String? unit;
-  final double? effectivePrice;
+  final List<SubscriptionItemQuantity> items;
+  final double totalAmount;
   final DateTime? nextDeliveryDate;
   final DateTime startDate;
   final DateTime? endDate;
@@ -190,9 +274,8 @@ class ServiceSubscription extends Equatable {
     required this.serviceName,
     required this.serviceType,
     required this.vendorName,
-    required this.quantityPerDelivery,
-    this.unit,
-    this.effectivePrice,
+    required this.items,
+    required this.totalAmount,
     this.nextDeliveryDate,
     required this.startDate,
     this.endDate,
@@ -205,6 +288,9 @@ class ServiceSubscription extends Equatable {
     required this.vendorId,
   });
 
+  /// Compact "Milk 2litre, Curd 1pack" summary, omitting skipped (qty 0) items.
+  String get itemsSummary => itemQuantitiesSummary(items);
+
   factory ServiceSubscription.fromJson(Map<String, dynamic> json) =>
       ServiceSubscription(
         id: json['id'] as String,
@@ -212,9 +298,10 @@ class ServiceSubscription extends Equatable {
         serviceName: json['serviceName'] as String,
         serviceType: _serviceTypeFromJson(json['serviceType'] as String),
         vendorName: json['vendorName'] as String,
-        quantityPerDelivery: (json['quantityPerDelivery'] as num).toDouble(),
-        unit: json['unit'] as String?,
-        effectivePrice: (json['effectivePrice'] as num?)?.toDouble(),
+        items: (json['items'] as List<dynamic>? ?? [])
+            .map((e) => SubscriptionItemQuantity.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        totalAmount: (json['totalAmount'] as num?)?.toDouble() ?? 0,
         nextDeliveryDate: json['nextDeliveryDate'] != null
             ? DateTime.tryParse(json['nextDeliveryDate'] as String)
             : null,
@@ -240,9 +327,8 @@ class ServiceSubscription extends Equatable {
     serviceName,
     serviceType,
     vendorName,
-    quantityPerDelivery,
-    unit,
-    effectivePrice,
+    items,
+    totalAmount,
     nextDeliveryDate,
     startDate,
     endDate,
@@ -271,14 +357,19 @@ class ScheduledDelivery extends Equatable {
   final String customerName;
   final String? customerAddress;
   final String? customerPhone;
+  final double? customerLatitude;
+  final double? customerLongitude;
   final DateTime scheduledDate;
   final DeliveryStatus status;
   final String? ledgerEntryId;
   final DateTime? deliveredAt;
+  final String? deliveredByUserId;
+  final String? deliveredByName;
+  final String? photoUrl;
   final String? notes;
-  final double quantityPerDelivery;
-  final String? unit;
   final String? deliveryTime;
+  final List<SubscriptionItemQuantity> items;
+  final double totalAmount;
 
   const ScheduledDelivery({
     required this.id,
@@ -291,14 +382,19 @@ class ScheduledDelivery extends Equatable {
     required this.customerName,
     this.customerAddress,
     this.customerPhone,
+    this.customerLatitude,
+    this.customerLongitude,
     required this.scheduledDate,
     required this.status,
     this.ledgerEntryId,
     this.deliveredAt,
+    this.deliveredByUserId,
+    this.deliveredByName,
+    this.photoUrl,
     this.notes,
-    required this.quantityPerDelivery,
-    this.unit,
     this.deliveryTime,
+    required this.items,
+    required this.totalAmount,
   });
 
   /// Whether it's time to act on this delivery yet. A `scheduled` delivery
@@ -320,6 +416,9 @@ class ScheduledDelivery extends Equatable {
     return !now.isBefore(due);
   }
 
+  /// Compact "Milk 2litre, Curd 1pack" summary, omitting skipped (qty 0) items.
+  String get itemsSummary => itemQuantitiesSummary(items);
+
   factory ScheduledDelivery.fromJson(Map<String, dynamic> json) =>
       ScheduledDelivery(
         id: json['id'] as String,
@@ -332,16 +431,23 @@ class ScheduledDelivery extends Equatable {
         customerName: json['customerName'] as String,
         customerAddress: json['customerAddress'] as String?,
         customerPhone: json['customerPhone'] as String?,
+        customerLatitude: (json['customerLatitude'] as num?)?.toDouble(),
+        customerLongitude: (json['customerLongitude'] as num?)?.toDouble(),
         scheduledDate: DateTime.parse(json['scheduledDate'] as String),
         status: _deliveryStatusFromJson(json['status'] as String),
         ledgerEntryId: json['ledgerEntryId'] as String?,
         deliveredAt: json['deliveredAt'] != null
             ? DateTime.tryParse(json['deliveredAt'] as String)
             : null,
+        deliveredByUserId: json['deliveredByUserId'] as String?,
+        deliveredByName: json['deliveredByName'] as String?,
+        photoUrl: json['photoUrl'] as String?,
         notes: json['notes'] as String?,
-        quantityPerDelivery: (json['quantityPerDelivery'] as num).toDouble(),
-        unit: json['unit'] as String?,
         deliveryTime: json['deliveryTime'] as String?,
+        items: (json['items'] as List<dynamic>? ?? [])
+            .map((e) => SubscriptionItemQuantity.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        totalAmount: (json['totalAmount'] as num?)?.toDouble() ?? 0,
       );
 
   @override
@@ -356,13 +462,18 @@ class ScheduledDelivery extends Equatable {
     customerName,
     customerAddress,
     customerPhone,
+    customerLatitude,
+    customerLongitude,
     scheduledDate,
     status,
     ledgerEntryId,
     deliveredAt,
+    deliveredByUserId,
+    deliveredByName,
+    photoUrl,
     notes,
-    quantityPerDelivery,
-    unit,
     deliveryTime,
+    items,
+    totalAmount,
   ];
 }

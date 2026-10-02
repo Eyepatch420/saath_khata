@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/schedule_model.dart';
 import '../cubit/schedule_cubit.dart';
+import 'delivery_detail_screen.dart';
 
 class CustomerSubscriptionsScreen extends StatefulWidget {
   const CustomerSubscriptionsScreen({super.key});
@@ -52,10 +53,7 @@ class _CustomerSubscriptionsScreenState
       ),
       body: TabBarView(
         controller: _tabs,
-        children: const [
-          _ActiveSubsTab(),
-          _MyDeliveriesTab(),
-        ],
+        children: const [_ActiveSubsTab(), _MyDeliveriesTab()],
       ),
     );
   }
@@ -76,12 +74,13 @@ class _ActiveSubsTab extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text(state.message,
-                    style: const TextStyle(color: AppColors.error)),
+                Text(
+                  state.message,
+                  style: const TextStyle(color: AppColors.error),
+                ),
                 const SizedBox(height: 12),
                 ElevatedButton(
-                  onPressed: () =>
-                      context.read<MySubscriptionsCubit>().load(),
+                  onPressed: () => context.read<MySubscriptionsCubit>().load(),
                   child: const Text('Retry'),
                 ),
               ],
@@ -94,11 +93,16 @@ class _ActiveSubsTab extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.subscriptions_outlined,
-                    size: 64, color: AppColors.textHint),
+                Icon(
+                  Icons.subscriptions_outlined,
+                  size: 64,
+                  color: AppColors.textHint,
+                ),
                 SizedBox(height: 12),
-                Text('No active subscriptions',
-                    style: TextStyle(color: AppColors.textSecondary)),
+                Text(
+                  'No active subscriptions',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
               ],
             ),
           );
@@ -108,7 +112,7 @@ class _ActiveSubsTab extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: subs.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (_, i) => _SubCard(sub: subs[i]),
           ),
         );
@@ -135,23 +139,32 @@ class _SubCard extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Text(sub.serviceName,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.w600, fontSize: 15)),
+                  child: Text(
+                    sub.serviceName,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
                 ),
                 if (sub.isPaused)
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.warning.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Text('Paused',
-                        style: TextStyle(
-                            color: AppColors.warning,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600)),
+                    child: const Text(
+                      'Paused',
+                      style: TextStyle(
+                        color: AppColors.warning,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -159,25 +172,31 @@ class _SubCard extends StatelessWidget {
             Text(
               sub.vendorName,
               style: const TextStyle(
-                  color: AppColors.textSecondary, fontSize: 13),
+                color: AppColors.textSecondary,
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
-              '${sub.quantityPerDelivery} ${sub.unit ?? ''} · ${sub.effectivePrice != null ? '₹${sub.effectivePrice!.toStringAsFixed(0)}/unit' : 'no price set'}',
-              style: const TextStyle(
-                  color: AppColors.textHint, fontSize: 12),
+              '${sub.itemsSummary} · ₹${sub.totalAmount.toStringAsFixed(0)}',
+              style: const TextStyle(color: AppColors.textHint, fontSize: 12),
             ),
             if (sub.nextDeliveryDate != null) ...[
               const SizedBox(height: 4),
               Row(
                 children: [
-                  const Icon(Icons.schedule, size: 13,
-                      color: AppColors.primary),
+                  const Icon(
+                    Icons.schedule,
+                    size: 13,
+                    color: AppColors.primary,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     'Next: ${fmt.format(sub.nextDeliveryDate!)}',
                     style: const TextStyle(
-                        fontSize: 12, color: AppColors.primary),
+                      fontSize: 12,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ],
               ),
@@ -201,15 +220,19 @@ class _MyDeliveriesTab extends StatelessWidget {
         }
         if (state is DeliveriesError) {
           return Center(
-            child: Text(state.message,
-                style: const TextStyle(color: AppColors.error)),
+            child: Text(
+              state.message,
+              style: const TextStyle(color: AppColors.error),
+            ),
           );
         }
         final deliveries = (state as DeliveriesLoaded).deliveries;
         if (deliveries.isEmpty) {
           return const Center(
-            child: Text('No deliveries yet',
-                style: TextStyle(color: AppColors.textSecondary)),
+            child: Text(
+              'No deliveries yet',
+              style: TextStyle(color: AppColors.textSecondary),
+            ),
           );
         }
         return RefreshIndicator(
@@ -217,7 +240,7 @@ class _MyDeliveriesTab extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: deliveries.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (_, i) => _DeliveryTile(delivery: deliveries[i]),
           ),
         );
@@ -242,7 +265,14 @@ class _DeliveryTile extends StatelessWidget {
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      clipBehavior: Clip.antiAlias,
       child: ListTile(
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DeliveryDetailScreen(delivery: delivery),
+          ),
+        ),
         leading: Container(
           width: 42,
           height: 42,
@@ -254,16 +284,18 @@ class _DeliveryTile extends StatelessWidget {
             delivery.status == DeliveryStatus.delivered
                 ? Icons.check_circle_outline
                 : delivery.status == DeliveryStatus.skipped
-                    ? Icons.skip_next
-                    : Icons.schedule,
+                ? Icons.skip_next
+                : Icons.schedule,
             color: statusColor,
             size: 20,
           ),
         ),
-        title: Text(delivery.serviceName,
-            style: const TextStyle(fontWeight: FontWeight.w600)),
+        title: Text(
+          delivery.serviceName,
+          style: const TextStyle(fontWeight: FontWeight.w600),
+        ),
         subtitle: Text(
-          '${fmt.format(delivery.scheduledDate)} · ${delivery.quantityPerDelivery} ${delivery.unit ?? ''}',
+          '${fmt.format(delivery.scheduledDate)} · ${delivery.itemsSummary}',
           style: const TextStyle(fontSize: 12),
         ),
         trailing: Container(
@@ -275,9 +307,10 @@ class _DeliveryTile extends StatelessWidget {
           child: Text(
             delivery.status.label,
             style: TextStyle(
-                color: statusColor,
-                fontSize: 11,
-                fontWeight: FontWeight.w600),
+              color: statusColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

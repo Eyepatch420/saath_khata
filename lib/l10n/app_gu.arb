@@ -118,6 +118,7 @@
       }
     }
   },
+  "description": "વર્ણન",
   "descriptionOptional": "વર્ણન (વૈકલ્પિક)",
   "quantityOptional": "જથ્થો (વૈકલ્પિક)",
   "descriptionHint": "દા.ત. 2L દૂધ, મહિના કરિયાણું",
@@ -462,7 +463,6 @@
   "membershipTiersDescription": "સ્તરોનું નામ બદલો અને સભ્ય ડિસ્કાઉન્ટ સેટ કરો",
   "logIn": "લૉગ ઇન",
   "enterPhoneNumberToContinue": "ચાલુ રાખવા ફોન નંબર દાખલ કરો",
-  "otpDemoHint": "OTP ફક્ત ડેમો માટે છે · ચાલુ રાખવા 123456 દાખલ કરો",
   "havingTrouble": "મુશ્કેલી છે?",
   "useEmailInstead": "ઈ-મેઇલ દ્વારા લૉગ ઇન →",
   "logInWithEmail": "ઈ-મેઇલ દ્વારા લૉગ ઇન",
@@ -551,6 +551,16 @@
   "deleteProductConfirmation": "વસ્તુ ભૂંસવી?",
   "noProductsYet": "હજુ કોઈ વસ્તુ નથી",
   "addFirstProduct": "પ્રથમ વસ્તુ ઉમેરો",
+  "setPriceToChargeTitle": "Set a price for {name}",
+  "@setPriceToChargeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "setPriceToChargeSubtitle": "This service has no unit or price set yet. Add them to charge customers for it.",
+  "setPrice": "Set Price",
   "renameTier": "સ્તરનું નામ બદલો",
   "tierName": "સ્તરનું નામ",
   "memberDiscount": "સભ્ય ડિસ્કાઉન્ટ",
@@ -614,7 +624,7 @@
   "upiIdAlreadyAdded": "આ UPI ID પહેલેથી ઉમેરાયો છે",
   "verifyButton": "ચકાસો",
   "createAccountButton": "ખાતું બનાવો",
-  "phonePlaceholder": "98765 43210",
+  "phonePlaceholder": "XXXXX XXXXX",
   "enterPassword": "પાસવર્ડ દાખલ કરો",
   "mobileNumberLabel": "મોબાઇલ નંબર",
   "personalInfo": "વ્યક્તિગત માહિતી",

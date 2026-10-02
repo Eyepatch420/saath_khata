@@ -80,13 +80,13 @@ class _BulkChargeView extends StatelessWidget {
               _TemplatePicker(
                 templates: state.templates,
                 selected: state.selectedTemplate,
-                onSelect: (t) =>
-                    context.read<BulkChargeCubit>().selectTemplate(t),
+                onSelect: (t) => _selectTemplate(context, t),
                 onEdit: (t) => _showTemplateSheet(context, existing: t),
                 onDelete: (t) =>
                     context.read<BulkChargeCubit>().deleteTemplate(t.id),
               ),
-              if (state.selectedTemplate != null) ...[
+              if (state.selectedTemplate != null &&
+                  !state.selectedTemplate!.needsPricing) ...[
                 _TemplateInfoBar(template: state.selectedTemplate!),
                 const Divider(height: 1),
                 // ── Customer quantity grid ───────────────────────────────
@@ -96,11 +96,20 @@ class _BulkChargeView extends StatelessWidget {
                       : _CustomerGrid(
                           customers: customers,
                           quantities: state.quantities,
-                          unit: state.selectedTemplate!.unit,
-                          pricePerUnit: state.selectedTemplate!.pricePerUnit,
+                          unit: state.selectedTemplate!.unit!,
+                          pricePerUnit: state.selectedTemplate!.pricePerUnit!,
                         ),
                 ),
-              ] else
+              ] else if (state.selectedTemplate != null &&
+                  state.selectedTemplate!.needsPricing)
+                Expanded(
+                  child: _NeedsPricingHint(
+                    template: state.selectedTemplate!,
+                    onSetPrice: () =>
+                        _showPriceServiceSheet(context, state.selectedTemplate!),
+                  ),
+                )
+              else
                 const Expanded(child: _SelectTemplateHint()),
             ],
           );
@@ -113,6 +122,113 @@ class _BulkChargeView extends StatelessWidget {
   void _showCreateTemplateSheet(BuildContext context) =>
       _showTemplateSheet(context, existing: null);
 
+  void _selectTemplate(BuildContext context, ProductTemplate t) {
+    context.read<BulkChargeCubit>().selectTemplate(t);
+    if (t.needsPricing) _showPriceServiceSheet(context, t);
+  }
+
+  void _showPriceServiceSheet(BuildContext context, ProductTemplate template) {
+    final cubit = context.read<BulkChargeCubit>();
+    final unitCtrl = TextEditingController();
+    final priceCtrl = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        final l10n = AppLocalizations.of(ctx)!;
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom:
+                MediaQuery.of(ctx).viewInsets.bottom +
+                MediaQuery.of(ctx).viewPadding.bottom +
+                32,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(template.name, style: AppTypography.h3),
+              const SizedBox(height: 4),
+              Text(
+                l10n.defineProduct,
+                style: AppTypography.bodySmall.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 20),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: unitCtrl,
+                      autofocus: true,
+                      decoration: InputDecoration(
+                        labelText: l10n.unit,
+                        hintText: l10n.unitExample,
+                        prefixIcon: const Icon(Icons.straighten_rounded),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: priceCtrl,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: InputDecoration(
+                        labelText: l10n.pricePerUnit,
+                        prefixIcon: const Icon(Icons.currency_rupee_rounded),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final unit = unitCtrl.text.trim();
+                    final price = double.tryParse(priceCtrl.text);
+                    if (unit.isEmpty || price == null || price <= 0) return;
+                    final ok = await cubit.priceScheduleService(
+                      template,
+                      unit: unit,
+                      pricePerUnit: price,
+                    );
+                    if (ok && ctx.mounted) Navigator.pop(ctx);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                  ),
+                  child: Text(
+                    l10n.saveChanges,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _showTemplateSheet(
     BuildContext context, {
     required ProductTemplate? existing,
@@ -121,7 +237,7 @@ class _BulkChargeView extends StatelessWidget {
     final nameCtrl = TextEditingController(text: existing?.name ?? '');
     final unitCtrl = TextEditingController(text: existing?.unit ?? '');
     final priceCtrl = TextEditingController(
-      text: existing != null ? existing.pricePerUnit.toStringAsFixed(2) : '',
+      text: existing?.pricePerUnit?.toStringAsFixed(2) ?? '',
     );
     final isEdit = existing != null;
 
@@ -253,6 +369,29 @@ class _BulkChargeView extends StatelessWidget {
 
 // ─── Template Picker ──────────────────────────────────────────────────────────
 
+/// One picker entry — either a standalone bulk-charge template, or a
+/// schedule service represented by all of its (active) items grouped
+/// together, so a multi-item bundle shows as one card instead of one chip
+/// per item.
+class _PickerEntry {
+  final ProductTemplate? template; // set for standalone templates
+  final String? serviceId; // set for schedule-service groups
+  final String? serviceName;
+  final List<ProductTemplate> serviceItems;
+
+  const _PickerEntry.template(ProductTemplate t)
+      : template = t,
+        serviceId = null,
+        serviceName = null,
+        serviceItems = const [];
+
+  const _PickerEntry.service(this.serviceId, this.serviceName, this.serviceItems)
+      : template = null;
+
+  bool get isService => serviceId != null;
+  bool get isMultiItem => isService && serviceItems.length > 1;
+}
+
 class _TemplatePicker extends StatelessWidget {
   final List<ProductTemplate> templates;
   final ProductTemplate? selected;
@@ -268,30 +407,62 @@ class _TemplatePicker extends StatelessWidget {
     required this.onDelete,
   });
 
+  List<_PickerEntry> _buildEntries() {
+    final entries = <_PickerEntry>[];
+    final seenServices = <String>{};
+    for (final t in templates) {
+      if (!t.isScheduleService) {
+        entries.add(_PickerEntry.template(t));
+        continue;
+      }
+      final serviceId = t.scheduleServiceId;
+      if (serviceId == null || !seenServices.add(serviceId)) continue;
+      final items = templates
+          .where((o) => o.isScheduleService && o.scheduleServiceId == serviceId)
+          .toList();
+      entries.add(_PickerEntry.service(serviceId, t.scheduleServiceName, items));
+    }
+    return entries;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final entries = _buildEntries();
     return Container(
       height: 52,
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
-        itemCount: templates.length,
+        itemCount: entries.length,
         separatorBuilder: (_, _) => const SizedBox(width: 8),
         itemBuilder: (ctx, i) {
-          final t = templates[i];
-          final isSelected = t.id == selected?.id;
-          return GestureDetector(
-            // Schedule-service-backed items are edited/deleted from the
-            // Schedule screen, not here — long-press only applies to real
-            // bulk-charge templates.
-            onLongPress: t.isScheduleService
-                ? null
-                : () => _showActions(context, t),
-            child: ChoiceChip(
-              avatar: t.isScheduleService
-                  ? const Icon(Icons.event_repeat_rounded, size: 16)
-                  : null,
-              label: Text(t.name),
+          final entry = entries[i];
+          if (!entry.isService) {
+            final t = entry.template!;
+            final isSelected = t.id == selected?.id;
+            return GestureDetector(
+              onLongPress: () => _showActions(context, t),
+              child: ChoiceChip(
+                label: Text(t.name),
+                selected: isSelected,
+                onSelected: (_) => onSelect(t),
+                selectedColor: AppColors.primary,
+                labelStyle: TextStyle(
+                  color: isSelected ? Colors.white : null,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            );
+          }
+
+          // Single-item service: behaves like a direct-select chip, no
+          // extra tap to open a one-item card.
+          if (!entry.isMultiItem) {
+            final t = entry.serviceItems.first;
+            final isSelected = t.id == selected?.id;
+            return ChoiceChip(
+              avatar: const Icon(Icons.event_repeat_rounded, size: 16),
+              label: Text(entry.serviceName ?? t.name),
               selected: isSelected,
               onSelected: (_) => onSelect(t),
               selectedColor: AppColors.primary,
@@ -299,9 +470,123 @@ class _TemplatePicker extends StatelessWidget {
                 color: isSelected ? Colors.white : null,
                 fontWeight: FontWeight.w600,
               ),
+            );
+          }
+
+          // Multi-item bundle: tapping opens a small card to pick one item.
+          final isSelected = entry.serviceItems.any((t) => t.id == selected?.id);
+          return ChoiceChip(
+            avatar: const Icon(Icons.event_repeat_rounded, size: 16),
+            label: Text('${entry.serviceName} (${entry.serviceItems.length})'),
+            selected: isSelected,
+            onSelected: (_) => _showItemPicker(context, entry),
+            selectedColor: AppColors.primary,
+            labelStyle: TextStyle(
+              color: isSelected ? Colors.white : null,
+              fontWeight: FontWeight.w600,
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showItemPicker(BuildContext context, _PickerEntry entry) {
+    showModalBottomSheet(
+      context: context,
+      useRootNavigator: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: ConstrainedBox(
+          // Cap the card's height on small screens instead of letting a
+          // long item list push past the visible area.
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(ctx).size.height * 0.6,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.textHint.withValues(alpha: 0.4),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    const Icon(
+                      Icons.event_repeat_rounded,
+                      size: 18,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        entry.serviceName ?? '',
+                        style: AppTypography.h3,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 4),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Text(
+                  'This service has multiple items — pick one to charge',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              const Divider(height: 20),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: entry.serviceItems.length,
+                  itemBuilder: (_, i) {
+                    final item = entry.serviceItems[i];
+                    final isSelected = item.id == selected?.id;
+                    return ListTile(
+                      leading: Icon(
+                        isSelected
+                            ? Icons.radio_button_checked
+                            : Icons.radio_button_unchecked,
+                        color: isSelected
+                            ? AppColors.primary
+                            : AppColors.textHint,
+                      ),
+                      title: Text(item.name),
+                      trailing: item.needsPricing
+                          ? const Icon(Icons.price_change_outlined,
+                              size: 18, color: AppColors.warning)
+                          : Text(
+                              '₹${item.pricePerUnit!.toStringAsFixed(2)} / ${item.unit}',
+                              style: AppTypography.bodySmall.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                      onTap: () {
+                        Navigator.pop(ctx);
+                        onSelect(item);
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -345,7 +630,7 @@ class _TemplatePicker extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '₹${t.pricePerUnit.toStringAsFixed(2)} / ${t.unit}',
+                    '₹${t.pricePerUnit?.toStringAsFixed(2) ?? '—'} / ${t.unit ?? '—'}',
                     style: AppTypography.bodySmall.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -430,20 +715,82 @@ class _TemplateInfoBar extends StatelessWidget {
             color: AppColors.primary,
           ),
           const SizedBox(width: 8),
-          Text(
-            template.name,
-            style: AppTypography.labelLarge.copyWith(color: AppColors.primary),
+          Expanded(
+            child: Text(
+              template.scheduleServiceName != null
+                  ? '${template.scheduleServiceName} · ${template.name}'
+                  : template.name,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.labelLarge.copyWith(color: AppColors.primary),
+            ),
           ),
           const SizedBox(width: 8),
           Text('•', style: AppTypography.bodySmall),
           const SizedBox(width: 8),
           Text(
-            '₹${template.pricePerUnit.toStringAsFixed(2)} / ${template.unit}',
+            '₹${template.pricePerUnit!.toStringAsFixed(2)} / ${template.unit}',
             style: AppTypography.bodySmall.copyWith(
               color: AppColors.textSecondary,
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ─── Needs Pricing Hint ───────────────────────────────────────────────────────
+
+class _NeedsPricingHint extends StatelessWidget {
+  final ProductTemplate template;
+  final VoidCallback onSetPrice;
+  const _NeedsPricingHint({required this.template, required this.onSetPrice});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.price_change_outlined,
+              size: 56,
+              color: AppColors.textHint,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.of(context)!.setPriceToChargeTitle(template.name),
+              textAlign: TextAlign.center,
+              style: AppTypography.h3,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              AppLocalizations.of(context)!.setPriceToChargeSubtitle,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: onSetPrice,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+              ),
+              icon: const Icon(Icons.price_change_outlined, color: Colors.white),
+              label: Text(
+                AppLocalizations.of(context)!.setPrice,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -669,9 +1016,11 @@ class _BottomBar extends StatelessWidget {
     return BlocBuilder<BulkChargeCubit, BulkChargeState>(
       builder: (context, state) {
         final template = state.selectedTemplate;
-        if (template == null) return const SizedBox.shrink();
+        if (template == null || template.needsPricing) {
+          return const SizedBox.shrink();
+        }
 
-        final total = state.totalAmount(template.pricePerUnit);
+        final total = state.totalAmount(template.pricePerUnit!);
         final count = state.activeCustomerCount;
         final hasItems = count > 0;
 
@@ -707,11 +1056,11 @@ class _BottomBar extends StatelessWidget {
                             .toStringAsFixed(1);
                         return Text(
                           count == 1
-                              ? l10n.bulkSummaryLine(count, qty, template.unit)
+                              ? l10n.bulkSummaryLine(count, qty, template.unit!)
                               : l10n.bulkSummaryLinePlural(
                                   count,
                                   qty,
-                                  template.unit,
+                                  template.unit!,
                                 ),
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textSecondary,

@@ -6,28 +6,56 @@ import '../../../../core/di/injection.dart';
 import '../../../../features/vendor/presentation/bloc/vendor_bloc.dart';
 import '../../../../features/vendor/presentation/bloc/vendor_state.dart';
 import '../../../../shared/models/link_model.dart';
+import '../../../../shared/models/schedule_model.dart';
+import '../../domain/repositories/schedule_repository.dart';
 import '../cubit/schedule_cubit.dart';
 
 class SubscribeSheet extends StatefulWidget {
-  final String serviceId;
-  const SubscribeSheet({super.key, required this.serviceId});
+  final ScheduledService service;
+  const SubscribeSheet({super.key, required this.service});
 
   @override
   State<SubscribeSheet> createState() => _SubscribeSheetState();
 }
 
+class _ItemQtyDraft {
+  final ScheduledServiceItem item;
+  final qtyCtrl = TextEditingController();
+  final priceCtrl = TextEditingController();
+  bool customPriceExpanded = false;
+
+  _ItemQtyDraft(this.item, {required bool isFirst}) {
+    qtyCtrl.text = isFirst ? '1' : '0';
+  }
+
+  void dispose() {
+    qtyCtrl.dispose();
+    priceCtrl.dispose();
+  }
+}
+
 class _SubscribeSheetState extends State<SubscribeSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _qtyCtrl = TextEditingController(text: '1');
-  final _priceCtrl = TextEditingController();
+  late final List<_ItemQtyDraft> _itemDrafts;
 
   CustomerLinkItem? _selectedCustomer;
   DateTime _startDate = DateTime.now();
 
   @override
+  void initState() {
+    super.initState();
+    final activeItems = widget.service.items.where((i) => i.isActive).toList();
+    _itemDrafts = [
+      for (var i = 0; i < activeItems.length; i++)
+        _ItemQtyDraft(activeItems[i], isFirst: i == 0),
+    ];
+  }
+
+  @override
   void dispose() {
-    _qtyCtrl.dispose();
-    _priceCtrl.dispose();
+    for (final draft in _itemDrafts) {
+      draft.dispose();
+    }
     super.dispose();
   }
 
@@ -76,7 +104,7 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
                       ? state.customers
                       : <CustomerLinkItem>[];
                   return DropdownButtonFormField<CustomerLinkItem>(
-                    value: _selectedCustomer,
+                    initialValue: _selectedCustomer,
                     hint: const Text('Select customer'),
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -95,43 +123,26 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
                   );
                 },
               ),
-              const SizedBox(height: 14),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _qtyCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Qty per Delivery *',
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      validator: (v) {
-                        if (v == null || v.isEmpty) return 'Required';
-                        if (double.tryParse(v) == null ||
-                            double.parse(v) <= 0) {
-                          return 'Invalid qty';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _priceCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Custom Price (₹, optional)',
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 16),
+              const Text(
+                'Items',
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 6),
+              ...List.generate(
+                _itemDrafts.length,
+                (i) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _ItemQtyRow(
+                    draft: _itemDrafts[i],
+                    onCustomPriceToggle: () => setState(
+                      () => _itemDrafts[i].customPriceExpanded =
+                          !_itemDrafts[i].customPriceExpanded,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
               const Text(
                 'Start Date',
                 style: TextStyle(fontWeight: FontWeight.w600),
@@ -214,16 +225,94 @@ class _SubscribeSheetState extends State<SubscribeSheet> {
 
   Future<void> _submit(BuildContext context) async {
     if (!_formKey.currentState!.validate()) return;
-    final price = _priceCtrl.text.trim().isEmpty
-        ? null
-        : double.tryParse(_priceCtrl.text.trim());
+
+    final items = <SubscriptionItemInput>[];
+    for (final draft in _itemDrafts) {
+      final qty = double.tryParse(draft.qtyCtrl.text.trim()) ?? 0;
+      final price = draft.priceCtrl.text.trim().isEmpty
+          ? null
+          : double.tryParse(draft.priceCtrl.text.trim());
+      items.add(SubscriptionItemInput(
+        serviceItemId: draft.item.id,
+        quantity: qty,
+        customPricePerUnit: price,
+      ));
+    }
+
+    if (!items.any((i) => i.quantity > 0)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Set a quantity for at least one item')),
+      );
+      return;
+    }
+
     final ok = await context.read<SubscriptionsCubit>().subscribe(
-      serviceId: widget.serviceId,
+      serviceId: widget.service.id,
       linkId: _selectedCustomer!.linkId,
-      quantityPerDelivery: double.parse(_qtyCtrl.text.trim()),
-      customPricePerUnit: price,
+      items: items,
       startDate: DateFormat('yyyy-MM-dd').format(_startDate),
     );
     if (ok && context.mounted) Navigator.pop(context);
+  }
+}
+
+class _ItemQtyRow extends StatelessWidget {
+  final _ItemQtyDraft draft;
+  final VoidCallback onCustomPriceToggle;
+  const _ItemQtyRow({required this.draft, required this.onCustomPriceToggle});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                '${draft.item.name} (${draft.item.unit}) · ₹${draft.item.defaultPricePerUnit.toStringAsFixed(2)}',
+                style: const TextStyle(fontSize: 13),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 90,
+              child: TextFormField(
+                controller: draft.qtyCtrl,
+                decoration: const InputDecoration(labelText: 'Qty'),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return null;
+                  if (double.tryParse(v) == null || double.parse(v) < 0) {
+                    return 'Invalid';
+                  }
+                  return null;
+                },
+              ),
+            ),
+          ],
+        ),
+        if (!draft.customPriceExpanded)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: onCustomPriceToggle,
+              child: const Text('Custom price?', style: TextStyle(fontSize: 12)),
+            ),
+          )
+        else
+          Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: TextFormField(
+              controller: draft.priceCtrl,
+              decoration: const InputDecoration(
+                labelText: 'Custom Price (₹, optional)',
+              ),
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            ),
+          ),
+      ],
+    );
   }
 }

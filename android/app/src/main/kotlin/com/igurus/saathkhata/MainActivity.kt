@@ -1,4 +1,4 @@
-package com.example.saath_khata
+package com.igurus.saathkhata
 
 import io.flutter.embedding.android.FlutterActivity
 

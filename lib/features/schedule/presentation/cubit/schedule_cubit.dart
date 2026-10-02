@@ -32,13 +32,20 @@ class ServicesCubit extends Cubit<ServicesState> {
 
   ServicesCubit(this._repo) : super(const ServicesLoading());
 
+  // Silent on repeat loads (pull-to-refresh, poll) — only the very first
+  // load shows the full-screen spinner. Otherwise the list would blank out
+  // and reappear on every refresh even though nothing may have changed.
   Future<void> load() async {
-    emit(const ServicesLoading());
+    final hadData = state is ServicesLoaded;
+    if (!hadData) emit(const ServicesLoading());
     try {
-      emit(ServicesLoaded(await _repo.getServices()));
+      final services = await _repo.getServices();
+      if (isClosed) return;
+      emit(ServicesLoaded(services));
     } catch (e) {
       AppLogger.e(_m, 'Load failed', e);
-      emit(ServicesError(_clean(e)));
+      if (isClosed) return;
+      if (!hadData) emit(ServicesError(_clean(e)));
     }
   }
 
@@ -46,9 +53,8 @@ class ServicesCubit extends Cubit<ServicesState> {
     required String name,
     required ServiceType serviceType,
     required ScheduleType scheduleType,
+    required List<ServiceItemInput> items,
     String? description,
-    String? unit,
-    double? defaultPricePerUnit,
     List<int>? deliveryDays,
     String? deliveryTime,
     bool autoCreateLedgerEntry = true,
@@ -59,9 +65,8 @@ class ServicesCubit extends Cubit<ServicesState> {
         name: name,
         serviceType: serviceType,
         scheduleType: scheduleType,
+        items: items,
         description: description,
-        unit: unit,
-        defaultPricePerUnit: defaultPricePerUnit,
         deliveryDays: deliveryDays,
         deliveryTime: deliveryTime,
         autoCreateLedgerEntry: autoCreateLedgerEntry,
@@ -70,6 +75,38 @@ class ServicesCubit extends Cubit<ServicesState> {
       return true;
     } catch (e) {
       AppLogger.e(_m, 'Create failed', e);
+      emit(ServicesError(_clean(e)));
+      emit(ServicesLoaded(await _safeList()));
+      return false;
+    }
+  }
+
+  Future<bool> update(
+    String id, {
+    String? name,
+    String? description,
+    List<ServiceItemUpdateInput>? items,
+    ScheduleType? scheduleType,
+    List<int>? deliveryDays,
+    String? deliveryTime,
+    bool? autoCreateLedgerEntry,
+  }) async {
+    _setSaving(true);
+    try {
+      await _repo.updateService(
+        id,
+        name: name,
+        description: description,
+        items: items,
+        scheduleType: scheduleType,
+        deliveryDays: deliveryDays,
+        deliveryTime: deliveryTime,
+        autoCreateLedgerEntry: autoCreateLedgerEntry,
+      );
+      emit(ServicesLoaded(await _repo.getServices()));
+      return true;
+    } catch (e) {
+      AppLogger.e(_m, 'Update failed', e);
       emit(ServicesError(_clean(e)));
       emit(ServicesLoaded(await _safeList()));
       return false;
@@ -138,9 +175,16 @@ class SubscriptionsCubit extends Cubit<SubscriptionsState> {
   final ScheduleRepository _repo;
   static const _m = 'Subscriptions';
 
+  // Set by loadForService/loadForVendor so mutating actions (subscribe,
+  // pause, resume, remove) know which list to refresh into — a service
+  // detail screen must not have its subscriber list overwritten with the
+  // vendor-wide feed.
+  String? _scopedServiceId;
+
   SubscriptionsCubit(this._repo) : super(const SubscriptionsLoading());
 
   Future<void> loadForVendor() async {
+    _scopedServiceId = null;
     emit(const SubscriptionsLoading());
     try {
       emit(SubscriptionsLoaded(await _repo.getAllSubscriptions()));
@@ -151,6 +195,7 @@ class SubscriptionsCubit extends Cubit<SubscriptionsState> {
   }
 
   Future<void> loadForService(String serviceId) async {
+    _scopedServiceId = serviceId;
     emit(const SubscriptionsLoading());
     try {
       emit(
@@ -165,81 +210,104 @@ class SubscriptionsCubit extends Cubit<SubscriptionsState> {
   Future<bool> subscribe({
     required String serviceId,
     required String linkId,
-    required double quantityPerDelivery,
-    double? customPricePerUnit,
+    required List<SubscriptionItemInput> items,
     required String startDate,
     String? endDate,
   }) async {
     _setSaving(true);
+    final scope = _scopedServiceId;
     try {
       await _repo.subscribe(
         serviceId: serviceId,
         linkId: linkId,
-        quantityPerDelivery: quantityPerDelivery,
-        customPricePerUnit: customPricePerUnit,
+        items: items,
         startDate: startDate,
         endDate: endDate,
       );
-      emit(SubscriptionsLoaded(await _repo.getAllSubscriptions()));
+      _emitReloaded(scope, await _reload(scope));
       return true;
     } catch (e) {
       AppLogger.e(_m, 'Subscribe failed', e);
-      emit(SubscriptionsError(_clean(e)));
-      emit(SubscriptionsLoaded(await _safeList()));
+      _emitError(e);
+      _emitReloaded(scope, await _safeList(scope));
       return false;
     }
   }
 
   Future<bool> pause(String id, {String? pausedUntil}) async {
     _setSaving(true);
+    final scope = _scopedServiceId;
     try {
       await _repo.pauseSubscription(id, pausedUntil: pausedUntil);
-      emit(SubscriptionsLoaded(await _repo.getAllSubscriptions()));
+      _emitReloaded(scope, await _reload(scope));
       return true;
     } catch (e) {
       AppLogger.e(_m, 'Pause failed', e);
-      emit(SubscriptionsError(_clean(e)));
-      emit(SubscriptionsLoaded(await _safeList()));
+      _emitError(e);
+      _emitReloaded(scope, await _safeList(scope));
       return false;
     }
   }
 
   Future<bool> resume(String id) async {
     _setSaving(true);
+    final scope = _scopedServiceId;
     try {
       await _repo.resumeSubscription(id);
-      emit(SubscriptionsLoaded(await _repo.getAllSubscriptions()));
+      _emitReloaded(scope, await _reload(scope));
       return true;
     } catch (e) {
       AppLogger.e(_m, 'Resume failed', e);
-      emit(SubscriptionsError(_clean(e)));
-      emit(SubscriptionsLoaded(await _safeList()));
+      _emitError(e);
+      _emitReloaded(scope, await _safeList(scope));
       return false;
     }
   }
 
   Future<bool> remove(String id) async {
     _setSaving(true);
+    final scope = _scopedServiceId;
     try {
       await _repo.removeSubscription(id);
-      emit(SubscriptionsLoaded(await _repo.getAllSubscriptions()));
+      _emitReloaded(scope, await _reload(scope));
       return true;
     } catch (e) {
       AppLogger.e(_m, 'Remove failed', e);
-      emit(SubscriptionsError(_clean(e)));
-      emit(SubscriptionsLoaded(await _safeList()));
+      _emitError(e);
+      _emitReloaded(scope, await _safeList(scope));
       return false;
     }
   }
 
   void _setSaving(bool v) {
+    if (isClosed) return;
     final s = state;
     if (s is SubscriptionsLoaded) emit(s.copyWith(saving: v));
   }
 
-  Future<List<ServiceSubscription>> _safeList() async {
+  void _emitError(Object e) {
+    if (isClosed) return;
+    emit(SubscriptionsError(_clean(e)));
+  }
+
+  // Discards the reload if the cubit has since closed, or if a newer
+  // loadForService/loadForVendor call switched scope while this action's
+  // network round-trip was in flight — otherwise a slow request can stomp
+  // the state a later, faster request already emitted.
+  void _emitReloaded(String? scope, List<ServiceSubscription> subs) {
+    if (isClosed || scope != _scopedServiceId) return;
+    emit(SubscriptionsLoaded(subs));
+  }
+
+  Future<List<ServiceSubscription>> _reload(String? scope) {
+    return scope != null
+        ? _repo.getSubscriptionsForService(scope)
+        : _repo.getAllSubscriptions();
+  }
+
+  Future<List<ServiceSubscription>> _safeList(String? scope) async {
     try {
-      return await _repo.getAllSubscriptions();
+      return await _reload(scope);
     } catch (_) {
       return const [];
     }
@@ -323,13 +391,17 @@ class DeliveriesCubit extends Cubit<DeliveriesState> {
     : _isCustomer = isCustomer,
       super(const DeliveriesLoading());
 
+  // Silent on repeat loads with unchanged filters (pull-to-refresh, poll) so
+  // the list doesn't blank out and reappear every time. A filter change
+  // still shows the full loading state since it's a different result set.
   Future<void> load({
     String? date,
     String? serviceId,
     String? status,
     String? linkId,
   }) async {
-    emit(const DeliveriesLoading());
+    final hadData = state is DeliveriesLoaded;
+    if (!hadData) emit(const DeliveriesLoading());
     try {
       final result = _isCustomer
           ? await _repo.getMyDeliveries(date: date)
@@ -339,6 +411,7 @@ class DeliveriesCubit extends Cubit<DeliveriesState> {
               status: status,
               linkId: linkId,
             );
+      if (isClosed) return;
       emit(
         DeliveriesLoaded(
           deliveries: result.deliveries,
@@ -348,14 +421,15 @@ class DeliveriesCubit extends Cubit<DeliveriesState> {
       );
     } catch (e) {
       AppLogger.e(_m, 'Load failed', e);
-      emit(DeliveriesError(_clean(e)));
+      if (isClosed) return;
+      if (!hadData) emit(DeliveriesError(_clean(e)));
     }
   }
 
-  Future<bool> markDelivered(String id) async {
+  Future<bool> markDelivered(String id, {required String photoUrl}) async {
     _setSaving(true);
     try {
-      final updated = await _repo.markDelivered(id);
+      final updated = await _repo.markDelivered(id, photoUrl: photoUrl);
       final s = state;
       if (s is DeliveriesLoaded) {
         final list = s.deliveries.map((d) => d.id == id ? updated : d).toList();

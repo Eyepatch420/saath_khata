@@ -64,7 +64,7 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
         final isLoading = state is AuthLoading;
         return Scaffold(
           body: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,16 +183,7 @@ class _PhoneEntryScreenState extends State<PhoneEntryScreen> {
                     isLoading: isLoading,
                     onPressed: isLoading ? null : () => _submit(context),
                   ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: Text(
-                      l10n.otpDemoHint,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textHint,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
+                  const SizedBox(height: 32),
                   Center(
                     child: RichText(
                       text: TextSpan(

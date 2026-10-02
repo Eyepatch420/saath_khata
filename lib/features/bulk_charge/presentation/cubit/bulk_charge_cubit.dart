@@ -35,24 +35,26 @@ class BulkChargeCubit extends Cubit<BulkChargeState> {
       ]);
       final templates = results[0] as List<ProductTemplate>;
       final services = results[1] as List<ScheduledService>;
-      final fromServices = services
-          .where(
-            (s) =>
-                s.isActive && s.unit != null && s.defaultPricePerUnit != null,
-          )
-          .map(
-            (s) => ProductTemplate(
-              id: s.id,
-              vendorId: '',
-              name: s.name,
-              unit: s.unit!,
-              pricePerUnit: s.defaultPricePerUnit!,
-              isActive: s.isActive,
-              createdAt: s.createdAt,
-              isScheduleService: true,
-            ),
-          )
-          .toList();
+      // One chip per active item across every active schedule service (not
+      // one per service) — a bundled service's items each have their own
+      // unit/price, and bulk-charge targets a single item per transaction,
+      // same as the backend's scheduleServiceItemId contract.
+      final fromServices = services.where((s) => s.isActive).expand(
+        (s) => s.items.where((i) => i.isActive).map(
+          (item) => ProductTemplate(
+            id: item.id,
+            vendorId: '',
+            name: item.name,
+            unit: item.unit,
+            pricePerUnit: item.defaultPricePerUnit,
+            isActive: item.isActive,
+            createdAt: s.createdAt,
+            isScheduleService: true,
+            scheduleServiceId: s.id,
+            scheduleServiceName: s.name,
+          ),
+        ),
+      ).toList();
       emit(
         state.copyWith(
           templates: [...templates, ...fromServices],
@@ -71,6 +73,54 @@ class BulkChargeCubit extends Cubit<BulkChargeState> {
 
   void selectTemplate(ProductTemplate template) {
     emit(state.copyWith(selectedTemplate: template, quantities: {}));
+  }
+
+  /// Sets unit/price for a schedule-service-item-backed template that had
+  /// none, persisting it to the item itself (via a single-item diff through
+  /// [ScheduleRepository.updateService]) so it's priced going forward and
+  /// doesn't need re-prompting next time. [template.id] is a service item's
+  /// id, so the owning service must be found first to target the PATCH.
+  Future<bool> priceScheduleService(
+    ProductTemplate template, {
+    required String unit,
+    required double pricePerUnit,
+  }) async {
+    if (!template.isScheduleService) return false;
+    try {
+      final services = await _scheduleRepo.getServices();
+      final service = services.firstWhere(
+        (s) => s.items.any((i) => i.id == template.id),
+        orElse: () => throw Exception('Service item not found'),
+      );
+      await _scheduleRepo.updateService(
+        service.id,
+        items: [
+          ServiceItemUpdateInput(
+            id: template.id,
+            unit: unit,
+            defaultPricePerUnit: pricePerUnit,
+          ),
+        ],
+      );
+      final priced = template.copyWith(unit: unit, pricePerUnit: pricePerUnit);
+      final templates = state.templates
+          .map((t) => t.id == priced.id && t.isScheduleService ? priced : t)
+          .toList();
+      final sel = state.selectedTemplate?.id == priced.id &&
+              state.selectedTemplate!.isScheduleService
+          ? priced
+          : state.selectedTemplate;
+      emit(state.copyWith(templates: templates, selectedTemplate: sel));
+      return true;
+    } catch (e) {
+      AppLogger.e(_m, 'Price schedule service item failed', e);
+      emit(
+        state.copyWith(
+          templateError: e.toString().replaceFirst('Exception: ', ''),
+        ),
+      );
+      return false;
+    }
   }
 
   void setQuantity(String linkId, double qty) {
@@ -163,7 +213,7 @@ class BulkChargeCubit extends Cubit<BulkChargeState> {
     List<CustomerLinkItem> customers,
   ) async {
     final template = state.selectedTemplate;
-    if (template == null) return null;
+    if (template == null || template.needsPricing) return null;
 
     final items = state.quantities.entries
         .where((e) => e.value > 0)

@@ -107,36 +107,55 @@ class _ServiceDetailScreenState extends State<ServiceDetailScreen> {
       useSafeArea: true,
       builder: (_) => BlocProvider.value(
         value: cubit,
-        child: SubscribeSheet(serviceId: widget.service.id),
+        child: SubscribeSheet(service: widget.service),
       ),
     );
   }
 
   void _deactivate(BuildContext context) {
+    final servicesCubit = context.read<ServicesCubit>();
+    bool submitting = false;
     showDialog(
       context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Deactivate Service'),
-        content: const Text(
-            'This will stop all future deliveries. Active subscriptions will be unaffected until manually removed.'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context);
-              final ok = await context
-                  .read<ServicesCubit>()
-                  .deactivate(widget.service.id);
-              if (ok && context.mounted) Navigator.pop(context);
-            },
-            style:
-                ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Deactivate',
-                style: TextStyle(color: Colors.white)),
-          ),
-        ],
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) => AlertDialog(
+          title: const Text('Deactivate Service'),
+          content: const Text(
+              'This will stop all future deliveries. Active subscriptions will be unaffected until manually removed.'),
+          actions: [
+            TextButton(
+                onPressed: submitting
+                    ? null
+                    : () => Navigator.pop(dialogContext),
+                child: const Text('Cancel')),
+            ElevatedButton(
+              onPressed: submitting
+                  ? null
+                  : () async {
+                      setDialogState(() => submitting = true);
+                      final ok = await servicesCubit.deactivate(
+                        widget.service.id,
+                      );
+                      if (!dialogContext.mounted) return;
+                      Navigator.pop(dialogContext);
+                      if (ok && context.mounted) Navigator.pop(context);
+                    },
+              style:
+                  ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+              child: submitting
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text('Deactivate',
+                      style: TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -162,14 +181,18 @@ class _InfoCard extends StatelessWidget {
             ],
             _row('Type', service.serviceType.label),
             _row('Schedule', service.scheduleLabel),
-            if (service.unit != null)
-              _row('Unit', service.unit!),
-            if (service.defaultPricePerUnit != null)
-              _row('Default Price',
-                  '₹${service.defaultPricePerUnit!.toStringAsFixed(2)} / ${service.unit ?? 'unit'}'),
             _row('Auto Ledger Entry',
                 service.autoCreateLedgerEntry ? 'Yes' : 'No'),
             _row('Status', service.isActive ? 'Active' : 'Inactive'),
+            const SizedBox(height: 8),
+            const Text('Items',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
+            const SizedBox(height: 4),
+            ...service.items.map((i) => _row(
+                  i.name,
+                  '₹${i.defaultPricePerUnit.toStringAsFixed(2)} / ${i.unit}',
+                )),
           ],
         ),
       ),
@@ -213,9 +236,16 @@ class _SubscriberTile extends StatelessWidget {
                   Text(sub.customerName,
                       style: const TextStyle(fontWeight: FontWeight.w600)),
                   Text(
-                    '${sub.quantityPerDelivery} ${sub.unit ?? ''} · starts ${fmt.format(sub.startDate)}',
+                    '${sub.itemsSummary} · starts ${fmt.format(sub.startDate)}',
                     style: const TextStyle(
                         fontSize: 12, color: AppColors.textSecondary),
+                  ),
+                  Text(
+                    '₹${sub.totalAmount.toStringAsFixed(0)} / delivery',
+                    style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600),
                   ),
                   if (sub.isPaused)
                     const Text('Paused',

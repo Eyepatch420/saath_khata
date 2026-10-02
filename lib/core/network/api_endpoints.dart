@@ -1,5 +1,5 @@
 class ApiEndpoints {
-  static const String baseUrl = 'http://45.195.159.30:3001/api/v1';
+  static const String baseUrl = 'http://10.0.2.2:3001/api/v1';
 
   // Auth — OTP
   static const String sendOtp = '/auth/otp/send';
@@ -18,6 +18,7 @@ class ApiEndpoints {
   static const String uploadPhoto = '/auth/profile/photo';
   static const String changePassword = '/auth/change-password';
   static const String deleteAccount = '/auth/account';
+  static const String deleteAccountOtp = '/auth/account/delete-otp';
 
   // Content (public)
   static const String termsAndConditions = '/content/terms';

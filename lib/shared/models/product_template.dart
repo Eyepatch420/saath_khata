@@ -8,11 +8,19 @@ class ProductTemplate extends Equatable {
   final String id;
   final String vendorId;
   final String name;
-  final String unit;
-  final double pricePerUnit;
+  // Null for a schedule-service-backed entry whose service has no unit
+  // and/or default price set yet — it still appears in the picker, but
+  // must be priced (see [needsPricing]) before it can be charged.
+  final String? unit;
+  final double? pricePerUnit;
   final bool isActive;
   final DateTime createdAt;
   final bool isScheduleService;
+  // Parent schedule service id/name, set only when isScheduleService is
+  // true — lets the picker group a bundle's items (e.g. Milk, Curd) under
+  // one "Daily Basket" card instead of listing each item as its own chip.
+  final String? scheduleServiceId;
+  final String? scheduleServiceName;
 
   const ProductTemplate({
     required this.id,
@@ -23,7 +31,29 @@ class ProductTemplate extends Equatable {
     required this.isActive,
     required this.createdAt,
     this.isScheduleService = false,
+    this.scheduleServiceId,
+    this.scheduleServiceName,
   });
+
+  // pricePerUnit <= 0 catches never-priced legacy schedule-service items
+  // (backfilled with a 0 sentinel before the multi-item migration), which
+  // the backend also rejects with the same threshold.
+  bool get needsPricing =>
+      unit == null || pricePerUnit == null || pricePerUnit! <= 0;
+
+  ProductTemplate copyWith({String? unit, double? pricePerUnit}) =>
+      ProductTemplate(
+        id: id,
+        vendorId: vendorId,
+        name: name,
+        unit: unit ?? this.unit,
+        pricePerUnit: pricePerUnit ?? this.pricePerUnit,
+        isActive: isActive,
+        createdAt: createdAt,
+        isScheduleService: isScheduleService,
+        scheduleServiceId: scheduleServiceId,
+        scheduleServiceName: scheduleServiceName,
+      );
 
   factory ProductTemplate.fromJson(Map<String, dynamic> json) =>
       ProductTemplate(
@@ -46,6 +76,8 @@ class ProductTemplate extends Equatable {
     isActive,
     createdAt,
     isScheduleService,
+    scheduleServiceId,
+    scheduleServiceName,
   ];
 }
 

@@ -73,7 +73,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
         final isLoading = state is AuthLoading;
         return Scaffold(
           body: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,7 +198,7 @@ class _EmailLoginScreenState extends State<EmailLoginScreen> {
                       ),
                     ),
                   ),
-                  const Spacer(),
+                  const SizedBox(height: 24),
                   Center(
                     child: Text(
                       l10n.needPasswordForEmail,

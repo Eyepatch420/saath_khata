@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/schedule_model.dart';
 import '../../../../shared/widgets/app_toast.dart';
+import '../../domain/models/delivery_filter.dart';
 import '../cubit/schedule_cubit.dart';
 import '../widgets/delivery_card.dart';
+import '../widgets/delivery_filter_bar.dart';
 import 'create_service_sheet.dart';
 import 'service_detail_screen.dart';
 
@@ -193,7 +196,7 @@ class _ServicesTab extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             itemCount: services.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (ctx, i) => _ServiceCard(service: services[i]),
           ),
         );
@@ -249,10 +252,12 @@ class _ServiceCard extends StatelessWidget {
                         fontSize: 13,
                       ),
                     ),
-                    if (service.defaultPricePerUnit != null) ...[
+                    if (service.items.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
-                        '₹${service.defaultPricePerUnit!.toStringAsFixed(0)} / ${service.unit ?? 'unit'}',
+                        service.itemsSummary,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: AppColors.primary,
                           fontSize: 13,
@@ -271,7 +276,7 @@ class _ServiceCard extends StatelessWidget {
                       vertical: 3,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
@@ -317,7 +322,7 @@ class _TypeIcon extends StatelessWidget {
       width: 44,
       height: 44,
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.1),
+        color: AppColors.primary.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(icon, color: AppColors.primary, size: 22),
@@ -325,71 +330,133 @@ class _TypeIcon extends StatelessWidget {
   }
 }
 
-class _DeliveriesTab extends StatelessWidget {
+class _DeliveriesTab extends StatefulWidget {
   const _DeliveriesTab();
 
   @override
-  Widget build(BuildContext context) {
-    return BlocConsumer<DeliveriesCubit, DeliveriesState>(
-      listenWhen: (prev, curr) =>
-          curr is DeliveriesLoaded && curr.actionError != null,
-      listener: (context, state) {
-        if (state is DeliveriesLoaded && state.actionError != null) {
-          AppToast.show(context, state.actionError!, type: ToastType.error);
+  State<_DeliveriesTab> createState() => _DeliveriesTabState();
+}
+
+class _DeliveriesTabState extends State<_DeliveriesTab> {
+  DeliveryFilter _filter = const DeliveryFilter();
+
+  void _applyFilter(DeliveryFilter filter) {
+    setState(() => _filter = filter);
+    context.read<DeliveriesCubit>().load(
+      status: filter.status?.name,
+      date: filter.date?.toIso8601String().split('T').first,
+    );
+  }
+
+  List<ScheduledDelivery> _filtered(List<ScheduledDelivery> deliveries) {
+    var result = deliveries;
+    final q = _filter.nameQuery?.toLowerCase();
+    if (q != null && q.isNotEmpty) {
+      result = result
+          .where(
+            (d) =>
+                d.customerName.toLowerCase().contains(q) ||
+                d.serviceName.toLowerCase().contains(q),
+          )
+          .toList();
+    }
+    if (_filter.radiusKm != null &&
+        _filter.centerLat != null &&
+        _filter.centerLng != null) {
+      result = result.where((d) {
+        if (d.customerLatitude == null || d.customerLongitude == null) {
+          return false;
         }
-      },
-      builder: (context, state) {
-        if (state is DeliveriesLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        if (state is DeliveriesError) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  state.message,
-                  style: const TextStyle(color: AppColors.error),
-                ),
-                const SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () => context.read<DeliveriesCubit>().load(),
-                  child: const Text('Retry'),
-                ),
-              ],
-            ),
-          );
-        }
-        final deliveries = (state as DeliveriesLoaded).deliveries;
-        if (deliveries.isEmpty) {
-          return const Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  size: 64,
-                  color: AppColors.textHint,
-                ),
-                SizedBox(height: 12),
-                Text(
-                  "No deliveries today",
-                  style: TextStyle(color: AppColors.textSecondary),
-                ),
-              ],
-            ),
-          );
-        }
-        return RefreshIndicator(
-          onRefresh: () => context.read<DeliveriesCubit>().load(),
-          child: ListView.separated(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-            itemCount: deliveries.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 8),
-            itemBuilder: (ctx, i) => DeliveryCard(delivery: deliveries[i]),
-          ),
+        final distanceMeters = Geolocator.distanceBetween(
+          _filter.centerLat!,
+          _filter.centerLng!,
+          d.customerLatitude!,
+          d.customerLongitude!,
         );
-      },
+        return distanceMeters <= _filter.radiusKm! * 1000;
+      }).toList();
+    }
+    return result;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        DeliveryFilterBar(filter: _filter, onChanged: _applyFilter),
+        Expanded(
+          child: BlocConsumer<DeliveriesCubit, DeliveriesState>(
+            listenWhen: (prev, curr) =>
+                curr is DeliveriesLoaded && curr.actionError != null,
+            listener: (context, state) {
+              if (state is DeliveriesLoaded && state.actionError != null) {
+                AppToast.show(
+                  context,
+                  state.actionError!,
+                  type: ToastType.error,
+                );
+              }
+            },
+            builder: (context, state) {
+              if (state is DeliveriesLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is DeliveriesError) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        state.message,
+                        style: const TextStyle(color: AppColors.error),
+                      ),
+                      const SizedBox(height: 12),
+                      ElevatedButton(
+                        onPressed: () => context.read<DeliveriesCubit>().load(),
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              final deliveries = _filtered(
+                (state as DeliveriesLoaded).deliveries,
+              );
+              if (deliveries.isEmpty) {
+                return Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.check_circle_outline,
+                        size: 64,
+                        color: AppColors.textHint,
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        _filter.isEmpty
+                            ? "No deliveries today"
+                            : 'No deliveries match your filters',
+                        style: const TextStyle(color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              return RefreshIndicator(
+                onRefresh: () => context.read<DeliveriesCubit>().load(),
+                child: ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+                  itemCount: deliveries.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
+                  itemBuilder: (ctx, i) =>
+                      DeliveryCard(delivery: deliveries[i]),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

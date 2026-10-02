@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../../../../core/network/api_client.dart';
 import '../../../../core/network/api_endpoints.dart';
+import '../../domain/delete_account_blocked_exception.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../models/auth_response_model.dart';
 import '../models/upi_id_model.dart';
@@ -149,10 +150,28 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<void> deleteAccount() async {
+  Future<void> sendDeleteAccountOtp() async {
     try {
-      await _api.delete(ApiEndpoints.deleteAccount);
+      await _api.post(ApiEndpoints.deleteAccountOtp);
     } on DioException catch (e) {
+      throw Exception(ApiClient.extractErrorMessage(e));
+    }
+  }
+
+  @override
+  Future<void> deleteAccount({required String confirmation}) async {
+    try {
+      await _api.delete(ApiEndpoints.deleteAccount, data: {'otp': confirmation});
+    } on DioException catch (e) {
+      final body = e.response?.data;
+      if (e.response?.statusCode == 409 &&
+          body is Map<String, dynamic> &&
+          body['error'] == 'DELETE_ACCOUNT_BLOCKED') {
+        final blockers = (body['blockers'] as List<dynamic>? ?? [])
+            .map((b) => DeleteAccountBlocker.fromJson(b as Map<String, dynamic>))
+            .toList();
+        throw DeleteAccountBlockedException(blockers);
+      }
       throw Exception(ApiClient.extractErrorMessage(e));
     }
   }

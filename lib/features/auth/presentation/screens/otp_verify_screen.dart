@@ -152,7 +152,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
         final isLoading = state is AuthLoading;
         return Scaffold(
           body: SafeArea(
-            child: Padding(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -246,17 +246,7 @@ class _OtpVerifyScreenState extends State<OtpVerifyScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Center(
-                    child: Text(
-                      l10n.otpDemoHint,
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textHint,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
+                  const SizedBox(height: 24),
                 ],
               ),
             ),

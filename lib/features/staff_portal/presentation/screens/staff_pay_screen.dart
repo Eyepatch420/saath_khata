@@ -11,6 +11,8 @@ import '../../../../shared/widgets/app_toast.dart';
 import '../../../../shared/widgets/error_state_widget.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../auth/presentation/bloc/auth_event.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../settings/presentation/widgets/delete_account_flow.dart';
 import '../../data/staff_portal_repository.dart';
 import '../../domain/models/staff_self.dart';
 import '../cubit/staff_portal_cubit.dart';
@@ -89,31 +91,10 @@ class StaffPayScreen extends StatelessWidget {
   }
 
   void _confirmDeleteAccount(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      useRootNavigator: true,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteAccountConfirmation),
-        content: Text(l10n.deleteAccountStaffWarning),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx, rootNavigator: true).pop(),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.of(ctx, rootNavigator: true).pop();
-              context
-                  .read<AuthBloc>()
-                  .add(const AuthDeleteAccountRequested());
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.deleteForever),
-          ),
-        ],
-      ),
-    );
+    final authState = context.read<AuthBloc>().state;
+    if (authState is AuthAuthenticated) {
+      DeleteAccountFlow.start(context, authState.user);
+    }
   }
 
   void _confirmLogout(BuildContext context) {

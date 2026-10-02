@@ -118,6 +118,7 @@
       }
     }
   },
+  "description": "বিবরণ",
   "descriptionOptional": "বিবরণ (ঐচ্ছিক)",
   "quantityOptional": "পরিমাণ (ঐচ্ছিক)",
   "descriptionHint": "যেমন: ২L দুধ, মাসিক মুদিখানা",
@@ -462,7 +463,6 @@
   "membershipTiersDescription": "স্তরের নাম পরিবর্তন করুন ও সদস্য ছাড় সেট করুন",
   "logIn": "লগইন করুন",
   "enterPhoneNumberToContinue": "চালিয়ে যেতে ফোন নম্বর দিন",
-  "otpDemoHint": "OTP শুধু ডেমোর জন্য · চালিয়ে যেতে 123456 দিন",
   "havingTrouble": "সমস্যা হচ্ছে?",
   "useEmailInstead": "ইমেইল দিয়ে লগইন করুন →",
   "logInWithEmail": "ইমেইল দিয়ে লগইন করুন",
@@ -551,6 +551,16 @@
   "deleteProductConfirmation": "পণ্য মুছবেন?",
   "noProductsYet": "এখনও কোনো পণ্য নেই",
   "addFirstProduct": "প্রথম পণ্য যোগ করুন",
+  "setPriceToChargeTitle": "Set a price for {name}",
+  "@setPriceToChargeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "setPriceToChargeSubtitle": "This service has no unit or price set yet. Add them to charge customers for it.",
+  "setPrice": "Set Price",
   "renameTier": "স্তরের নাম পরিবর্তন করুন",
   "tierName": "স্তরের নাম",
   "memberDiscount": "সদস্য ছাড়",
@@ -614,7 +624,7 @@
   "upiIdAlreadyAdded": "এই UPI আইডি আগেই যোগ করা আছে",
   "verifyButton": "যাচাই করুন",
   "createAccountButton": "অ্যাকাউন্ট তৈরি করুন",
-  "phonePlaceholder": "98765 43210",
+  "phonePlaceholder": "XXXXX XXXXX",
   "enterPassword": "পাসওয়ার্ড দিন",
   "mobileNumberLabel": "মোবাইল নম্বর",
   "personalInfo": "ব্যক্তিগত তথ্য",

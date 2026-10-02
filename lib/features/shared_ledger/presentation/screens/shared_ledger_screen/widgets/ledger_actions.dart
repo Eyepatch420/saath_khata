@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 import '../../../../../../core/constants/app_colors.dart';
 import '../../../../../../core/constants/app_typography.dart';
 import '../../../../../../core/di/injection.dart';
@@ -13,6 +12,7 @@ import '../../../../../../shared/widgets/app_toast.dart';
 import '../../../bloc/ledger_bloc.dart';
 import '../../../bloc/ledger_event.dart';
 import 'attachment_section.dart';
+import 'date_picker_row.dart';
 import 'multi_item_entry_sheet.dart';
 
 class LedgerActions extends StatelessWidget {
@@ -189,11 +189,12 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
         linkId: widget.linkId,
         entryId: null,
       );
-      if (mounted)
+      if (mounted) {
         setState(() {
           _pendingUrl = url;
           _uploading = false;
         });
+      }
     } catch (e) {
       if (mounted) {
         setState(() => _uploading = false);
@@ -277,13 +278,13 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
             TextField(
               controller: _descCtrl,
               decoration: InputDecoration(
-                labelText: l10n.descriptionOptional,
+                labelText: l10n.description,
                 prefixIcon: const Icon(Icons.description_rounded),
                 hintText: l10n.descriptionHint,
               ),
             ),
             const SizedBox(height: 16),
-            _DatePickerRow(
+            LedgerDatePickerRow(
               selectedDate: _selectedDate,
               onTap: () async {
                 final now = DateTime.now();
@@ -345,10 +346,34 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
             ),
             if (_pendingUrl != null) ...[
               const SizedBox(height: 12),
-              LedgerAttachmentSection(
-                attachmentUrl: _pendingUrl,
-                isLocked: false,
-                heroTag: 'new_entry_attachment_${widget.linkId}',
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  LedgerAttachmentSection(
+                    attachmentUrl: _pendingUrl,
+                    isLocked: false,
+                    heroTag: 'new_entry_attachment_${widget.linkId}',
+                  ),
+                  Positioned(
+                    top: -8,
+                    right: -8,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _pendingUrl = null),
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: AppColors.error,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
             const SizedBox(height: 24),
@@ -387,86 +412,6 @@ class _AddEntrySheetState extends State<_AddEntrySheet> {
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DatePickerRow extends StatelessWidget {
-  final DateTime? selectedDate;
-  final VoidCallback onTap;
-
-  const _DatePickerRow({required this.selectedDate, required this.onTap});
-
-  String _label() {
-    if (selectedDate == null) return 'Today';
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final d = DateTime(
-      selectedDate!.year,
-      selectedDate!.month,
-      selectedDate!.day,
-    );
-    if (d == today) return 'Today';
-    if (d == today.subtract(const Duration(days: 1))) return 'Yesterday';
-    if (d.year == now.year) return DateFormat('EEE, d MMM').format(d);
-    return DateFormat('d MMM yyyy').format(d);
-  }
-
-  bool get _isPast {
-    if (selectedDate == null) return false;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    return DateTime(
-      selectedDate!.year,
-      selectedDate!.month,
-      selectedDate!.day,
-    ).isBefore(today);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.calendar_today_rounded,
-              size: 18,
-              color: AppColors.textSecondary,
-            ),
-            const SizedBox(width: 10),
-            Text(
-              _label(),
-              style: TextStyle(
-                color: _isPast ? AppColors.primary : AppColors.textSecondary,
-              ),
-            ),
-            if (_isPast) ...[
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade100,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: const Text(
-                  'Past date',
-                  style: TextStyle(fontSize: 10, color: Colors.deepOrange),
-                ),
-              ),
-            ],
-            const Spacer(),
-            const Icon(
-              Icons.chevron_right_rounded,
-              size: 16,
-              color: AppColors.textHint,
             ),
           ],
         ),

@@ -954,6 +954,65 @@ class AppLocalizationsEn extends AppLocalizations {
       'This will permanently delete your account. This cannot be undone.';
 
   @override
+  String get deleteAccountStrongWarning =>
+      'Deleting your account is permanent and cannot be undone. Please read carefully before continuing:';
+
+  @override
+  String get deleteAccountWarningLoginRemoved =>
+      'You will immediately lose the ability to log in.';
+
+  @override
+  String get deleteAccountWarningIrreversible =>
+      'This action cannot be reversed — there is no way to recover your account afterward.';
+
+  @override
+  String get deleteAccountWarningRecordsKept =>
+      'Your ledger entries, payments, delivery proofs and statements are kept for financial record-keeping and legal/audit purposes — they are never deleted.';
+
+  @override
+  String get deleteAccountWarningVendorBlockers =>
+      'You must settle all outstanding balances, remove or pay staff, and resolve pending orders/deliveries and subscriptions before you can delete your account.';
+
+  @override
+  String get deleteAccountWarningStaffBlockers =>
+      'You must have no unpaid salary, outstanding advance, or unfinished assigned work before you can delete your account.';
+
+  @override
+  String get deleteAccountWarningCustomerBlockers =>
+      'You must settle all outstanding balances and have no active orders before you can delete your account.';
+
+  @override
+  String get iUnderstandContinue => 'I Understand, Continue';
+
+  @override
+  String get deleteAccountTypeToConfirmTitle => 'Type DELETE to confirm';
+
+  @override
+  String get deleteAccountTypeToConfirmMessage =>
+      'To confirm you want to permanently delete your account, type DELETE below.';
+
+  @override
+  String get deleteAccountEnterOtpTitle => 'Enter OTP';
+
+  @override
+  String get deleteAccountEnterOtpMessage =>
+      'We sent a 6-digit OTP to your registered phone number. Enter it to confirm account deletion.';
+
+  @override
+  String get deleteAccountEnterPasswordTitle => 'Enter your password';
+
+  @override
+  String get deleteAccountEnterPasswordMessage =>
+      'Enter your account password to confirm account deletion.';
+
+  @override
+  String get deleteAccountBlockedTitle => 'Can\'t Delete Account Yet';
+
+  @override
+  String get deleteAccountBlockedMessage =>
+      'Please resolve the following before deleting your account:';
+
+  @override
   String get deleteForever => 'Delete Forever';
 
   @override
@@ -2393,7 +2452,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dateClosedToast => 'Date marked as closed';
 
   @override
-  String get mergeSucceededToast => 'Slots merged';
+  String get mergeSucceededToast => 'Slots merged — tap Save to apply';
 
   @override
   String get membershipPlansTitle => 'Membership Plans';

@@ -284,19 +284,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthDeleteAccountRequested event,
     Emitter<AuthState> emit,
   ) async {
-    AppLogger.i(_m, 'Delete account requested');
-    emit(const AuthLoading());
-    try {
-      await _authRepository.deleteAccount();
-      AppLogger.i(_m, 'Account deleted on server');
-    } catch (e) {
-      AppLogger.w(_m, 'Server delete failed (clearing locally anyway)');
-    } finally {
-      await _storage.clearAll();
-      getIt<LedgerSocketService>().disconnect();
-      AppLogger.i(_m, 'Local session cleared after account deletion');
-      emit(const AuthUnauthenticated());
-    }
+    // The server-side deletion already happened (see DeleteAccountFlow) —
+    // this just clears the local session now that it's confirmed deleted.
+    AppLogger.i(_m, 'Clearing local session after confirmed account deletion');
+    await _storage.clearAll();
+    getIt<LedgerSocketService>().disconnect();
+    emit(const AuthUnauthenticated());
   }
 
   Future<void> _onUpdateProfile(

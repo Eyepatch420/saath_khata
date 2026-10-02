@@ -114,6 +114,7 @@
       }
     }
   },
+  "description": "विवरण",
   "descriptionOptional": "विवरण (वैकल्पिक)",
   "quantityOptional": "मात्रा (वैकल्पिक)",
   "descriptionHint": "जैसे: 2L दूध, मासिक राशन",
@@ -463,7 +464,6 @@
   "membershipTiersDescription": "स्तरों का नाम बदलें और सदस्य छूट सेट करें",
   "logIn": "लॉगिन करें",
   "enterPhoneNumberToContinue": "जारी रखने के लिए फ़ोन नंबर दर्ज करें",
-  "otpDemoHint": "OTP केवल डेमो के लिए है · जारी रखने के लिए 123456 दर्ज करें",
   "havingTrouble": "कोई समस्या है?",
   "useEmailInstead": "ईमेल से लॉगिन करें →",
   "logInWithEmail": "ईमेल से लॉगिन करें",
@@ -552,6 +552,16 @@
   "deleteProductConfirmation": "उत्पाद हटाएं?",
   "noProductsYet": "अभी तक कोई उत्पाद नहीं",
   "addFirstProduct": "पहला उत्पाद जोड़ें",
+  "setPriceToChargeTitle": "Set a price for {name}",
+  "@setPriceToChargeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "setPriceToChargeSubtitle": "This service has no unit or price set yet. Add them to charge customers for it.",
+  "setPrice": "Set Price",
   "renameTier": "स्तर का नाम बदलें",
   "tierName": "स्तर का नाम",
   "memberDiscount": "सदस्य छूट",
@@ -619,7 +629,7 @@
   "upiIdAlreadyAdded": "यह UPI आईडी पहले से जुड़ी है",
   "verifyButton": "सत्यापित करें",
   "createAccountButton": "खाता बनाएं",
-  "phonePlaceholder": "98765 43210",
+  "phonePlaceholder": "XXXXX XXXXX",
   "enterPassword": "पासवर्ड दर्ज करें",
   "mobileNumberLabel": "मोबाइल नंबर",
   "personalInfo": "व्यक्तिगत जानकारी",

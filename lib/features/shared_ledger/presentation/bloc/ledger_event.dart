@@ -61,14 +61,16 @@ class ItemRow {
 class AddMultiItemLedgerEntry extends LedgerEvent {
   final String linkId;
   final List<ItemRow> items;
+  final DateTime? date;
 
   const AddMultiItemLedgerEntry({
     required this.linkId,
     required this.items,
+    this.date,
   });
 
   @override
-  List<Object?> get props => [linkId, items];
+  List<Object?> get props => [linkId, items, date];
 }
 
 class ConfirmLedgerEntry extends LedgerEvent {

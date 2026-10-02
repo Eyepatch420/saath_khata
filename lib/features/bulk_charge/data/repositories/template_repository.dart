@@ -79,7 +79,7 @@ class TemplateRepository {
   }) async {
     try {
       final body = <String, dynamic>{
-        isScheduleService ? 'scheduleServiceId' : 'templateId': templateId,
+        isScheduleService ? 'scheduleServiceItemId' : 'templateId': templateId,
         'items': items.map((i) => i.toJson()).toList(),
       };
       if (date != null) body['date'] = date.toUtc().toIso8601String();

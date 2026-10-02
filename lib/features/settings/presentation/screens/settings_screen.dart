@@ -15,6 +15,7 @@ import '../../../auth/presentation/bloc/auth_event.dart';
 import '../../../auth/presentation/bloc/auth_state.dart';
 import '../../../memberships/domain/repositories/membership_repository.dart';
 import '../../../../core/di/injection.dart';
+import '../widgets/delete_account_flow.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -61,7 +62,12 @@ class SettingsScreen extends StatelessWidget {
                 icon: Icons.delete_outline_rounded,
                 title: l10n.deleteAccount,
                 subtitle: l10n.deleteAccountSubtitle,
-                onTap: () => _confirmDeleteAccount(context),
+                onTap: () {
+                  final authState = context.read<AuthBloc>().state;
+                  if (authState is AuthAuthenticated) {
+                    DeleteAccountFlow.start(context, authState.user);
+                  }
+                },
                 isDanger: true,
               ),
               const SizedBox(height: 12),
@@ -226,33 +232,6 @@ class SettingsScreen extends StatelessWidget {
               l10n.logout,
               style: const TextStyle(color: AppColors.error),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _confirmDeleteAccount(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.deleteAccountConfirmation),
-        content: Text(l10n.deleteAccountConfirmationMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(ctx);
-              context
-                  .read<AuthBloc>()
-                  .add(const AuthDeleteAccountRequested());
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(l10n.deleteForever),
           ),
         ],
       ),

@@ -30,7 +30,9 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
     double balance = 0;
     for (final entry in entries) {
       if (entry.status != EntryStatus.confirmed &&
-          entry.status != EntryStatus.autoConfirmed) continue;
+          entry.status != EntryStatus.autoConfirmed) {
+        continue;
+      }
       if (entry.type == EntryType.credit) {
         balance += entry.amount;
       } else {
@@ -120,12 +122,13 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
     emit(LedgerActionLoading(entries: current.entries, balance: current.balance));
     try {
       final total = event.items.fold(0.0, (sum, i) => sum + i.amount);
+      final entryDate = event.date ?? DateTime.now();
       final parentEntry = LedgerEntry(
         id: '',
         linkId: event.linkId,
         amount: total,
         type: EntryType.credit,
-        date: DateTime.now(),
+        date: entryDate,
         description: '${event.items.length} items',
         status: EntryStatus.pending,
         createdBy: '',
@@ -141,7 +144,7 @@ class LedgerBloc extends Bloc<LedgerEvent, LedgerState> {
           linkId: event.linkId,
           amount: item.amount,
           type: EntryType.credit,
-          date: DateTime.now(),
+          date: entryDate,
           description: item.description,
           quantity: item.quantity,
           unit: item.unit,

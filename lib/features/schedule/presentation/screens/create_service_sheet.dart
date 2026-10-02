@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/models/schedule_model.dart';
+import '../../domain/repositories/schedule_repository.dart';
 import '../cubit/schedule_cubit.dart';
 
 class CreateServiceSheet extends StatefulWidget {
@@ -11,12 +12,24 @@ class CreateServiceSheet extends StatefulWidget {
   State<CreateServiceSheet> createState() => _CreateServiceSheetState();
 }
 
+class _ItemDraft {
+  final nameCtrl = TextEditingController();
+  final unitCtrl = TextEditingController();
+  final priceCtrl = TextEditingController();
+
+  void dispose() {
+    nameCtrl.dispose();
+    unitCtrl.dispose();
+    priceCtrl.dispose();
+  }
+}
+
 class _CreateServiceSheetState extends State<CreateServiceSheet> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _descCtrl = TextEditingController();
-  final _unitCtrl = TextEditingController();
-  final _priceCtrl = TextEditingController();
+
+  final List<_ItemDraft> _items = [_ItemDraft()];
 
   ServiceType _serviceType = ServiceType.product;
   ScheduleType _scheduleType = ScheduleType.daily;
@@ -29,9 +42,19 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
   void dispose() {
     _nameCtrl.dispose();
     _descCtrl.dispose();
-    _unitCtrl.dispose();
-    _priceCtrl.dispose();
+    for (final item in _items) {
+      item.dispose();
+    }
     super.dispose();
+  }
+
+  void _addItem() => setState(() => _items.add(_ItemDraft()));
+
+  void _removeItem(int index) {
+    setState(() {
+      _items[index].dispose();
+      _items.removeAt(index);
+    });
   }
 
   @override
@@ -130,7 +153,7 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
                           }
                         });
                       },
-                      selectedColor: AppColors.primary.withOpacity(0.2),
+                      selectedColor: AppColors.primary.withValues(alpha: 0.2),
                       checkmarkColor: AppColors.primary,
                     );
                   }),
@@ -138,30 +161,31 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
               ],
               const SizedBox(height: 16),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Expanded(
-                    child: TextFormField(
-                      controller: _unitCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Unit (e.g. litre, kg)',
-                      ),
-                    ),
+                  const Text(
+                    'Items',
+                    style: TextStyle(fontWeight: FontWeight.w600),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextFormField(
-                      controller: _priceCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Default Price/Unit (₹)',
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                    ),
+                  TextButton.icon(
+                    onPressed: _addItem,
+                    icon: const Icon(Icons.add, size: 16),
+                    label: const Text('Add Item'),
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 6),
+              ...List.generate(
+                _items.length,
+                (i) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: _ItemRow(
+                    item: _items[i],
+                    onRemove: _items.length > 1 ? () => _removeItem(i) : null,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               SwitchListTile(
                 contentPadding: EdgeInsets.zero,
                 title: const Text('Auto-create ledger entry'),
@@ -171,7 +195,7 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
                 ),
                 value: _autoLedger,
                 onChanged: (v) => setState(() => _autoLedger = v),
-                activeColor: AppColors.primary,
+                activeThumbColor: AppColors.primary,
               ),
               const SizedBox(height: 20),
               BlocBuilder<ServicesCubit, ServicesState>(
@@ -221,19 +245,84 @@ class _CreateServiceSheetState extends State<CreateServiceSheet> {
       );
       return;
     }
-    final price = double.tryParse(_priceCtrl.text.trim());
+
+    final items = <ServiceItemInput>[];
+    for (final draft in _items) {
+      final name = draft.nameCtrl.text.trim();
+      final unit = draft.unitCtrl.text.trim();
+      final price = double.tryParse(draft.priceCtrl.text.trim());
+      if (name.isEmpty || unit.isEmpty || price == null || price < 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Fill in name, unit and price for every item'),
+          ),
+        );
+        return;
+      }
+      items.add(ServiceItemInput(name: name, unit: unit, defaultPricePerUnit: price));
+    }
+
     final ok = await context.read<ServicesCubit>().create(
       name: _nameCtrl.text.trim(),
       description: _descCtrl.text.trim().isEmpty ? null : _descCtrl.text.trim(),
       serviceType: _serviceType,
       scheduleType: _scheduleType,
-      unit: _unitCtrl.text.trim().isEmpty ? null : _unitCtrl.text.trim(),
-      defaultPricePerUnit: price,
+      items: items,
       deliveryDays: _scheduleType != ScheduleType.daily
           ? (_deliveryDays.toList()..sort())
           : null,
       autoCreateLedgerEntry: _autoLedger,
     );
     if (ok && context.mounted) Navigator.pop(context);
+  }
+}
+
+class _ItemRow extends StatelessWidget {
+  final _ItemDraft item;
+  final VoidCallback? onRemove;
+  const _ItemRow({required this.item, required this.onRemove});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 3,
+          child: TextFormField(
+            controller: item.nameCtrl,
+            decoration: const InputDecoration(labelText: 'Item name'),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          flex: 2,
+          child: TextFormField(
+            controller: item.unitCtrl,
+            decoration: const InputDecoration(labelText: 'Unit'),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          flex: 2,
+          child: TextFormField(
+            controller: item.priceCtrl,
+            decoration: const InputDecoration(labelText: 'Price (₹)'),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          ),
+        ),
+        SizedBox(
+          width: 40,
+          child: onRemove != null
+              ? IconButton(
+                  onPressed: onRemove,
+                  icon: const Icon(Icons.remove_circle_outline, size: 20),
+                  color: AppColors.error,
+                  padding: EdgeInsets.zero,
+                )
+              : null,
+        ),
+      ],
+    );
   }
 }

@@ -1882,6 +1882,102 @@ abstract class AppLocalizations {
   /// **'This will permanently delete your account. This cannot be undone.'**
   String get deleteAccountStaffWarning;
 
+  /// No description provided for @deleteAccountStrongWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your account is permanent and cannot be undone. Please read carefully before continuing:'**
+  String get deleteAccountStrongWarning;
+
+  /// No description provided for @deleteAccountWarningLoginRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'You will immediately lose the ability to log in.'**
+  String get deleteAccountWarningLoginRemoved;
+
+  /// No description provided for @deleteAccountWarningIrreversible.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be reversed — there is no way to recover your account afterward.'**
+  String get deleteAccountWarningIrreversible;
+
+  /// No description provided for @deleteAccountWarningRecordsKept.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ledger entries, payments, delivery proofs and statements are kept for financial record-keeping and legal/audit purposes — they are never deleted.'**
+  String get deleteAccountWarningRecordsKept;
+
+  /// No description provided for @deleteAccountWarningVendorBlockers.
+  ///
+  /// In en, this message translates to:
+  /// **'You must settle all outstanding balances, remove or pay staff, and resolve pending orders/deliveries and subscriptions before you can delete your account.'**
+  String get deleteAccountWarningVendorBlockers;
+
+  /// No description provided for @deleteAccountWarningStaffBlockers.
+  ///
+  /// In en, this message translates to:
+  /// **'You must have no unpaid salary, outstanding advance, or unfinished assigned work before you can delete your account.'**
+  String get deleteAccountWarningStaffBlockers;
+
+  /// No description provided for @deleteAccountWarningCustomerBlockers.
+  ///
+  /// In en, this message translates to:
+  /// **'You must settle all outstanding balances and have no active orders before you can delete your account.'**
+  String get deleteAccountWarningCustomerBlockers;
+
+  /// No description provided for @iUnderstandContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'I Understand, Continue'**
+  String get iUnderstandContinue;
+
+  /// No description provided for @deleteAccountTypeToConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Type DELETE to confirm'**
+  String get deleteAccountTypeToConfirmTitle;
+
+  /// No description provided for @deleteAccountTypeToConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'To confirm you want to permanently delete your account, type DELETE below.'**
+  String get deleteAccountTypeToConfirmMessage;
+
+  /// No description provided for @deleteAccountEnterOtpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter OTP'**
+  String get deleteAccountEnterOtpTitle;
+
+  /// No description provided for @deleteAccountEnterOtpMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We sent a 6-digit OTP to your registered phone number. Enter it to confirm account deletion.'**
+  String get deleteAccountEnterOtpMessage;
+
+  /// No description provided for @deleteAccountEnterPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get deleteAccountEnterPasswordTitle;
+
+  /// No description provided for @deleteAccountEnterPasswordMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your account password to confirm account deletion.'**
+  String get deleteAccountEnterPasswordMessage;
+
+  /// No description provided for @deleteAccountBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t Delete Account Yet'**
+  String get deleteAccountBlockedTitle;
+
+  /// No description provided for @deleteAccountBlockedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please resolve the following before deleting your account:'**
+  String get deleteAccountBlockedMessage;
+
   /// No description provided for @deleteForever.
   ///
   /// In en, this message translates to:
@@ -4447,7 +4543,7 @@ abstract class AppLocalizations {
   /// No description provided for @mergeSucceededToast.
   ///
   /// In en, this message translates to:
-  /// **'Slots merged'**
+  /// **'Slots merged — tap Save to apply'**
   String get mergeSucceededToast;
 
   /// No description provided for @membershipPlansTitle.

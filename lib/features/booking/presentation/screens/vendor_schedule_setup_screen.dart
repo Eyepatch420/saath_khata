@@ -185,16 +185,14 @@ class _ScheduleSetupViewState extends State<_ScheduleSetupView>
     );
     final remaining = <DaySlot>[
       for (int i = 0; i < daySlots.length; i++)
-        if (!sortedIndexes.contains(i)) daySlots[i],
-    ]..add(merged);
+        if (!sortedIndexes.contains(i)) daySlots[i], merged,
+    ];
     remaining.sort((a, b) => _toMins(a.startTime).compareTo(_toMins(b.startTime)));
+    // Purely local — like add/edit/delete, this only takes effect once the
+    // vendor hits Save. A separate index-based backend call here would be
+    // unsafe: the indexes are computed against this in-memory (possibly
+    // unsaved) list, not whatever is currently persisted server-side.
     setState(() => _config = _config.withUpdatedDay(day, remaining));
-    // Persist the merge to the weekly template on the backend too.
-    context.read<BookingBloc>().add(MergeSlots(
-          dayOfWeek: day,
-          slotIndexes: slotIndexes,
-          mergedCapacity: mergedCapacity,
-        ));
   }
 
   @override
@@ -421,6 +419,10 @@ class _DayTabState extends State<_DayTab> {
   Future<void> _confirmMerge() async {
     final l10n = AppLocalizations.of(context)!;
     final selectedSlots = _selected.map((i) => widget.slots[i]).toList();
+    if (!_slotsContiguousForMerge(selectedSlots)) {
+      AppToast.show(context, l10n.mergeNotContiguousHint, type: ToastType.error);
+      return;
+    }
     final result = await _showMergeConfirmDialog(context, selectedSlots);
     if (result == null) return;
     widget.onMerge(_selected.toList(), result);
@@ -483,7 +485,7 @@ class _DayTabState extends State<_DayTab> {
                     ),
                   ),
                   ElevatedButton(
-                    onPressed: canMerge ? _confirmMerge : null,
+                    onPressed: _selected.length >= 2 ? _confirmMerge : null,
                     style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
                     child: Text(l10n.mergeSlotsButton, style: const TextStyle(color: Colors.white)),
                   ),
@@ -1476,15 +1478,33 @@ class _DateSlotSheetState extends State<_DateSlotSheet> {
   Future<void> _confirmMerge() async {
     final l10n = AppLocalizations.of(context)!;
     final sortedIndexes = List<int>.from(_selected)..sort();
-    final selectedSlots = sortedIndexes.map((i) => _slots[i]).toList();
-    final mergedCapacity = await _showMergeConfirmDialog(context, selectedSlots);
+    final selected = sortedIndexes.map((i) => _slots[i]).toList()
+      ..sort((a, b) => _toMins(a.startTime).compareTo(_toMins(b.startTime)));
+    if (!_slotsContiguousForMerge(selected)) {
+      AppToast.show(context, l10n.mergeNotContiguousHint, type: ToastType.error);
+      return;
+    }
+    final mergedCapacity = await _showMergeConfirmDialog(context, selected);
     if (mergedCapacity == null || !mounted) return;
-    context.read<BookingBloc>().add(MergeSlots(
-          date: _dateStr,
-          slotIndexes: sortedIndexes,
-          mergedCapacity: mergedCapacity,
-        ));
+    final merged = DaySlot(
+      startTime: selected.first.startTime,
+      endTime: selected
+          .map((s) => s.endTime)
+          .reduce((a, b) => _toMins(a) > _toMins(b) ? a : b),
+      maxCapacity: mergedCapacity,
+    );
+    final remaining = <DaySlot>[
+      for (int i = 0; i < _slots.length; i++)
+        if (!sortedIndexes.contains(i)) _slots[i], merged,
+    ];
+    remaining.sort((a, b) => _toMins(a.startTime).compareTo(_toMins(b.startTime)));
+    // Purely local — like add/edit/delete on this sheet, this only takes
+    // effect once the vendor hits Save. Sending index-based merge straight
+    // to the backend here would be unsafe: the indexes are computed against
+    // this in-memory (possibly unsaved) list, not whatever is currently
+    // persisted server-side for this date.
     setState(() {
+      _slots = remaining;
       _selectMode = false;
       _selected.clear();
     });
@@ -1510,8 +1530,6 @@ class _DateSlotSheetState extends State<_DateSlotSheet> {
     final l10n = AppLocalizations.of(context)!;
     final colorScheme = Theme.of(context).colorScheme;
     final mq = MediaQuery.of(context);
-    final selectedSlots = _selected.map((i) => _slots[i]).toList();
-    final canMerge = _selectMode && _slotsContiguousForMerge(selectedSlots);
 
     return BlocListener<BookingBloc, BookingState>(
       listener: (context, state) {
@@ -1527,10 +1545,6 @@ class _DateSlotSheetState extends State<_DateSlotSheet> {
             type: ToastType.success,
           );
         } else if (state is DateSlotsError) {
-          AppToast.show(context, state.message, type: ToastType.error);
-        } else if (state is SlotsMerged && state.dateSlots.date == _dateStr) {
-          _applyOverride(state.dateSlots);
-        } else if (state is MergeError) {
           AppToast.show(context, state.message, type: ToastType.error);
         } else if (state is ReplicateCompleted) {
           AppToast.show(
@@ -1662,7 +1676,7 @@ class _DateSlotSheetState extends State<_DateSlotSheet> {
                                   ),
                                 ),
                                 ElevatedButton(
-                                  onPressed: canMerge ? _confirmMerge : null,
+                                  onPressed: _selected.length >= 2 ? _confirmMerge : null,
                                   style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
                                   child: Text(l10n.mergeSlotsButton, style: const TextStyle(color: Colors.white)),
                                 ),

@@ -6,6 +6,7 @@ import '../../../../../../core/utils/app_logger.dart';
 import '../../../../../../l10n/app_localizations.dart';
 import '../../../bloc/ledger_bloc.dart';
 import '../../../bloc/ledger_event.dart';
+import 'date_picker_row.dart';
 
 class MultiItemEntrySheet extends StatefulWidget {
   final String linkId;
@@ -24,6 +25,7 @@ class MultiItemEntrySheet extends StatefulWidget {
 class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
   static const _m = 'MultiItemEntrySheet';
   final List<_ItemRowState> _rows = [];
+  DateTime? _selectedDate;
 
   @override
   void initState() {
@@ -79,7 +81,11 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
       'Submitting ${items.length} item(s), total ₹${_total.toStringAsFixed(2)}',
     );
     Navigator.pop(context);
-    bloc.add(AddMultiItemLedgerEntry(linkId: widget.linkId, items: items));
+    bloc.add(AddMultiItemLedgerEntry(
+      linkId: widget.linkId,
+      items: items,
+      date: _selectedDate,
+    ));
   }
 
   @override
@@ -160,6 +166,19 @@ class _MultiItemEntrySheetState extends State<MultiItemEntrySheet> {
               icon: const Icon(Icons.add_circle_outline_rounded, size: 16),
               label: Text(l10n.addItemLabel),
               style: TextButton.styleFrom(foregroundColor: AppColors.primary),
+            ),
+            LedgerDatePickerRow(
+              selectedDate: _selectedDate,
+              onTap: () async {
+                final now = DateTime.now();
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: _selectedDate ?? now,
+                  firstDate: DateTime(now.year - 1, now.month, now.day),
+                  lastDate: now,
+                );
+                if (picked != null) setState(() => _selectedDate = picked);
+              },
             ),
             const Divider(height: 20),
             Row(

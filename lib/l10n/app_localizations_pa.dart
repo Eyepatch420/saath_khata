@@ -314,6 +314,9 @@ class AppLocalizationsPa extends AppLocalizations {
   }
 
   @override
+  String get description => 'ਵੇਰਵਾ';
+
+  @override
   String get descriptionOptional => 'ਵੇਰਵਾ (ਵਿਕਲਪਿਕ)';
 
   @override
@@ -948,6 +951,65 @@ class AppLocalizationsPa extends AppLocalizations {
       'This will permanently delete your account. This cannot be undone.';
 
   @override
+  String get deleteAccountStrongWarning =>
+      'Deleting your account is permanent and cannot be undone. Please read carefully before continuing:';
+
+  @override
+  String get deleteAccountWarningLoginRemoved =>
+      'You will immediately lose the ability to log in.';
+
+  @override
+  String get deleteAccountWarningIrreversible =>
+      'This action cannot be reversed — there is no way to recover your account afterward.';
+
+  @override
+  String get deleteAccountWarningRecordsKept =>
+      'Your ledger entries, payments, delivery proofs and statements are kept for financial record-keeping and legal/audit purposes — they are never deleted.';
+
+  @override
+  String get deleteAccountWarningVendorBlockers =>
+      'You must settle all outstanding balances, remove or pay staff, and resolve pending orders/deliveries and subscriptions before you can delete your account.';
+
+  @override
+  String get deleteAccountWarningStaffBlockers =>
+      'You must have no unpaid salary, outstanding advance, or unfinished assigned work before you can delete your account.';
+
+  @override
+  String get deleteAccountWarningCustomerBlockers =>
+      'You must settle all outstanding balances and have no active orders before you can delete your account.';
+
+  @override
+  String get iUnderstandContinue => 'I Understand, Continue';
+
+  @override
+  String get deleteAccountTypeToConfirmTitle => 'Type DELETE to confirm';
+
+  @override
+  String get deleteAccountTypeToConfirmMessage =>
+      'To confirm you want to permanently delete your account, type DELETE below.';
+
+  @override
+  String get deleteAccountEnterOtpTitle => 'Enter OTP';
+
+  @override
+  String get deleteAccountEnterOtpMessage =>
+      'We sent a 6-digit OTP to your registered phone number. Enter it to confirm account deletion.';
+
+  @override
+  String get deleteAccountEnterPasswordTitle => 'Enter your password';
+
+  @override
+  String get deleteAccountEnterPasswordMessage =>
+      'Enter your account password to confirm account deletion.';
+
+  @override
+  String get deleteAccountBlockedTitle => 'Can\'t Delete Account Yet';
+
+  @override
+  String get deleteAccountBlockedMessage =>
+      'Please resolve the following before deleting your account:';
+
+  @override
   String get deleteForever => 'Delete Forever';
 
   @override
@@ -975,9 +1037,6 @@ class AppLocalizationsPa extends AppLocalizations {
   @override
   String get enterPhoneNumberToContinue =>
       'Enter your phone number to continue';
-
-  @override
-  String get otpDemoHint => 'OTP is for demo only · enter 123456 to continue';
 
   @override
   String get havingTrouble => 'Having trouble?';
@@ -1251,6 +1310,18 @@ class AppLocalizationsPa extends AppLocalizations {
   String get addFirstProduct => 'Add First Product';
 
   @override
+  String setPriceToChargeTitle(String name) {
+    return 'Set a price for $name';
+  }
+
+  @override
+  String get setPriceToChargeSubtitle =>
+      'This service has no unit or price set yet. Add them to charge customers for it.';
+
+  @override
+  String get setPrice => 'Set Price';
+
+  @override
   String get renameTier => 'Rename tier';
 
   @override
@@ -1349,7 +1420,7 @@ class AppLocalizationsPa extends AppLocalizations {
   String get createAccountButton => 'Create Account';
 
   @override
-  String get phonePlaceholder => '98765 43210';
+  String get phonePlaceholder => 'XXXXX XXXXX';
 
   @override
   String get enterPassword => 'Enter your password';
@@ -2277,6 +2348,110 @@ class AppLocalizationsPa extends AppLocalizations {
   String get deleteButton => 'Delete';
 
   @override
+  String get weeklyTemplateTab => 'Weekly Template';
+
+  @override
+  String get calendarTab => 'Calendar';
+
+  @override
+  String get usingWeeklyTemplate => 'Using weekly template';
+
+  @override
+  String get customForThisDate => 'Custom for this date';
+
+  @override
+  String get closedBadge => 'Closed';
+
+  @override
+  String get markAsClosed => 'Mark as closed';
+
+  @override
+  String get revertToTemplate => 'Revert to template';
+
+  @override
+  String get replicateToButton => 'Replicate to…';
+
+  @override
+  String get replicateTargetWeek => 'Week';
+
+  @override
+  String get replicateTargetMonth => 'Month';
+
+  @override
+  String get replicateTargetMultipleMonths => 'Multiple Months';
+
+  @override
+  String get replicateMonthsCount => 'Number of months';
+
+  @override
+  String get replicateStartDateLabel => 'Start date';
+
+  @override
+  String get applyReplicateButton => 'Apply';
+
+  @override
+  String replicateResultToast(int applied, int skipped, int failed) {
+    return 'Applied to $applied dates, skipped $skipped already customized, $failed failed';
+  }
+
+  @override
+  String get selectModeButton => 'Select';
+
+  @override
+  String get cancelSelectButton => 'Cancel';
+
+  @override
+  String get mergeSlotsButton => 'Merge';
+
+  @override
+  String get mergeNotContiguousHint =>
+      'Selected slots must be contiguous (touching or overlapping) to merge';
+
+  @override
+  String get mergedCapacityLabel => 'Merged capacity';
+
+  @override
+  String get confirmMergeTitle => 'Merge slots?';
+
+  @override
+  String confirmMergeMessage(String start, String end) {
+    return 'This will merge the selected slots into $start – $end.';
+  }
+
+  @override
+  String get capacityLabel => 'Capacity';
+
+  @override
+  String get duplicateSlotExists =>
+      'A slot with the exact same start and end time already exists';
+
+  @override
+  String bookedOfCapacity(int count, int capacity) {
+    return '$count/$capacity booked';
+  }
+
+  @override
+  String overCapacityWarning(int count) {
+    return 'Over capacity by $count';
+  }
+
+  @override
+  String get noSlotsVendorMayBeClosed =>
+      'No slots available — vendor may be closed on this date';
+
+  @override
+  String get revertedToTemplateToast => 'Reverted to weekly template';
+
+  @override
+  String get dateSavedToast => 'Saved custom slots for this date';
+
+  @override
+  String get dateClosedToast => 'Date marked as closed';
+
+  @override
+  String get mergeSucceededToast => 'Slots merged — tap Save to apply';
+
+  @override
   String get membershipPlansTitle => 'Membership Plans';
 
   @override
@@ -2468,6 +2643,9 @@ class AppLocalizationsPa extends AppLocalizations {
 
   @override
   String get useLabel => 'Use';
+
+  @override
+  String get decreaseLabel => 'Decrease usage count';
 
   @override
   String daysLeftLabel(int count) {

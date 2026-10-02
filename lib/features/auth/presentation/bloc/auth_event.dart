@@ -167,6 +167,10 @@ class AuthUserUpdated extends AuthEvent {
   List<Object?> get props => [user];
 }
 
+/// Dispatched only after the server has confirmed the account was deleted
+/// (see the delete-account confirmation flow, which calls the repository
+/// directly so it can show blocker/OTP errors without disturbing global
+/// auth state). This event just clears the local session.
 class AuthDeleteAccountRequested extends AuthEvent {
   const AuthDeleteAccountRequested();
 }

@@ -15,7 +15,9 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
 
   /// Parses a standard `{ data: [...] }` list response.
   List<T> _list<T>(Response r, T Function(Map<String, dynamic>) fn) =>
-      (r.data['data'] as List).map((e) => fn(e as Map<String, dynamic>)).toList();
+      (r.data['data'] as List)
+          .map((e) => fn(e as Map<String, dynamic>))
+          .toList();
 
   /// Parses a standard `{ data: {...} }` single-item response.
   Map<String, dynamic> _item(Response r) =>
@@ -40,9 +42,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     required String name,
     required ServiceType serviceType,
     required ScheduleType scheduleType,
+    required List<ServiceItemInput> items,
     String? description,
-    String? unit,
-    double? defaultPricePerUnit,
     List<int>? deliveryDays,
     String? deliveryTime,
     bool autoCreateLedgerEntry = true,
@@ -55,8 +56,13 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
           'serviceType': serviceType.toJson(),
           'scheduleType': scheduleType.toJson(),
           'description': ?description,
-          'unit': ?unit,
-          'defaultPricePerUnit': ?defaultPricePerUnit,
+          'items': items
+              .map((i) => {
+                    'name': i.name,
+                    'unit': i.unit,
+                    'defaultPricePerUnit': i.defaultPricePerUnit,
+                  })
+              .toList(),
           'deliveryDays': ?deliveryDays,
           'deliveryTime': ?deliveryTime,
           'autoCreateLedgerEntry': autoCreateLedgerEntry,
@@ -73,8 +79,7 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
     String id, {
     String? name,
     String? description,
-    String? unit,
-    double? defaultPricePerUnit,
+    List<ServiceItemUpdateInput>? items,
     ScheduleType? scheduleType,
     List<int>? deliveryDays,
     String? deliveryTime,
@@ -86,8 +91,13 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
         data: {
           'name': ?name,
           'description': ?description,
-          'unit': ?unit,
-          'defaultPricePerUnit': ?defaultPricePerUnit,
+          'items': items?.map((i) => {
+                'id': ?i.id,
+                'name': ?i.name,
+                'unit': ?i.unit,
+                'defaultPricePerUnit': ?i.defaultPricePerUnit,
+                'isActive': ?i.isActive,
+              }).toList(),
           'scheduleType': ?scheduleType?.toJson(),
           'deliveryDays': ?deliveryDays,
           'deliveryTime': ?deliveryTime,
@@ -114,9 +124,13 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   // ---------------------------------------------------------------------------
 
   @override
-  Future<List<ServiceSubscription>> getSubscriptionsForService(String serviceId) async {
+  Future<List<ServiceSubscription>> getSubscriptionsForService(
+    String serviceId,
+  ) async {
     try {
-      final r = await _api.get(ApiEndpoints.scheduleServiceSubscriptions(serviceId));
+      final r = await _api.get(
+        ApiEndpoints.scheduleServiceSubscriptions(serviceId),
+      );
       return _list(r, ServiceSubscription.fromJson);
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
@@ -137,8 +151,7 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   Future<ServiceSubscription> subscribe({
     required String serviceId,
     required String linkId,
-    required double quantityPerDelivery,
-    double? customPricePerUnit,
+    required List<SubscriptionItemInput> items,
     required String startDate,
     String? endDate,
   }) async {
@@ -147,8 +160,13 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
         ApiEndpoints.scheduleServiceSubscriptions(serviceId),
         data: {
           'linkId': linkId,
-          'quantityPerDelivery': quantityPerDelivery,
-          'customPricePerUnit': ?customPricePerUnit,
+          'items': items
+              .map((i) => {
+                    'serviceItemId': i.serviceItemId,
+                    'quantity': i.quantity,
+                    'customPricePerUnit': ?i.customPricePerUnit,
+                  })
+              .toList(),
           'startDate': startDate,
           'endDate': ?endDate,
         },
@@ -169,13 +187,14 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   }
 
   @override
-  Future<ServiceSubscription> pauseSubscription(String id, {String? pausedUntil}) async {
+  Future<ServiceSubscription> pauseSubscription(
+    String id, {
+    String? pausedUntil,
+  }) async {
     try {
       final r = await _api.post(
         ApiEndpoints.scheduleSubscriptionPause(id),
-        data: {
-          'pausedUntil': ?pausedUntil,
-        },
+        data: {'pausedUntil': ?pausedUntil},
       );
       return ServiceSubscription.fromJson(_item(r));
     } on DioException catch (e) {
@@ -212,7 +231,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   // ---------------------------------------------------------------------------
 
   @override
-  Future<({List<ScheduledDelivery> deliveries, int total, int page})> getVendorDeliveries({
+  Future<({List<ScheduledDelivery> deliveries, int total, int page})>
+  getVendorDeliveries({
     String? date,
     String? startDate,
     String? endDate,
@@ -249,9 +269,15 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   }
 
   @override
-  Future<ScheduledDelivery> markDelivered(String id) async {
+  Future<ScheduledDelivery> markDelivered(
+    String id, {
+    required String photoUrl,
+  }) async {
     try {
-      final r = await _api.post(ApiEndpoints.scheduleDeliveryDeliver(id));
+      final r = await _api.patch(
+        ApiEndpoints.scheduleDeliveryDeliver(id),
+        data: {'photoUrl': photoUrl},
+      );
       return ScheduledDelivery.fromJson(_item(r));
     } on DioException catch (e) {
       throw Exception(ApiClient.extractErrorMessage(e));
@@ -261,11 +287,9 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   @override
   Future<ScheduledDelivery> skipDelivery(String id, {String? notes}) async {
     try {
-      final r = await _api.post(
+      final r = await _api.patch(
         ApiEndpoints.scheduleDeliverySkip(id),
-        data: {
-          'notes': ?notes,
-        },
+        data: {'notes': ?notes},
       );
       return ScheduledDelivery.fromJson(_item(r));
     } on DioException catch (e) {
@@ -278,7 +302,8 @@ class ScheduleRepositoryImpl implements ScheduleRepository {
   // ---------------------------------------------------------------------------
 
   @override
-  Future<({List<ScheduledDelivery> deliveries, int total, int page})> getMyDeliveries({
+  Future<({List<ScheduledDelivery> deliveries, int total, int page})>
+  getMyDeliveries({
     String? date,
     String? startDate,
     String? endDate,

@@ -118,6 +118,7 @@
       }
     }
   },
+  "description": "விவரம்",
   "descriptionOptional": "விவரம் (விருப்பத்தேர்வு)",
   "quantityOptional": "அளவு (விருப்பத்தேர்வு)",
   "descriptionHint": "எ.கா. 2L பால், மாத மளிகை",
@@ -462,7 +463,6 @@
   "membershipTiersDescription": "Rename tiers and set member discounts",
   "logIn": "Log in",
   "enterPhoneNumberToContinue": "Enter your phone number to continue",
-  "otpDemoHint": "OTP is for demo only · enter 123456 to continue",
   "havingTrouble": "Having trouble?",
   "useEmailInstead": "Use email instead →",
   "logInWithEmail": "Log in with email",
@@ -551,6 +551,16 @@
   "deleteProductConfirmation": "Delete product?",
   "noProductsYet": "No products yet",
   "addFirstProduct": "Add First Product",
+  "setPriceToChargeTitle": "Set a price for {name}",
+  "@setPriceToChargeTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "setPriceToChargeSubtitle": "This service has no unit or price set yet. Add them to charge customers for it.",
+  "setPrice": "Set Price",
   "renameTier": "Rename tier",
   "tierName": "Tier name",
   "memberDiscount": "Member discount",
@@ -614,7 +624,7 @@
   "upiIdAlreadyAdded": "இந்த UPI ஐடி ஏற்கனவே சேர்க்கப்பட்டது",
   "verifyButton": "சரிபார்க்கவும்",
   "createAccountButton": "கணக்கு உருவாக்கவும்",
-  "phonePlaceholder": "98765 43210",
+  "phonePlaceholder": "XXXXX XXXXX",
   "enterPassword": "கடவுச்சொல்லை உள்ளிடவும்",
   "mobileNumberLabel": "மொபைல் எண்",
   "personalInfo": "தனிப்பட்ட தகவல்",

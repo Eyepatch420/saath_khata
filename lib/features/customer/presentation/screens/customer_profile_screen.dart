@@ -61,6 +61,14 @@ class CustomerProfileScreen extends StatelessWidget {
                     onTap: () => _showHelpSupport(context, l10n),
                   ),
                   const SizedBox(height: 20),
+                  _SectionHeader(label: 'Ledger Preferences'),
+                  const SizedBox(height: 8),
+                  _ProfileItem(
+                    icon: Icons.auto_awesome_rounded,
+                    title: 'Auto-Confirm Entries',
+                    onTap: () => context.push(AppRouter.ledgerPreferences),
+                  ),
+                  const SizedBox(height: 20),
                   _SectionHeader(label: l10n.legalInfo),
                   const SizedBox(height: 8),
                   _ProfileItem(
